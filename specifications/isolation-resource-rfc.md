@@ -204,18 +204,18 @@ Two rules hold regardless of final values:
   generation, terminal id, or authenticated client id) and emits observable
   accounting.
 
-| ID    | Dimension                        | Applies to            | Proposed default                                          | Floor and maximum policy                                      |
-| ----- | -------------------------------- | --------------------- | --------------------------------------------------------- | ------------------------------------------------------------- |
-| RC-1  | Callback CPU/instruction budget  | each plugin callback  | 10^7 VM instructions or 50 ms wall clock, whichever first | warning candidate at 8 ms per plugin-system measurement note  |
-| RC-2  | Memory per plugin VM             | each plugin           | 32 MiB accounted allocations                              | floor 8 MiB; policy maximum 256 MiB                           |
-| RC-3  | Aggregate plugin memory          | all plugins           | 512 MiB reserved shares, lazy plugins included            | scales with PB-2/PB-3 headroom                                |
-| RC-4  | Live tasks and timers            | each plugin           | 64 tasks, 32 timers                                       | refusal above cap; no burst queueing                          |
-| RC-5  | Event queue depth                | each plugin           | 1024 queued events                                        | overflow drops newest, counts, attributes                     |
-| RC-6  | File descriptors                 | plugins via host only | 0 direct; 16 concurrently open capability files           | global reserve: at least 20% of RLIMIT_NOFILE kept for core   |
-| RC-7  | PTY output burst buffer          | each terminal         | 8 MiB in-memory absorption                                | beyond it, backpressure stops reading; kernel buffer backs up |
-| RC-8  | Notification/title/metadata rate | each PTY source       | 10 events/s coalesced                                     | reply channel capped per Terminal State RFC invariant 7       |
-| RC-9  | IPC request rate and payload     | each connection       | 100 req/s sustained, 2x burst 1 s, 1 MiB payload          | 16 concurrent connections per endpoint default                |
-| RC-10 | MCP/Agent response size          | each response         | snapshot-bounded, 256 KiB stream chunks                   | read scopes only; elevation changes scopes, not ceilings      |
+| ID    | Dimension                        | Applies to            | Proposed default                                          | Floor and maximum policy                                                                                                    |
+| ----- | -------------------------------- | --------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| RC-1  | Callback CPU/instruction budget  | each plugin callback  | 10^7 VM instructions or 50 ms wall clock, whichever first | warning candidate at 8 ms per plugin-system measurement note                                                                |
+| RC-2  | Memory per plugin VM             | each plugin           | 32 MiB accounted allocations                              | floor 8 MiB; policy maximum 256 MiB                                                                                         |
+| RC-3  | Aggregate plugin memory          | all plugins           | 512 MiB reserved shares, lazy plugins included            | scales with PB-2/PB-3 headroom                                                                                              |
+| RC-4  | Live tasks and timers            | each plugin           | 64 tasks, 32 timers                                       | refusal above cap; no burst queueing                                                                                        |
+| RC-5  | Event queue depth                | each plugin           | 1024 queued events                                        | overflow follows the shared plugin-platform drop-policy decision point; drops counted and attributed under either candidate |
+| RC-6  | File descriptors                 | plugins via host only | 0 direct; 16 concurrently open capability files           | global reserve: at least 20% of RLIMIT_NOFILE kept for core                                                                 |
+| RC-7  | PTY output burst buffer          | each terminal         | 8 MiB in-memory absorption                                | beyond it, backpressure stops reading; kernel buffer backs up                                                               |
+| RC-8  | Notification/title/metadata rate | each PTY source       | 10 events/s coalesced                                     | reply channel capped per Terminal State RFC invariant 7                                                                     |
+| RC-9  | IPC request rate and payload     | each connection       | 100 req/s sustained, 2x burst 1 s, 1 MiB payload          | 16 concurrent connections per endpoint default                                                                              |
+| RC-10 | MCP/Agent response size          | each response         | snapshot-bounded, 256 KiB stream chunks                   | read scopes only; elevation changes scopes, not ceilings                                                                    |
 
 Notes:
 
@@ -388,9 +388,12 @@ Source: T-07; R-007; hot-path exclusion per P0-AC-015 under RC-4/RC-5.
 - Given a plugin spawning maximal tasks and timers while flooding its event
   queue,
   when caps are crossed,
-  then excess tasks/timers are refused, queue overflow drops newest with
-  counters, no drop is silent (attribution emitted), and parser/render/input
-  latency probes show no plugin-induced breach.
+  then excess tasks/timers are refused, queue overflow follows the single
+  drop-policy decision point defined in the
+  [Plugin Platform RFC event pipeline](plugin-platform-rfc.md#delivery-ordering-batching-and-coalescing)
+  with drops counted and attributed under either candidate, no drop is
+  silent, and parser/render/input latency probes show no plugin-induced
+  breach.
 
 Verification: adversarial + integration (latency probes).
 Pass threshold: caps hold exactly; hot-path budgets unaffected; drop counters
@@ -549,7 +552,7 @@ separation serve T-10/R-013; the configuration-attack and fault-injection cases
 guard the enforcement machinery itself. All ceilings are additive constraints
 beneath existing controls; where any conflict arises, the security corpus
 prevails per Normative precedence. Independent security-auditor review is
-required before any part advances beyond `draft` (see CTX-0021 gate).
+required before any part advances beyond `draft`.
 
 ## Open items remaining under OQ-014
 

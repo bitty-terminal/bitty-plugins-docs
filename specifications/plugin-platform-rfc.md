@@ -248,15 +248,15 @@ Rules:
 
 ### Grant lifecycle
 
-| Stage       | Proposed behavior                                                                                                                                                                                                         |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Request     | The manifest declares requested identifiers. Undeclared authority cannot be exercised even if a stale grant record exists.                                                                                                |
-| Consent     | First activation prompts once per capability group with: plugin ID, version, verified source, the canonical manifest path and hash, a plain-language effect statement, and the exact scope parameter (for example paths). |
-| Persistence | Grants persist as a signed-format-free, user-owned record under the configuration state directory: plugin ID, manifest hash, granted set, decision timestamps, and origin. Content-addressed to the manifest hash.        |
-| Update      | Any manifest change recomputes the hash. Added capabilities block automatic update and require a permission-diff approval (R-016); unchanged or narrowed sets carry grants forward silently.                              |
-| Revocation  | `bitty plugin revoke <id> [<capability>]` and the equivalent plugin-manager action remove grants immediately; the host detaches affected handlers at the next dispatch boundary and reports what was revoked.             |
-| Re-grant    | A revoked plugin re-prompts on next activation; a denied decision persists as a denial record so hostile packages cannot re-prompt in a loop.                                                                             |
-| Workspace   | Project/workspace configuration may narrow grants but may never add any (system policy cannot be weakened by user configuration, and workspace trust is weaker than user consent).                                        |
+| Stage       | Proposed behavior                                                                                                                                                                                                                                                                                                                                              |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Request     | The manifest declares requested identifiers. Undeclared authority cannot be exercised even if a stale grant record exists.                                                                                                                                                                                                                                     |
+| Consent     | First activation prompts once per capability group with: plugin ID, version, the recorded source origin (source verification strength is owned by package integrity and provenance per OQ-022 and is not claimed at consent time), the canonical manifest path and hash, a plain-language effect statement, and the exact scope parameter (for example paths). |
+| Persistence | Grants persist as a signed-format-free, user-owned record under the configuration state directory: plugin ID, manifest hash, granted set, decision timestamps, and origin. Content-addressed to the manifest hash.                                                                                                                                             |
+| Update      | Any manifest change recomputes the hash. Added capabilities block automatic update and require a permission-diff approval (R-016); unchanged or narrowed sets carry grants forward silently.                                                                                                                                                                   |
+| Revocation  | `bitty plugin revoke <id> [<capability>]` and the equivalent plugin-manager action remove grants immediately; the host detaches affected handlers at the next dispatch boundary and reports what was revoked.                                                                                                                                                  |
+| Re-grant    | A revoked plugin re-prompts on next activation; a denied decision persists as a denial record so hostile packages cannot re-prompt in a loop.                                                                                                                                                                                                                  |
+| Workspace   | Project/workspace configuration may narrow grants but may never add any (system policy cannot be weakened by user configuration, and workspace trust is weaker than user consent).                                                                                                                                                                             |
 
 Prompt-UX constraints (proposed): one dialog per capability family group,
 never a single accept-all toggle; high-risk identifiers render with distinct
@@ -427,10 +427,24 @@ Proposed rules:
    collapse to the latest value when the queue holds undelivered copies.
    Non-coalescable events (opened/closed/exited/bell) preserve one-by-one
    delivery up to the queue bound.
-3. Drop policy when a queue is full: drop oldest, count the drop, and report
-   cumulative counts through `bitty plugin doctor`. Silent loss is not
-   permitted; sustained dropping is a diagnosable budget signal feeding the
-   OQ-014 enforcement work.
+3. Queue overflow when a queue is full is a single shared **open decision
+   point** owned by [OQ-013](../decisions/open-questions.md); this section is
+   its one authoritative statement, and other documents must reference this
+   point instead of asserting a settled policy of their own. Two candidate
+   drop policies remain PROPOSED:
+
+   - **Drop-oldest:** evict the oldest queued event. Newest signals survive,
+     so consumers converge on current state (aligned with coalescing), but a
+     sustained burst can discard every early event, losing burst history.
+   - **Drop-newest:** refuse each arrival at an already-full queue.
+     Already-queued events keep uninterrupted FIFO delivery, but a sustained
+     flood starves exactly the newest signals, leaving the consumer behind.
+
+   Under either candidate, drops are counted per queue, attributed to the
+   owning plugin, and reported cumulatively through `bitty plugin doctor`;
+   silent loss is not permitted, and sustained dropping is a diagnosable
+   budget signal feeding the OQ-014 enforcement work.
+
 4. Ordering guarantees are deliberately weak: FIFO within one queue, no
    ordering across plugins, and no ordering between observation delivery and
    unrelated user actions. Where an extension point composes (status
@@ -529,6 +543,10 @@ Deliberately unresolved by this proposal:
    this exact capability model or a restricted profile of it; the corpus keeps
    this open, and this RFC does not force user-trusted code into the
    third-party grant flow.
+9. Selection of the queue-overflow drop policy: both candidates
+   (drop-oldest versus drop-newest) and their trade-offs are stated in the
+   event-pipeline delivery rules above; resource budgets elsewhere reference
+   that single decision point instead of fixing a policy.
 
 ## Acceptance criteria
 
