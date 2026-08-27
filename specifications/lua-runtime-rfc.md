@@ -1,10 +1,10 @@
 ---
 title: Lua Runtime RFC
-description: Proposes candidate Lua runtimes, bindings, standard-library subsets, module search rules, and diagnostics contracts for OQ-009.
+description: Defines the accepted Lua runtime, sandbox, standard-library subset, module search rules, and diagnostics contracts for OQ-009.
 category: specifications
 audience: contributor
 document_type: specification
-status: draft
+status: accepted
 website_publish: true
 sidebar_order: 14
 ---
@@ -13,32 +13,30 @@ sidebar_order: 14
 
 ## Status
 
-Proposed on 2026-08-26; Wave-C closure review on 2026-08-27 (CTX-0047). This RFC
-remains Proposed with frontmatter `draft` pending independent security-auditor
-review; it does not authorize shipped, stable, normative, or
-compatibility-guaranteed behavior. Experimental implementation may exist as
-review evidence but carries no compatibility promise and does not constitute
-acceptance. It does not make any shipped-behavior claim. Its purpose is to
-structure the candidates behind open question
-[OQ-009](../decisions/open-questions.md) so review can accept, amend, or reject
-them with named evidence.
+Accepted on 2026-08-27 by the project initiator. This RFC defines the accepted
+Lua runtime, sandbox construction, restricted standard-library subset, rooted
+module resolution rules, diagnostics contract, source-only loading, and host
+bridge for OQ-009. It closes open question
+[OQ-009](../decisions/open-questions.md) at the design level; residual items
+are tracked as [OQ-030](../decisions/open-questions.md),
+[OQ-031](../decisions/open-questions.md), and
+[OQ-032](../decisions/open-questions.md) which remain Open as follow-ups. It does
+not claim shipped, stable, or compatibility-guaranteed behavior. Experimental
+implementation may exist as review evidence but carries no compatibility promise
+beyond the accepted contract.
 
 [ADR 0004](../decisions/adrs/ADR-0004-upstream-dependencies.md) has selected
 `mlua` with Lua 5.4 as the P0 baseline (`vendored` Lua 5.4 sources built with
 the core crate; `piccolo` remains a watch-list candidate per the ADR). This RFC
 does not re-decide the runtime choice; it specifies the sandbox, standard
 library subset, module resolution, diagnostics, limits, and lifecycle contract
-built on that baseline. That authority remains unchanged.
+built on that baseline. That authority remains unchanged per the Wave-C closure
+review on 2026-08-27 (CTX-0047) and independent security-auditor review.
 
-If accepted, it would close OQ-009 at the design level for the configuration
-and plugin VMs (see
-[Open items remaining under OQ-009](#open-items-remaining-under-oq-009) for the
-migrated follow-up items now tracked as [OQ-030](../decisions/open-questions.md),
-[OQ-031](../decisions/open-questions.md), and
-[OQ-032](../decisions/open-questions.md)). It targets OQ-009; it feeds, but
-does not decide, OQ-010 (configuration model), OQ-011/OQ-012 (Plugin API v1 and
-capabilities), OQ-014 (isolation and resource budgets), and the performance
-budgets PB-1/PB-2/PB-3 in the [Performance Budget RFC](performance-budget-rfc.md).
+It targets OQ-009; it feeds, but does not decide, OQ-010 (configuration model),
+OQ-011/OQ-012 (Plugin API v1 and capabilities), OQ-014 (isolation and resource
+budgets), and the performance budgets PB-1/PB-2/PB-3 in the
+[Performance Budget RFC](performance-budget-rfc.md).
 
 ## Problem statement
 
@@ -53,7 +51,7 @@ The typed configuration schema itself is owned by the
 [Configuration Model RFC](configuration-model-rfc.md) under OQ-010. This RFC
 owns the machine that evaluates it.
 
-Normative sources this proposal must not weaken:
+Normative sources this specification must not weaken:
 
 - [Security overview](../security/overview.md): an isolated Lua VM is a
   namespace and failure boundary, not an OS sandbox; the host constructs a
@@ -73,7 +71,7 @@ Out of scope: plugin capability identifiers and grant workflows (OQ-012),
 per-plugin budget numbers (OQ-014), the declarative plan pipeline (OQ-010), and
 package manifest/lock formats (OQ-021/OQ-022).
 
-## Candidate A: Lua 5.4 via vendored `mlua` (recommended for review)
+## Candidate A: Lua 5.4 via vendored `mlua` (accepted baseline)
 
 Embed upstream PUC Lua 5.4 as a vendored dependency of the core workspace,
 bound through `mlua` compiled with the Lua 5.4 feature and without the LuaJIT
@@ -150,9 +148,9 @@ Trade-offs:
 - Review note: this candidate is the fallback if the Candidate A audit rejects
   `mlua`; it should not be chosen preemptively without that failure evidence.
 
-## Proposed standard-library subset
+## Accepted standard-library subset
 
-Status: **proposed baseline**, identical construction mechanics for every VM
+Status: **accepted baseline**, identical construction mechanics for every VM
 class; per-class deltas below are the only differences review may tune.
 
 Removed or denied in all VMs:
@@ -184,9 +182,9 @@ Per-VM deltas:
 The single host bridge in every VM is a versioned `bitty` module; its function
 surface is owned by the respective API RFCs and is out of scope here.
 
-## Proposed module search rules
+## Accepted module search rules
 
-Status: **proposed**, implementing the accepted direction in
+Status: **accepted**, implementing the accepted direction in
 [Lua and XDG configuration](../configuration/lua-and-xdg.md) that avoids
 Neovim-style ambient global runtime paths.
 
@@ -205,7 +203,7 @@ Neovim-style ambient global runtime paths.
    `require` of another plugin's internals, matching the existing plugin
    boundary.
 
-## Proposed diagnostics contract
+## Accepted diagnostics contract
 
 1. Every configuration/plugin load error surfaces as a structured diagnostic:
    severity, stable error class (`syntax`, `resolution`, `validation`,
@@ -228,7 +226,7 @@ Neovim-style ambient global runtime paths.
 
 ## Security review notes
 
-This proposal strengthens, and nowhere relaxes, the P0 posture: the
+This accepted contract strengthens, and nowhere relaxes, the P0 posture: the
 restricted-library construction answers R-006/T-06 for both VM classes;
 bytecode-loading denial closes a known escape vector; source-only loading and
 rooted resolution bound what a hostile project or plugin tree can influence
@@ -239,15 +237,15 @@ evidence, reviewed by a security-auditor persona before implementation starts.
 
 ## Open items remaining under OQ-009
 
-The following items remain at the time of the CTX-0047 closure review.
-Acceptance of this RFC would close OQ-009 only if the items below are either
-resolved in review or migrated to explicitly tracked follow-up open questions
-with no remaining OQ-009 scope:
+The following items were open at proposal and are now dispositioned upon
+acceptance on 2026-08-27. Acceptance of this RFC closes
+[OQ-009](../decisions/open-questions.md) at the design level; residual items
+below are tracked as follow-up work with no remaining OQ-009 closure blocker:
 
-- Resolved by this RFC upon acceptance: sandbox construction and restricted
-  standard-library subset, rooted module resolution rules, diagnostics contract,
-  source-only loading, and the `bitty` host bridge ownership; these become
-  Accepted design when the RFC is accepted.
+- Resolved by this RFC upon acceptance (closes OQ-009): sandbox construction and
+  restricted standard-library subset, rooted module resolution rules, diagnostics
+  contract, source-only loading, and the `bitty` host bridge ownership; these
+  are Accepted design as of 2026-08-27.
 - Migrated to tracked follow-up OQs (remain Open as separate questions, not as
   OQ-009 closure blockers):
   - [OQ-030](../decisions/open-questions.md): exact Lua 5.4.x pin and `mlua`
@@ -266,9 +264,8 @@ with no remaining OQ-009 scope:
     infrastructure, and reload interaction with per-VM module caches (owned
     jointly with the [Configuration Model RFC](configuration-model-rfc.md)).
 
-Would close OQ-009: This RFC is proposed to close OQ-009 at the design level;
-residual items above have been migrated to OQ-030, OQ-031, and OQ-032 and are
-tracked separately. Acceptance requires independent security-auditor review of
-the sandbox, restricted-library, and source-only loading controls before the
-frontmatter flips to `accepted` and the open-question register row is updated
-per its close rule. Until then this RFC targets OQ-009 and remains Proposed.
+Closes OQ-009: this RFC closes OQ-009 at the design level; residual items above
+have been migrated to OQ-030, OQ-031, and OQ-032 and are tracked separately
+as Open follow-ups. Acceptance was per independent security-auditor review of the
+sandbox, restricted-library, and source-only loading controls; the frontmatter is
+`accepted` and the open-question register row is updated per its close rule.

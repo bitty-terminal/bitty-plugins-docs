@@ -48,7 +48,8 @@ rules.
 
 Out of scope (each remains owned elsewhere):
 
-- Lua runtime/binding choice and standard-library subset (OQ-009) and the
+- Lua runtime/binding choice and standard-library subset (OQ-009, accepted in
+  [Lua Runtime RFC](../specifications/lua-runtime-rfc.md)) and the
   configuration model (OQ-010). This RFC assumes the accepted direction of one
   isolated Lua VM per plugin and defines only the host side of the boundary.
 - Per-plugin budget thresholds, instruction/memory/task enforcement mechanisms,

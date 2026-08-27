@@ -54,8 +54,8 @@ Out of scope: capability identifiers and manifest schema (OQ-012, accepted in
 [Plugin Platform RFC](plugin-platform-rfc.md)), Plugin API surface (OQ-011,
 accepted), event interception phases (OQ-013, accepted), image protocol limits
 (OQ-008, which owns decompression budgets), IPC protocol wire format (OQ-018),
-and Lua runtime selection mechanics (OQ-009; ADR 0004 records that `piccolo`
-adoption timing is decided with this RFC).
+and Lua runtime selection mechanics (OQ-009, accepted in [Lua Runtime RFC](lua-runtime-rfc.md); ADR 0004 records that `piccolo`
+adoption timing is decided with this RFC and OQ-030..032 remain Open).
 
 ## Normative precedence
 
