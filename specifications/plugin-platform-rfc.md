@@ -22,6 +22,13 @@ sidebar_order: 16
 > normative, or compatibility-guaranteed behavior. Experimental implementation
 > may exist as review evidence but carries no compatibility promise and does not
 > constitute acceptance; acceptance requires independent review.
+>
+> Wave-C P1 candidate winner for v1 review evidence (RFC still draft/Proposed,
+> not self-accepted): **DropOldest is the v1 default** for UI
+> observation/event systems (consumer converges to latest state);
+> **DropNewest remains a documented alternative, not the default**, per
+> OQ-013. This note is candidate-winner evidence only and does not advance the
+> RFC beyond Proposed.
 
 ## Purpose and scope
 
@@ -429,23 +436,28 @@ Proposed rules:
    collapse to the latest value when the queue holds undelivered copies.
    Non-coalescable events (opened/closed/exited/bell) preserve one-by-one
    delivery up to the queue bound.
-3. Queue overflow when a queue is full is a single shared **open decision
-   point** owned by [OQ-013](../decisions/open-questions.md); this section is
-   its one authoritative statement, and other documents must reference this
-   point instead of asserting a settled policy of their own. Two candidate
-   drop policies remain PROPOSED:
+3. Queue overflow when a queue is full is a single shared decision point owned
+   by [OQ-013](../decisions/open-questions.md); this section is its one
+   authoritative statement, and other documents must reference it. Wave-C P1
+   candidate winner for v1 review evidence (RFC still draft/Proposed, not
+   self-accepted): **DropOldest is the v1 default** for UI observation/event
+   systems because the consumer converges to latest state (aligned with
+   coalescing); **DropNewest remains a documented alternative, not the default.**
+   Two policies described:
 
-   - **Drop-oldest:** evict the oldest queued event. Newest signals survive,
-     so consumers converge on current state (aligned with coalescing), but a
-     sustained burst can discard every early event, losing burst history.
-   - **Drop-newest:** refuse each arrival at an already-full queue.
+   - **DropOldest (v1 default):** evict the oldest queued event. Newest signals
+     survive, so consumers converge on current state (aligned with coalescing),
+     but a sustained burst can discard every early event, losing burst history.
+   - **DropNewest (alternative):** refuse each arrival at an already-full queue.
      Already-queued events keep uninterrupted FIFO delivery, but a sustained
      flood starves exactly the newest signals, leaving the consumer behind.
 
-   Under either candidate, drops are counted per queue, attributed to the
-   owning plugin, and reported cumulatively through `bitty plugin doctor`;
-   silent loss is not permitted, and sustained dropping is a diagnosable
-   budget signal feeding the OQ-014 enforcement work.
+   Under the v1 default DropOldest (and under the DropNewest alternative) drops
+   are counted per queue, attributed to the owning plugin, and reported
+   cumulatively through `bitty plugin doctor`; silent loss is not permitted, and
+   sustained dropping is a diagnosable budget signal feeding the OQ-014
+   enforcement work. Runtime default DropOldest is the accepted candidate winner
+   per OQ-013, not implicit.
 
 4. Ordering guarantees are deliberately weak: FIFO within one queue, no
    ordering across plugins, and no ordering between observation delivery and
@@ -455,6 +467,19 @@ Proposed rules:
    payload per wakeup, whichever is smaller) so one slow consumer cannot turn
    a burst into one oversized callback; batch tuning belongs with OQ-014
    budgets.
+6. Three-level queue budgets (candidate, OQ-014, aligned with
+   `bitty-plugin-host/src/event.rs` and the
+   [Isolation Resource RFC](isolation-resource-rfc.md#proposed-resource-ceilings)
+   RC-5 family): **PerSubscription 64 events** per `(plugin, event-type)` queue
+   (strict FIFO bound in `EventQueue::push`); **PerPlugin 1024 events / 256 KiB**
+   aggregate across all queues of one plugin (enforced at
+   `EventPipeline::publish` with the same DropPolicy at the plugin boundary;
+   candidate, P0 review required); **Global 8192 events / 2 MiB** aggregate
+   across all plugins (candidate open item for host admission control; not yet
+   hard-gated, exposed via `total_queued_events`/`total_queued_bytes` and
+   `bitty plugin doctor`). Per-event payloads are bounded by 8 KiB
+   (`EVENT_MAX_BYTES`) and batches by 32 events or 8 KiB per wakeup, both
+   enforced via `BoundedText`.
 
 ### Timeouts and failure policy
 
@@ -528,8 +553,11 @@ time; acceptance would close OQ-011/OQ-012/OQ-013 only if they are resolved in
 review or migrated to tracked follow-ups with no remaining scope in the closing
 OQ:
 
-1. Exact soft/hard timeout milliseconds and queue depths (proposed defaults
-   above are starting values; OQ-014 owns enforceable numbers).
+1. Exact soft/hard timeout milliseconds and remaining queue tuning (proposed
+   defaults above are starting values, including three-level budgets
+   PerSubscription 64 / PerPlugin 1024 events/256 KiB / Global 8192 events/2 MiB
+   aligned with `bitty-plugin-host/src/event.rs`; OQ-014 owns enforceable
+   numbers).
 2. Whether presentation replacement (level 3) and protocol registration
    (level 4) enter as `1.x` additions or wait for `2.0`, and the decoration
    composition/ordering representation.
@@ -548,10 +576,14 @@ OQ:
    this exact capability model or a restricted profile of it; the corpus keeps
    this open, and this RFC does not force user-trusted code into the
    third-party grant flow.
-9. Selection of the queue-overflow drop policy: both candidates
-   (drop-oldest versus drop-newest) and their trade-offs are stated in the
-   event-pipeline delivery rules above; resource budgets elsewhere reference
-   that single decision point instead of fixing a policy.
+9. Drop policy follow-up: Wave-C P1 selects DropOldest as the v1 default
+   candidate winner for UI observation/event systems (consumer converges to
+   latest state); DropNewest remains a documented alternative. Runtime default
+   DropOldest is the accepted candidate winner per OQ-013 (RFC still Proposed,
+   not self-accepted); resource budgets elsewhere reference the single
+   authoritative statement in
+   [Delivery, ordering, batching, and coalescing](#delivery-ordering-batching-and-coalescing)
+   instead of fixing a policy of their own.
 
 ## Acceptance criteria
 
