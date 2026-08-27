@@ -589,7 +589,14 @@ remaining OQ-014 design scope:
 - Migrated or deferred (remain Open as follow-up work, not as OQ-014 closure
   blockers unless review decides otherwise): final RC values requiring the
   measurement harness and reference hardware defined with the Performance Budget
-  RFC follow-up; concrete VM technology and instruction-counting mechanism
+  RFC follow-up — including **measurement**, **instruction/CPU budgets (RC-1
+  10^7 VM instructions / 50 ms wall clock, warning candidate 8 ms)**,
+  **per-plugin bytes (RC-5 PerPlugin 256 KiB aggregate, candidate, enforced at
+  `EventPipeline::publish` via DropPolicy, P0 review required for tuning)**,
+  and **global limits (Global 8192 events / 2 MiB aggregate, accepted
+  admission-control open item, not yet hard-gated, exposed via
+  `total_queued_events`/`total_queued_bytes` and `bitty plugin doctor`)**;
+  concrete VM technology and instruction-counting mechanism
   (`mlua` wrapper today versus `piccolo` watch-list) closing the hook left by
   [ADR 0004](../decisions/adrs/ADR-0004-upstream-dependencies.md); per-child
   rlimit mapping per platform with the platform policy ADR (OQ-003) including
@@ -603,4 +610,9 @@ Would close OQ-014: adopting this RFC would close OQ-014 at the design level;
 the register row would gain its acceptance pointer when review completes. Until
 then the row stays Open and this draft targets OQ-014; it does not claim
 closure and does not authorize shipped behavior. Experimental implementation
-may exist as review evidence but carries no compatibility promise.
+may exist as review evidence but carries no compatibility promise. Wave-C
+review CTX-0046 (2026-08-27) verified the three-level queue budgets
+(PerSubscription 64 / PerPlugin 1024 events/256 KiB / Global 8192 events/2 MiB)
+against `bitty-plugin-host/src/event.rs`; measurement, per-plugin bytes,
+global limits, and instruction/CPU budgets remain Open candidates per RC-1 and
+RC-5.
