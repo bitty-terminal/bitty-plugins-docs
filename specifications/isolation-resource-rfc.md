@@ -15,7 +15,10 @@ sidebar_order: 17
 > "Isolation/resource RFC plus adversarial tests" named as the next artifact for
 > [OQ-014](../decisions/open-questions.md). It proposes mechanisms; it does not
 > describe implemented behavior, relax any normative control, or authorize
-> implementation before independent security-auditor review.
+> shipped, stable, normative, or compatibility-guaranteed behavior.
+> Experimental implementation may exist as review evidence but carries no
+> compatibility promise and does not constitute acceptance; acceptance requires
+> independent security-auditor review.
 
 ## Purpose and scope
 
@@ -556,19 +559,30 @@ required before any part advances beyond `draft`.
 
 ## Open items remaining under OQ-014
 
-- Final RC values require the measurement harness and reference hardware
-  defined with the Performance Budget RFC follow-up.
-- Choose the concrete VM technology and instruction-counting mechanism
-  (`mlua` wrapper today versus `piccolo` watch-list), closing the hook left by
-  [ADR 0004](../decisions/adrs/ADR-0004-upstream-dependencies.md).
-- Specify per-child rlimit mapping per platform with the platform policy ADR
-  (OQ-003), including Windows Job Objects equivalents.
-- Decide whether WASM/helper-process staging (P2) needs reservation hooks in
-  the RC tables now so later adoption cannot require ceiling redesign.
-- Define the exact attribution-record schema and retention/redaction rules with
-  the sensitive-data handling requirements (R-014 minimization applies to
-  enforcement records too).
+The following remain Open at proposal time. Acceptance would close OQ-014 only
+if these items are resolved in review or migrated to tracked follow-ups with no
+remaining OQ-014 design scope:
 
-Adopting this RFC closes OQ-014 at the design level; the register row should
-gain its acceptance pointer when review completes. Until then the row stays
-open and this draft authorizes no implementation.
+- Resolved by this RFC upon acceptance: isolation domains and enforcement
+  mechanisms for PTY, plugin runtimes, and IPC/MCP clients; resource ceilings
+  framework and enforcement points; failure semantics (denial, containment,
+  degradation, reclaim, reload, safe-mode); and the adversarial test
+  specification with coverage traceability.
+- Migrated or deferred (remain Open as follow-up work, not as OQ-014 closure
+  blockers unless review decides otherwise): final RC values requiring the
+  measurement harness and reference hardware defined with the Performance Budget
+  RFC follow-up; concrete VM technology and instruction-counting mechanism
+  (`mlua` wrapper today versus `piccolo` watch-list) closing the hook left by
+  [ADR 0004](../decisions/adrs/ADR-0004-upstream-dependencies.md); per-child
+  rlimit mapping per platform with the platform policy ADR (OQ-003) including
+  Windows Job Objects equivalents; whether WASM/helper-process staging (P2)
+  needs reservation hooks in the RC tables now so later adoption cannot require
+  ceiling redesign; and exact attribution-record schema and
+  retention/redaction rules with sensitive-data handling (R-014 minimization
+  applies to enforcement records too).
+
+Would close OQ-014: adopting this RFC would close OQ-014 at the design level;
+the register row would gain its acceptance pointer when review completes. Until
+then the row stays Open and this draft targets OQ-014; it does not claim
+closure and does not authorize shipped behavior. Experimental implementation
+may exist as review evidence but carries no compatibility promise.

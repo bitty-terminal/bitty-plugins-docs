@@ -18,8 +18,10 @@ sidebar_order: 16
 > [OQ-013](../decisions/open-questions.md). It consolidates the three related
 > contracts into one platform specification because their surfaces share
 > identifiers, lifecycle state, and review evidence. It proposes a contract; it
-> does not describe implemented behavior and does not authorize implementation
-> before independent review.
+> does not describe implemented behavior and does not authorize shipped, stable,
+> normative, or compatibility-guaranteed behavior. Experimental implementation
+> may exist as review evidence but carries no compatibility promise and does not
+> constitute acceptance; acceptance requires independent review.
 
 ## Purpose and scope
 
@@ -521,7 +523,10 @@ contract.
 
 ## Open points
 
-Deliberately unresolved by this proposal:
+Deliberately unresolved by this proposal. The following remain Open at proposal
+time; acceptance would close OQ-011/OQ-012/OQ-013 only if they are resolved in
+review or migrated to tracked follow-ups with no remaining scope in the closing
+OQ:
 
 1. Exact soft/hard timeout milliseconds and queue depths (proposed defaults
    above are starting values; OQ-014 owns enforceable numbers).
@@ -550,8 +555,11 @@ Deliberately unresolved by this proposal:
 
 ## Acceptance criteria
 
-This RFC closes OQ-011, OQ-012, and OQ-013 only when all of the following
-hold, per the [open-question register](../decisions/open-questions.md) rules:
+This RFC targets OQ-011, OQ-012, and OQ-013 and would close them only when all
+of the following hold, per the
+[open-question register](../decisions/open-questions.md) rules. Until then it
+does not claim closure; see [Open points](#open-points) for residual items
+that must be resolved or migrated to tracked follow-ups:
 
 1. Independent review by the category owner, a docs curator, and a security
    reviewer accepts the contract, including every high-risk identifier and the

@@ -1,6 +1,6 @@
 ---
 title: Package integrity, activation, and rollback
-description: Proposed integrity verification chain staged activation lifecycle and safe rollback contracts closing OQ-021 and OQ-022
+description: Proposed integrity verification chain staged activation lifecycle and safe rollback contracts targeting OQ-021 and OQ-022
 category: specifications
 audience: security-reviewer
 document_type: specification
@@ -15,16 +15,21 @@ sidebar_order: 18
 > package format/resolver and supply-chain artifact named by
 > [OQ-021](../decisions/open-questions.md) and
 > [OQ-022](../decisions/open-questions.md). It proposes contracts; it does not
-> describe implemented behavior and does not authorize implementation before
-> independent review.
+> describe implemented behavior and does not authorize shipped, stable,
+> normative, or compatibility-guaranteed behavior. Experimental implementation
+> may exist as review evidence but carries no compatibility promise and does not
+> constitute acceptance; acceptance requires independent review.
 
 ## Document status
 
 - Status: **proposed**; acceptance requires independent review including a
   separate security-auditor persona per the
   [documentation workflow](../development/documentation-workflow.md).
-- If accepted, it closes OQ-021 and OQ-022 at the design level; the register
-  rows are then updated per their own closure rules.
+- If accepted, it would close OQ-021 at the design level; the register row is
+  then updated per its own closure rules. It targets OQ-021 and OQ-022; residual
+  items are migrated to new open questions OQ-026, OQ-027, OQ-028, and OQ-029
+  (see [Open items remaining under OQ-021/OQ-022](#open-items-remaining-under-oq-021oq-022)). Until those are resolved, the new
+  questions remain Open.
 - Every mechanism below is a **target contract for future implementation**.
   No statement here is evidence that any control exists today.
 
@@ -468,18 +473,39 @@ this document.
 
 ## Open items remaining under OQ-021/OQ-022
 
-- Exact manifest and lockfile format versions and their canonical encodings
-  (H-B specification).
-- Constraint grammar, prerelease/yanked policy, side-by-side dependency
-  versions (package management open questions).
-- Default N for retained generations and the byte budget; interaction with
-  `clean`/`doctor` verbs.
-- Key enrollment, rotation, revocation, and freshness (snapshot timestamp)
-  design for V-C; whether Git-source publishers can practically sign.
-- Registry service boundaries: what the registry attests versus what the
-  client verifies.
-- Whether bundled packages ship inside the generation model or outside it.
+The following items remain at proposal time, split into what this RFC resolves
+and what is migrated to new open questions. Acceptance would close OQ-021 only
+when its in-scope items are accepted; migrated items remain Open under the new
+questions below and do not block OQ-021 closure once migrated:
 
-Adopting this RFC closes OQ-021 and OQ-022 at the design level; register rows
-should be updated to point here upon acceptance, with the residual items above
-either resolved in review or spun into follow-up tasks.
+- Resolved by this RFC upon acceptance (would close OQ-021): integrity
+  verification chain (fetch framing, artifact checksum, manifest validation,
+  manifest hash binding, capability diff, compatibility check, store commit),
+  hashing schemes H-A/H-B/H-C, publisher trust options V-A/V-B/V-C at the
+  contract level, local-path development package semantics, staged activation
+  lifecycle and atomic switch, retained environments, and safe rollback
+  semantics. These become Accepted design when the RFC is accepted.
+- Migrated to [OQ-026](../decisions/open-questions.md) (Dependency resolver
+  and constraint grammar): constraint grammar, side-by-side dependency
+  versions, and resolver selection semantics.
+- Migrated to [OQ-027](../decisions/open-questions.md) (Version lifecycle:
+  yank, prerelease, and side-by-side policy): yanked-version policy,
+  prerelease precedence, and interaction with constraint resolution.
+- Migrated to [OQ-028](../decisions/open-questions.md) (Registry service and
+  attestation): registry service boundaries (what the registry attests versus
+  what the client verifies) and whether bundled packages ship inside the
+  generation model or outside it.
+- Migrated to [OQ-029](../decisions/open-questions.md) (Key directory,
+  revocation, rotation, and freshness): key enrollment, rotation, revocation,
+  key-directory infrastructure, freshness/snapshot timestamps for V-C, and
+  whether Git-source publishers can practically sign; plus exact manifest and
+  lockfile format versions and their canonical encodings (H-B specification)
+  and default N for retained generations and the byte budget with
+  `clean`/`doctor` interaction where they touch trust state.
+
+Would close OQ-021: adopting this RFC would close OQ-021 at the design level;
+the register row would be updated to Accepted with a pointer here upon
+acceptance. OQ-022 content is addressed by the integrity and trust contracts
+above; any remaining OQ-022-specific registry or freshness scope lives under
+OQ-028/OQ-029 and remains Open. Until migration is recorded, this RFC targets
+OQ-021/OQ-022 and does not claim closure.

@@ -14,13 +14,23 @@ sidebar_order: 14
 ## Status
 
 Proposed on 2026-08-26. This RFC is not accepted; it does not authorize
-implementation, select a dependency, or make any shipped-behavior claim. Its
-purpose is to structure the candidates behind open question
-[OQ-009](../decisions/open-questions.md) so review can accept, amend, or reject
-them with named evidence.
+shipped, stable, normative, or compatibility-guaranteed behavior. Experimental
+implementation may exist as review evidence but carries no compatibility
+promise and does not constitute acceptance. It does not make any
+shipped-behavior claim. Its purpose is to structure the candidates behind open
+question [OQ-009](../decisions/open-questions.md) so review can accept, amend,
+or reject them with named evidence.
 
-If accepted, it closes OQ-009 at the design level for the configuration and
-plugin VMs. It feeds, but does not decide, OQ-010 (configuration model),
+[ADR 0004](../decisions/adrs/ADR-0004-upstream-dependencies.md) has selected
+`mlua` with Lua 5.4 as the P0 baseline (`vendored` Lua 5.4 sources built with
+the core crate; `piccolo` remains a watch-list candidate per the ADR). This RFC
+does not re-decide the runtime choice; it specifies the sandbox, standard
+library subset, module resolution, diagnostics, limits, and lifecycle contract
+built on that baseline.
+
+If accepted, it would close OQ-009 at the design level for the configuration
+and plugin VMs (see [Open items remaining under OQ-009](#open-items-remaining-under-oq-009) for the residual/migrated items). It
+targets OQ-009; it feeds, but does not decide, OQ-010 (configuration model),
 OQ-011/OQ-012 (Plugin API v1 and capabilities), OQ-014 (isolation and resource
 budgets), and the performance budgets PB-1/PB-2/PB-3 in the
 [Performance Budget RFC](performance-budget-rfc.md).
@@ -49,10 +59,7 @@ Normative sources this proposal must not weaken:
 - [Core boundaries](../architecture/core-boundaries.md): security policy cannot
   be delegated to Lua; plugins never enter the terminal, render, or input hot
   paths.
-- [Technology strategy](../project/technology-strategy.md): current candidate
-  is "Lua 5.4 plus vendored `mlua`", with required validation covering
-  Windows/macOS/Linux/BSD builds, sandbox capability, VM cost, and async/Send
-  requirements; Lua 5.4 is preferred over LuaJIT.
+- [Technology strategy](../project/technology-strategy.md) and [ADR 0004](../decisions/adrs/ADR-0004-upstream-dependencies.md): `mlua` with Lua 5.4 is the P0 baseline (`vendored` Lua 5.4 sources built with the core crate; `piccolo` remains a watch-list candidate). Required validation covering Windows/macOS/Linux/BSD builds, sandbox capability, VM cost, and async/Send requirements still applies; Lua 5.4 is preferred over LuaJIT.
 - [Threat model](../security/threat-model.md): T-06 (VM escape via unrestricted
   libraries) and T-14 (unsafe/FFI defects), with risks R-006, R-007, and R-018
   in the [risk register](../security/risk-register.md).
@@ -227,22 +234,29 @@ evidence, reviewed by a security-auditor persona before implementation starts.
 
 ## Open items remaining under OQ-009
 
-- Binding audit: confirm the pinned `mlua` version's unsafe surface passes
-  security review, or fall back to Candidate C; record the decision as an ADR
-  alongside the technology strategy.
-- Exact Lua 5.4.x pin and upgrade cadence, coordinated with the dependency
-  governance policy (R-019).
-- Whether the configuration VM also receives instruction/memory budgets during
-  startup evaluation, and how that cost is charged against PB-1/PB-2 without
-  breaking the trusted-user experience.
-- Async/Send boundary: which host calls block the config VM thread versus
-  return handles, per the technology strategy validation requirement.
-- Final `debug` allowlist contents and whether `os.getenv` is exposed to the
-  Configuration VM given trace-minimization defaults elsewhere.
-- Reload interaction with module caches (owned jointly with the
-  [Configuration Model RFC](configuration-model-rfc.md)).
-- GC tuning defaults and any hard memory ceiling numbers, pending measurement
-  infrastructure that does not exist yet.
+The following items remain open at the time of proposal. Acceptance of this RFC
+would close OQ-009 only if the items below are either resolved in review or
+migrated to explicitly tracked follow-up tasks with no remaining OQ-009 scope:
 
-Accepting this RFC closes OQ-009 at the design level; the register row should
-then be updated per the open-question register rules.
+- Resolved by this RFC upon acceptance: sandbox construction and restricted
+  standard-library subset, rooted module resolution rules, diagnostics contract,
+  source-only loading, and the `bitty` host bridge ownership; these become
+  Accepted design when the RFC is accepted.
+- Migrated or deferred (remain Open as follow-up work, not as OQ-009 closure
+  blockers unless review decides otherwise): binding audit of the pinned `mlua`
+  version's unsafe surface (or fallback to Candidate C; record as ADR
+  alongside the technology strategy), exact Lua 5.4.x pin and upgrade cadence
+  coordinated with dependency governance (R-019), whether the configuration VM
+  receives instruction/memory budgets during startup evaluation and how cost is
+  charged against PB-1/PB-2, async/Send boundary for host calls blocking the
+  config VM thread versus returning handles (technology strategy validation),
+  final `debug` allowlist contents and whether `os.getenv` is exposed to the
+  Configuration VM given trace-minimization defaults, reload interaction with
+  module caches (owned jointly with the
+  [Configuration Model RFC](configuration-model-rfc.md)), and GC tuning defaults
+  and hard memory ceiling numbers pending measurement infrastructure.
+
+Would close OQ-009: accepting this RFC would close OQ-009 at the design level
+once the residual items above are either resolved or migrated to tracked
+follow-up tasks; the register row is then updated per the open-question
+register rules. Until then this RFC targets OQ-009 and does not claim closure.
