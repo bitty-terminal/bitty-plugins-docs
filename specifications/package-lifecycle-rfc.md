@@ -1,37 +1,46 @@
 ---
 title: Package integrity, activation, and rollback
-description: Proposed integrity verification chain staged activation lifecycle and safe rollback contracts targeting OQ-021 and OQ-022
+description: Defines the accepted integrity verification chain staged activation lifecycle and safe rollback contracts for OQ-021 and OQ-022
 category: specifications
 audience: security-reviewer
 document_type: specification
-status: draft
+status: accepted
 website_publish: true
 sidebar_order: 18
 ---
 
 # Package integrity, activation, and rollback
 
-> Status: **proposed** (frontmatter status `draft`). This document is the
-> package format/resolver and supply-chain artifact named by
-> [OQ-021](../decisions/open-questions.md) and
-> [OQ-022](../decisions/open-questions.md). It proposes contracts; it does not
-> describe implemented behavior and does not authorize shipped, stable,
-> normative, or compatibility-guaranteed behavior. Experimental implementation
-> may exist as review evidence but carries no compatibility promise and does not
-> constitute acceptance; acceptance requires independent review.
+> Status: **accepted** on 2026-08-27 by the project initiator. This document
+> defines the accepted integrity verification chain, staged activation lifecycle
+> and safe rollback contracts; it closes
+> [OQ-021](../decisions/open-questions.md) at the design level and partially
+> addresses [OQ-022](../decisions/open-questions.md) with remaining
+> registry and key items migrated to OQ-026 through OQ-029. It does not describe
+> implemented behavior and does not authorize shipped, stable, or
+> compatibility-guaranteed behavior. Experimental implementation may exist as
+> review evidence but carries no compatibility promise beyond the accepted
+> contract. The lifecycle and integrity model is accepted as normative for staged
+> activation and rollback; real signature verification, registry service, and
+> key-directory contracts remain draft under OQ-022 and OQ-026 through OQ-029.
 
 ## Document status
 
-- Status: **proposed**; acceptance requires independent review including a
-  separate security-auditor persona per the
-  [documentation workflow](../development/documentation-workflow.md).
-- If accepted, it would close OQ-021 at the design level; the register row is
-  then updated per its own closure rules. It targets OQ-021 and OQ-022; residual
-  items are migrated to new open questions OQ-026, OQ-027, OQ-028, and OQ-029
+- Status: **accepted** on 2026-08-27 by the project initiator; this RFC defines
+  the accepted integrity verification chain, staged activation lifecycle and safe
+  rollback contracts and closes OQ-021. The lifecycle and integrity model is
+  accepted as normative for staged activation and rollback; real signature
+  verification, registry service, and key-directory contracts remain draft under
+  OQ-022 and OQ-026 through OQ-029.
+- It targets OQ-021 (closed) and OQ-022 (partially addressed); residual items
+  are migrated to new open questions OQ-026, OQ-027, OQ-028, and OQ-029
   (see [Open items remaining under OQ-021/OQ-022](#open-items-remaining-under-oq-021oq-022)). Until those are resolved, the new
   questions remain Open.
-- Every mechanism below is a **target contract for future implementation**.
-  No statement here is evidence that any control exists today.
+- Every mechanism below is an **accepted contract for the lifecycle and
+  integrity scope**; no statement here is evidence that any control is
+  implemented today. Experimental `bitty-package` may exist as review evidence
+  but carries no compatibility promise beyond the accepted contract. Real
+  signature verification and key-directory wiring remain draft per crate docs.
 
 ## Purpose and scope
 
@@ -41,29 +50,31 @@ contracts?_ OQ-022 asks: _which source types precede a registry, and how are
 integrity, signatures, provenance, local paths, and publisher trust enforced?_
 
 This RFC answers the integrity, activation, and rollback portions of both
-questions with candidate options, their security properties, and testable
+questions with accepted contracts, their security properties, and testable
 verification criteria: one verification chain applied to every source type, a
 comparison of publisher-trust models (trust-on-first-use versus signed
 releases), a staged activation lifecycle separated from installation, and
 rollback over retained environments.
 
 In scope: manifest and lockfile hashing schemes; the verification pipeline;
-publisher-trust options and staged adoption; local-path development packages;
-the activation transaction and its phases; retained-environment bounds; full
-and per-plugin rollback; failure and crash semantics.
+publisher-trust options and staged adoption at the contract level;
+local-path development packages; the activation transaction and its phases;
+retained-environment bounds; full and per-plugin rollback; failure and crash
+semantics.
 
 Out of scope: constraint grammar, prerelease/yanked policy, and side-by-side
-dependency versions (remaining OQ-021 items); registry service design,
-key-directory infrastructure, and revocation details (remaining OQ-022 items);
+dependency versions (remaining OQ-021 items now [OQ-026](../decisions/open-questions.md) and [OQ-027](../decisions/open-questions.md)); registry service design,
+key-directory infrastructure, and revocation details (remaining OQ-022 items
+now [OQ-028](../decisions/open-questions.md) and [OQ-029](../decisions/open-questions.md));
 plugin runtime isolation and capability enforcement (OQ-014); CLI verb
 spelling ([package management](../extensibility/package-management.md)).
 
-## Normative constraints this proposal must not weaken
+## Normative constraints this RFC must not weaken
 
 The [security overview](../security/overview.md),
 [threat model](../security/threat-model.md), and
 [P0 acceptance criteria](../security/p0-acceptance-criteria.md) are normative.
-This RFC only proposes mechanisms beneath them:
+This RFC only defines mechanisms beneath them:
 
 - Invariant 7: every untrusted input has size, time, nesting, rate, and memory
   limits; manifests, lockfiles, and package metadata are untrusted inputs.
@@ -83,7 +94,7 @@ This RFC only proposes mechanisms beneath them:
 
 ## Lifecycle overview
 
-Status: **proposed contract.**
+Status: **accepted contract.**
 
 A package moves through six states. Each transition is a named gate; failing a
 gate fails closed and leaves the previous state unchanged.
@@ -118,7 +129,7 @@ the plugin host.
 
 ### Verification pipeline
 
-Status: **proposed contract.** The chain is ordered; each stage consumes the
+Status: **accepted contract.** The chain is ordered; each stage consumes the
 output of the previous one and none may be skipped for any source type.
 Bundled and local-path sources use degenerate records rather than exemptions:
 
@@ -146,7 +157,7 @@ skips stages 3 through 5.
 
 ### Manifest hashing schemes
 
-Status: **proposed options with a recommended combination.** The lockfile
+Status: **accepted options with a recommended combination.** The lockfile
 binds three distinct digests so that transport corruption, semantic
 reinterpretation, and partial content tampering are independently detectable.
 
@@ -174,7 +185,7 @@ Testable criteria: PL-AC-001, PL-AC-002.
 
 ### Publisher trust options
 
-Status: **proposed staged options; P0 floor unchanged.** Checksums prove that
+Status: **accepted staged options; P0 floor unchanged; real signature verification remains draft per crate docs.** Checksums prove that
 what was fetched matches what was locked; they do not prove who published it.
 Three trust models close that gap at increasing infrastructure cost.
 
@@ -206,7 +217,7 @@ Properties and hazards:
 
 ### Local-path development packages
 
-Status: **proposed contract.** Local paths exist for development; they need
+Status: **accepted contract.** Local paths exist for development; they need
 visibly different trust semantics, not exemptions:
 
 - A local-path package is recorded in the lock with a distinct source class
@@ -224,7 +235,7 @@ Testable criterion: PL-AC-005.
 
 ### Activation phases
 
-Status: **proposed contract.** Activation is one transaction with named
+Status: **accepted contract.** Activation is one transaction with named
 phases; every phase has a defined failure action, and failure anywhere before
 `commit` leaves the active environment untouched:
 
@@ -243,7 +254,7 @@ Testable criteria: PL-AC-006, PL-AC-007.
 
 ### Staging mechanics options
 
-Status: **proposed options.** Two candidate mechanisms implement the switch:
+Status: **accepted options.** Two candidate mechanisms implement the switch:
 
 | Option | Mechanism                                                                                                                     | Security and reliability properties                                                                             | Costs                                                                                                       |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
@@ -259,7 +270,7 @@ ergonomics, not security necessity.
 
 ### Retained environments
 
-Status: **proposed contract.**
+Status: **accepted contract.**
 
 - Each successful activation records an immutable generation entry: full lock
   resolution, generation root digest, capability grant snapshot, activation
@@ -274,7 +285,7 @@ Testable criteria: PL-AC-008, PL-AC-009.
 
 ### Rollback operations
 
-Status: **proposed contract.**
+Status: **accepted contract.**
 
 - Full rollback selects a retained generation and performs the same staged
   activation transaction in reverse; rollback executes no package code either.
@@ -454,8 +465,8 @@ commit and is owned by P0-AC-018.
 
 ## Security review notes
 
-This proposal strengthens the supply-chain posture without touching any P0
-guarantee: the verification chain adds semantic binding (H-B) and store
+This accepted contract strengthens the supply-chain posture without touching any
+P0 guarantee: the verification chain adds semantic binding (H-B) and store
 self-verification (H-C) above the checksum floor; TOFU pins and signatures add
 publisher assurance in later stages while leaving first-contact risk
 explicitly stated rather than hidden; the activation lifecycle makes
@@ -464,7 +475,8 @@ recovery available (R-009) while capping storage abuse. Residual accepted
 exposures: first-contact compromise under V-B, legitimate-key-holder
 misbehavior under all options, and freeze/downgrade windows pending signed
 freshness metadata. These residuals belong to OQ-022 follow-up design, not to
-implementation shortcuts.
+implementation shortcuts. Real signature verification remains draft per crate
+docs; the lifecycle and integrity model is accepted as normative.
 
 Reviewer guidance: verify that no option above is readable as permitting
 install-time execution, silent capability growth, checksum skipping for any
@@ -473,18 +485,19 @@ this document.
 
 ## Open items remaining under OQ-021/OQ-022
 
-The following items remain at proposal time, split into what this RFC resolves
-and what is migrated to new open questions. Acceptance would close OQ-021 only
-when its in-scope items are accepted; migrated items remain Open under the new
-questions below and do not block OQ-021 closure once migrated:
+The following items were open at proposal and are now dispositioned upon
+acceptance on 2026-08-27. Acceptance of this RFC closes
+[OQ-021](../decisions/open-questions.md) at the design level; residual items
+below are tracked as follow-up work with no remaining OQ-021 closure blocker
+unless review decides otherwise:
 
-- Resolved by this RFC upon acceptance (would close OQ-021): integrity
+- Resolved by this RFC upon acceptance (closes OQ-021): integrity
   verification chain (fetch framing, artifact checksum, manifest validation,
   manifest hash binding, capability diff, compatibility check, store commit),
   hashing schemes H-A/H-B/H-C, publisher trust options V-A/V-B/V-C at the
   contract level, local-path development package semantics, staged activation
   lifecycle and atomic switch, retained environments, and safe rollback
-  semantics. These become Accepted design when the RFC is accepted.
+  semantics. These are Accepted design as of 2026-08-27.
 - Migrated to [OQ-026](../decisions/open-questions.md) (Dependency resolver
   and constraint grammar): constraint grammar, side-by-side dependency
   versions, and resolver selection semantics.
@@ -503,9 +516,7 @@ questions below and do not block OQ-021 closure once migrated:
   and default N for retained generations and the byte budget with
   `clean`/`doctor` interaction where they touch trust state.
 
-Would close OQ-021: adopting this RFC would close OQ-021 at the design level;
-the register row would be updated to Accepted with a pointer here upon
-acceptance. OQ-022 content is addressed by the integrity and trust contracts
-above; any remaining OQ-022-specific registry or freshness scope lives under
-OQ-028/OQ-029 and remains Open. Until migration is recorded, this RFC targets
-OQ-021/OQ-022 and does not claim closure.
+Closes OQ-021: this RFC closes OQ-021 at the design level; the register row is
+updated per the open-question register rules. OQ-022 content is addressed by the
+integrity and trust contracts above; any remaining OQ-022-specific registry or
+freshness scope lives under OQ-028/OQ-029 and remains Open.

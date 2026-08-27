@@ -14,7 +14,13 @@ sidebar_order: 20
 > Status: pre-implementation architecture. A package-manager experience for
 > first-party and third-party plugins is accepted working direction. State
 > boundaries, command names, file names, schemas, and update policy are
-> candidate contracts except where the security contract is normative.
+> candidate contracts except where the security contract is normative. The
+> integrity verification chain, staged activation lifecycle and safe rollback
+> semantics are accepted in
+> [Package Lifecycle RFC](../specifications/package-lifecycle-rfc.md)
+> (OQ-021, 2026-08-27) as normative for staged activation and rollback; real
+> signature verification, registry service, and key-directory contracts remain
+> draft under OQ-022 and OQ-026 through OQ-029.
 
 Bitty should treat plugin installation as package management, not as an
 incidental side effect of loading Lua. Users should be able to declare,
