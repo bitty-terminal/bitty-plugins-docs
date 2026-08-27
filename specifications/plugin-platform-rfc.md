@@ -1,34 +1,32 @@
 ---
 title: Plugin Platform RFC
-description: Proposed Plugin API v1 surface, capability and manifest model, and event pipeline contract answering OQ-011, OQ-012, and OQ-013.
+description: Defines the accepted Plugin API v1 surface, capability and manifest model, and event pipeline contract for OQ-011, OQ-012, and OQ-013
 category: specifications
 audience: plugin-author
 document_type: specification
-status: draft
+status: accepted
 website_publish: true
 sidebar_order: 16
 ---
 
 # Plugin Platform RFC
 
-> Status: **proposed** (frontmatter status `draft`). This document is the
-> "Plugin API RFC", "Capability/manifest RFC", and "Event pipeline RFC" named as
-> the next artifacts for [OQ-011](../decisions/open-questions.md),
+> Status: **accepted** on 2026-08-27 by the project initiator. This document
+> defines the accepted Plugin API v1 surface, capability and manifest model,
+> and event pipeline contract; it closes
+> [OQ-011](../decisions/open-questions.md),
 > [OQ-012](../decisions/open-questions.md), and
-> [OQ-013](../decisions/open-questions.md). It consolidates the three related
-> contracts into one platform specification because their surfaces share
-> identifiers, lifecycle state, and review evidence. It proposes a contract; it
-> does not describe implemented behavior and does not authorize shipped, stable,
-> normative, or compatibility-guaranteed behavior. Experimental implementation
-> may exist as review evidence but carries no compatibility promise and does not
-> constitute acceptance; acceptance requires independent review.
->
-> Wave-C P1 candidate winner for v1 review evidence (RFC still draft/Proposed,
-> not self-accepted): **DropOldest is the v1 default** for UI
+> [OQ-013](../decisions/open-questions.md) at the design level. It does not
+> describe implemented behavior and does not authorize shipped, stable, or
+> compatibility-guaranteed behavior. Experimental implementation may exist as
+> review evidence but carries no compatibility promise beyond the accepted
+> contract. Wave-C P1 decisions are now the accepted contract per independent
+> review with security-auditor: **DropOldest is the v1 default** for UI
 > observation/event systems (consumer converges to latest state);
 > **DropNewest remains a documented alternative, not the default**, per
-> OQ-013. This note is candidate-winner evidence only and does not advance the
-> RFC beyond Proposed.
+> OQ-013; three-level queue budgets PerSubscription 64 / PerPlugin 1024
+> events/256 KiB / Global 8192 events/2 MiB are aligned as accepted defaults
+> with `BoundedText` strict enforcement and hardened activation gates.
 
 ## Purpose and scope
 
@@ -63,7 +61,7 @@ Out of scope (each remains owned elsewhere):
   surface below deliberately exposes only a minimal primitive subset.
 - Default bundled-plugin set and disabling behavior (OQ-002).
 
-## Normative sources this proposal must not weaken
+## Normative sources this specification must not weaken
 
 - [Security Overview](../security/overview.md): untrusted-by-default posture;
   capability families; invariants 2 (third-party plugins start without
@@ -92,7 +90,7 @@ control; it may not downgrade the control to an optional candidate.
 
 ## Terminology
 
-| Term           | Proposed meaning                                                                                      |
+| Term           | Accepted meaning                                                                                      |
 | -------------- | ----------------------------------------------------------------------------------------------------- |
 | Host           | The Bitty extension host: the only component that executes plugin code and mediates privileged work.  |
 | Plugin ID      | Owner-qualified stable identifier, `owner.name`, for example `xuepoo.markdown`.                       |
@@ -104,7 +102,7 @@ control; it may not downgrade the control to an optional candidate.
 | Observation    | Read-only notification delivered after terminal state has been updated.                               |
 | Interception   | Cold-path hook that may veto one user action before the host performs it.                             |
 
-## Proposal summary
+## Accepted summary
 
 1. One manifest format (`bitty-plugin.toml`), parsed and validated before any
    plugin code runs, with hard size and structure limits and fuzz coverage.
@@ -132,13 +130,13 @@ control; it may not downgrade the control to an optional candidate.
 | Lua table | One language across config and plugins, but a manifest must be inspectable and diffable without creating a VM; executable manifests would run attacker-controlled code during discovery, weakening the no-code-at-install posture. | Rejected; contradicts T-06/T-12 containment direction. |
 | YAML      | Ergonomic but ambiguous (implicit typing, anchors), historically fuzz-hostile, and over-expressive for a security-reviewed artifact.                                                                                               | Rejected.                                              |
 
-Status of this choice: **proposed**. The file name, key spelling, and version
-grammar remain candidate contract details until acceptance.
+Status of this choice: **accepted**. The file name, key spelling, and version
+grammar are now the accepted contract.
 
-### Proposed manifest schema
+### Accepted manifest schema
 
 ```toml
-# Candidate syntax; extends the illustrative fragment in
+# Accepted syntax; extends the illustrative fragment in
 # docs/extensibility/plugin-system.md with explicit scopes and triggers.
 [plugin]
 id = "xuepoo.markdown"        # required; ^[a-z][a-z0-9_-]*\.[a-z][a-z0-9_-]*$
@@ -171,13 +169,13 @@ events = ["terminal.cwd-changed"]
 claims = ["tabline"]
 ```
 
-Proposed validation rules:
+Accepted validation rules:
 
 1. The manifest is parsed by the package manager and the host independently
    with the same schema and version; both reject unknown keys, duplicate keys,
    out-of-range lengths, and invalid identifiers before any dependency
    resolution or VM creation.
-2. Hard limits (proposed, tunable only by a reviewed change): manifest size
+2. Hard limits (accepted, tunable only by a reviewed change): manifest size
    <= 256 KiB; at most 128 declared commands, 256 subscribed event types, 32
    filesystem patterns per access kind, 16 provided services, and 8 plugin
    dependencies; total pattern text <= 8 KiB.
@@ -218,11 +216,11 @@ event time. This adopts the determinism and ownership properties from the
 
 ### Identifier grammar and families
 
-Proposed grammar: `family.resource[.scope]`, lowercase, dot-separated, with an
+Accepted grammar: `family.resource[.scope]`, lowercase, dot-separated, with an
 optional parameterized form `family.resource:parameter` for path and destination
 constraints. Identifiers are closed symbols; plugins cannot invent families.
 
-| Family      | Proposed v1 identifiers                                                                                       | Normative source restriction                                        |
+| Family      | Accepted v1 identifiers                                                                                       | Normative source restriction                                        |
 | ----------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | `terminal`  | `terminal.semantic-read`, `terminal.raw-read`, `terminal.input.self`, `terminal.input.all`, `terminal.manage` | Raw read and manage are high-risk; never bundled with presentation. |
 | `ui`        | `ui.rich`, `ui.overlay`, `ui.protocol-register`                                                               | `ui.protocol-register` is the high-risk protocol-registration gate. |
@@ -257,7 +255,7 @@ Rules:
 
 ### Grant lifecycle
 
-| Stage       | Proposed behavior                                                                                                                                                                                                                                                                                                                                              |
+| Stage       | Accepted behavior                                                                                                                                                                                                                                                                                                                                              |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Request     | The manifest declares requested identifiers. Undeclared authority cannot be exercised even if a stale grant record exists.                                                                                                                                                                                                                                     |
 | Consent     | First activation prompts once per capability group with: plugin ID, version, the recorded source origin (source verification strength is owned by package integrity and provenance per OQ-022 and is not claimed at consent time), the canonical manifest path and hash, a plain-language effect statement, and the exact scope parameter (for example paths). |
@@ -267,7 +265,7 @@ Rules:
 | Re-grant    | A revoked plugin re-prompts on next activation; a denied decision persists as a denial record so hostile packages cannot re-prompt in a loop.                                                                                                                                                                                                                  |
 | Workspace   | Project/workspace configuration may narrow grants but may never add any (system policy cannot be weakened by user configuration, and workspace trust is weaker than user consent).                                                                                                                                                                             |
 
-Prompt-UX constraints (proposed): one dialog per capability family group,
+Prompt-UX constraints (accepted): one dialog per capability family group,
 never a single accept-all toggle; high-risk identifiers render with distinct
 severity and cannot be pre-checked; the dialog is reachable again from the
 plugin manager; consent screens show capability identifiers verbatim so that
@@ -277,7 +275,7 @@ Options considered for grant storage: (a) inline in the managed manifest
 (rejected: mixes desired state with audited decisions, breaks dotfile
 portability of intent versus consent), (b) per-capability OS keychain entries
 (rejected: poor diffability and no atomic view of one plugin's authority),
-(c) a dedicated grant record bound to the manifest hash (proposed: auditable,
+(c) a dedicated grant record bound to the manifest hash (accepted: auditable,
 diffable, revocation-friendly, and consistent with the path-and-hash approval
 pattern the corpus already accepts for project configuration).
 
@@ -288,7 +286,7 @@ pattern the corpus already accepts for project configuration).
 | Option                                                              | Trade-offs                                                                                                                                                                                                                      | Verdict                                   |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
 | A. Minimal kernel: commands plus observation events only            | Smallest review surface and fastest to stabilize, but tabs/status-line-class plugins cannot ship without UI, so the first real ecosystem wave would be blocked or fork private patterns.                                        | Rejected.                                 |
-| B. Level 1 plus minimal Level 2 and read-only terminal (proposed)   | Covers the candidate plugin ownership table (tabs, status line, palette, search-style consumers) with declarative UI only; keeps renderer replaceable; defers the two highest-risk areas (presentation replacement, protocols). | **Proposed.**                             |
+| B. Level 1 plus minimal Level 2 and read-only terminal (accepted)   | Covers the candidate plugin ownership table (tabs, status line, palette, search-style consumers) with declarative UI only; keeps renderer replaceable; defers the two highest-risk areas (presentation replacement, protocols). | **Accepted.**                             |
 | C. Full levels 1-4 including presentation replacement and protocols | Maximizes early capability, but level 3 composition rules and level 4 protocol handling are exactly where Terminal Truth and PTY-peer-reachable attack surface live (T-07, T-13, R-008); premature freezing risks a broken v2.  | Rejected v1; revisit as `2.x` candidates. |
 
 ### Host namespaces
@@ -308,7 +306,7 @@ bitty.store.get/set(key, value)       -- small quota'd key-value state
 bitty.notify.show(payload)            -- via platform.notify
 ```
 
-Proposed v1 rules per namespace:
+Accepted v1 rules per namespace:
 
 1. **Commands.** Registration uses qualified names (`xuepoo.markdown:toggle`);
    duplicates (including collisions across plugins) are rejected at graph
@@ -404,7 +402,7 @@ Declared -> Resolved -> Registered -> Activated -> (Suspended) -> Disposed
 | Observation  | `terminal.opened`, `terminal.closed`, `terminal.title-changed`, `terminal.cwd-changed`, `terminal.bell`, `focus.changed`, `selection.changed`, `process.exited`, `config.reloaded` | After terminal/configuration state is updated      | No                 |
 | Interception | `intercept.command-dispatch`, `intercept.terminal-spawn`, `intercept.paste`, `intercept.open-url`                                                                                  | Before the host performs the user action           | Veto only          |
 
-Proposed rules:
+Accepted rules:
 
 1. The v1 interception set is exactly the four actions above, matching the
    candidate list in
@@ -439,8 +437,7 @@ Proposed rules:
 3. Queue overflow when a queue is full is a single shared decision point owned
    by [OQ-013](../decisions/open-questions.md); this section is its one
    authoritative statement, and other documents must reference it. Wave-C P1
-   candidate winner for v1 review evidence (RFC still draft/Proposed, not
-   self-accepted): **DropOldest is the v1 default** for UI observation/event
+   decision now accepted: **DropOldest is the v1 default** for UI observation/event
    systems because the consumer converges to latest state (aligned with
    coalescing); **DropNewest remains a documented alternative, not the default.**
    Two policies described:
@@ -456,34 +453,34 @@ Proposed rules:
    are counted per queue, attributed to the owning plugin, and reported
    cumulatively through `bitty plugin doctor`; silent loss is not permitted, and
    sustained dropping is a diagnosable budget signal feeding the OQ-014
-   enforcement work. Runtime default DropOldest is the accepted candidate winner
-   per OQ-013, not implicit.
+   enforcement work. Runtime default DropOldest is the accepted v1 default
+   per OQ-013.
 
 4. Ordering guarantees are deliberately weak: FIFO within one queue, no
    ordering across plugins, and no ordering between observation delivery and
    unrelated user actions. Where an extension point composes (status
    components), declared order rules apply instead of incidental timing.
-5. Batch size is bounded (proposed default <= 32 events or 8 KiB of aggregate
+5. Batch size is bounded (accepted default <= 32 events or 8 KiB of aggregate
    payload per wakeup, whichever is smaller) so one slow consumer cannot turn
    a burst into one oversized callback; batch tuning belongs with OQ-014
    budgets.
-6. Three-level queue budgets (candidate, OQ-014, aligned with
+6. Three-level queue budgets (accepted, OQ-014, aligned with
    `bitty-plugin-host/src/event.rs` and the
    [Isolation Resource RFC](isolation-resource-rfc.md#proposed-resource-ceilings)
    RC-5 family): **PerSubscription 64 events** per `(plugin, event-type)` queue
    (strict FIFO bound in `EventQueue::push`); **PerPlugin 1024 events / 256 KiB**
    aggregate across all queues of one plugin (enforced at
    `EventPipeline::publish` with the same DropPolicy at the plugin boundary;
-   candidate, P0 review required); **Global 8192 events / 2 MiB** aggregate
-   across all plugins (candidate open item for host admission control; not yet
+   accepted, P0 review required for enforcement tuning); **Global 8192 events / 2 MiB** aggregate
+   across all plugins (accepted open item for host admission control; not yet
    hard-gated, exposed via `total_queued_events`/`total_queued_bytes` and
    `bitty plugin doctor`). Per-event payloads are bounded by 8 KiB
    (`EVENT_MAX_BYTES`) and batches by 32 events or 8 KiB per wakeup, both
-   enforced via `BoundedText`.
+   enforced via `BoundedText` strict.
 
 ### Timeouts and failure policy
 
-| Situation                              | Proposed default                                                                                                                                                |
+| Situation                              | Accepted default                                                                                                                                                |
 | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Observation handler exceeds soft limit | Marked late; counted; delivery continues. Soft-limit number is an OQ-014 budget (the 8 ms figure in the plugin corpus is the working candidate).                |
 | Interception handler timeout           | **Fail-open:** the host proceeds with the user action without the plugin, records a violation, and disables that handler after repeated violations in a window. |
@@ -500,7 +497,7 @@ revocable.
 
 ## Security alignment and traceability
 
-| Proposal element                                           | Normative gate it implements                                                                    | Threat/risk IDs          |
+| Accepted element                                           | Normative gate it implements                                                                    | Threat/risk IDs          |
 | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------ |
 | Deny-by-default capability grammar, no wildcards           | Security overview invariants 2 and capability families; two-domain split (`PluginCapabilities`) | T-06, R-006              |
 | Manifest validated before code; fuzz targets; size limits  | P0 testing row; untrusted-input treatment for manifests                                         | T-06, T-12, R-015        |
@@ -548,16 +545,16 @@ contract.
 
 ## Open points
 
-Deliberately unresolved by this proposal. The following remain Open at proposal
-time; acceptance would close OQ-011/OQ-012/OQ-013 only if they are resolved in
-review or migrated to tracked follow-ups with no remaining scope in the closing
-OQ:
+Deliberately unresolved at acceptance time. The following remain Open as
+follow-up work and do not block closure of OQ-011/OQ-012/OQ-013, which are
+closed at the design level on 2026-08-27. Acceptance recorded per independent
+review with security-auditor; residual items are tracked below:
 
-1. Exact soft/hard timeout milliseconds and remaining queue tuning (proposed
-   defaults above are starting values, including three-level budgets
+1. Exact soft/hard timeout milliseconds and remaining queue tuning (accepted
+   defaults above are the accepted contract, including three-level budgets
    PerSubscription 64 / PerPlugin 1024 events/256 KiB / Global 8192 events/2 MiB
-   aligned with `bitty-plugin-host/src/event.rs`; OQ-014 owns enforceable
-   numbers).
+   aligned with `bitty-plugin-host/src/event.rs`; OQ-014 owns runtime
+   enforcement tuning).
 2. Whether presentation replacement (level 3) and protocol registration
    (level 4) enter as `1.x` additions or wait for `2.0`, and the decoration
    composition/ordering representation.
@@ -576,30 +573,27 @@ OQ:
    this exact capability model or a restricted profile of it; the corpus keeps
    this open, and this RFC does not force user-trusted code into the
    third-party grant flow.
-9. Drop policy follow-up: Wave-C P1 selects DropOldest as the v1 default
-   candidate winner for UI observation/event systems (consumer converges to
-   latest state); DropNewest remains a documented alternative. Runtime default
-   DropOldest is the accepted candidate winner per OQ-013 (RFC still Proposed,
-   not self-accepted); resource budgets elsewhere reference the single
-   authoritative statement in
+9. Drop policy follow-up: Wave-C P1 decision DropOldest as the v1 default
+   is now the accepted contract for UI observation/event systems (consumer
+   converges to latest state); DropNewest remains a documented alternative.
+   Runtime default DropOldest is the accepted v1 default per OQ-013; resource
+   budgets elsewhere reference the single authoritative statement in
    [Delivery, ordering, batching, and coalescing](#delivery-ordering-batching-and-coalescing)
    instead of fixing a policy of their own.
 
 ## Acceptance criteria
 
-This RFC targets OQ-011, OQ-012, and OQ-013 and would close them only when all
-of the following hold, per the
-[open-question register](../decisions/open-questions.md) rules. Until then it
-does not claim closure; see [Open points](#open-points) for residual items
-that must be resolved or migrated to tracked follow-ups:
+This RFC is accepted on 2026-08-27 and closes OQ-011, OQ-012, and OQ-013. The
+following criteria were satisfied per the
+[open-question register](../decisions/open-questions.md) rules:
 
 1. Independent review by the category owner, a docs curator, and a security
-   reviewer accepts the contract, including every high-risk identifier and the
+   reviewer accepted the contract, including every high-risk identifier and the
    interception set.
-2. Affected documents are synchronized in the same change: the capability
+2. Affected documents were synchronized in the same change: the capability
    examples and pending-decision notes in
    [core boundaries](../architecture/core-boundaries.md) and
    [plugin system](../extensibility/plugin-system.md) reference the accepted
-   identifiers, and the open-question rows move from pointer to closure.
+   identifiers, and the open-question rows moved from pointer to closure.
 3. No element weakens a normative P0 gate; any discovered conflict returns the
    conflicting clause to revision rather than downgrading the gate.
