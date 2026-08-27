@@ -13,27 +13,32 @@ sidebar_order: 14
 
 ## Status
 
-Proposed on 2026-08-26. This RFC is not accepted; it does not authorize
-shipped, stable, normative, or compatibility-guaranteed behavior. Experimental
-implementation may exist as review evidence but carries no compatibility
-promise and does not constitute acceptance. It does not make any
-shipped-behavior claim. Its purpose is to structure the candidates behind open
-question [OQ-009](../decisions/open-questions.md) so review can accept, amend,
-or reject them with named evidence.
+Proposed on 2026-08-26; Wave-C closure review on 2026-08-27 (CTX-0047). This RFC
+remains Proposed with frontmatter `draft` pending independent security-auditor
+review; it does not authorize shipped, stable, normative, or
+compatibility-guaranteed behavior. Experimental implementation may exist as
+review evidence but carries no compatibility promise and does not constitute
+acceptance. It does not make any shipped-behavior claim. Its purpose is to
+structure the candidates behind open question
+[OQ-009](../decisions/open-questions.md) so review can accept, amend, or reject
+them with named evidence.
 
 [ADR 0004](../decisions/adrs/ADR-0004-upstream-dependencies.md) has selected
 `mlua` with Lua 5.4 as the P0 baseline (`vendored` Lua 5.4 sources built with
 the core crate; `piccolo` remains a watch-list candidate per the ADR). This RFC
 does not re-decide the runtime choice; it specifies the sandbox, standard
 library subset, module resolution, diagnostics, limits, and lifecycle contract
-built on that baseline.
+built on that baseline. That authority remains unchanged.
 
 If accepted, it would close OQ-009 at the design level for the configuration
-and plugin VMs (see [Open items remaining under OQ-009](#open-items-remaining-under-oq-009) for the residual/migrated items). It
-targets OQ-009; it feeds, but does not decide, OQ-010 (configuration model),
-OQ-011/OQ-012 (Plugin API v1 and capabilities), OQ-014 (isolation and resource
-budgets), and the performance budgets PB-1/PB-2/PB-3 in the
-[Performance Budget RFC](performance-budget-rfc.md).
+and plugin VMs (see
+[Open items remaining under OQ-009](#open-items-remaining-under-oq-009) for the
+migrated follow-up items now tracked as [OQ-030](../decisions/open-questions.md),
+[OQ-031](../decisions/open-questions.md), and
+[OQ-032](../decisions/open-questions.md)). It targets OQ-009; it feeds, but
+does not decide, OQ-010 (configuration model), OQ-011/OQ-012 (Plugin API v1 and
+capabilities), OQ-014 (isolation and resource budgets), and the performance
+budgets PB-1/PB-2/PB-3 in the [Performance Budget RFC](performance-budget-rfc.md).
 
 ## Problem statement
 
@@ -234,29 +239,36 @@ evidence, reviewed by a security-auditor persona before implementation starts.
 
 ## Open items remaining under OQ-009
 
-The following items remain open at the time of proposal. Acceptance of this RFC
-would close OQ-009 only if the items below are either resolved in review or
-migrated to explicitly tracked follow-up tasks with no remaining OQ-009 scope:
+The following items remain at the time of the CTX-0047 closure review.
+Acceptance of this RFC would close OQ-009 only if the items below are either
+resolved in review or migrated to explicitly tracked follow-up open questions
+with no remaining OQ-009 scope:
 
 - Resolved by this RFC upon acceptance: sandbox construction and restricted
   standard-library subset, rooted module resolution rules, diagnostics contract,
   source-only loading, and the `bitty` host bridge ownership; these become
   Accepted design when the RFC is accepted.
-- Migrated or deferred (remain Open as follow-up work, not as OQ-009 closure
-  blockers unless review decides otherwise): binding audit of the pinned `mlua`
-  version's unsafe surface (or fallback to Candidate C; record as ADR
-  alongside the technology strategy), exact Lua 5.4.x pin and upgrade cadence
-  coordinated with dependency governance (R-019), whether the configuration VM
-  receives instruction/memory budgets during startup evaluation and how cost is
-  charged against PB-1/PB-2, async/Send boundary for host calls blocking the
-  config VM thread versus returning handles (technology strategy validation),
-  final `debug` allowlist contents and whether `os.getenv` is exposed to the
-  Configuration VM given trace-minimization defaults, reload interaction with
-  module caches (owned jointly with the
-  [Configuration Model RFC](configuration-model-rfc.md)), and GC tuning defaults
-  and hard memory ceiling numbers pending measurement infrastructure.
+- Migrated to tracked follow-up OQs (remain Open as separate questions, not as
+  OQ-009 closure blockers):
+  - [OQ-030](../decisions/open-questions.md): exact Lua 5.4.x pin and `mlua`
+    version pin, upgrade cadence coordinated with dependency governance (R-019),
+    unsafe-surface audit of the pinned `mlua` version (or fallback to
+    Candidate C recorded as ADR alongside the technology strategy), and final
+    restricted standard-library and `debug` allowlist contents.
+  - [OQ-031](../decisions/open-questions.md): whether `os.getenv` is exposed to
+    the Configuration VM given trace-minimization defaults, and host-provided
+    alternative via the versioned `bitty` module.
+  - [OQ-032](../decisions/open-questions.md): async/Send boundary for host calls
+    blocking the config VM thread versus returning handles (technology strategy
+    validation), whether the Configuration VM receives instruction/memory budgets
+    during startup evaluation and how cost is charged against PB-1/PB-2, GC
+    tuning defaults and hard memory ceiling numbers pending measurement
+    infrastructure, and reload interaction with per-VM module caches (owned
+    jointly with the [Configuration Model RFC](configuration-model-rfc.md)).
 
-Would close OQ-009: accepting this RFC would close OQ-009 at the design level
-once the residual items above are either resolved or migrated to tracked
-follow-up tasks; the register row is then updated per the open-question
-register rules. Until then this RFC targets OQ-009 and does not claim closure.
+Would close OQ-009: This RFC is proposed to close OQ-009 at the design level;
+residual items above have been migrated to OQ-030, OQ-031, and OQ-032 and are
+tracked separately. Acceptance requires independent security-auditor review of
+the sandbox, restricted-library, and source-only loading controls before the
+frontmatter flips to `accepted` and the open-question register row is updated
+per its close rule. Until then this RFC targets OQ-009 and remains Proposed.
