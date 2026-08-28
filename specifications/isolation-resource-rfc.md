@@ -11,14 +11,15 @@ sidebar_order: 17
 
 # Isolation and Resource RFC
 
-> Status: **proposed** (frontmatter status `draft`). This document is the
+> Status: **proposed** (frontmatter status `draft`; P0 review in progress per CTX-0063, 2026-08-28). This document is the
 > "Isolation/resource RFC plus adversarial tests" named as the next artifact for
 > [OQ-014](../decisions/open-questions.md). It proposes mechanisms; it does not
 > describe implemented behavior, relax any normative control, or authorize
 > shipped, stable, normative, or compatibility-guaranteed behavior.
 > Experimental implementation may exist as review evidence but carries no
 > compatibility promise and does not constitute acceptance; acceptance requires
-> independent security-auditor review.
+> independent security-auditor review per the
+> [P0 review checklist](../reviews/p0-review-checklist.md).
 >
 > Wave-C P1 decision now accepted in
 > [Plugin Platform RFC](plugin-platform-rfc.md) (OQ-011/OQ-012/OQ-013,
@@ -714,3 +715,24 @@ remain `Proposed` pending P0 review for enforcement tuning, lifecycle is
 `Draft -> experimental review evidence -> Accepted -> normative`; all RC budgets
 now enforced measured, pending P0 review acceptance (frontmatter remains
 `draft`, no self-accept).
+
+## P0 Review Sign-off
+
+> P0 review per CTX-0063 tracks acceptance of OQ-014 via this RFC. Frontmatter
+> remains `draft` until all reviewers record passing evidence and
+> [open-questions.md](../decisions/open-questions.md) is updated per its close
+> rule. This section is placeholder sign-off and does not close any open
+> question.
+
+| Role                                  | Reviewer (placeholder) | Verdict | Evidence / scope                                                                                                                                                                                                                                                                             | Date       |
+| ------------------------------------- | ---------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| security-auditor                      | `bitty-security`       | pending | R-006, R-007, R-018, T-07, T-14, RC-1 10^7/50 ms/8 ms warning / RC-2 32 MiB / Global 8192/2 MiB hard-gated fail-closed, `forbid(unsafe_code)` for `bitty-lua`/`piccolo` 0.3.3, FS-1..FS-9, adversarial AT-IR-001..015                                                                        | 2026-08-28 |
+| category-owner (security-and-quality) | `bitty-quality`        | pending | Queue budgets PerSub 64 strict at `EventQueue::push` / PerPlugin 1024/256 KiB / Global 8192/2 MiB hard-gated at Host admission, `DropOldest` default at `EventPipeline::publish` / `Host::publish` via `would_exceed_global_limits` + `evict_oldest_globally` with shared `DropPolicy`       | 2026-08-28 |
+| category-owner (architecture)         | `bitty-architect`      | pending | `VmBudgetSnapshot`, `would_exceed_lua_limits`, `piccolo` Fuel + wall deadline, `Lua::total_memory()` 32 MiB, `bitty-plugin-host` 21 tests / `bitty-lua` 15 tests headless, `cargo check --target x86_64-pc-windows-gnu` gate                                                                 | 2026-08-28 |
+| docs-curator                          | `bitty-curator`        | pending | Frontmatter `draft`, lifecycle `Draft -> experimental review evidence -> Accepted -> normative`, measurement evidence CTX-0037 PR #68 / CTX-0040 `d67a65b`, links to [Security Overview](../security/overview.md) and [P0 review checklist](../reviews/p0-review-checklist.md), English-only | 2026-08-28 |
+
+Until then, `bitty-plugin-host` and `bitty-lua` remain draft headless crates
+ahead of acceptance per
+[ADR 0003](../decisions/adrs/ADR-0003-core-workspace-topology.md) and the
+[Proposed Delivery Sequence](../product/proposed-delivery-sequence.md); crate
+presence does not imply shipped behavior.
