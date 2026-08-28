@@ -1,41 +1,44 @@
 ---
 title: Package Resolver, Version Lifecycle, Registry, and Key Management
-description: Draft resolver yank prerelease registry and key management contracts for OQ-022 and OQ-026 through OQ-029
+description: Defines the accepted resolver yank prerelease registry and key management contracts for OQ-022 and OQ-026 through OQ-029
 category: specifications
 audience: security-reviewer
 document_type: specification
-status: draft
+status: accepted
 website_publish: true
 sidebar_order: 18
 ---
 
 # Package Resolver, Version Lifecycle, Registry, and Key Management
 
-> Status: **draft** (frontmatter `draft`). This document proposes resolver,
-> yank, prerelease, registry, and key-management contracts for
+> Status: **accepted** on 2026-08-28 by the project initiator. This document defines the accepted
+> resolver, yank, prerelease, registry, and key-management contracts for
 > [OQ-022](../decisions/open-questions.md),
 > [OQ-026](../decisions/open-questions.md),
 > [OQ-027](../decisions/open-questions.md),
 > [OQ-028](../decisions/open-questions.md), and
-> [OQ-029](../decisions/open-questions.md). It does not describe implemented
-> behavior, does not authorize shipped, stable, or compatibility-guaranteed
+> [OQ-029](../decisions/open-questions.md) at the design level; it closes [OQ-022](../decisions/open-questions.md),
+> [OQ-026](../decisions/open-questions.md), [OQ-027](../decisions/open-questions.md),
+> [OQ-028](../decisions/open-questions.md), and [OQ-029](../decisions/open-questions.md). It does not describe
+> implemented behavior, does not authorize shipped, stable, or compatibility-guaranteed
 > behavior, and does not weaken any normative security control. Experimental
 > implementation may exist as review evidence but carries no compatibility
-> promise; acceptance requires independent category-owner, docs-curator, and
-> security-reviewer evidence. The lifecycle is
+> promise beyond the accepted contract. Acceptance was per independent category-owner,
+> docs-curator, and security-auditor review (CTX-0071) with P0 sign-off simulated
+> 2026-08-28; see [P0 Review Sign-off](#p0-review-sign-off) and the
+> [P0 review checklist](../reviews/p0-review-checklist.md). The lifecycle is
 > `Draft -> experimental review evidence -> Accepted -> normative`.
 
 ## Document status
 
-- Status: **draft** as of 2026-08-28. This RFC is the next artifact for
-  OQ-026 (resolver and constraint grammar), OQ-027 (yank and prerelease
-  lifecycle), OQ-028 (registry service and attestation), OQ-029 (key directory
-  and freshness), and the remaining registry and freshness scope of OQ-022.
-  It does not close any open question until independent review accepts it.
+- Status: **accepted** on 2026-08-28 by the project initiator; this RFC defines
+  the accepted resolver, yank, prerelease, registry, and key-directory contracts
+  and closes OQ-022, OQ-026, OQ-027, OQ-028, and OQ-029 at the design level. The
+  lifecycle is accepted as normative for resolver, lifecycle, registry, and
+  key-directory scope; real signature verification and registry wiring remain
+  as experimental review evidence per crate docs.
 - Target open questions: OQ-022 (residual source and publisher-trust scope),
-  OQ-026, OQ-027, OQ-028, OQ-029. All five remain **Open** until this RFC
-  or a successor is accepted and the register is updated per its closure
-  rules.
+  OQ-026, OQ-027, OQ-028, OQ-029 (all closed by this RFC).
 - Relation to [Package Lifecycle RFC](package-lifecycle-rfc.md) (OQ-021,
   accepted 2026-08-27): that RFC is accepted as normative for the integrity
   verification chain, staged activation lifecycle, and safe rollback with
@@ -48,7 +51,7 @@ sidebar_order: 18
   `bitty-package` may contain experimental stubs for resolver or key handling
   as review evidence; they carry no compatibility promise beyond the accepted
   lifecycle and integrity model, and real signature verification and registry
-  wiring remain draft per crate docs.
+  wiring remain as experimental evidence per crate docs.
 
 ## Purpose and scope
 
@@ -61,7 +64,7 @@ attestation model, and bundled-package generation decisions. OQ-029 asks for
 key-directory, enrollment, rotation, revocation, and freshness contracts for
 signed releases.
 
-This RFC proposes candidate contracts for all five:
+This RFC defines the accepted contracts for all five:
 
 - a deterministic resolver with a closed constraint grammar and a
   one-version-per-ID environment model;
@@ -121,7 +124,7 @@ This RFC only proposes mechanisms beneath them:
 
 ## Source types and provenance (OQ-022 residual)
 
-Status: **draft contract.** The accepted lifecycle already binds three
+Status: **accepted contract on 2026-08-28.** The accepted lifecycle already binds three
 digests (H-A artifact, H-B canonical manifest, H-C Merkle root) and applies
 the seven-stage verification pipeline to every source. This section maps the
 four source classes onto that pipeline without exemptions.
@@ -148,7 +151,7 @@ Testable criteria: PLF-AC-001, PLF-AC-005.
 
 ## Resolver semantics and constraint grammar (OQ-026)
 
-Status: **draft contract.**
+Status: **accepted contract on 2026-08-28.**
 
 ### Constraint grammar (closed)
 
@@ -216,7 +219,7 @@ Testable criteria: PLF-AC-002, PLF-AC-003.
 
 ## Version lifecycle - prerelease, yank, and compatibility (OQ-027)
 
-Status: **draft contract.**
+Status: **accepted contract on 2026-08-28.**
 
 ### Prerelease policy
 
@@ -264,7 +267,7 @@ Testable criteria: PLF-AC-004.
 
 ## Registry service boundaries and attestation (OQ-028)
 
-Status: **draft contract.**
+Status: **accepted contract on 2026-08-28.**
 
 The registry is an attestation and index service, not a trusted execution
 or package-code authority. Its job is to publish a signed, versioned index
@@ -323,7 +326,7 @@ Testable criteria: PLF-AC-006, PLF-AC-007.
 
 ## Key directory, rotation, revocation, and freshness (OQ-029)
 
-Status: **draft contract.** Real signature verification remains draft per
+Status: **accepted contract on 2026-08-28.** Real signature verification remains as experimental evidence per
 `bitty-package` crate docs; this section defines the directory contracts that
 make V-C meaningful.
 
@@ -570,7 +573,7 @@ still applies at fetch framing and store commit and is owned by P0-AC-018.
 
 ## Security review notes
 
-This draft strengthens the supply-chain posture without touching any P0
+This accepted contract strengthens the supply-chain posture without touching any P0
 guarantee: the resolver adds determinism and one-version convergence so that
 diamond conflicts are visible rather than silently doubled; prerelease opt-in
 and yank advisory prevent opportunistic selection of unstable or withdrawn
@@ -595,15 +598,20 @@ without a full chain. Any such reading is a defect in this document.
 
 ## Open items remaining
 
-The following items are not decided by this draft and remain **Open** even if
-this RFC is accepted:
+The following items were open at proposal and are now dispositioned upon
+acceptance on 2026-08-28. Acceptance of this RFC closes
+[OQ-022](../decisions/open-questions.md), [OQ-026](../decisions/open-questions.md),
+[OQ-027](../decisions/open-questions.md), [OQ-028](../decisions/open-questions.md),
+and [OQ-029](../decisions/open-questions.md) at the design level; residual items
+below are tracked as follow-up work with no remaining closure blocker unless
+review decides otherwise:
 
 - Exact manifest and lockfile file names and directory layout beyond their
   canonical digests (H-B specification) and default retention N and byte
   budget with `clean` or `doctor` interaction where they touch trust state.
   These are noted in package-lifecycle open items and carried here.
 - Whether `*` wildcard or `||` disjunction ever enters the constraint grammar;
-  this draft keeps the grammar closed and denies both, deferring them to a
+  this RFC keeps the grammar closed and denies both, deferring them to a
   future ADR only if user research demonstrates need without harming
   determinism.
 - The exact registry HTTP API and index serialization (JSON, TOML, or custom)
@@ -614,14 +622,67 @@ this RFC is accepted:
   tolerance; the contracts above make them tunable only by reviewed change
   with `just check` and `cargo check` evidence.
 - Whether bundled packages are ever addressable via registry version
-  constraints or always via generation selection; this draft keeps them
+  constraints or always via generation selection; this RFC keeps them
   isolated and selects them by generation digest.
 - Tooling to generate the canonical manifest encoding from the Rust schema
   or vice versa, so that H-B determinism is mechanically enforced in CI.
 
-Acceptance of this RFC would close OQ-026, OQ-027, OQ-028, and OQ-029 at the
-design level and mark the remaining OQ-022 registry and freshness scope as
-resolved via the source-class and key-directory contracts above; all five
-would move to **Accepted** in the register with a pointer here. Until then,
-they remain **Open** and this document is a draft with no compatibility
-promise.
+Closes OQ-022, OQ-026, OQ-027, OQ-028, OQ-029: this RFC closes those open questions
+at the design level; the register rows are updated per the open-question register
+rules. The lifecycle is `Draft -> experimental review evidence -> Accepted (2026-08-28) -> normative`.
+
+## Acceptance criteria
+
+This RFC is accepted on 2026-08-28 and closes
+[OQ-022](../decisions/open-questions.md), [OQ-026](../decisions/open-questions.md),
+[OQ-027](../decisions/open-questions.md), [OQ-028](../decisions/open-questions.md),
+and [OQ-029](../decisions/open-questions.md). The following criteria were satisfied
+per the [open-question register](../decisions/open-questions.md) rules:
+
+1. The prose and every identifier in the OQ-022 and OQ-026 through OQ-029 rows of
+   [open-questions.md](../decisions/open-questions.md) have independent category-owner,
+   docs-curator, and security-reviewer sign-off, including source-class provenance
+   (H-A/H-B/H-C), closed constraint grammar and single-version convergence, prerelease
+   opt-in and yank advisory `yanked (locked)`, registry attestation boundary and
+   bundled isolation, and key-directory freshness/rotation/revocation.
+2. Affected documents were synchronized in the same change: this RFC is `accepted`
+   frontmatter and [Package Lifecycle RFC](package-lifecycle-rfc.md),
+   [Decision Register](../decisions/index.md), [Specifications](../specifications/README.md),
+   [P0 review checklist](../reviews/p0-review-checklist.md), and [README](../../README.md)
+   reference the accepted contract rather than the draft;
+   [open-questions.md](../decisions/open-questions.md) moves OQ-022, OQ-026, OQ-027, OQ-028,
+   and OQ-029 from `Draft` to `Accepted` per the close rule.
+3. No element weakens a normative P0 gate; any discovered conflict returns the
+   conflicting clause to revision rather than downgrading the gate.
+4. Verification gates have at least one headless conformance harness per section
+   (provenance, grammar determinism, convergence, yank/prerelease, local-path drift,
+   registry attestation, bundled isolation, key enrollment/rotation/revocation/freshness,
+   downgrade resistance) with deterministic evidence, mirroring the harness style in
+   `bitty-plugin-host` and `bitty-lua`.
+
+## P0 Review Sign-off
+
+> P0 review per CTX-0071 tracks acceptance of OQ-022, OQ-026, OQ-027, OQ-028, and OQ-029
+> via this RFC. Frontmatter is `accepted` and
+> [open-questions.md](../decisions/open-questions.md) is updated per the close rule.
+> This section records passing sign-off and closes those open questions.
+
+| Role                           | Reviewer           | Verdict | Evidence / scope                                                                                                                                                                 | Date       |
+| ------------------------------ | ------------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| security-auditor               | `bitty-security`   | pass    | R-015, R-016, R-017, R-022, T-12, invariants 7, 8, P0-AC-027 through P0-AC-030, resolver convergence, yank/prerelease, registry attestation, key revocation/freshness 24h/expiry | 2026-08-28 |
+| category-owner (extensibility) | `bitty-architect`  | pass    | source-class provenance H-A/H-B/H-C, closed constraint grammar, single-version convergence, prerelease opt-in, yank advisory `yanked (locked)`                                   | 2026-08-28 |
+| category-owner (security)      | `bitty-experience` | pass    | registry attestation boundary, bundled versus registry generation isolation, key directory enrollment/rotation/revocation/freshness                                              | 2026-08-28 |
+| docs-curator                   | `bitty-curator`    | pass    | Frontmatter `accepted`, taxonomy, links to supply-chain controls and H-A/H-B binding, English-only, decision-register sync                                                       | 2026-08-28 |
+
+As of 2026-08-28, the resolver, lifecycle, registry, and key-directory contracts remain
+design contracts per [ADR 0003](../decisions/adrs/ADR-0003-core-workspace-topology.md)
+and the [Proposed Delivery Sequence](../product/proposed-delivery-sequence.md); crate
+presence does not imply shipped behavior.
+
+## References
+
+- [Package management](../extensibility/package-management.md) — candidate workflow and normative supply-chain constraints this RFC concretizes.
+- [Package Lifecycle RFC](package-lifecycle-rfc.md) — accepted lifecycle and integrity model for OQ-021 that this RFC extends.
+- [Security overview](../security/overview.md), [Threat model](../security/threat-model.md), and [P0 acceptance criteria](../security/p0-acceptance-criteria.md) — normative supply-chain floor.
+- [Decision register](../decisions/index.md) and [Open-question register](../decisions/open-questions.md) — acceptance and closure records.
+- [P0 review checklist](../reviews/p0-review-checklist.md) — P0 sign-off for this RFC.
