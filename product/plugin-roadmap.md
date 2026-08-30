@@ -57,6 +57,10 @@ Out of scope (owned elsewhere):
 - Rich block, scene, semantic zone, and structured transport contracts
   (OQ-008/OQ-015/OQ-016,
   [Rich Presentation RFC](../specifications/rich-presentation-rfc.md)).
+- Panel container semantics, Panel Runtime, and inter-Panel Event Bus; these
+  remain candidate work described by the future Panel Extensibility Vision
+  document (CTX-0094, pending review) and draft
+  [Workspace Compositor](../specifications/workspace-compositor.md).
 
 No new trust boundary is introduced. Every plugin below uses the same
 capability-checked, generation-scoped, bounded-queue host as any community
@@ -188,6 +192,32 @@ Featured plugins reuse the same mechanism vs policy split: core provides
 snapshots, zones, blocks, overlays, intercept veto points, and budget gates;
 each featured plugin decides filtering, ranking, retention, and presentation
 policy within its declared capabilities.
+
+## Post-v1.0 Panel ecosystem candidates
+
+The future Panel Extensibility Vision document (CTX-0094, pending review)
+describes Panel as a candidate workspace-managed application container that
+generalizes View content. It is not an OS Window or a PTY. A future Panel RFC
+must define the
+Panel lifecycle, Panel Runtime, and inter-Panel Event Bus before any provider
+or ecosystem surface can be treated as an implementation target.
+
+Accordingly, the following are post-v1.0 candidates with no date or publication
+promise:
+
+- Panel providers for terminal, files, Git, Markdown, browser, logs, and AI
+  workflows, using the same capability, lifecycle, and resource controls as
+  other plugins.
+- Optional WebView, native-hosted declarative UI, and CLI adapter paths,
+  subject to the capability and isolation review required by the [IPC and
+  Agent RFC](../specifications/ipc-agent-rfc.md).
+- Distribution presets such as `bitty-minimal`, `bitty-dev`, `bitty-cloud`,
+  and `bitty-social`, plus community layouts and plugin collections. Presets
+  must remain explicit bundles over the accepted [Default Distribution RFC](../specifications/default-distribution-rfc.md)
+  mechanism and must not imply enabled-by-default plugins.
+
+This list records ecosystem direction only. It does not add a Panel API,
+distribution manifest, runtime, Event Bus, or implementation claim.
 
 ### Privacy-first activity: `store_command_args: false`
 
