@@ -19,8 +19,10 @@ sidebar_order: 22
 > (OQ-002, accepted 2026-08-29). It does not describe implemented behavior,
 > does not claim any plugin is shipped, and does not authorize stable,
 > normative, or compatibility-guaranteed behavior. The lifecycle is
-> `Draft -> experimental review evidence -> Accepted -> normative`; only
-> `Accepted` or `normative` documents authorize shipped behavior.
+> `Draft -> experimental review evidence -> Accepted -> normative`; acceptance
+> authorizes an accepted design constraint, while implementation and release
+> require separate implementation evidence and applicable verification and
+> release gates.
 
 ## Purpose and scope
 
@@ -35,11 +37,11 @@ generation lifecycle), and the
 sequencing.
 
 In scope: the bundled-disabled first-party set that dogfoods Plugin API v1
-(tabs, splits, search, palette, statusline, shell integration), the featured
-second wave (pet, activity, contributions to knowledge graph, peek, mirror,
-lock, scratchpad), their mechanism vs policy split, capability sketches,
-privacy posture (`store_command_args: false` by default), and dogfood
-validation signals.
+(shell integration, tabs, statusline, palette, project), future dogfood
+candidates such as splits and search, the featured second wave (pet, activity,
+contributions to knowledge graph, peek, mirror, lock, scratchpad), their
+mechanism vs policy split, capability sketches, privacy posture
+(`store_command_args: false` by default), and dogfood validation signals.
 
 Out of scope (owned elsewhere):
 
@@ -131,6 +133,17 @@ relax a gate.
    from the same integrity chain (manifest validation, lock, checksum, no
    install scripts) and activated through the same staged lifecycle.
 
+6. **First-party proves the public contract.** First-party plugins use the same
+   public API, manifest format, capability grants, and lifecycle as community
+   plugins. A private API is evidence of an incomplete boundary, not a reason
+   to add an exception. Their role is to dogfood the boundary after a usable
+   terminal exists, not to pull application policy into Core.
+7. **Mechanisms are not applications.** Core provides terminal truth, layout and
+   panel primitives, routing, bounded events, and policy gates; plugins choose
+   workflows and presentation. Users pay only for what they use: bundling a
+   disabled plugin adds no active VM, queue, handler, or resident application
+   cost, and enabling it charges the plugin's attributable budgets.
+
 ## First-party wave: bundled, disabled, dogfooding Plugin API v1
 
 Candidate target: `v0.1.0` maturity slice per
@@ -144,14 +157,13 @@ with `distribution.toml` and `checksums.sha256`, PB-5 `<= 40 MiB` cap).
 Bundled presence alone creates zero VM, queue, or handler cost until
 explicitly enabled.
 
-| Plugin ID                          | Policy owned by the plugin                                                                                             | Core mechanism relied on                                                                                                                | Capability sketch (illustrative)                        | Dogfood validation signal                                                                                             |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `bitty-terminal.shell-integration` | OSC 7/133 semantic zones, cwd and title propagation, prompt and command-region marks, fail-closed fallback when absent | VT parser OSC 7/133 derivation, semantic zones, `ImageStore` anchor fallback                                                            | `terminal.semantic-read` read-only                      | Zones consumed by search, statusline, and peek without plugin-side VT parsing; absence degrades gracefully            |
-| `bitty-terminal.tabs`              | Tab commands, tabline presentation, ordering, key bindings, and closing policy                                         | `LayoutNode` and split primitives, tabline exclusive claim, statusline slot composition                                                 | `ui.rich` or status-component slot plus `tabline` claim | Exclusive claim validated: duplicate claim rejected, not last-wins; close policy observable via `bitty plugin doctor` |
-| `bitty-terminal.splits`            | When to split, default direction, balancing policy, focus and resize key bindings, split UX                            | Core split, resize, and focus `LayoutNode` primitives, scene snapshot and damage                                                        | status-component or `ui.rich` composition only          | Validates that split policy lives outside core layout; core primitives remain correct under plugin-driven splits      |
-| `bitty-terminal.search`            | Search UI, navigation, history policy, match highlighting presentation                                                 | Controlled terminal snapshot (`terminal.semantic-read`), rich block anchors, overlay slot, semantic zones for scrollback line anchoring | `terminal.semantic-read` read-only                      | Bounded snapshot use, no hot-path byte hook, history policy isolated to plugin quota under `bitty.store`              |
-| `bitty-terminal.palette`           | Command palette and picker UI, fuzzy filtering, preview presentation                                                   | Command registry, overlay slot, declarative list and text primitives                                                                    | `ui.overlay`                                            | Validates palette as overlay composition using declarative primitives only, no shader or native window path           |
-| `bitty-terminal.statusline`        | Presentation of cwd, mode, Git and task state, status component composition policy                                     | Statusline slot composition, semantic snapshot, zone metadata from shell integration                                                    | `terminal.semantic-read`, status-component composition  | Composition validated: many providers compose, ordering explicit, no ambient capability via composition               |
+| Plugin ID                          | Policy owned by the plugin                                                                                             | Core mechanism relied on                                                                | Capability sketch (illustrative)                        | Dogfood validation signal                                                                                             |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `bitty-terminal.shell-integration` | OSC 7/133 semantic zones, cwd and title propagation, prompt and command-region marks, fail-closed fallback when absent | VT parser OSC 7/133 derivation, semantic zones, `ImageStore` anchor fallback            | `terminal.semantic-read` read-only                      | Zones consumed by search, statusline, and peek without plugin-side VT parsing; absence degrades gracefully            |
+| `bitty-terminal.tabs`              | Tab commands, tabline presentation, ordering, key bindings, and closing policy                                         | `LayoutNode` and split primitives, tabline exclusive claim, statusline slot composition | `ui.rich` or status-component slot plus `tabline` claim | Exclusive claim validated: duplicate claim rejected, not last-wins; close policy observable via `bitty plugin doctor` |
+| `bitty-terminal.palette`           | Command palette and picker UI, fuzzy filtering, preview presentation                                                   | Command registry, overlay slot, declarative list and text primitives                    | `ui.overlay`                                            | Validates palette as overlay composition using declarative primitives only, no shader or native window path           |
+| `bitty-terminal.statusline`        | Presentation of cwd, mode, Git and task state, status component composition policy                                     | Statusline slot composition, semantic snapshot, zone metadata from shell integration    | `terminal.semantic-read`, status-component composition  | Composition validated: many providers compose, ordering explicit, no ambient capability via composition               |
+| `bitty-terminal.project`           | Project discovery and session presentation                                                                             | Constrained project discovery and session metadata                                      | `fs.read:PROJECT_GLOB` constrained                      | Validates project-scoped discovery and session presentation without widening trust or filesystem authority            |
 
 Accepted rules for this wave:
 
@@ -362,6 +374,26 @@ minimal-ui`) should compose a named group of bundled plugins atomically
    on this exact capability profile or a restricted profile of it
    (corpus-kept open; this roadmap does not force user-trusted code into
    the third-party grant flow).
+
+## Future topics to assess and candidate risks
+
+These are noncanonical assessment topics: they are unaccepted, are not product
+commitments, are not implementation claims, and are not entries in the OQ
+register.
+
+1. PTY canonical geometry when multiple Views present one Terminal: ownership of
+   logical terminal size, viewport size, and the controlling View; resize and
+   replay behavior must be settled before multi-View dogfood.
+2. Input routing across global commands, the focused Panel/component, terminal
+   encoding, and UI actions, including keyboard, mouse, paste, and IME events.
+3. How Rich surfaces preserve terminal row, column, cursor, scrollback,
+   selection, anchor, accessibility, and alternate-screen assumptions without
+   changing Terminal Truth.
+4. Which platform backend capabilities remain separate (window, PTY, font,
+   clipboard, and IME) rather than being hidden behind a God abstraction.
+5. Whether a browser Panel requires an optional isolated backend or remains
+   deferred; its process, network, memory, lifecycle, and trust risks require
+   the existing open-question and security-review mechanism before selection.
 
 ## References
 
