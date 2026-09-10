@@ -1,10 +1,10 @@
 ---
 title: Plugin API v1 Lua Surface RFC
-description: Draft contract resolving the Plugin API v1 Lua module functions payloads event names and L1/L2 split under OQ-011
+description: Accepted contract resolving the Plugin API v1 Lua module functions payloads event names and L1/L2 split under OQ-011
 category: specifications
 audience: plugin-author
 document_type: specification
-status: draft
+status: accepted
 website_publish: true
 sidebar_order: 29
 ---
@@ -13,15 +13,17 @@ sidebar_order: 29
 
 ## Status
 
-**Draft** for review under `bitty-docs/CTX-0143`. This RFC is a proposal, not an
-accepted contract: acceptance is a project decision that this draft does not
-make. It does not describe implemented behavior, does not authorize shipped,
-stable, or compatibility-guaranteed behavior, and does not weaken any normative
+**Accepted** on 2026-09-11 by the project initiator (user) through
+[ADR 0009](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md), which
+ratified all twelve `LUA-OQ-*` resolutions wholesale. This contract defines the
+accepted Plugin API v1 Lua surface; it does not describe implemented behavior,
+does not by itself authorize shipped or compatibility-guaranteed behavior
+beyond the `1.x` stability policy below, and does not weaken any normative
 security control.
 
-The draft resolves the deferred "final spelling" left open by the
-[Plugin Platform RFC](plugin-platform-rfc.md) for OQ-011 and the three
-conflicting candidate spellings recorded in the corpus:
+The contract resolves the deferred "final spelling" left open by the
+[Plugin Platform RFC](plugin-platform-rfc.md) for OQ-011 and the conflicting
+candidate spellings recorded in the corpus:
 
 | Candidate                                                        | Recorded in                                                                                                 |
 | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
@@ -30,7 +32,7 @@ conflicting candidate spellings recorded in the corpus:
 | `register_panel/on_event/get_terminal_state` (R-SDK-1 gate list) | `bitty` CarryCtx note `PX-1199` (CTX-0221 first-plugin-batch plan, planning only)                           |
 | `bitty.services:get(...)` colon-style methods                    | [Plugin Reuse and Provider Ecology RFC](plugin-reuse-and-providers.md) (Draft, post-1.0 provider follow-up) |
 
-Evidence revisions inspected read-only for this draft: `bitty` `1ea2f66`
+Evidence revisions inspected read-only during drafting: `bitty` `1ea2f66`
 (local checkout; `bitty-plugin-host` and `bitty-lua` sources; the workspace was
 behind `origin/main` at inspection time), `bitty-plugin-sdk` worktree CTX-0015
 branch `ctx-0015/feat-manifest-lint` at `d2cad1f` (manifest/lint in review, not
@@ -38,23 +40,22 @@ accepted). The SDK produces no authoritative surface: per
 [core boundaries](../architecture/core-boundaries.md) and the Plugin Platform
 RFC, an SDK surface must derive from an accepted host contract.
 
-### Authority tension this RFC does not resolve by itself
+### Authority placement (LUA-OQ-1)
 
-Two accepted statements constrain where the surface becomes authoritative:
+Ratified in [ADR 0009](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md):
+the accepted surface text is this `bitty-docs` contract. The `bitty` repository
+owns the executable implementation and the machine-checkable parity evidence,
+and may refine mechanics but may not add or rename v1 identifiers without a
+`bitty-docs` revision. The SDK is generated from the accepted surface and may
+not invent identifiers. [Core boundaries](../architecture/core-boundaries.md)
+and the [Plugin Platform RFC](plugin-platform-rfc.md) record the same
+three-way split. The accepted statements below remain in force:
 
-1. [Core boundaries](../architecture/core-boundaries.md) records that the
-   authoritative Plugin API definition lives in the core repository and the SDK
-   is generated output.
-2. [Lua Runtime RFC](lua-runtime-rfc.md) says the single host bridge in every VM
-   is a versioned `bitty` module and that "its function surface is owned by the
+1. [Lua Runtime RFC](lua-runtime-rfc.md) fixes the single host bridge in every
+   VM as a versioned `bitty` module whose "function surface is owned by the
    respective API RFCs"; [ADR 0006](../decisions/adrs/ADR-0006-os-env-policy.md)
    already fixes `bitty.env.get` and `bitty.env.has` under that module.
-
-This RFC proposes that the accepted surface text lives in the `bitty-docs`
-contract corpus while `bitty` implements it and the SDK is generated from it.
-That proposal is open question [LUA-OQ-1](#open-questions). If the project keeps
-definition authority in the core repository, this RFC is the reviewed input
-contract to be mirrored there without divergent wording.
+2. The SDK consumes this contract; no divergent copy is created.
 
 ## Purpose and scope
 
@@ -102,7 +103,7 @@ Out of scope; owned elsewhere and only referenced here:
 This RFC selects spellings for controls the sources already accept. It moves no
 requirement between owners and relaxes no gate.
 
-## Candidate resolution
+## Resolution
 
 The surface adopts the accepted `bitty` module root and one spelling per
 concept. Options were compared against the accepted sources and the Rust
@@ -130,16 +131,36 @@ pre-empting the panel contract.
 2. The table and its sub-tables are read-only from Lua. Assignment or raw
    metatable mutation fails with a typed `runtime` diagnostic. No plugin may
    replace, wrap, or shadow `bitty`.
-3. `bitty.api_version` (proposed) is a SemVer 2 string identifying the host
-   bridge line, initially `1.0.0`; minor versions are additive only and removing
-   or narrowing a function requires a major version, matching the accepted
+3. `bitty.api_version` is a SemVer 2 string identifying the host bridge line,
+   initially `1.0.0`; minor versions are additive only and removing or narrowing
+   a function requires a major version, matching the accepted
    `compat.plugin-api = "^1.0"` policy in the Plugin Platform RFC.
 4. There is no `bitty.api` alias, no global function outside `bitty`, and no
    second spelling for any v1 concept.
-5. Namespaces that are not granted are either absent from the VM or present and
-   fail closed with a typed denial. The proposal is fail-closed typed denial for
-   consistency with [ADR 0006](../decisions/adrs/ADR-0006-os-env-policy.md);
-   exact absence-versus-stub behavior is [LUA-OQ-2](#open-questions).
+5. The `bitty` root table and every v1 sub-table are always present. A
+   capability-gated function whose grant is absent is present and fails closed
+   with a typed denial (`runtime` class, stable code `E_CAPABILITY_DENIED`,
+   bounded message, file/line/column where available) before any side effect,
+   consistent with [ADR 0006](../decisions/adrs/ADR-0006-os-env-policy.md). The
+   one carve-out is `bitty.env`: absent unless the manifest declares an
+   `env:<KEY>` capability, as
+   [LUA-OQ-2 in ADR 0009](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-2-absent-versus-denied-namespaces)
+   records.
+
+### Activation entry point (LUA-OQ-12)
+
+The entry point is a fixed `init.lua` at the plugin package root, not a
+manifest-declared field. It executes synchronously at activation in the
+per-plugin VM; every registration call (`bitty.commands.register`,
+`bitty.events.subscribe`, `bitty.keymaps.suggest`, `bitty.ui.mount`,
+`bitty.services.provide`, timer and task creation) is valid only during that
+execution. After `init.lua` returns, the generation is activated and
+`plugin.activated` is delivered; any later registration attempt is a
+registration error. A lazy plugin runs `init.lua` in the fresh VM and then
+replays the triggering command once, per the accepted lazy-load semantics.
+`require` resolves only inside the package tree. Failure raises typed
+`syntax`/`resolution`/`validation`/`runtime` diagnostics naming the entry file
+and line, and leaves no partially activated state.
 
 ## Extension-level split
 
@@ -166,7 +187,7 @@ excludes Levels 3 and 4.
 Interception handlers are part of L1 event subscription but deliver only the
 bounded metadata below; they are not a separate level.
 
-## Function surface (proposed spellings)
+## Function surface (accepted spellings)
 
 Signatures use Lua notation. `?` marks optional fields; every table is a plain,
 bounded data table, never a host object handle. All registration calls are valid
@@ -180,20 +201,25 @@ further registration is a registration error. Spawned resources are owned by
 bitty.commands.register(def) -> handle
 ```
 
-| `def` field   | Type     | Required | Proposed rule                                                                                                                    |
-| ------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `id`          | string   | yes      | Plugin-local command segment, `^[a-z][a-z0-9-]{0,63}$`; host qualifies to `<plugin-id>:<id>`                                     |
-| `title`       | string   | yes      | Bounded display text, host-rendered, never markup                                                                                |
-| `description` | string   | no       | Bounded display text                                                                                                             |
-| `params`      | table    | no       | Map of argument name to `{ type, required?, values?, description? }`; `type` in `string \| integer \| number \| boolean \| enum` |
-| `result`      | table    | no       | Declared result shape for CLI, palette, IPC, and Agent reuse                                                                     |
-| `run`         | function | yes      | `function(args) -> result`; `args` is a validated plain table                                                                    |
+| `def` field     | Type     | Required | Rule                                                                                                                                                                                                                                                                             |
+| --------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`            | string   | yes      | Plugin-local command segment, `^[a-z][a-z0-9-]{0,63}$`; host qualifies to `<plugin-id>:<id>`                                                                                                                                                                                     |
+| `title`         | string   | yes      | Bounded display text, host-rendered, never markup                                                                                                                                                                                                                                |
+| `description`   | string   | no       | Bounded display text                                                                                                                                                                                                                                                             |
+| `args_schema`   | table    | no       | Bounded JSON Schema (CLI Contract RFC model): depth at most 16, bounded string fields, flag `additionalProperties` explicit; total size at most `CMD_SCHEMA_MAX_BYTES` (default 16 KiB per schema, fixed by [ADR 0009](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md)) |
+| `result_schema` | table    | no       | Bounded JSON Schema with the same limits, declaring the result shape for CLI, palette, IPC, and Agent reuse                                                                                                                                                                      |
+| `run`           | function | yes      | `function(args) -> result`; `args` is a validated plain table and `result` is validated before it is returned                                                                                                                                                                    |
 
 The qualified name must already be reserved through the manifest
 (`[lazy].commands`), and duplicate qualified names across plugins are rejected
-at graph construction, not shadowed. The `params`/`result` metadata representation
-is [LUA-OQ-3](#open-questions): the accepted RFC requires it, but neither the
-accepted manifest schema nor `bitty-plugin-host` models it yet.
+at graph construction, not shadowed. The host validates arguments before
+dispatch and results before returning them, so CLI, palette, IPC, and Agent
+reuse one registry. The manifest `[lazy].commands` entry accepts a table form in
+addition to the string form: `{ id = "...", args_schema = {...}, result_schema = {...} }`.
+When a command is declared statically and registered at activation, the two
+definitions must be equivalent after canonicalization or activation fails with a
+`validation` diagnostic; the static form is how lazy help and completion work
+without a VM ([LUA-OQ-3](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-3-command-parameter-and-result-metadata)).
 
 ### Events
 
@@ -221,11 +247,18 @@ bitty.keymaps.suggest(def) -> handle
 ```
 
 `def = { chord = string, command = string, when? = string }` where `command`
-names a registered plugin command. Suggestions never override user or workspace
-mappings; the accepted precedence
-(`user > workspace > first-party/default > plugin suggestion`) applies. The
-namespace name and chord grammar have no accepted spelling yet, so this is
-[LUA-OQ-5](#open-questions).
+names a command registered by the same generation and `when` must be absent or
+`"global"` in v1; any other value is a registration error naming the supported
+context. The chord grammar is exactly the shipped configuration grammar from the
+[Configuration Model RFC](configuration-model-rfc.md): trimmed, case-insensitive
+modifiers joined with `+` (`ctrl`, `alt`, `shift`, `super`), named keys from the
+shipped vocabulary (`tab` through `f35`, including the `ins`/`del`/`hm`/`end`/`pu`/`pd`
+aliases), and single-character keys require a modifier. Identity for precedence
+and conflict detection is `(when, normalized chord)`. Suggestions never override
+user or workspace mappings; the accepted precedence
+(`user > workspace > first-party/default > plugin suggestion`) applies, and
+chord conflicts produce diagnostics for user resolution rather than load order
+([LUA-OQ-5](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-5-key-binding-suggestions)).
 
 ### Settings and storage
 
@@ -240,11 +273,25 @@ bitty.store.set(key, value) -> boolean
   cannot read or write outside their own namespace. Typed schema declaration,
   merge, and reload semantics are owned by the
   [Configuration Model RFC](configuration-model-rfc.md) (OQ-010).
-- Storage is the quota-bounded key-value area scoped by plugin ID and
-  generation and persisted under the platform data directory. Values are bounded
-  plain data. Quota numbers belong to the [Isolation Resource RFC](isolation-resource-rfc.md);
-  value encoding and the generation/reload interaction are
-  [LUA-OQ-6](#open-questions).
+- Storage is the quota-bounded key-value area scoped by plugin ID (not by
+  generation) and persisted under the platform data directory:
+  - Key grammar `^[a-z0-9][a-z0-9._-]{0,127}$`, at most 128 UTF-8 bytes, no
+    empty dot segments.
+  - Value type: JSON-compatible plain data only (boolean, finite number, UTF-8
+    string, array, object), depth at most 8, at most 1024 nodes, serialized
+    value at most 8 KiB (`STORE_MAX_VALUE_BYTES`); functions, metatables,
+    cycles, and non-finite numbers are rejected with `E_STORE_VALUE_INVALID`
+    (`validation` class). `bitty.store.set(key, nil)` deletes the key.
+  - Quota: `STORE_QUOTA_BYTES` default 256 KiB persisted per plugin; overflow
+    fails closed with `E_STORE_QUOTA` (`budget` class), never evicting or
+    partially writing. The numbers are recorded as `RC-11` in the
+    [Isolation Resource RFC](isolation-resource-rfc.md).
+  - Persistence: the store survives suspension, reload, and generation
+    disposal; writes from generation N are committed synchronously before N is
+    disposed, so N+1 reads the same values. Data is deleted only by uninstall
+    or an explicit user purge. Persisted store data is not generation state;
+    generation-owned memory, handles, tasks, and timers are still reclaimed
+    ([LUA-OQ-6](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-6-storage-semantics)).
 - Neither namespace grants filesystem authority; `fs.*` grants remain a
   separate capability path that v1 does not define a Lua entry point for.
 
@@ -259,7 +306,13 @@ bitty.env.has(name) -> boolean
 `payload = { title = string, body? = string, urgency? = "low"|"normal"|"critical" }`,
 gated by `platform.notify` and subject to host rate policy. The `bitty.env.*`
 contract is accepted in [ADR 0006](../decisions/adrs/ADR-0006-os-env-policy.md)
-and is referenced, not redefined.
+and is referenced, not redefined. Per
+[LUA-OQ-2](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-2-absent-versus-denied-namespaces),
+`bitty.env` is absent from the VM unless the manifest declares an `env:<KEY>`
+capability; when declared but not granted, its functions fail closed with
+`E_CAPABILITY_DENIED` and never enumerate keys. Key-level minimization is
+unchanged: with a valid grant, `bitty.env.get` for a non-allowlisted key
+returns `nil`, indistinguishable from an unset variable.
 
 ### UI contributions (L2)
 
@@ -271,17 +324,28 @@ bitty.ui.update(handle, component) -> boolean
 - `slot` is the accepted closed set:
   `terminal | top | bottom | left | right | tabline | statusline | overlay`.
 - `component` is a declarative node table shaped by the accepted
-  [`SceneNode` contract](rich-presentation-rfc.md), restricted for v1 to text,
-  styled spans, rows, columns, lists, popups, and status components. Image,
-  code-block, table, and rule nodes exist in the wider scene contract but are
-  not part of Plugin API v1.
+  [`SceneNode` contract](rich-presentation-rfc.md), restricted for v1 to the
+  `Text`, `Row`, `Column`, and `List` nodes. Status components are ordinary
+  subtrees mounted in the `statusline` slot, and popups are overlay-slot
+  subtrees, not a new node kind. `Image`, `CodeBlock`, `Table`, `Rule`, and
+  bordered `Block` nodes are excluded from v1.
+- The handle is an opaque, generation-owned integer (`block_id`);
+  `bitty.ui.update` replaces the block's scene subtree under the same
+  `block_id` with an incremented version, which is exactly the accepted
+  `RichBlock` replacement rule, and the composer diffs the subtree. `update`
+  returns `false` for a stale or foreign handle and raises
+  `E_UI_COMPONENT_INVALID` for a component that violates the scene contract
+  ([LUA-OQ-7](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-7-ui-update-model)).
 - Rich content requires `ui.rich`; the `overlay` slot requires `ui.overlay`.
+  The `overlay` slot is presentation-only, non-focusable declarative content: it
+  never claims focus, never mutates a view or terminal, and never becomes a
+  `PanelProvider`. If the Panel RFC redefines overlays as focusable surfaces,
+  the slot remains a content source and the panel contract owns focus and
+  routing ([LUA-OQ-11](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-11-panel-and-overlay-boundary)).
   There are no global coordinates, shaders, pipelines, glyph injection, native
   windows, or renderer handles.
 - `tabline` is an exclusive claim; status components compose. Host layout owns
-  placement and decoration. `bitty.ui.update` is a proposed minimal update path
-  (the scene contract diffs subtrees); whether v1 mounts immutably and remounts
-  instead is [LUA-OQ-7](#open-questions).
+  placement and decoration.
 
 ### Terminal snapshot (L2, read-only)
 
@@ -289,52 +353,111 @@ bitty.ui.update(handle, component) -> boolean
 bitty.terminal.snapshot(opts) -> Snapshot
 ```
 
-`opts = { scope = "semantic" }` is the only v1 scope and requires
-`terminal.semantic-read`. `scope = "raw"` is rejected in v1; it would require
-`terminal.raw-read` and is explicitly high-risk.
+`opts = { scope = "semantic", terminal_id? = integer }` is the only v1 scope
+and requires `terminal.semantic-read`. `scope = "raw"` is rejected in v1; it
+would require `terminal.raw-read` and is explicitly high-risk. Without
+`terminal_id` the snapshot targets the focused view's attached terminal; an
+explicit id is allowed within `terminal.semantic-read` so consumers can answer
+observation events for other terminals. Terminal enumeration remains excluded
+in v1.
 
-Proposed top-level shape, aligned with the versioned
-[terminal snapshot contract](terminal-state-rfc.md) and the
-accepted semantic projection (visible text with attributes, cursor, modes,
-semantic zones):
+Top-level shape, aligned with the versioned
+[terminal snapshot contract](terminal-state-rfc.md) and the accepted semantic
+projection (visible text with attributes, cursor, modes, semantic zones):
 
-| Field        | Type    | Proposed meaning                                                     |
-| ------------ | ------- | -------------------------------------------------------------------- |
-| `version`    | integer | Snapshot contract version                                            |
-| `generation` | integer | Committed-state generation the snapshot reflects                     |
-| `width`      | integer | Grid columns in the snapshot region                                  |
-| `height`     | integer | Grid rows in the snapshot region                                     |
-| `rows`       | array   | `{ text = string, spans = { { start, end, attrs } } }` semantic rows |
-| `cursor`     | table   | `{ row, col, visible }`                                              |
-| `modes`      | table   | Mode flags, for example `{ alternate_screen = boolean }`             |
-| `title`      | string  | Bounded title text                                                   |
-| `zones`      | array?  | Semantic-zone metadata derived from OSC 7/133 state                  |
+| Field                 | Type    | Meaning                                                                       |
+| --------------------- | ------- | ----------------------------------------------------------------------------- |
+| `version`             | integer | Snapshot contract version, `1`                                                |
+| `terminal_id`         | integer | Registry `TerminalId` of the snapshotted terminal                             |
+| `runtime_id`          | integer | Registry `RuntimeId` paired with the terminal                                 |
+| `generation`          | integer | Registry generation the identity tuple was allocated in                       |
+| `snapshot_generation` | integer | Terminal damage generation the snapshot reflects                              |
+| `width`               | integer | Grid columns in the snapshot region                                           |
+| `height`              | integer | Grid rows in the snapshot region                                              |
+| `rows`                | array   | `{ text = string, spans = { { start, end, attrs } } }` visible rows, top-down |
+| `cursor`              | table   | `{ row, col, visible }`                                                       |
+| `modes`               | table   | Mode flags, including `alternate_screen = boolean`                            |
+| `title`               | string  | Bounded title text                                                            |
+| `zones`               | array?  | Semantic-zone metadata derived from OSC 7/133 state                           |
 
-Exact attribute encoding, region selection, and alternate-screen behavior are
-[LUA-OQ-4](#open-questions). Snapshots served to automation surfaces carry the
+Row and attribute encoding is aligned with the accepted `bitty-term-state`
+`Style`/`Attributes` model and `bitty-vt` `Color`/`UnderlineStyle`:
+
+- `rows[i].text` is the visible row only; `rows[i].spans` carries half-open
+  column offsets `[start, end)` with only non-default attributes.
+- `attrs.underline` is
+  `"none" | "single" | "double" | "curly" | "dotted" | "dashed"`; boolean flags
+  (`bold`, `faint`, `italic`, `blink`, `inverse`, `invisible`,
+  `strikethrough`) are omitted when false.
+- `attrs.fg` / `bg` / `underline_color` are `"default"`, integer `0..=255`
+  palette index, or `"#RRGGBB"`.
+- `zones[i]` is
+  `{ kind = "prompt" | "input" | "command" | "output" | "unknown", range = { start_line, end_line }, metadata? = { cwd?, host?, command?, exit_code? } }`;
+  zone text is not expanded outside the visible rows.
+
+The region is the visible viewport only, top-down; no scrollback text and no
+full-grid selection in v1. A snapshot whose serialized size exceeds
+`SNAPSHOT_MAX_BYTES` (default 256 KiB) is rejected with `E_SNAPSHOT_TOO_LARGE`
+rather than truncated. The snapshot always reflects the currently displayed
+grid; while `alternate_screen` is true zones may be absent and scrollback is
+never included, and exiting alternate screen restores the primary grid per
+accepted terminal-state rules. Snapshots served to automation surfaces carry the
 untrusted-observation-data label; there is no write path to grid, cursor, modes,
-or scrollback in v1.
+or scrollback in v1
+([LUA-OQ-4](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-4-terminal-snapshot-schema)).
 
 ### Services
 
 ```lua
 bitty.services.get(iface, opts) -> service | nil
+bitty.services.provide(iface, impl) -> handle
 ```
 
-`opts = { version = ">=2.0" }` uses the accepted version-requirement grammar.
-The provider is selected before activation or resolution fails; the callee
-executes with its own grants, arguments are validated against the interface
-schema, and results are values rather than cross-VM handles. Provider-side
-registration spelling and interface-schema ownership are
-[LUA-OQ-8](#open-questions); v1 consumers exist only once that is defined.
+- Consumer side: `opts = { version = ">=2.0", optional? = boolean }` uses the
+  accepted version-requirement grammar. The provider is selected before
+  activation or resolution fails closed with `E_SERVICE_RESOLUTION`
+  (`resolution` class); with `optional = true` a missing provider returns `nil`
+  instead. The callee executes with its own grants, arguments are validated
+  against the interface schema, and results are values rather than cross-VM
+  handles.
+- Provider side: `provide` is valid during activation; `impl` is a plain table
+  whose members are functions. The provider declares the interface name,
+  concrete version, and bounded JSON Schema (`args_schema`/`result_schema`, per
+  the command limits above) in its manifest. The accepted
+  `[services.provided]` entry gains a table form
+  `{ version = "...", args_schema = {...}, result_schema = {...} }` alongside
+  the accepted `"iface" = "1.0.0"` string form; only table-form providers are
+  resolvable by schema-validating consumers.
+- Provider disappearance after activation (revocation, suspension, disable)
+  makes in-flight calls fail closed with `E_SERVICE_GONE` (`runtime` class); no
+  stale handle remains callable.
+- This freezes only the minimal v1 consumer/provider contract. Provider ecology
+  (pickers, status, context providers, side-by-side versions) stays post-1.0
+  under the Draft [provider-ecology RFC](plugin-reuse-and-providers.md)
+  ([LUA-OQ-8](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-8-service-provider-side)).
 
 ### Tasks and timers
 
+```lua
+bitty.tasks.spawn(fn) -> task_id
+bitty.tasks.cancel(task_id) -> boolean
+bitty.timers.create(delay_ms, callback) -> timer_id
+bitty.timers.cancel(timer_id) -> boolean
+```
+
 Host-owned tasks and timers are accepted with RC-4 caps (64 tasks / 32 timers
-per plugin) in [ADR 0007](../decisions/adrs/ADR-0007-async-gc.md), which writes
-`task.spawn` and `timer.create` without a module prefix. This RFC does not fix
-that spelling; it is [LUA-OQ-9](#open-questions) and stays outside the frozen v1
-surface until reconciled.
+per plugin) in [ADR 0007](../decisions/adrs/ADR-0007-async-gc.md); handles are
+small generation-owned integers, not host objects. Exceeding a live cap refuses
+with `E_BUDGET_TASK`/`E_BUDGET_TIMER` (`budget` class) and never queues
+silently. Timer fire and task resumption deliver through the accepted event
+path, so the three-level queue budgets still apply. Cancellation releases the
+cap slot; task cancellation is cooperative at the next host slice (no
+Lua-visible abort hook in v1); all handles from generation N are invalid after
+disposal and fail closed. Timers are one-shot in v1; repeating timers are a
+`1.x` minor addition. The bare `task.spawn` / `timer.create` spellings in
+ADR 0007 are internal concept labels, not Lua identifiers, and ADR 0007 carries
+the reconciliation note
+([LUA-OQ-9](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-9-tasks-and-timers)).
 
 ## Event names and payloads
 
@@ -343,25 +466,32 @@ The closed v1 name set is exactly the `EventKind` closed set implemented in
 these strings. The envelope is
 `{ kind = string, sequence = integer, payload = table }`.
 
-| Kind                         | Class        | Proposed Lua payload          | Notes                                                 |
-| ---------------------------- | ------------ | ----------------------------- | ----------------------------------------------------- |
-| `plugin.activated`           | Lifecycle    | `{}`                          | Delivered to the owning plugin only                   |
-| `plugin.suspended`           | Lifecycle    | `{}`                          | Owning plugin only                                    |
-| `plugin.disposed`            | Lifecycle    | `{}`                          | Owning plugin only                                    |
-| `handler.violation`          | Lifecycle    | `{}`                          | Owning plugin only; diagnostic detail stays host-side |
-| `terminal.opened`            | Observation  | `{}`                          | No identity field today; see LUA-OQ-10                |
-| `terminal.closed`            | Observation  | `{}`                          | No identity field today; see LUA-OQ-10                |
-| `terminal.title-changed`     | Observation  | `{ title = string }`          | Bounded (`EVENT_MAX_BYTES`)                           |
-| `terminal.cwd-changed`       | Observation  | `{ cwd = string }`            | Bounded; treat as sensitive-capable display data      |
-| `terminal.bell`              | Observation  | `{}`                          | Coalescable events collapse to the latest value       |
-| `focus.changed`              | Observation  | `{}`                          | Coalescable                                           |
-| `selection.changed`          | Observation  | `{}`                          | Coalescable; no selection text in v1                  |
-| `process.exited`             | Observation  | `{}`                          | Exit status is not carried by the host payload today  |
-| `config.reloaded`            | Observation  | `{}`                          | —                                                     |
-| `intercept.command-dispatch` | Interception | `{ action, origin, preview }` | Bounded sanitized metadata; veto/approve only         |
-| `intercept.terminal-spawn`   | Interception | `{ action, origin, preview }` | Bounded sanitized metadata                            |
-| `intercept.paste`            | Interception | `{ action, origin, preview }` | Never carries paste text without `clipboard.read`     |
-| `intercept.open-url`         | Interception | `{ action, origin, preview }` | Bounded sanitized metadata                            |
+| Kind                         | Class        | Lua payload                                   | Notes                                                 |
+| ---------------------------- | ------------ | --------------------------------------------- | ----------------------------------------------------- |
+| `plugin.activated`           | Lifecycle    | `{}`                                          | Delivered to the owning plugin only                   |
+| `plugin.suspended`           | Lifecycle    | `{}`                                          | Owning plugin only                                    |
+| `plugin.disposed`            | Lifecycle    | `{}`                                          | Owning plugin only                                    |
+| `handler.violation`          | Lifecycle    | `{}`                                          | Owning plugin only; diagnostic detail stays host-side |
+| `terminal.opened`            | Observation  | `{ terminal_id, runtime_id, generation }`     | Identity tuple from the registry contract             |
+| `terminal.closed`            | Observation  | `{ terminal_id, runtime_id, reason }`         | `reason` from the accepted `TerminalClosed` shape     |
+| `terminal.title-changed`     | Observation  | `{ title = string, terminal_id, runtime_id }` | Bounded (`EVENT_MAX_BYTES`); identity for attribution |
+| `terminal.cwd-changed`       | Observation  | `{ cwd = string, terminal_id, runtime_id }`   | Bounded; treat as sensitive-capable display data      |
+| `terminal.bell`              | Observation  | `{}`                                          | Coalescable events collapse to the latest value       |
+| `focus.changed`              | Observation  | `{ view_id, terminal_id? }`                   | Coalescable; identity added for attribution           |
+| `selection.changed`          | Observation  | `{ view_id, terminal_id? }`                   | Coalescable; no selection text in v1                  |
+| `process.exited`             | Observation  | `{ terminal_id, runtime_id, exit_code }`      | Exit status from the accepted `TerminalExited` shape  |
+| `config.reloaded`            | Observation  | `{}`                                          | —                                                     |
+| `intercept.command-dispatch` | Interception | `{ action, origin, preview }`                 | Bounded sanitized metadata; veto/approve only         |
+| `intercept.terminal-spawn`   | Interception | `{ action, origin, preview }`                 | Bounded sanitized metadata                            |
+| `intercept.paste`            | Interception | `{ action, origin, preview }`                 | Never carries paste text without `clipboard.read`     |
+| `intercept.open-url`         | Interception | `{ action, origin, preview }`                 | Bounded sanitized metadata                            |
+
+Identity fields are Lua integers (u64 within the i64 range); field names carry
+the type distinction, so a single opaque `id` field is not used, matching the
+accepted rule that `TerminalId`, `ViewId`, and `RuntimeId` are pairwise
+incompatible. `generation` lets consumers detect stale identities; `reason` and
+`exit_code` come from the accepted `TerminalClosed`/`TerminalExited` shapes
+([LUA-OQ-10](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-10-observation-identity)).
 
 Observation handlers receive a bounded copy; they never receive live core
 objects. `bitty-plugin-host::HostObservation` also has host-side
@@ -408,7 +538,7 @@ is consistent with the accepted no-hot-path-events rule.
 
 ## Security alignment and traceability
 
-| Proposed element                                              | Gate it preserves                                                   | Threat/risk IDs          |
+| Contract element                                              | Gate it preserves                                                   | Threat/risk IDs          |
 | ------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------ |
 | Read-only `bitty` table; typed denials                        | No ambient authority; capability checks cannot be bypassed from Lua | T-06, R-006              |
 | Capability-gated `ui.*`, `terminal.snapshot`, `notify`, env   | Deny-by-default capability families; presentation-not-truth         | T-06, T-13, R-006, R-008 |
@@ -420,7 +550,10 @@ is consistent with the accepted no-hot-path-events rule.
 
 ## Verification plan
 
-Acceptance of this draft requires, at minimum:
+Ratification was recorded on 2026-09-11 by the project initiator (user) through
+[ADR 0009](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md). The
+obligations below remain the acceptance gates for the implementing repositories
+and are not satisfied by this documentation change alone:
 
 1. **Host parity:** every v1 function maps to an existing or explicitly
    scheduled `bitty-plugin-host` operation, and every event name round-trips
@@ -435,56 +568,44 @@ Acceptance of this draft requires, at minimum:
    R-TPL-1 uses only L1/L2 elements.
 5. **Independent review:** category owner, docs curator, and a security reviewer
    accept the surface, the exclusions, and every high-risk boundary.
-6. **Documentation synchronization:** on acceptance, the
+6. **Documentation synchronization:** the
    [Plugin Platform RFC](plugin-platform-rfc.md) host-namespace section,
    [core boundaries](../architecture/core-boundaries.md) authority statement,
-   the [specifications index](README.md), and the CarryCtx task record are
-   updated in the same change; no divergent copy is created.
+   the [specifications index](README.md), the
+   [decision register](../decisions/index.md), the
+   [ADR index](../decisions/adrs/README.md),
+   [ADR 0006](../decisions/adrs/ADR-0006-os-env-policy.md),
+   [ADR 0007](../decisions/adrs/ADR-0007-async-gc.md), the
+   [Isolation Resource RFC](isolation-resource-rfc.md), and the CarryCtx task
+   record were updated in the same ratification change; no divergent copy is
+   created.
 
-## Open questions
+## Resolved questions (ADR 0009)
 
-These are unresolved because accepted material does not decide them. They do not
-block reviewing this draft; they block acceptance of the affected element.
+All twelve questions were ratified wholesale on 2026-09-11. The decision,
+rationale, and rejected alternatives for each row are recorded in
+[ADR 0009](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md); the
+dispositions are:
 
-1. **LUA-OQ-1, authority placement.** Does the accepted surface text live in
-   `bitty-docs` (this RFC's proposal) or remain owned by `bitty` per core
-   boundaries, with this RFC mirrored as implementation input? A project
-   decision is required.
-2. **LUA-OQ-2, absent versus denied namespaces.** Should ungranted namespaces be
-   absent from the VM table or present with typed fail-closed denials, and does
-   the choice interact with the diagnostics contract?
-3. **LUA-OQ-3, command metadata.** The accepted RFC requires parameter and result
-   schemas for CLI/IPC/Agent reuse, but no accepted manifest or host structure
-   models them; where do they live and what is the exact schema?
-4. **LUA-OQ-4, snapshot schema.** Exact attribute encoding, region selection
-   (visible versus full grid), zone metadata shape, and alternate-screen rules.
-5. **LUA-OQ-5, key-binding suggestions.** Namespace spelling (`bitty.keymaps`),
-   chord grammar, `when`-context grammar, and whether suggestions are Lua calls
-   or manifest declarations.
-6. **LUA-OQ-6, storage semantics.** Value type and size bounds, key grammar,
-   quota numbers, and how persisted store state interacts with reload and
-   generation disposal.
-7. **LUA-OQ-7, UI update model.** Is `bitty.ui.update` needed in v1, or does the
-   host treat mounting as declarative and remount on change?
-8. **LUA-OQ-8, service provider side.** Provider registration spelling, interface
-   schema ownership, missing-provider error taxonomy, and the relationship to
-   the Draft provider-ecology RFC.
-9. **LUA-OQ-9, tasks and timers.** Reconcile the ADR 0007 `task.spawn` /
-   `timer.create` names with the module root (for example `bitty.task.spawn` or
-   `bitty.timers.create`) and define handle and cancellation semantics.
-10. **LUA-OQ-10, observation identity.** The host payload carries no terminal or
-    view identity for `terminal.opened`/`closed`, `focus.changed`,
-    `selection.changed`, or `process.exited`; decide whether v1 adds bounded
-    identity fields and an exit-status field.
-11. **LUA-OQ-11, panel and overlay boundary.** Confirm that `bitty.ui.mount` with
-    the `overlay` slot stays valid if the Panel RFC redefines overlays, or gate
-    it until then.
-12. **LUA-OQ-12, plugin entry point.** Accepted material does not define the
-    activation entry point that performs registration; candidate `init.lua` from
-    the template plan needs its own contract.
+| OQ        | Disposition                                                                                                                                                     |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LUA-OQ-1  | Contract authority in `bitty-docs`; `bitty` owns implementation/parity; SDK generated; core-boundaries and plugin-platform authority wording amended.           |
+| LUA-OQ-2  | `bitty` shape always present; ungranted calls fail closed with typed `E_CAPABILITY_DENIED`; `bitty.env` absent unless declared (ADR 0006 carve-out).            |
+| LUA-OQ-3  | Bounded JSON Schema `args_schema`/`result_schema`; runtime-authoritative plus optional static manifest table form for lazy help.                                |
+| LUA-OQ-4  | Semantic snapshot of the visible viewport with registry identity tuple, accepted `Style`/`Color` encoding, semantic zones, and alt-screen flag.                 |
+| LUA-OQ-5  | `bitty.keymaps.suggest` reuses the shipped config chord grammar and `(when, chord)` identity; `when` is `"global"` in v1.                                       |
+| LUA-OQ-6  | JSON-compatible bounded values; 256 KiB/plugin and 8 KiB/value defaults; store persists across generations; Isolation RFC `RC-11`.                              |
+| LUA-OQ-7  | `bitty.ui.mount` + `bitty.ui.update` with stable `block_id` versioning; v1 nodes `Text`/`Row`/`Column`/`List` only.                                             |
+| LUA-OQ-8  | `bitty.services.provide`; provider manifest declares bounded interface schema; missing provider fails before activation (`E_SERVICE_RESOLUTION`, optional nil). |
+| LUA-OQ-9  | `bitty.tasks.spawn`/`bitty.tasks.cancel`, `bitty.timers.create`/`bitty.timers.cancel`; integer handles; RC-4 caps; ADR 0007 reconciliation.                     |
+| LUA-OQ-10 | Bounded `terminal_id`/`runtime_id`/`generation`/`view_id`/`exit_code`/`reason` identity fields derived from the accepted registry contract.                     |
+| LUA-OQ-11 | The `overlay` slot stays non-focusable presentation content; Panel RFC compatibility note recorded.                                                             |
+| LUA-OQ-12 | Fixed `init.lua` at the package root, executed at activation; registration only during that window; lazy replay per accepted semantics.                         |
 
 ## References
 
+- [ADR 0009](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md) — accepted
+  resolutions for LUA-OQ-1 through LUA-OQ-12, ratified 2026-09-11.
 - [Plugin Platform RFC](plugin-platform-rfc.md) — accepted manifest,
   capabilities, namespace rules, event pipeline.
 - [Lua Runtime RFC](lua-runtime-rfc.md) — accepted `bitty` host bridge, sandbox,
