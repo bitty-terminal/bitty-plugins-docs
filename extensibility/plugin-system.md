@@ -137,8 +137,12 @@ the host.
 Status: **candidate contract.**
 
 Exact VM creation, reuse, unload/reload lifecycle, service transport, state
-migration, and cost optimizations still require validation. A plugin may load
-its own modules but not another plugin's private module tree.
+migration, and cost optimizations are defined by the accepted
+[Plugin Host Runtime RFC](../specifications/plugin-host-runtime-rfc.md)
+(OQ-033/OQ-034/OQ-035, ratified through
+[ADR 0010](../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md));
+implementation evidence remains per-crate. A plugin may load its own modules
+but not another plugin's private module tree.
 
 Plugin-to-plugin collaboration goes through versioned services or other
 host-mediated registries:
