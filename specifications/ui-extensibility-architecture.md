@@ -22,8 +22,9 @@ sidebar_order: 31
 > references without copying their source, configuration syntax, or wire
 > format. Its prioritized changes are explicitly separated into **candidate**
 > and **already accepted elsewhere**; nothing here is accepted by this
-> document. Related contracts are the per-View override layer (candidate) and
-> the accepted per-panel background-image contract in the
+> document except where it records an acceptance that landed in RFC-0001.
+> Related contracts are the per-View override layer (accepted 2026-09-12 in
+> RFC-0001) and the accepted per-panel background-image contract in the
 > [Appearance Configuration RFC](../decisions/rfcs/RFC-0001-appearance-configuration.md),
 > plus the [Panel Extensibility Vision](../product/panel-vision.md) (Draft).
 
@@ -105,8 +106,8 @@ and the accepted contract documents; it claims no new behavior.
 | Rich/declarative content | `SceneNode`/`RichBlock` scene contract                                 | Accepted              | [Rich Presentation RFC](rich-presentation-rfc.md)                                                                         |
 | Appearance configuration | `init.lua` `ConfigPlan` keys; theme presets                            | Accepted/partial      | [Configuration Model RFC](configuration-model-rfc.md), [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md) |
 | Panel background image   | `decoration.background_image` / `_fit` / `_image_roots` (contract)     | Accepted (contract)   | [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md) (OQ-042)                                               |
-| Per-View appearance      | `views.<selector>.*` override layer                                    | Candidate             | [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md)                                                        |
-| Outline width            | `decoration.border_width` / `_focused` / `_idle`, per-View overridable | Candidate             | [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md) (OQ-045)                                               |
+| Per-View appearance      | `views.<selector>.*` override layer                                    | Accepted (contract)   | [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md) (OQ-041)                                               |
+| Outline width            | `decoration.border_width` / `_focused` / `_idle`, per-View overridable | Accepted (contract)   | [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md) (OQ-045)                                               |
 | Panel providers          | `register_panel`, `PanelId`, panel lifecycle                           | Excluded from v1      | [Plugin API v1](plugin-api-v1-lua-surface-rfc.md)                                                                         |
 | Protocol registration    | OSC/APC and structured-output handlers                                 | Excluded from v1      | [Plugin API v1](plugin-api-v1-lua-surface-rfc.md)                                                                         |
 | Decoration/annotation    | Level 3 presentation contributions                                     | Excluded from v1      | [Plugin system](../extensibility/plugin-system.md)                                                                        |
@@ -155,7 +156,7 @@ surface exposing system semantics rather than Rust internals.
 | Configuration            | `ConfigPlan` typed validation, layering, reload          | own `plugins.<owner>.<name>` settings/store namespace | global appearance/layout keys         |
 
 The dividing line for the appearance work: **Core owns chrome; a plugin may
-only ever contribute policy that Core validates and resolves.** The candidate
+only ever contribute policy that Core validates and resolves.** The accepted
 per-View override layer is user configuration, not a plugin hook.
 
 ## Prioritized change candidates
@@ -163,29 +164,36 @@ per-View override layer is user configuration, not a plugin hook.
 Ordered by expected increase in plugin freedom per unit of risk. Every item is
 **candidate** unless marked accepted elsewhere; none is authorized to ship.
 
-### P1 — Per-View/per-panel appearance overrides (candidate)
+### P1 — Per-View/per-panel appearance overrides (accepted)
 
 What: the `views.<selector>.*` override layer in
 [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md), resolving
-global defaults to per-`View` opacity, blur, border color, outline width,
-and (later) animation options.
+global defaults to per-`View` border color, outline width, background image and
+fit; per-`View` opacity, blur, and animation options remain reserved until
+their owning questions accept them.
 
-Why it increases freedom: today the only look controls are global, so a plugin
-or user cannot give a terminal a different frame from a rich panel. Per-View
-resolution is the smallest change that makes independent looks possible without
-touching terminal truth or the layout solver.
+Why it increases freedom: before acceptance the only look controls were global,
+so a plugin or user could not give a terminal a different frame from a rich
+panel. Per-View resolution is the smallest change that makes independent looks
+possible without touching terminal truth or the layout solver.
 
 Risk: medium. Adds a resolution pass and per-`View` state to the presentation
 record; must keep AC-1..AC-2 contrast per resolved pair, stay order-independent,
 and remain fail-closed and `--safe`-clean. It must not become an
-`is_terminal` branch in Core layout. The candidate outline-width triple
+`is_terminal` branch in Core layout. The outline-width triple
 ([OQ-045](../decisions/open-questions.md)) joins the field set and supplies the
 AC-2 non-color cue (`border_width_focused >= border_width_idle + 1` logical px),
 so the appearance layer no longer depends on an unrecorded thickness gap.
 
-Disposition: reviewed candidate; tracked as
-[OQ-041](../decisions/open-questions.md). Needs a renderer/validation design and
-its own acceptance.
+Disposition: **accepted** 2026-09-12 under docs `CTX-0163`, closing
+[OQ-041](../decisions/open-questions.md) and OQ-045 in
+[RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md). Acceptance
+is a reviewed contract, not implementation evidence: no `views.*` key is
+supported until `bitty` implements it (bitty `CTX-0343`/`CTX-0344`/`CTX-0347`).
+The selector grammar, accepted and reserved field sets, per-field precedence,
+per-`View` contrast rule, `Live` reload with whole-reload fail-closed
+validation, and `--safe` behavior are fixed in RFC-0001; this document does not
+restate them.
 
 ### P2 — Stable panel identity and a panel provider contract (candidate)
 
@@ -218,18 +226,18 @@ visual identity without granting Core chrome control.
 
 Risk: medium-high. Opens a path for untrusted presentation input (image decode,
 path access, cache pressure) and a privilege-escalation surface if the
-contribution can escape the plugin's own `View`s. Requires the P1 override
-layer and the accepted P5 image contract first.
+contribution can escape the plugin's own `View`s. Requires the (now accepted)
+P1 override layer and the accepted P5 image contract first.
 
 Disposition: candidate; tracked as
 [OQ-044](../decisions/open-questions.md), with the plugin-image path narrowed to
 [OQ-049](../decisions/open-questions.md). Core-owned chrome (`gaps_*`,
 `border`, global focus/idle colors) stays off-limits regardless.
 
-### P4 — Per-panel animation overrides (candidate)
+### P4 — Per-panel animation overrides (candidate, narrowed)
 
-What: allow the `views.<selector>` layer to override transition durations and
-easing per panel, bounded by the accepted RFC-0002 grammar.
+What: allow the accepted `views.<selector>` layer to override transition
+durations and easing per panel, bounded by the accepted RFC-0002 grammar.
 
 Why it increases freedom: a plugin panel may want a different open/close feel
 than a terminal, and a user may want to disable motion on one surface.
@@ -239,7 +247,12 @@ cost is budget attribution and proving frame-on-demand still holds with mixed
 per-surface durations.
 
 Disposition: candidate; tracked as
-[OQ-043](../decisions/open-questions.md).
+[OQ-043](../decisions/open-questions.md), **narrowed** by the accepted OQ-041
+contract: the selector grammar, per-field precedence tiers, reserved-field
+rejection, reload, and safe-mode rules are fixed there, so this candidate now
+only needs to define the animation field set and its reduced-motion/budget
+interaction. The `views.<selector>.animations` field stays reserved and
+rejected until OQ-043 accepts it.
 
 ### P5 — Background-image contract (accepted)
 
@@ -277,6 +290,12 @@ supported until `bitty` implements it.
 - The Core-owned per-panel background-image contract for user configuration
   ([RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md), OQ-042);
   plugin-supplied images remain open as OQ-049.
+- The per-View/per-panel appearance override contract and the focus/idle
+  outline-width triple
+  ([RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md), OQ-041
+  and OQ-045, accepted 2026-09-12; docs `CTX-0163`). The field set, selector
+  grammar, precedence, per-`View` contrast, reload, and safe-mode rules are
+  fixed there and are not re-litigated here.
 
 ## Lua surface
 
@@ -285,11 +304,13 @@ accepted `bitty` module root (ADR 0009) and the semantic-API rule. None of the
 following is a supported key today.
 
 ```lua
--- Candidate only; not shipped. Appearance is user configuration.
+-- Accepted user-configuration contract only; not shipped until bitty
+-- implements it. The accepted field set is border color/width and background
+-- image/fit; opacity/blur/animations are reserved until OQ-038/OQ-043 accept.
 return {
     views = {
-        terminal = { border_color_focused = "#33CCFF" },
-        ["view:7"] = { opacity = 0.9 },
+        ["terminal"] = { border_color_focused = "#33CCFF" },
+        ["view:7"] = { background_image = "~/wall/one.png" },
     },
 }
 
@@ -334,18 +355,21 @@ closed-grammar addition requiring its own reviewed contract.
 
 - [OQ-041](../decisions/open-questions.md): per-View/per-panel appearance
   override contract (selector grammar, precedence, reload, safe mode).
+  **Accepted** 2026-09-12 under docs `CTX-0163`; see RFC-0001.
 - [OQ-042](../decisions/open-questions.md): per-panel background-image contract
   (format, limits, decode, cache, fit, path trust). **Accepted** 2026-09-12 for
   the Core-owned user-configuration path; plugin supply narrowed to OQ-049.
 - [OQ-049](../decisions/open-questions.md): whether and how a plugin may supply
   a per-panel background image under a capability.
 - [OQ-043](../decisions/open-questions.md): per-panel animation override
-  contract.
+  contract. **Narrowed** by the accepted OQ-041 contract to the animation field
+  set and its reduced-motion/budget interaction.
 - [OQ-044](../decisions/open-questions.md): plugin-supplied appearance contract
   and the ownership boundary against Core chrome.
 - [OQ-045](../decisions/open-questions.md): focus/idle outline-width contract
   (defaults, `0..=16` bounds, per-View override resolution, DPI scaling,
-  safe mode, and the AC-2 non-color cue).
+  safe mode, and the AC-2 non-color cue). **Accepted** 2026-09-12 under docs
+  `CTX-0163`; see RFC-0001.
 - Whether a bounded panel-provider surface belongs in Plugin API `1.x` or a new
   major version, and how it reconciles with the unresolved Panel identity
   question.
@@ -359,14 +383,20 @@ new Lua identifier; negative capability tests proving denied appearance
 mutations and `--safe` ignore overrides; parser/validation tests for selector
 and color grammar; image bound and path-policy tests; contrast tests per
 resolved pair; and budget tests proving appearance resolution stays out of the
-hot path. Evidence belongs in `bitty`; this document records candidate direction
-only.
+hot path. The accepted OQ-041/OQ-045 contracts add, in `bitty`: order-independent
+selector resolution across tiers and declaration orders, whole-reload
+fail-closed rejection for unknown/reserved fields and out-of-range values,
+`ws:`/`view:` match-set re-resolution without `View` recreation, per-resolved-
+`View` AC-1/AC-2 enforcement including the first-match path of an inert
+selector, the `0..=16` width bound and `--safe` `1`/`1` pair, and proof that a
+focused width change does not move the content grid. Evidence belongs in
+`bitty`; this document records direction only.
 
 ## References
 
 - [Appearance Configuration RFC](../decisions/rfcs/RFC-0001-appearance-configuration.md)
-  (OQ-039 accepted; per-View override and outline-width candidates;
-  OQ-041/OQ-042/OQ-043/OQ-044/OQ-045).
+  (OQ-039, OQ-041, OQ-042, and OQ-045 accepted; OQ-036/OQ-037/OQ-038 remain
+  open; OQ-043 narrowed; OQ-044 and OQ-049 remain open).
 - [Panel Animations and Effects RFC](../decisions/rfcs/RFC-0002-panel-animations.md)
   (OQ-040 accepted).
 - [Workspace Compositor Specification](workspace-compositor.md).
