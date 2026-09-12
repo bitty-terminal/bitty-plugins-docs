@@ -22,9 +22,10 @@ sidebar_order: 31
 > references without copying their source, configuration syntax, or wire
 > format. Its prioritized changes are explicitly separated into **candidate**
 > and **already accepted elsewhere**; nothing here is accepted by this
-> document. Related candidate contracts are the per-View override layer in the
-> [Appearance Configuration RFC](../decisions/rfcs/RFC-0001-appearance-configuration.md)
-> and the [Panel Extensibility Vision](../product/panel-vision.md) (Draft).
+> document. Related contracts are the per-View override layer (candidate) and
+> the accepted per-panel background-image contract in the
+> [Appearance Configuration RFC](../decisions/rfcs/RFC-0001-appearance-configuration.md),
+> plus the [Panel Extensibility Vision](../product/panel-vision.md) (Draft).
 
 ## Purpose and scope
 
@@ -103,6 +104,7 @@ and the accepted contract documents; it claims no new behavior.
 | Layout algorithms        | `LayoutProvider` pure geometry proposal                                | Accepted (trait open) | [Workspace Compositor](workspace-compositor.md)                                                                           |
 | Rich/declarative content | `SceneNode`/`RichBlock` scene contract                                 | Accepted              | [Rich Presentation RFC](rich-presentation-rfc.md)                                                                         |
 | Appearance configuration | `init.lua` `ConfigPlan` keys; theme presets                            | Accepted/partial      | [Configuration Model RFC](configuration-model-rfc.md), [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md) |
+| Panel background image   | `decoration.background_image` / `_fit` / `_image_roots` (contract)     | Accepted (contract)   | [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md) (OQ-042)                                               |
 | Per-View appearance      | `views.<selector>.*` override layer                                    | Candidate             | [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md)                                                        |
 | Outline width            | `decoration.border_width` / `_focused` / `_idle`, per-View overridable | Candidate             | [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md) (OQ-045)                                               |
 | Panel providers          | `register_panel`, `PanelId`, panel lifecycle                           | Excluded from v1      | [Plugin API v1](plugin-api-v1-lua-surface-rfc.md)                                                                         |
@@ -217,10 +219,11 @@ visual identity without granting Core chrome control.
 Risk: medium-high. Opens a path for untrusted presentation input (image decode,
 path access, cache pressure) and a privilege-escalation surface if the
 contribution can escape the plugin's own `View`s. Requires the P1 override
-layer and OQ-042 image contract first.
+layer and the accepted P5 image contract first.
 
 Disposition: candidate; tracked as
-[OQ-044](../decisions/open-questions.md). Core-owned chrome (`gaps_*`,
+[OQ-044](../decisions/open-questions.md), with the plugin-image path narrowed to
+[OQ-049](../decisions/open-questions.md). Core-owned chrome (`gaps_*`,
 `border`, global focus/idle colors) stays off-limits regardless.
 
 ### P4 — Per-panel animation overrides (candidate)
@@ -238,21 +241,28 @@ per-surface durations.
 Disposition: candidate; tracked as
 [OQ-043](../decisions/open-questions.md).
 
-### P5 — Background-image contract (candidate)
+### P5 — Background-image contract (accepted)
 
-What: a bounded per-panel background image (format, size, decode, cache, fit)
-with path trust.
+What: a bounded per-panel background image — format, size, decode, cache, fit,
+and path trust.
 
 Why it increases freedom: a concrete, popular per-panel customization and a
 useful test of the appearance-contribution pipeline.
 
 Risk: high. Crosses the image/file trust boundary (T-01, T-02,
 `platform.image-file`); unbounded decode or filesystem access would be a P0
-defect.
+defect. The accepted contract mitigates this by reusing the accepted image-store
+ceilings (IMG-1..IMG-5) for BG-1..BG-5 (BG-6 is a design bound and BG-7 a
+present-path bound), denying paths by default, and
+rejecting malformed input with a whole-reload failure.
 
-Disposition: candidate; tracked as
-[OQ-042](../decisions/open-questions.md). Must reuse accepted image limits and
-the deny-by-default file policy.
+Disposition: **accepted** 2026-09-12 under docs `CTX-0159` for the Core-owned
+user-configuration path; see the accepted OQ-042 section in the
+[Appearance Configuration RFC](../decisions/rfcs/RFC-0001-appearance-configuration.md).
+It reuses the accepted image limits and the deny-by-default file policy. The
+plugin-supplied-image sub-question remains open as
+[OQ-049](../decisions/open-questions.md), so P3 stays candidate. No key is
+supported until `bitty` implements it.
 
 ### Already accepted elsewhere (do not re-litigate here)
 
@@ -264,6 +274,9 @@ the deny-by-default file policy.
 - Bounded panel animations and accepted focus/idle colors
   ([RFC-0002](../decisions/rfcs/RFC-0002-panel-animations.md),
   [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md)).
+- The Core-owned per-panel background-image contract for user configuration
+  ([RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md), OQ-042);
+  plugin-supplied images remain open as OQ-049.
 
 ## Lua surface
 
@@ -302,16 +315,16 @@ Rules the surface must keep:
 New appearance capabilities are presentation data, but background images and
 plugin contributions add untrusted input. Required bounds:
 
-| Concern                     | Required control                                                                                           | Source                                                             |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| Background image decode     | Reuse accepted compressed/decoded size, dimension, and image-store budget limits; reject before allocation | [Security Overview](../security/overview.md) Graphics; T-02        |
-| Image path access           | Deny by default; regular-file and safe-path policy; no ambient filesystem authority                        | [Security Overview](../security/overview.md) P0                    |
-| Per-panel cache             | Bounded per-`View`/aggregate cache; fail closed on overflow; release on `View` close                       | T-01                                                               |
-| Plugin appearance authority | Capability-gated, scoped to the plugin's own content, validated by Core; no Core chrome mutation           | [Core boundaries](../architecture/core-boundaries.md)              |
-| Hot path                    | No appearance resolution in PTY parse, VT, damage-to-snapshot, or render-per-frame path                    | invariant 4                                                        |
-| Fail closed                 | Malformed selector, field, color, or image metadata rejects the reload; never clamps silently              | [Configuration Model RFC](configuration-model-rfc.md)              |
-| Safe mode                   | `bitty --safe` ignores all overrides and image contributions                                               | invariant 10                                                       |
-| Contrast                    | Per-resolved-pair AC-1/AC-2 enforcement; idle advisory AC-3                                                | [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md) |
+| Concern                     | Required control                                                                                                                       | Source                                                             |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Background image decode     | Reuse accepted compressed/decoded size, dimension, and image-store budget limits; reject before allocation (accepted BG-1..BG-3, BG-7) | [Security Overview](../security/overview.md) Graphics; T-02        |
+| Image path access           | Deny by default; regular-file and approved-root policy; no ambient filesystem authority (accepted `background_image_roots`)            | [Security Overview](../security/overview.md) P0                    |
+| Per-panel cache             | Bounded per-`View`/aggregate cache (accepted BG-4..BG-6); fail closed on overflow; never displaces terminal `ImageStore`               | T-01                                                               |
+| Plugin appearance authority | Capability-gated, scoped to the plugin's own content, validated by Core; no Core chrome mutation                                       | [Core boundaries](../architecture/core-boundaries.md)              |
+| Hot path                    | No appearance resolution in PTY parse, VT, damage-to-snapshot, or render-per-frame path                                                | invariant 4                                                        |
+| Fail closed                 | Malformed selector, field, color, or image metadata rejects the reload; never clamps silently                                          | [Configuration Model RFC](configuration-model-rfc.md)              |
+| Safe mode                   | `bitty --safe` ignores all overrides and image contributions                                                                           | invariant 10                                                       |
+| Contrast                    | Per-resolved-pair AC-1/AC-2 enforcement; idle advisory AC-3                                                                            | [RFC-0001](../decisions/rfcs/RFC-0001-appearance-configuration.md) |
 
 The extension architecture should not add a fourth security domain: it reuses
 the accepted `PluginCapabilities` model. Any new capability identifier is a
@@ -322,7 +335,10 @@ closed-grammar addition requiring its own reviewed contract.
 - [OQ-041](../decisions/open-questions.md): per-View/per-panel appearance
   override contract (selector grammar, precedence, reload, safe mode).
 - [OQ-042](../decisions/open-questions.md): per-panel background-image contract
-  (format, limits, decode, cache, fit, path trust, plugin supply).
+  (format, limits, decode, cache, fit, path trust). **Accepted** 2026-09-12 for
+  the Core-owned user-configuration path; plugin supply narrowed to OQ-049.
+- [OQ-049](../decisions/open-questions.md): whether and how a plugin may supply
+  a per-panel background image under a capability.
 - [OQ-043](../decisions/open-questions.md): per-panel animation override
   contract.
 - [OQ-044](../decisions/open-questions.md): plugin-supplied appearance contract
