@@ -50,6 +50,19 @@ The governing boundary is:
 
 > Plugins may alter presentation, but must not alter terminal truth.
 
+Two candidate design rules sharpen the boundary between the Lua layer and the
+host:
+
+- **Lua decides policy and composition; Rust enforces capability and
+  mechanism.** Plugins choose what should happen and compose host-provided
+  services; the host decides whether it may happen and how it is bounded.
+- **Semantic primitives are the extension ceiling.** Plugins compose
+  host-provided semantic primitives and cannot create a primitive the host
+  does not define, so a missing primitive is an upstream design task rather
+  than a plugin-side workaround. Core owes plugins aggregated semantic hook
+  points (for example a completed-command event with exit status) instead of
+  raw per-byte or per-cell callbacks.
+
 This is an architecture direction, not a claim that the APIs described below
 exist.
 
