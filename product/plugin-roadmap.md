@@ -210,6 +210,31 @@ Accepted rules for this wave:
   matching the Distribution RFC generation-disposal and PB-3 15% reclaim
   criterion.
 
+## Statusline and shell-prompt boundary
+
+The bundled `bitty-terminal.statusline` is terminal-owned chrome: a
+waybar/Hyprland-class status surface that occupies a terminal UI slot (the
+statusline/workspaceline slot) and presents terminal and workspace state such
+as cwd, mode, Git and task state from the semantic snapshot. It is not a shell
+prompt.
+
+Starship, Oh My Posh, Powerlevel10k, and similar tools are shell-prompt
+producers: the shell renders their Unicode/ANSI output inside the terminal
+grid as ordinary VT content. The surfaces are distinct and have different
+owners, so "statusline replaces starship" is not the accepted relationship.
+Bitty's obligation toward starship-class prompts is faithful rendering, not
+substitution; the terminal-side compatibility checklist for those prompts is
+maintained in
+[Shell and TUI compatibility](../extensibility/plugin-system.md#shell-and-tui-compatibility).
+
+The recorded user direction (2026-09-13, bitty `CTX-0377`) is that the
+statusline is a good design that _may eventually_ carry starship-class
+information, while starship-class prompts still require perfect terminal
+compatibility. Whether the statusline should absorb prompt-class presentation
+is undecided and is tracked as
+[OQ-079](../decisions/open-questions.md); this roadmap records the possibility
+without converging the two surfaces.
+
 ## Independent-plugin migration direction (candidate)
 
 Status: **candidate, non-normative**. Bundled-disabled and independent are
