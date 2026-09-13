@@ -41,8 +41,8 @@ functions, comments, imports, and formatting make that unsafe and
 nondeterministic.
 
 Supply-chain requirements are normative in the
-[security overview](../../../security/overview.md) and tracked as R-015, R-016, and
-R-022 in the [security risk register](../../../security/risk-register.md). Package
+[security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md) and tracked as R-015, R-016, and
+R-022 in the [security risk register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/risk-register.md). Package
 design must not weaken those requirements.
 
 The boundary is:
@@ -88,7 +88,7 @@ including:
 The lockfile belongs beside the user's configuration so it can be versioned
 with dotfiles. Installed plugin code belongs under the platform data directory,
 not the configuration directory. See
-[Lua and XDG configuration](../configuration/lua-and-xdg.md).
+[Lua and XDG configuration](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/configuration/lua-and-xdg.md).
 
 Shipped slice (`bitty` #483 `95c2b23`, CTX-0150, closes `bitty` #244):
 `bitty plugin` manages exactly one `bitty-plugins.toml` beside `init.lua` as a
@@ -98,7 +98,7 @@ duplicate keys, malformed values, over-limit files, and unknown versions fail
 closed before any mutation, and the Lua `init.lua` is never rewritten. The
 lockfile, the package store, and non-bundled (registry/Git/local-path) sources
 are not implemented; the candidate state model above remains the target. See
-the [CLI reference](../interfaces/cli.md) for the shipped verbs and consent
+the [CLI reference](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/interfaces/cli.md) for the shipped verbs and consent
 behavior.
 
 ## Source model
@@ -281,7 +281,7 @@ models and must not be conflated.
 
 Static manifest metadata should supply command names, argument schemas, help,
 completion, lazy triggers, and ownership without starting plugin Lua VMs. The
-shared CLI model is described in [CLI](../interfaces/cli.md).
+shared CLI model is described in [CLI](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/interfaces/cli.md).
 
 ## Security and trust
 

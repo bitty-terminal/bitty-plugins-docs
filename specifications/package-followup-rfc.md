@@ -13,20 +13,20 @@ sidebar_order: 18
 
 > Status: **accepted** on 2026-08-28 by the project initiator. This document defines the accepted
 > resolver, yank, prerelease, registry, and key-management contracts for
-> [OQ-022](../../../decisions/open-questions.md),
-> [OQ-026](../../../decisions/open-questions.md),
-> [OQ-027](../../../decisions/open-questions.md),
-> [OQ-028](../../../decisions/open-questions.md), and
-> [OQ-029](../../../decisions/open-questions.md) at the design level; it closes [OQ-022](../../../decisions/open-questions.md),
-> [OQ-026](../../../decisions/open-questions.md), [OQ-027](../../../decisions/open-questions.md),
-> [OQ-028](../../../decisions/open-questions.md), and [OQ-029](../../../decisions/open-questions.md). It does not describe
+> [OQ-022](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md),
+> [OQ-026](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md),
+> [OQ-027](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md),
+> [OQ-028](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md), and
+> [OQ-029](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) at the design level; it closes [OQ-022](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md),
+> [OQ-026](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md), [OQ-027](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md),
+> [OQ-028](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md), and [OQ-029](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md). It does not describe
 > implemented behavior, does not authorize shipped, stable, or compatibility-guaranteed
 > behavior, and does not weaken any normative security control. Experimental
 > implementation may exist as review evidence but carries no compatibility
 > promise beyond the accepted contract. Acceptance was per independent category-owner,
 > docs-curator, and security-auditor review (CTX-0071) with P0 sign-off simulated
 > 2026-08-28; see [P0 Review Sign-off](#p0-review-sign-off) and the
-> [P0 review checklist](../../../reviews/p0-review-checklist.md). The lifecycle is
+> [P0 review checklist](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/reviews/p0-review-checklist.md). The lifecycle is
 > `Draft -> experimental review evidence -> Accepted -> normative`.
 
 ## Document status
@@ -95,9 +95,9 @@ security properties.
 
 ## Normative constraints this RFC must not weaken
 
-The [security overview](../../../security/overview.md),
-[threat model](../../../security/threat-model.md), and
-[P0 acceptance criteria](../../../security/p0-acceptance-criteria.md) are normative.
+The [security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md),
+[threat model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md), and
+[P0 acceptance criteria](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/p0-acceptance-criteria.md) are normative.
 This RFC only proposes mechanisms beneath them:
 
 - Invariant 7: every untrusted input has size, time, nesting, rate, and
@@ -406,7 +406,7 @@ Testable criteria: PLF-AC-008, PLF-AC-009, PLF-AC-010.
 ## Verification criteria
 
 These design-level criteria extend, and defer to, the normative floor in
-[P0 acceptance criteria](../../../security/p0-acceptance-criteria.md) section
+[P0 acceptance criteria](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/p0-acceptance-criteria.md) section
 Supply chain (P0-AC-027 through P0-AC-030) and the accepted
 [Package Lifecycle RFC](package-lifecycle-rfc.md) criteria PL-AC-001 through
 PL-AC-010. IDs are stable. Until each criterion records passing evidence per
@@ -600,9 +600,9 @@ without a full chain. Any such reading is a defect in this document.
 
 The following items were open at proposal and are now dispositioned upon
 acceptance on 2026-08-28. Acceptance of this RFC closes
-[OQ-022](../../../decisions/open-questions.md), [OQ-026](../../../decisions/open-questions.md),
-[OQ-027](../../../decisions/open-questions.md), [OQ-028](../../../decisions/open-questions.md),
-and [OQ-029](../../../decisions/open-questions.md) at the design level; residual items
+[OQ-022](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md), [OQ-026](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md),
+[OQ-027](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md), [OQ-028](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md),
+and [OQ-029](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) at the design level; residual items
 below are tracked as follow-up work with no remaining closure blocker unless
 review decides otherwise:
 
@@ -634,23 +634,23 @@ rules. The lifecycle is `Draft -> experimental review evidence -> Accepted (2026
 ## Acceptance criteria
 
 This RFC is accepted on 2026-08-28 and closes
-[OQ-022](../../../decisions/open-questions.md), [OQ-026](../../../decisions/open-questions.md),
-[OQ-027](../../../decisions/open-questions.md), [OQ-028](../../../decisions/open-questions.md),
-and [OQ-029](../../../decisions/open-questions.md). The following criteria were satisfied
-per the [open-question register](../../../decisions/open-questions.md) rules:
+[OQ-022](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md), [OQ-026](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md),
+[OQ-027](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md), [OQ-028](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md),
+and [OQ-029](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md). The following criteria were satisfied
+per the [open-question register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) rules:
 
 1. The prose and every identifier in the OQ-022 and OQ-026 through OQ-029 rows of
-   [open-questions.md](../../../decisions/open-questions.md) have independent category-owner,
+   [open-questions.md](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) have independent category-owner,
    docs-curator, and security-reviewer sign-off, including source-class provenance
    (H-A/H-B/H-C), closed constraint grammar and single-version convergence, prerelease
    opt-in and yank advisory `yanked (locked)`, registry attestation boundary and
    bundled isolation, and key-directory freshness/rotation/revocation.
 2. Affected documents were synchronized in the same change: this RFC is `accepted`
    frontmatter and [Package Lifecycle RFC](package-lifecycle-rfc.md),
-   [Decision Register](../../../decisions/index.md), [Specifications](README.md),
-   [P0 review checklist](../../../reviews/p0-review-checklist.md), and [README](../../../../README.md)
+   [Decision Register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md), [Specifications](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/README.md),
+   [P0 review checklist](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/reviews/p0-review-checklist.md), and [README](https://github.com/bitty-terminal/bitty-docs/blob/main/README.md)
    reference the accepted contract rather than the draft;
-   [open-questions.md](../../../decisions/open-questions.md) moves OQ-022, OQ-026, OQ-027, OQ-028,
+   [open-questions.md](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) moves OQ-022, OQ-026, OQ-027, OQ-028,
    and OQ-029 from `Draft` to `Accepted` per the close rule.
 3. No element weakens a normative P0 gate; any discovered conflict returns the
    conflicting clause to revision rather than downgrading the gate.
@@ -664,7 +664,7 @@ per the [open-question register](../../../decisions/open-questions.md) rules:
 
 > P0 review per CTX-0071 tracks acceptance of OQ-022, OQ-026, OQ-027, OQ-028, and OQ-029
 > via this RFC. Frontmatter is `accepted` and
-> [open-questions.md](../../../decisions/open-questions.md) is updated per the close rule.
+> [open-questions.md](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) is updated per the close rule.
 > This section records passing sign-off and closes those open questions.
 
 | Role                           | Reviewer           | Verdict | Evidence / scope                                                                                                                                                                 | Date       |
@@ -675,14 +675,14 @@ per the [open-question register](../../../decisions/open-questions.md) rules:
 | docs-curator                   | `bitty-curator`    | pass    | Frontmatter `accepted`, taxonomy, links to supply-chain controls and H-A/H-B binding, English-only, decision-register sync                                                       | 2026-08-28 |
 
 As of 2026-08-28, the resolver, lifecycle, registry, and key-directory contracts remain
-design contracts per [ADR 0003](../../../decisions/adrs/ADR-0003-core-workspace-topology.md)
-and the [Proposed Delivery Sequence](../product/proposed-delivery-sequence.md); crate
+design contracts per [ADR 0003](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0003-core-workspace-topology.md)
+and the [Proposed Delivery Sequence](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/proposed-delivery-sequence.md); crate
 presence does not imply shipped behavior.
 
 ## References
 
 - [Package management](../extensibility/package-management.md) — candidate workflow and normative supply-chain constraints this RFC concretizes.
 - [Package Lifecycle RFC](package-lifecycle-rfc.md) — accepted lifecycle and integrity model for OQ-021 that this RFC extends.
-- [Security overview](../../../security/overview.md), [Threat model](../../../security/threat-model.md), and [P0 acceptance criteria](../../../security/p0-acceptance-criteria.md) — normative supply-chain floor.
-- [Decision register](../../../decisions/index.md) and [Open-question register](../../../decisions/open-questions.md) — acceptance and closure records.
-- [P0 review checklist](../../../reviews/p0-review-checklist.md) — P0 sign-off for this RFC.
+- [Security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md), [Threat model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md), and [P0 acceptance criteria](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/p0-acceptance-criteria.md) — normative supply-chain floor.
+- [Decision register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md) and [Open-question register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) — acceptance and closure records.
+- [P0 review checklist](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/reviews/p0-review-checklist.md) — P0 sign-off for this RFC.

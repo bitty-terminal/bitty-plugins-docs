@@ -16,13 +16,13 @@ plugin candidates. Each documented plugin gets its own directory
 `docs/projects/plugins/<plugin>/` with the standard page set: status, design,
 schemas and contracts, and evidence and links. The reusable starting point is
 [`TEMPLATE.md`](TEMPLATE.md); the normative description lives in the
-[documentation workflow](../../development/documentation-workflow.md#per-plugin-documentation-page-set).
+[documentation workflow](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/documentation-workflow.md#per-plugin-documentation-page-set).
 
 ## Candidate plugins
 
 The list below records documentation candidates from draft planning. None of
 these plugins is implemented, shipped, or accepted here; the
-[Plugin Roadmap](../bitty/product/plugin-roadmap.md) (draft) is the planning
+[Plugin Roadmap](../../product/plugin-roadmap.md) (draft) is the planning
 source, and names, identifiers, and batches may change before any plugin
 contract is accepted.
 
@@ -54,7 +54,7 @@ contract is accepted.
 
 ## Related
 
-- [Project documentation partition](../README.md)
-- [Plugin system](../bitty/extensibility/plugin-system.md)
-- [Plugin Roadmap](../bitty/product/plugin-roadmap.md) (draft)
-- [Default Distribution RFC](../bitty/specifications/default-distribution-rfc.md)
+- [Project documentation partition](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/projects/README.md)
+- [Plugin system](../../extensibility/plugin-system.md)
+- [Plugin Roadmap](../../product/plugin-roadmap.md) (draft)
+- [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)

@@ -23,8 +23,8 @@ the terminal emulator's compatibility depend on plugin load order or plugin
 correctness.
 
 Core-versus-plugin ownership is authoritative in
-[Core / Plugin boundaries](../architecture/core-boundaries.md). The normative
-trust posture is defined by the [security overview](../../../security/overview.md).
+[Core / Plugin boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md). The normative
+trust posture is defined by the [security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md).
 This document specializes those contracts for extension composition and must
 not weaken them.
 
@@ -108,7 +108,7 @@ The intended composition has three surfaces:
 The renderer composes these surfaces; plugins do not rewrite the underlying
 grid.
 
-See [Rich content](../interfaces/rich-content.md) for semantic zones,
+See [Rich content](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/interfaces/rich-content.md) for semantic zones,
 structured output, and streaming Markdown.
 
 ## Extension levels
@@ -153,7 +153,7 @@ Exact VM creation, reuse, unload/reload lifecycle, service transport, state
 migration, and cost optimizations are defined by the accepted
 [Plugin Host Runtime RFC](../specifications/plugin-host-runtime-rfc.md)
 (OQ-033/OQ-034/OQ-035, ratified through
-[ADR 0010](../../../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md)). The
+[ADR 0010](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md)). The
 first sliced implementation shipped in bitty PR #554 merge `e51b5cc`
 (CTX-0328: bridge and VM lifecycle) and PR #558 merge `064b9de` (CTX-0329:
 store staging and integrity verification); hardening and the reload/update
@@ -259,7 +259,7 @@ explicit user mapping
 ```
 
 Workspace configuration remains subject to the trust restrictions described
-in [Lua and XDG configuration](../configuration/lua-and-xdg.md).
+in [Lua and XDG configuration](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/configuration/lua-and-xdg.md).
 
 ## UI and presentation composition
 
@@ -323,7 +323,7 @@ verified. Native in-process plugins are outside the accepted security model.
 Raw PTY access, protocol handling, terminal input injection, and runtime
 management warrant separate high-risk permissions. Remote-control capability
 boundaries must be shared with the CLI and IPC model described in
-[CLI](../interfaces/cli.md).
+[CLI](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/interfaces/cli.md).
 
 ## Performance and observability
 
@@ -363,7 +363,7 @@ inside the terminal grid. The two surfaces therefore do not substitute for one
 another, and the terminal-side obligation is to render prompt output faithfully
 (see the checklist below). Whether the statusline may later present
 starship-class information is tracked as
-[OQ-079](../../../decisions/open-questions.md), not decided here.
+[OQ-079](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md), not decided here.
 
 Shell integration must observe or chain shell lifecycle hooks instead of
 overwriting `PROMPT_COMMAND` or another shell's equivalent. It should primarily
@@ -389,7 +389,7 @@ named `bitty` implementation evidence exists, **Candidate** means the direction
 or contract is recorded without dedicated acceptance evidence, **Open** means
 no contract or implementation. Every Shipped row still owes the cross-platform
 evidence and independent sign-off the
-[Compatibility Milestone RFC](../specifications/compatibility-milestone-rfc.md)
+[Compatibility Milestone RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/compatibility-milestone-rfc.md)
 requires before milestone M1 can be declared complete.
 
 | Requirement                                                   | Status           | Evidence and remaining gap                                                                                                                                                                                                                                                                                                                                           |
@@ -426,7 +426,7 @@ argument escaping, path resolution, and Windows/Unix differences stay in core.
 
 ## Risk ownership
 
-The authoritative [security risk register](../../../security/risk-register.md) tracks
+The authoritative [security risk register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/risk-register.md) tracks
 plugin authority, hot-path denial, Terminal Truth integrity, recovery, supply
 chain, capability changes, native artifacts, and rich-content resource risks as
 R-006 through R-009, R-015 through R-017, and R-021 through R-022.

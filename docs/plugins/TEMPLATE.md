@@ -14,7 +14,7 @@ sidebar_order: 20
 Use this template to start a plugin directory at
 `docs/projects/plugins/<plugin>/`. It covers the standard page set defined by
 the
-[documentation workflow](../../development/documentation-workflow.md#per-plugin-documentation-page-set):
+[documentation workflow](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/documentation-workflow.md#per-plugin-documentation-page-set):
 status, design, schemas and contracts, and evidence and links. Copy the index
 skeleton below into `README.md`, replace every placeholder with reviewed
 content, and keep the flat frontmatter schema exact or `just metadata` fails.

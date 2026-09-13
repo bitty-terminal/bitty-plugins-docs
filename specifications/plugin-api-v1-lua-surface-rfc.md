@@ -14,7 +14,7 @@ sidebar_order: 29
 ## Status
 
 **Accepted** on 2026-09-11 by the project initiator (user) through
-[ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md), which
+[ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md), which
 ratified all twelve `LUA-OQ-*` resolutions wholesale. This contract defines the
 accepted Plugin API v1 Lua surface; it does not describe implemented behavior,
 does not by itself authorize shipped or compatibility-guaranteed behavior
@@ -37,23 +37,23 @@ Evidence revisions inspected read-only during drafting: `bitty` `1ea2f66`
 behind `origin/main` at inspection time), `bitty-plugin-sdk` worktree CTX-0015
 branch `ctx-0015/feat-manifest-lint` at `d2cad1f` (manifest/lint in review, not
 accepted). The SDK produces no authoritative surface: per
-[core boundaries](../architecture/core-boundaries.md) and the Plugin Platform
+[core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) and the Plugin Platform
 RFC, an SDK surface must derive from an accepted host contract.
 
 ### Authority placement (LUA-OQ-1)
 
-Ratified in [ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md):
+Ratified in [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md):
 the accepted surface text is this `bitty-docs` contract. The `bitty` repository
 owns the executable implementation and the machine-checkable parity evidence,
 and may refine mechanics but may not add or rename v1 identifiers without a
 `bitty-docs` revision. The SDK is generated from the accepted surface and may
-not invent identifiers. [Core boundaries](../architecture/core-boundaries.md)
+not invent identifiers. [Core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md)
 and the [Plugin Platform RFC](plugin-platform-rfc.md) record the same
 three-way split. The accepted statements below remain in force:
 
 1. [Lua Runtime RFC](lua-runtime-rfc.md) fixes the single host bridge in every
    VM as a versioned `bitty` module whose "function surface is owned by the
-   respective API RFCs"; [ADR 0006](../../../decisions/adrs/ADR-0006-os-env-policy.md)
+   respective API RFCs"; [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md)
    already fixes `bitty.env.get` and `bitty.env.has` under that module.
 2. The SDK consumes this contract; no divergent copy is created.
 
@@ -71,27 +71,27 @@ Out of scope; owned elsewhere and only referenced here:
   ([Plugin Platform RFC](plugin-platform-rfc.md), accepted).
 - VM construction, restricted standard library, rooted module resolution,
   diagnostics classes ([Lua Runtime RFC](lua-runtime-rfc.md), accepted), pins and
-  allowlist ([ADR 0005](../../../decisions/adrs/ADR-0005-lua-pins-and-stdlib.md)),
-  environment reads ([ADR 0006](../../../decisions/adrs/ADR-0006-os-env-policy.md)),
-  async boundary and tasks/timers ([ADR 0007](../../../decisions/adrs/ADR-0007-async-gc.md)).
+  allowlist ([ADR 0005](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0005-lua-pins-and-stdlib.md)),
+  environment reads ([ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md)),
+  async boundary and tasks/timers ([ADR 0007](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0007-async-gc.md)).
 - Resource ceilings and enforcement numbers
   ([Isolation Resource RFC](isolation-resource-rfc.md), accepted).
-- Scene content contract ([Rich Presentation RFC](rich-presentation-rfc.md),
+- Scene content contract ([Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md),
   accepted).
 - Panel identity, lifecycle, and providers
-  ([Panel Runtime pre-study](panel-runtime-pre-study.md), Draft) and workspace
-  layout ([Workspace Compositor](workspace-compositor.md), accepted without a
+  ([Panel Runtime pre-study](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-pre-study.md), Draft) and workspace
+  layout ([Workspace Compositor](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md), accepted without a
   `PanelId`).
 
 ## Normative sources this proposal must not weaken
 
-- [Security overview](../../../security/overview.md): untrusted-by-default posture,
+- [Security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md): untrusted-by-default posture,
   capability families, invariants 2 (no ambient authority), 3 (presentation,
   never Terminal Truth), 4 (no hot-path execution), 8 (updates cannot silently
   add capabilities), and 10 (`bitty --safe`).
-- [Threat model](../../../security/threat-model.md): T-06, T-07, T-10, T-12, T-13 and
+- [Threat model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md): T-06, T-07, T-10, T-12, T-13 and
   the plugin-to-host data-flow controls.
-- [Core boundaries](../architecture/core-boundaries.md): mechanism/policy split,
+- [Core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md): mechanism/policy split,
   observation-versus-interception, declarative UI, generation ownership, and the
   two security domains.
 - [Plugin system](../extensibility/plugin-system.md): extension levels 1-4,
@@ -112,10 +112,10 @@ which is the only exact, machine-checkable representation today.
 
 | Option                                                        | Disposition     | Rationale                                                                                                                                                                                                                                                                                                                                                                                    |
 | ------------------------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Module root `bitty`, namespaced functions                     | **Adopted**     | Accepted by [Lua Runtime RFC](lua-runtime-rfc.md) ("the single host bridge in every VM is a versioned `bitty` module") and already used by accepted `bitty.env.get`/`bitty.env.has` in [ADR 0006](../../../decisions/adrs/ADR-0006-os-env-policy.md). The Plugin Platform RFC namespace rules give each namespace an accepted contract.                                                      |
+| Module root `bitty`, namespaced functions                     | **Adopted**     | Accepted by [Lua Runtime RFC](lua-runtime-rfc.md) ("the single host bridge in every VM is a versioned `bitty` module") and already used by accepted `bitty.env.get`/`bitty.env.has` in [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md). The Plugin Platform RFC namespace rules give each namespace an accepted contract.                                                      |
 | Module root `bitty.api.*`                                     | Rejected        | Adds an unaccepted nesting level with no contract behind it; conflicts with the accepted `bitty.env.*` shape; would force one concept to have two spellings. Only source is a finding recommendation that itself cites no accepted spelling.                                                                                                                                                 |
 | Flat `bitty.register_command`/`on_event`/`get_terminal_state` | Rejected        | Accepted material uses namespaced shapes (`bitty.commands.register`, `bitty.events.subscribe`, `bitty.terminal.snapshot`); flat verbs consume the global module namespace, collide with future accepted additions (`bitty.env`), and lose the per-namespace capability mapping.                                                                                                              |
-| `register_panel` for a panel provider                         | Rejected for v1 | Panel identity and lifecycle are not accepted: [Workspace Compositor](workspace-compositor.md) explicitly introduces no `PanelId`, and the [Panel pre-study](panel-runtime-pre-study.md) leaves the provider contract and `panel.*` mapping open. Panel providers are post-v1.0 per the [plugin roadmap](../product/plugin-roadmap.md#post-v10-panel-ecosystem-candidates) pending that RFC. |
+| `register_panel` for a panel provider                         | Rejected for v1 | Panel identity and lifecycle are not accepted: [Workspace Compositor](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md) explicitly introduces no `PanelId`, and the [Panel pre-study](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-pre-study.md) leaves the provider contract and `panel.*` mapping open. Panel providers are post-v1.0 per the [plugin roadmap](../product/plugin-roadmap.md#post-v10-panel-ecosystem-candidates) pending that RFC. |
 | Colon-style methods `bitty.services:get(...)`                 | Rejected for v1 | Accepted material uses dot calls with explicit option tables; colon methods imply Lua object/self semantics that the host-owned value-return contract does not require. Provider ecology remains Draft post-1.0.                                                                                                                                                                             |
 
 `register_panel`/`on_event`/`get_terminal_state` reappear in this surface as
@@ -141,10 +141,10 @@ pre-empting the panel contract.
    capability-gated function whose grant is absent is present and fails closed
    with a typed denial (`runtime` class, stable code `E_CAPABILITY_DENIED`,
    bounded message, file/line/column where available) before any side effect,
-   consistent with [ADR 0006](../../../decisions/adrs/ADR-0006-os-env-policy.md). The
+   consistent with [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md). The
    one carve-out is `bitty.env`: absent unless the manifest declares an
    `env:<KEY>` capability, as
-   [LUA-OQ-2 in ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-2-absent-versus-denied-namespaces)
+   [LUA-OQ-2 in ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-2-absent-versus-denied-namespaces)
    records.
 
 ### Activation entry point (LUA-OQ-12)
@@ -206,7 +206,7 @@ bitty.commands.register(def) -> handle
 | `id`            | string   | yes      | Plugin-local command segment, `^[a-z][a-z0-9-]{0,63}$`; host qualifies to `<plugin-id>:<id>`                                                                                                                                                                                           |
 | `title`         | string   | yes      | Bounded display text, host-rendered, never markup                                                                                                                                                                                                                                      |
 | `description`   | string   | no       | Bounded display text                                                                                                                                                                                                                                                                   |
-| `args_schema`   | table    | no       | Bounded JSON Schema (CLI Contract RFC model): depth at most 16, bounded string fields, flag `additionalProperties` explicit; total size at most `CMD_SCHEMA_MAX_BYTES` (default 16 KiB per schema, fixed by [ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md)) |
+| `args_schema`   | table    | no       | Bounded JSON Schema (CLI Contract RFC model): depth at most 16, bounded string fields, flag `additionalProperties` explicit; total size at most `CMD_SCHEMA_MAX_BYTES` (default 16 KiB per schema, fixed by [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md)) |
 | `result_schema` | table    | no       | Bounded JSON Schema with the same limits, declaring the result shape for CLI, palette, IPC, and Agent reuse                                                                                                                                                                            |
 | `run`           | function | yes      | `function(args) -> result`; `args` is a validated plain table and `result` is validated before it is returned                                                                                                                                                                          |
 
@@ -219,7 +219,7 @@ addition to the string form: `{ id = "...", args_schema = {...}, result_schema =
 When a command is declared statically and registered at activation, the two
 definitions must be equivalent after canonicalization or activation fails with a
 `validation` diagnostic; the static form is how lazy help and completion work
-without a VM ([LUA-OQ-3](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-3-command-parameter-and-result-metadata)).
+without a VM ([LUA-OQ-3](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-3-command-parameter-and-result-metadata)).
 
 ### Events
 
@@ -250,7 +250,7 @@ bitty.keymaps.suggest(def) -> handle
 names a command registered by the same generation and `when` must be absent or
 `"global"` in v1; any other value is a registration error naming the supported
 context. The chord grammar is exactly the shipped configuration grammar from the
-[Configuration Model RFC](configuration-model-rfc.md): trimmed, case-insensitive
+[Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md): trimmed, case-insensitive
 modifiers joined with `+` (`ctrl`, `alt`, `shift`, `super`), named keys from the
 shipped vocabulary (`tab` through `f35`, including the `ins`/`del`/`hm`/`end`/`pu`/`pd`
 aliases), and single-character keys require a modifier. Identity for precedence
@@ -258,7 +258,7 @@ and conflict detection is `(when, normalized chord)`. Suggestions never override
 user or workspace mappings; the accepted precedence
 (`user > workspace > first-party/default > plugin suggestion`) applies, and
 chord conflicts produce diagnostics for user resolution rather than load order
-([LUA-OQ-5](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-5-key-binding-suggestions)).
+([LUA-OQ-5](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-5-key-binding-suggestions)).
 
 ### Settings and storage
 
@@ -272,7 +272,7 @@ bitty.store.set(key, value) -> boolean
 - Settings keys are dot paths relative to `plugins.<owner>.<name>`; plugins
   cannot read or write outside their own namespace. Typed schema declaration,
   merge, and reload semantics are owned by the
-  [Configuration Model RFC](configuration-model-rfc.md) (OQ-010).
+  [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md) (OQ-010).
 - Storage is the quota-bounded key-value area scoped by plugin ID (not by
   generation) and persisted under the platform data directory:
   - Key grammar `^[a-z0-9][a-z0-9._-]{0,127}$`, at most 128 UTF-8 bytes, no
@@ -291,7 +291,7 @@ bitty.store.set(key, value) -> boolean
     disposed, so N+1 reads the same values. Data is deleted only by uninstall
     or an explicit user purge. Persisted store data is not generation state;
     generation-owned memory, handles, tasks, and timers are still reclaimed
-    ([LUA-OQ-6](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-6-storage-semantics)).
+    ([LUA-OQ-6](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-6-storage-semantics)).
 - Neither namespace grants filesystem authority; `fs.*` grants remain a
   separate capability path that v1 does not define a Lua entry point for.
 
@@ -305,9 +305,9 @@ bitty.env.has(name) -> boolean
 
 `payload = { title = string, body? = string, urgency? = "low"|"normal"|"critical" }`,
 gated by `platform.notify` and subject to host rate policy. The `bitty.env.*`
-contract is accepted in [ADR 0006](../../../decisions/adrs/ADR-0006-os-env-policy.md)
+contract is accepted in [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md)
 and is referenced, not redefined. Per
-[LUA-OQ-2](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-2-absent-versus-denied-namespaces),
+[LUA-OQ-2](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-2-absent-versus-denied-namespaces),
 `bitty.env` is absent from the VM unless the manifest declares an `env:<KEY>`
 capability; when declared but not granted, its functions fail closed with
 `E_CAPABILITY_DENIED` and never enumerate keys. Key-level minimization is
@@ -324,7 +324,7 @@ bitty.ui.update(handle, component) -> boolean
 - `slot` is the accepted closed set:
   `terminal | top | bottom | left | right | tabline | statusline | overlay`.
 - `component` is a declarative node table shaped by the accepted
-  [`SceneNode` contract](rich-presentation-rfc.md), restricted for v1 to the
+  [`SceneNode` contract](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md), restricted for v1 to the
   `Text`, `Row`, `Column`, and `List` nodes. Status components are ordinary
   subtrees mounted in the `statusline` slot, and popups are overlay-slot
   subtrees, not a new node kind. `Image`, `CodeBlock`, `Table`, `Rule`, and
@@ -335,13 +335,13 @@ bitty.ui.update(handle, component) -> boolean
   `RichBlock` replacement rule, and the composer diffs the subtree. `update`
   returns `false` for a stale or foreign handle and raises
   `E_UI_COMPONENT_INVALID` for a component that violates the scene contract
-  ([LUA-OQ-7](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-7-ui-update-model)).
+  ([LUA-OQ-7](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-7-ui-update-model)).
 - Rich content requires `ui.rich`; the `overlay` slot requires `ui.overlay`.
   The `overlay` slot is presentation-only, non-focusable declarative content: it
   never claims focus, never mutates a view or terminal, and never becomes a
   `PanelProvider`. If the Panel RFC redefines overlays as focusable surfaces,
   the slot remains a content source and the panel contract owns focus and
-  routing ([LUA-OQ-11](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-11-panel-and-overlay-boundary)).
+  routing ([LUA-OQ-11](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-11-panel-and-overlay-boundary)).
   There are no global coordinates, shaders, pipelines, glyph injection, native
   windows, or renderer handles.
 - `tabline` is an exclusive claim; status components compose. Host layout owns
@@ -362,7 +362,7 @@ observation events for other terminals. Terminal enumeration remains excluded
 in v1.
 
 Top-level shape, aligned with the versioned
-[terminal snapshot contract](terminal-state-rfc.md) and the accepted semantic
+[terminal snapshot contract](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/terminal-state-rfc.md) and the accepted semantic
 projection (visible text with attributes, cursor, modes, semantic zones):
 
 | Field                 | Type    | Meaning                                                                       |
@@ -404,7 +404,7 @@ never included, and exiting alternate screen restores the primary grid per
 accepted terminal-state rules. Snapshots served to automation surfaces carry the
 untrusted-observation-data label; there is no write path to grid, cursor, modes,
 or scrollback in v1
-([LUA-OQ-4](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-4-terminal-snapshot-schema)).
+([LUA-OQ-4](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-4-terminal-snapshot-schema)).
 
 ### Services
 
@@ -434,7 +434,7 @@ bitty.services.provide(iface, impl) -> handle
 - This freezes only the minimal v1 consumer/provider contract. Provider ecology
   (pickers, status, context providers, side-by-side versions) stays post-1.0
   under the Draft [provider-ecology RFC](plugin-reuse-and-providers.md)
-  ([LUA-OQ-8](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-8-service-provider-side)).
+  ([LUA-OQ-8](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-8-service-provider-side)).
 
 ### Tasks and timers
 
@@ -446,7 +446,7 @@ bitty.timers.cancel(timer_id) -> boolean
 ```
 
 Host-owned tasks and timers are accepted with RC-4 caps (64 tasks / 32 timers
-per plugin) in [ADR 0007](../../../decisions/adrs/ADR-0007-async-gc.md); handles are
+per plugin) in [ADR 0007](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0007-async-gc.md); handles are
 small generation-owned integers, not host objects. Exceeding a live cap refuses
 with `E_BUDGET_TASK`/`E_BUDGET_TIMER` (`budget` class) and never queues
 silently. Timer fire and task resumption deliver through the accepted event
@@ -457,7 +457,7 @@ disposal and fail closed. Timers are one-shot in v1; repeating timers are a
 `1.x` minor addition. The bare `task.spawn` / `timer.create` spellings in
 ADR 0007 are internal concept labels, not Lua identifiers, and ADR 0007 carries
 the reconciliation note
-([LUA-OQ-9](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-9-tasks-and-timers)).
+([LUA-OQ-9](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-9-tasks-and-timers)).
 
 ## Event names and payloads
 
@@ -491,7 +491,7 @@ the type distinction, so a single opaque `id` field is not used, matching the
 accepted rule that `TerminalId`, `ViewId`, and `RuntimeId` are pairwise
 incompatible. `generation` lets consumers detect stale identities; `reason` and
 `exit_code` come from the accepted `TerminalClosed`/`TerminalExited` shapes
-([LUA-OQ-10](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-10-observation-identity)).
+([LUA-OQ-10](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-10-observation-identity)).
 
 Observation handlers receive a bounded copy; they never receive live core
 objects. `bitty-plugin-host::HostObservation` also has host-side
@@ -551,7 +551,7 @@ is consistent with the accepted no-hot-path-events rule.
 ## Verification plan
 
 Ratification was recorded on 2026-09-11 by the project initiator (user) through
-[ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md). The
+[ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md). The
 obligations below remain the acceptance gates for the implementing repositories
 and are not satisfied by this documentation change alone:
 
@@ -570,12 +570,12 @@ and are not satisfied by this documentation change alone:
    accept the surface, the exclusions, and every high-risk boundary.
 6. **Documentation synchronization:** the
    [Plugin Platform RFC](plugin-platform-rfc.md) host-namespace section,
-   [core boundaries](../architecture/core-boundaries.md) authority statement,
-   the [specifications index](README.md), the
-   [decision register](../../../decisions/index.md), the
-   [ADR index](../../../decisions/adrs/README.md),
-   [ADR 0006](../../../decisions/adrs/ADR-0006-os-env-policy.md),
-   [ADR 0007](../../../decisions/adrs/ADR-0007-async-gc.md), the
+   [core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) authority statement,
+   the [specifications index](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/README.md), the
+   [decision register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md), the
+   [ADR index](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/README.md),
+   [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md),
+   [ADR 0007](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0007-async-gc.md), the
    [Isolation Resource RFC](isolation-resource-rfc.md), and the CarryCtx task
    record were updated in the same ratification change; no divergent copy is
    created.
@@ -584,7 +584,7 @@ and are not satisfied by this documentation change alone:
 
 All twelve questions were ratified wholesale on 2026-09-11. The decision,
 rationale, and rejected alternatives for each row are recorded in
-[ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md); the
+[ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md); the
 dispositions are:
 
 | OQ        | Disposition                                                                                                                                                     |
@@ -604,26 +604,26 @@ dispositions are:
 
 ## References
 
-- [ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md) — accepted
+- [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md) — accepted
   resolutions for LUA-OQ-1 through LUA-OQ-12, ratified 2026-09-11.
 - [Plugin Platform RFC](plugin-platform-rfc.md) — accepted manifest,
   capabilities, namespace rules, event pipeline.
 - [Lua Runtime RFC](lua-runtime-rfc.md) — accepted `bitty` host bridge, sandbox,
   module resolution, diagnostics.
-- [Core boundaries](../architecture/core-boundaries.md) — ownership and
+- [Core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) — ownership and
   authority statement.
 - [Plugin system](../extensibility/plugin-system.md) — extension levels,
   register-versus-claim, key-binding precedence.
-- [Rich Presentation RFC](rich-presentation-rfc.md) — accepted `SceneNode` and
+- [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md) — accepted `SceneNode` and
   `RichBlock` contracts.
 - [Isolation Resource RFC](isolation-resource-rfc.md) — RC budgets and queue
   ceilings.
-- [Workspace Compositor](workspace-compositor.md) and
-  [Panel Runtime pre-study](panel-runtime-pre-study.md) — panel identity and
+- [Workspace Compositor](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md) and
+  [Panel Runtime pre-study](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-pre-study.md) — panel identity and
   provider deferral.
-- [ADR 0005](../../../decisions/adrs/ADR-0005-lua-pins-and-stdlib.md),
-  [ADR 0006](../../../decisions/adrs/ADR-0006-os-env-policy.md),
-  [ADR 0007](../../../decisions/adrs/ADR-0007-async-gc.md) — accepted runtime,
+- [ADR 0005](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0005-lua-pins-and-stdlib.md),
+  [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md),
+  [ADR 0007](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0007-async-gc.md) — accepted runtime,
   environment, and async contracts.
 - `FIND-0003` `ECO-SDK-01` (bitty-docs finding recorded in the shared
   checkout; not yet committed to `origin/main` at draft time) — candidate

@@ -14,9 +14,9 @@ sidebar_order: 16
 > Status: **accepted** on 2026-08-27 by the project initiator. This document
 > defines the accepted Plugin API v1 surface, capability and manifest model,
 > and event pipeline contract; it closes
-> [OQ-011](../../../decisions/open-questions.md),
-> [OQ-012](../../../decisions/open-questions.md), and
-> [OQ-013](../../../decisions/open-questions.md) at the design level. It does not
+> [OQ-011](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md),
+> [OQ-012](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md), and
+> [OQ-013](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) at the design level. It does not
 > describe implemented behavior and does not authorize shipped, stable, or
 > compatibility-guaranteed behavior. Experimental implementation may exist as
 > review evidence but carries no compatibility promise beyond the accepted
@@ -64,17 +64,17 @@ Out of scope (each remains owned elsewhere):
 
 ## Normative sources this specification must not weaken
 
-- [Security Overview](../../../security/overview.md): untrusted-by-default posture;
+- [Security Overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md): untrusted-by-default posture;
   capability families; invariants 2 (third-party plugins start without
   filesystem, network, process, clipboard, runtime-control, debug, or
   protocol-registration authority), 3 (presentation, never Terminal Truth),
   4 (no hot-path execution), 8 (installation runs no package code and updates
   cannot silently add capabilities), and 10 (`bitty --safe`).
-- [Threat Model](../../../security/threat-model.md): abuse cases T-06, T-07, T-10,
+- [Threat Model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md): abuse cases T-06, T-07, T-10,
   T-12, and T-13 and the plugin-to-host data-flow controls.
-- [Security Risk Register](../../../security/risk-register.md): R-006 through R-009,
+- [Security Risk Register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/risk-register.md): R-006 through R-009,
   R-013, R-015 through R-017, and R-022.
-- [Core and Plugin Boundaries](../architecture/core-boundaries.md):
+- [Core and Plugin Boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md):
   mechanism/policy split, observation-versus-interception event distinction,
   capability-family separation, declarative UI, generation-based lifecycle,
   and the two security domains (`TerminalSecurityPolicy` versus
@@ -194,11 +194,11 @@ Accepted validation rules:
 5. Manifests are attacker-controlled input (a cloned repository, a typo-squatted
    package, or a compromised update can supply one). Schema parsers therefore
    get fuzz targets alongside VT/config parsers per the P0 testing row of the
-   [security overview](../../../security/overview.md).
+   [security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md).
 6. The `[services.provided]` and `[lazy].commands` entries accept both the
    accepted string form and the table form with bounded JSON Schema metadata
    (`args_schema`/`result_schema`) recorded by
-   [ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md); schema
+   [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md); schema
    fragments are bounded per the
    [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md).
 
@@ -220,8 +220,8 @@ event time. This adopts the determinism and ownership properties from the
 - Plugin API v1 is identified as `1.x` with SemVer: minor versions are additive
   only; removing or narrowing an existing surface requires a major version.
   Authority is split three ways per
-  [ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md) and
-  [core boundaries](../architecture/core-boundaries.md#extension-api-composition):
+  [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md) and
+  [core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md#extension-api-composition):
   the accepted contract text is the
   [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md) in the
   `bitty-docs` corpus, the `bitty` repository owns the implementation and parity
@@ -308,7 +308,7 @@ pattern the corpus already accepts for project configuration).
 
 The v1 spellings and signatures are accepted in the
 [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md), ratified
-through [ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md);
+through [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md);
 nothing here is implemented yet:
 
 ```lua
@@ -334,7 +334,7 @@ Accepted v1 rules per namespace:
    construction, not shadowed. Commands declare parameter schemas and result
    types so CLI, palette, IPC, and Agents reuse one registry, honoring the
    one-executable-registry direction in
-   [CLI](../interfaces/cli.md#extension-commands). Commands are the only way a
+   [CLI](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/interfaces/cli.md#extension-commands). Commands are the only way a
    plugin contributes invocable behavior; there is no direct hook into internal
    managers.
 2. **Key bindings.** Suggestions only, resolved with the accepted precedence:
@@ -379,7 +379,7 @@ carry the untrusted-observation-data label required by T-10.
 ### Lazy loading and replay
 
 Adopting the candidate approach in
-[core boundaries](../architecture/core-boundaries.md#command), with the
+[core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md#command), with the
 semantics that document leaves to this RFC:
 
 1. An unloaded lazy plugin registers only a command-to-loader mapping from its
@@ -405,7 +405,7 @@ Declared -> Resolved -> Registered -> Activated -> (Suspended) -> Disposed
 - Every resource (command, handler, timer, task, UI node) is owned by
   `(PluginId, generation)`. Persisted `bitty.store` data is not generation
   state: it is scoped to the plugin ID and survives generation disposal
-  ([ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-6-storage-semantics)).
+  ([ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-6-storage-semantics)).
 - Reload disposes all generation N resources before activating N+1; the old
   generation cannot observe or cancel N+1 except through host-mediated
   handoff of persisted state, and store writes from generation N are committed
@@ -435,7 +435,7 @@ Accepted rules:
 
 1. The v1 interception set is exactly the four actions above, matching the
    candidate list in
-   [core boundaries](../architecture/core-boundaries.md#event). Adding an
+   [core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md#event). Adding an
    interception point requires a reviewed change; it is never a plugin-visible
    configuration option.
 2. Interceptors may **veto or approve**, and nothing else, in v1. Content
@@ -464,7 +464,7 @@ Accepted rules:
    Non-coalescable events (opened/closed/exited/bell) preserve one-by-one
    delivery up to the queue bound.
 3. Queue overflow when a queue is full is a single shared decision point owned
-   by [OQ-013](../../../decisions/open-questions.md); this section is its one
+   by [OQ-013](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md); this section is its one
    authoritative statement, and other documents must reference it. Wave-C P1
    decision now accepted: **DropOldest is the v1 default** for UI observation/event
    systems because the consumer converges to latest state (aligned with
@@ -614,14 +614,14 @@ review with security-auditor; residual items are tracked below:
 
 This RFC is accepted on 2026-08-27 and closes OQ-011, OQ-012, and OQ-013. The
 following criteria were satisfied per the
-[open-question register](../../../decisions/open-questions.md) rules:
+[open-question register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) rules:
 
 1. Independent review by the category owner, a docs curator, and a security
    reviewer accepted the contract, including every high-risk identifier and the
    interception set.
 2. Affected documents were synchronized in the same change: the capability
    examples and pending-decision notes in
-   [core boundaries](../architecture/core-boundaries.md) and
+   [core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) and
    [plugin system](../extensibility/plugin-system.md) reference the accepted
    identifiers, and the open-question rows moved from pointer to closure.
 3. No element weakens a normative P0 gate; any discovered conflict returns the

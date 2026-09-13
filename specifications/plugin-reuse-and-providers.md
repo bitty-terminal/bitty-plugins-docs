@@ -13,9 +13,9 @@ sidebar_order: 24
 
 > Status: **draft** (post-1.0 only). This document proposes the reuse principle
 > "Lua is glue" with four explicit layers and a provider ecology for
-> [OQ-011](../../../decisions/open-questions.md),
-> [OQ-012](../../../decisions/open-questions.md), and
-> [OQ-013](../../../decisions/open-questions.md) as a follow-up to the accepted
+> [OQ-011](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md),
+> [OQ-012](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md), and
+> [OQ-013](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) as a follow-up to the accepted
 > [Plugin Platform RFC](plugin-platform-rfc.md). It does not self-accept, does
 > not authorize shipped, stable, or compatibility-guaranteed behavior, and
 > requires independent category-owner, docs-curator, and security-reviewer
@@ -23,7 +23,7 @@ sidebar_order: 24
 > evidence -> Accepted -> normative; only Accepted or normative documents
 > authorize shipped behavior. Headless note: all mechanisms apply to the
 > single-process v1.0 host and remain compatible with the headless-runtime
-> separation in [ADR 0008](../../../decisions/adrs/ADR-0008-headless.md).
+> separation in [ADR 0008](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0008-headless.md).
 
 ## Purpose and scope
 
@@ -58,9 +58,9 @@ Out of scope (owned elsewhere):
   accepted in [Package Lifecycle RFC](package-lifecycle-rfc.md) and
   [Package Follow-up RFC](package-followup-rfc.md));
 - local IPC wire, auth, and scopes (OQ-018,
-  accepted in [IPC and Agent RFC](ipc-agent-rfc.md));
+  accepted in [IPC and Agent RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/ipc-agent-rfc.md));
 - headless daemon, detach/reattach, and remote UI trust boundary (OQ-020,
-  deferred in [ADR 0008](../../../decisions/adrs/ADR-0008-headless.md) to post-1.0;
+  deferred in [ADR 0008](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0008-headless.md) to post-1.0;
   this RFC remains single-process and daemon-agnostic).
 
 This document refines OQ-011..013 for provider composition; it does not reopen
@@ -68,14 +68,14 @@ or weaken any accepted contract.
 
 ## Normative sources this specification must not weaken
 
-- [Security Overview](../../../security/overview.md): untrusted-by-default posture;
+- [Security Overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md): untrusted-by-default posture;
   invariants 2, 3, 4, 5, 8, 10; least-privilege capability families;
   generation-based lifecycle; safe-mode startup without third-party plugins.
-- [Threat Model](../../../security/threat-model.md): abuse cases T-06, T-07, T-10,
+- [Threat Model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md): abuse cases T-06, T-07, T-10,
   T-12, T-13; host mediation of privileged work; no ambient authority.
-- [Security Risk Register](../../../security/risk-register.md): R-006, R-007, R-008,
+- [Security Risk Register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/risk-register.md): R-006, R-007, R-008,
   R-009, R-013, R-015, R-016, R-017, R-022.
-- [Core and Plugin Boundaries](../architecture/core-boundaries.md):
+- [Core and Plugin Boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md):
   mechanism/policy split, declarative UI, ownership, observation versus
   interception.
 - [Plugin system](../extensibility/plugin-system.md): extension levels 1 to 4,
@@ -90,7 +90,7 @@ or weaken any accepted contract.
   FS-1..FS-9 failure semantics, three-level queue
   PerSubscription 64 / PerPlugin 1024 events/256 KiB / Global 8192 events/2 MiB
   with `DropOldest` default.
-- [ADR 0008](../../../decisions/adrs/ADR-0008-headless.md): headless runtime
+- [ADR 0008](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0008-headless.md): headless runtime
   separation as prerequisite, no daemon in v1.0.
 
 Where this RFC picks manifest keys or defaults it refines the above sources;
@@ -199,7 +199,7 @@ false` means the plugin degrades and remains activatable with reduced
 ### Doctor
 
 The draft proposes `bitty plugin doctor` (traceable to the CLI surface owned by
-the [CLI Contract RFC](cli-contract-rfc.md) and the package evidence in the
+the [CLI Contract RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/cli-contract-rfc.md) and the package evidence in the
 Package Lifecycle RFC) as the verifier for this layer: it resolves each
 declared tool, checks version constraints, and reports missing or mismatched
 tools with remediation guidance. No package code runs during `doctor`.
@@ -264,7 +264,7 @@ crates before the post-1.0 boundary.
   remains owned by the package and configuration model
   ([Package Lifecycle RFC](package-lifecycle-rfc.md),
   [Package Follow-up RFC](package-followup-rfc.md),
-  [Configuration Model RFC](configuration-model-rfc.md)); the TOML sketch is
+  [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md)); the TOML sketch is
   not an accepted schema:
 
 ```toml
@@ -412,7 +412,7 @@ This RFC makes explicit and bounded what the accepted corpus already implies:
   assumes a viewer is attached, consistent with ADR 0008.
 - Draft tails remain draft: crates named `bitty-rich`, `bitty-ipc`, or
   `bitty-agent` in the
-  [Technology Strategy](../../../project/technology-strategy.md) have no evidence
+  [Technology Strategy](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/project/technology-strategy.md) have no evidence
   weight for acceptance beyond their already accepted RFCs, and no crate
   presence in this draft self-proves a layer exists.
 
@@ -445,7 +445,7 @@ Status: **candidate direction, non-normative.** No crate below is adopted.
   underline; tools such as `bat` and `glow` render within those limits, and
   `bat` decorations degrade to grid output. Complex shaping (ZWJ sequences),
   BiDi reordering (see the
-  [Text and Rendering RFC](text-rendering-rfc.md) BiDi contract), and in-grid
+  [Text and Rendering RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/text-rendering-rfc.md) BiDi contract), and in-grid
   interactivity are unsupported.
 - Candidate direction: Markdown parsing and typography belong in a Lua plugin
   or upper panel, while Core keeps the GPU primitive seam. Plugins compose
@@ -458,7 +458,7 @@ Status: **candidate direction, non-normative.** No crate below is adopted.
 - Candidate crates: `pulldown-cmark` or `termimad` for Markdown, `syntect` or
   a tree-sitter helper process for highlighting, `unicode-bidi` for
   display-layer reordering, and `rustybuzz` for shaping.
-- This composes with the [Rich Presentation RFC](rich-presentation-rfc.md)
+- This composes with the [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md)
   (OQ-008/OQ-015/OQ-016); adoption requires its own RFC and does not advance by
   this draft's acceptance.
 
@@ -498,9 +498,9 @@ Status: **candidate direction, non-normative.** No crate below is adopted.
 - [Lua Runtime RFC](lua-runtime-rfc.md) (OQ-009, accepted 2026-08-27)
 - [Isolation Resource RFC](isolation-resource-rfc.md) (OQ-014, accepted
   2026-08-28)
-- [Configuration Model RFC](configuration-model-rfc.md) (OQ-010, accepted
+- [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md) (OQ-010, accepted
   2026-08-27)
 - [Plugin system](../extensibility/plugin-system.md) (directional candidate)
-- [Security Overview](../../../security/overview.md), [Threat Model](../../../security/threat-model.md), [Risk Register](../../../security/risk-register.md)
-- [ADR 0008](../../../decisions/adrs/ADR-0008-headless.md) (OQ-020, accepted
+- [Security Overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md), [Threat Model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md), [Risk Register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/risk-register.md)
+- [ADR 0008](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0008-headless.md) (OQ-020, accepted
   2026-08-28)

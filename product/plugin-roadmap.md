@@ -15,7 +15,7 @@ sidebar_order: 22
 > sequencing first-party and featured plugins on top of the accepted
 > [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)
 > (OQ-011, OQ-012, OQ-013, accepted 2026-08-27) and the
-> [Default Distribution RFC](../specifications/default-distribution-rfc.md)
+> [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)
 > (OQ-002, accepted 2026-08-29). It does not describe implemented behavior,
 > does not claim any plugin is shipped, and does not authorize stable,
 > normative, or compatibility-guaranteed behavior. The lifecycle is
@@ -29,11 +29,11 @@ sidebar_order: 22
 This roadmap answers: _which first-party plugins should validate the Plugin
 API v1 boundary first, which featured plugins should follow, and what
 constraints govern them?_ It links the
-[Product vision](vision.md) (small core, stable API, everything composable),
-[Core and Plugin Boundaries](../architecture/core-boundaries.md)
+[Product vision](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/vision.md) (small core, stable API, everything composable),
+[Core and Plugin Boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md)
 (mechanism/policy split, observation vs interception, declarative UI,
 generation lifecycle), and the
-[Security overview](../../../security/overview.md) trust posture to concrete plugin
+[Security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md) trust posture to concrete plugin
 sequencing.
 
 In scope: the bundled-disabled first-party set that dogfoods Plugin API v1
@@ -51,19 +51,19 @@ Out of scope (owned elsewhere):
   [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)).
 - Bundling vs enabling distinction, distribution pinning, five disable
   surfaces, and safe-mode precedence (OQ-002,
-  [Default Distribution RFC](../specifications/default-distribution-rfc.md)).
+  [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)).
 - Per-plugin instruction, memory, task, and queue budgets and their
   enforcement (OQ-014,
   [Isolation Resource RFC](../specifications/isolation-resource-rfc.md)).
 - Configuration pipeline, layer precedence, and project trust
-  (OQ-010, [Configuration Model RFC](../specifications/configuration-model-rfc.md)).
+  (OQ-010, [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md)).
 - Rich block, scene, semantic zone, and structured transport contracts
   (OQ-008/OQ-015/OQ-016,
-  [Rich Presentation RFC](../specifications/rich-presentation-rfc.md)).
+  [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md)).
 - Panel container semantics, Panel Runtime, and inter-Panel Event Bus; these
   remain candidate work described by the future Panel Extensibility Vision
   document (CTX-0094, pending review) and draft
-  [Workspace Compositor](../specifications/workspace-compositor.md).
+  [Workspace Compositor](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md).
 
 No new trust boundary is introduced. Every plugin below uses the same
 capability-checked, generation-scoped, bounded-queue host as any community
@@ -71,12 +71,12 @@ plugin; there is no first-party bypass flag and CI may not add one.
 
 ## Normative sources this roadmap must not weaken
 
-- [Product vision](vision.md): an official distribution may bundle
+- [Product vision](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/vision.md): an official distribution may bundle
   first-party plugins, but bundling does not change their status as plugins;
   first-party and community plugins use the same API, permission model, and
   lifecycle so that first-party use continually validates boundary
   completeness.
-- [Core and Plugin Boundaries](../architecture/core-boundaries.md):
+- [Core and Plugin Boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md):
   mechanism/policy split, declarative UI, generation disposal, two security
   domains (`TerminalSecurityPolicy` vs `PluginCapabilities`), and the
   governing boundary that plugins may alter presentation but must not alter
@@ -86,13 +86,13 @@ plugin; there is no first-party bypass flag and CI may not add one.
   (explicit user > workspace > first-party/default > plugin suggestion),
   and the six architecture properties (isolation, determinism, ownership,
   composability, observability, recoverability).
-- [Default Distribution RFC](../specifications/default-distribution-rfc.md):
+- [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md):
   bundled-disabled by default (empty enabled set at `v1`), five disable
   surfaces with `bitty --safe` unconditional precedence, generation disposal
   and budget reclaim, and promotion criteria for any future
   enabled-by-default addition.
-- [Security overview](../../../security/overview.md) and
-  [Threat model](../../../security/threat-model.md): invariants 2, 3, 4, 8, 9, 10,
+- [Security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md) and
+  [Threat model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md): invariants 2, 3, 4, 8, 9, 10,
   PTY and package inputs as untrusted, secret-minimizing traces, and the
   requirement that MCP and Agent access is read-only with terminal content
   as untrusted observation data.
@@ -110,8 +110,8 @@ relax a gate.
    Plugins own policy and experience (when to split, tab presentation,
    search UX, palette filtering, status composition, which command arguments
    to retain). See
-   [Core and Plugin Boundaries](../architecture/core-boundaries.md#mechanism-and-policy-examples)
-   and [Product vision](vision.md#core-manages-mechanisms-plugins-manage-policy).
+   [Core and Plugin Boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md#mechanism-and-policy-examples)
+   and [Product vision](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/vision.md#core-manages-mechanisms-plugins-manage-policy).
 2. **First-party dogfoods the public boundary.** Bundled plugins are
    `bitty-terminal.*` under the same `bitty-plugin.toml`, capability
    grammar, grant lifecycle, and generation model as any community plugin.
@@ -148,8 +148,8 @@ relax a gate.
 ## First-party wave: bundled, disabled, dogfooding Plugin API v1
 
 Candidate target: `v0.1.0` maturity slice per
-[Proposed Delivery Sequence](proposed-delivery-sequence.md) and
-[Release Ladder](release-ladder.md) (maturity label, not a date promise);
+[Proposed Delivery Sequence](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/proposed-delivery-sequence.md) and
+[Release Ladder](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/release-ladder.md) (maturity label, not a date promise);
 acceptance still requires the RFC-linked verification gates below.
 
 Distribution presence follows the Default Distribution RFC staged-store model
@@ -169,14 +169,14 @@ first-party runtime implementations that exercise these manifests live in
 plugin behavior.
 
 Synchronization note: the accepted
-[Default Distribution RFC](../specifications/default-distribution-rfc.md) bundled list
+[Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md) bundled list
 was revised on 2026-09-13 (CTX-0170) to the ten-plugin code catalog and the
 `workspace` rename, retaining the earlier five-plugin set as history in that
 RFC's
-[superseded set](../specifications/default-distribution-rfc.md#superseded-bundled-set-2026-08-29).
+[superseded set](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md#superseded-bundled-set-2026-08-29).
 This roadmap and the RFC now describe the same catalog. Point-in-time
 citations in the pre-studies (for example
-[Browser and Agent Panel Integration Pre-Study](../specifications/browser-agent-pre-study.md))
+[Browser and Agent Panel Integration Pre-Study](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/browser-agent-pre-study.md))
 stay as committed-snapshot references.
 
 | Plugin ID                          | Policy owned by the plugin                                                                                             | Core mechanism relied on                                                             | Capability sketch (illustrative)                                                                                                                                | Dogfood validation signal                                                                                                           |
@@ -233,7 +233,7 @@ statusline is a good design that _may eventually_ carry starship-class
 information, while starship-class prompts still require perfect terminal
 compatibility. Whether the statusline should absorb prompt-class presentation
 is undecided and is tracked as
-[OQ-079](../../../decisions/open-questions.md); this roadmap records the possibility
+[OQ-079](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md); this roadmap records the possibility
 without converging the two surfaces.
 
 ## Independent-plugin migration direction (candidate)
@@ -272,7 +272,7 @@ Candidate invariants if this migration is accepted:
 - Fresh-install behavior stays staged-and-disabled; migration must not turn
   "previously bundled" into "implicitly enabled".
 
-Tracked as [OQ-053](../../../decisions/open-questions.md).
+Tracked as [OQ-053](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).
 
 ### Bundled-plugin suitability rules (candidate)
 
@@ -315,12 +315,12 @@ Status: **candidate, non-normative**.
 - **Open parts.** Streaming-component registration and slot claims, the
   per-cell damage budget and coalescing, the drop policy under backpressure,
   and lifecycle (stop when hidden or when the producer exits) are undecided.
-  Tracked as [OQ-082](../../../decisions/open-questions.md).
+  Tracked as [OQ-082](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).
 
 ## Secrets and credential handling direction (candidate)
 
 Status: **candidate, non-normative**, except where it restates
-[ADR 0006](../../../decisions/adrs/ADR-0006-os-env-policy.md), which is accepted and
+[ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md), which is accepted and
 authoritative.
 
 Accepted baseline that this direction must not weaken:
@@ -384,7 +384,7 @@ the first-party wave grows:
    failure isolation rules for services with multiple consumers; the
    contributions/knowledge-graph open question is a concrete case.
 
-Tracked as [OQ-056](../../../decisions/open-questions.md); it does not re-litigate
+Tracked as [OQ-056](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md); it does not re-litigate
 OQ-044/OQ-049 (appearance) or the accepted Plugin Platform RFC surface.
 
 ## Featured wave: install-time plugins that exercise the boundary
@@ -425,10 +425,10 @@ promise:
   other plugins.
 - Optional WebView, native-hosted declarative UI, and CLI adapter paths,
   subject to the capability and isolation review required by the [IPC and
-  Agent RFC](../specifications/ipc-agent-rfc.md).
+  Agent RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/ipc-agent-rfc.md).
 - Distribution presets such as `bitty-minimal`, `bitty-dev`, `bitty-cloud`,
   and `bitty-social`, plus community layouts and plugin collections. Presets
-  must remain explicit bundles over the accepted [Default Distribution RFC](../specifications/default-distribution-rfc.md)
+  must remain explicit bundles over the accepted [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)
   mechanism and must not imply enabled-by-default plugins.
 
 This list records ecosystem direction only. It does not add a Panel API,
@@ -534,7 +534,7 @@ Acceptance of an implemented slice later requires at minimum, reusing the
 verification plan alongside the
 [Plugin Platform RFC](../specifications/plugin-platform-rfc.md#verification-plan)
 and
-[Default Distribution RFC](../specifications/default-distribution-rfc.md#verification-plan):
+[Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md#verification-plan):
 
 1. Conformance and negative-capability tests per host namespace, hosted by
    the staged first-party set.
@@ -602,16 +602,16 @@ register.
 
 - [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) for
   OQ-011/OQ-012/OQ-013 (accepted 2026-08-27).
-- [Default Distribution RFC](../specifications/default-distribution-rfc.md)
+- [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)
   for OQ-002 (accepted 2026-08-29).
-- [Core and Plugin Boundaries](../architecture/core-boundaries.md) for the
+- [Core and Plugin Boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) for the
   mechanism/policy split and boundary principles.
-- [Product vision](vision.md) for small core, stable API, and everything
+- [Product vision](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/vision.md) for small core, stable API, and everything
   composable.
-- [Security overview](../../../security/overview.md) for invariants 2, 3, 4, 8,
+- [Security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md) for invariants 2, 3, 4, 8,
   9, and 10 and the P0 baseline.
 - [Plugin system](../extensibility/plugin-system.md) for extension levels,
   register vs claim, and plugin author rules.
-- [Proposed Delivery Sequence](proposed-delivery-sequence.md) and
-  [Release Ladder](release-ladder.md) for maturity and verification
+- [Proposed Delivery Sequence](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/proposed-delivery-sequence.md) and
+  [Release Ladder](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/release-ladder.md) for maturity and verification
   framing (`be3bdb4`, 16 crates, `Implemented` not yet `Verified`).
