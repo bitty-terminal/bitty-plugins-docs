@@ -58,7 +58,7 @@ Out of scope (owned elsewhere):
   accepted in [Package Lifecycle RFC](package-lifecycle-rfc.md) and
   [Package Follow-up RFC](package-followup-rfc.md));
 - local IPC wire, auth, and scopes (OQ-018,
-  accepted in [IPC and Agent RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/ipc-agent-rfc.md));
+  accepted in [IPC and Agent RFC](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/ipc-agent-rfc.md));
 - headless daemon, detach/reattach, and remote UI trust boundary (OQ-020,
   deferred in [ADR 0008](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0008-headless.md) to post-1.0;
   this RFC remains single-process and daemon-agnostic).

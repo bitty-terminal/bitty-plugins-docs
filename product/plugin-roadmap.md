@@ -176,7 +176,7 @@ RFC's
 [superseded set](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md#superseded-bundled-set-2026-08-29).
 This roadmap and the RFC now describe the same catalog. Point-in-time
 citations in the pre-studies (for example
-[Browser and Agent Panel Integration Pre-Study](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/browser-agent-pre-study.md))
+[Browser and Agent Panel Integration Pre-Study](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/browser-agent-pre-study.md))
 stay as committed-snapshot references.
 
 | Plugin ID                          | Policy owned by the plugin                                                                                             | Core mechanism relied on                                                             | Capability sketch (illustrative)                                                                                                                                | Dogfood validation signal                                                                                                           |
@@ -425,7 +425,7 @@ promise:
   other plugins.
 - Optional WebView, native-hosted declarative UI, and CLI adapter paths,
   subject to the capability and isolation review required by the [IPC and
-  Agent RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/ipc-agent-rfc.md).
+  Agent RFC](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/ipc-agent-rfc.md).
 - Distribution presets such as `bitty-minimal`, `bitty-dev`, `bitty-cloud`,
   and `bitty-social`, plus community layouts and plugin collections. Presets
   must remain explicit bundles over the accepted [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)
