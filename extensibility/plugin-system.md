@@ -147,15 +147,18 @@ CPU/instruction, memory, task, callback-time, and queue budgets are per-plugin,
 attributable, and enforceable. A plugin failure is isolated and must not crash
 the host.
 
-Status: **candidate contract.**
+Status: **accepted contract; first slice shipped.**
 
 Exact VM creation, reuse, unload/reload lifecycle, service transport, state
 migration, and cost optimizations are defined by the accepted
 [Plugin Host Runtime RFC](../specifications/plugin-host-runtime-rfc.md)
 (OQ-033/OQ-034/OQ-035, ratified through
-[ADR 0010](../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md));
-implementation evidence remains per-crate. A plugin may load its own modules
-but not another plugin's private module tree.
+[ADR 0010](../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md)). The
+first sliced implementation shipped in bitty PR #554 merge `e51b5cc`
+(CTX-0328: bridge and VM lifecycle) and PR #558 merge `064b9de` (CTX-0329:
+store staging and integrity verification); hardening and the reload/update
+trigger contract remain follow-ups (bitty `CTX-0330`; OQ-072). A plugin may load
+its own modules but not another plugin's private module tree.
 
 Plugin-to-plugin collaboration goes through versioned services or other
 host-mediated registries:
