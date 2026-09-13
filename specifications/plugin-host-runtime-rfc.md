@@ -415,6 +415,55 @@ rollback, and purge have independent semantics.
 | Service provider absent            | typed resolution error before activation (`E_SERVICE_RESOLUTION`)            |
 | Bridge re-entry or invalid capture | `runtime`/`validation` diagnostic, generation disposed without partial state |
 
+## Candidate - reload/update triggers and queue drain (OQ-072)
+
+Status: **candidate, not ratified** (bitty `CTX-0373`; registered as
+[OQ-072](../decisions/open-questions.md)). The accepted reload mechanics stay
+authoritative; this section does not revise an accepted contract and makes no
+implementation claim. It bounds what the accepted corpus leaves open after
+OQ-033/OQ-034/OQ-035:
+
+- **Trigger surfaces.** Reload applies only on an explicit host action: a
+  `bitty plugin reload <id>` CLI/IPC request under the `plugin.manage` scope
+  with elevation, or the package manager's activation `wake` phase after a
+  committed update transaction. A plugin cannot request its own reload, and no
+  plugin-visible configuration widens the trigger set. The accepted
+  `runtime.plugin-manage` high-risk capability stays consent-gated.
+- **Development watcher.** Automatic reload is limited to opted-in `local-path`
+  sources. The watcher pins the canonical module root recorded at resolution
+  (B.5) and never follows a changed path or symlink target; events outside the
+  recorded root are ignored and reported. Events are debounced and coalesced
+  into at most one in-flight reload per plugin; the request is enqueued to the
+  cold-path control queue and applied between ticks on the runtime owner
+  thread, never on the parser, render, or input hot path. Installed
+  (`registry`/`git`) sources reload only through the package manager's
+  transactional `wake`, and `bundled` sources are not hot-swapped. A failed
+  watcher-triggered reload leaves the plugin cleanly disabled per FS-6 with a
+  diagnostic; it never retries in a loop.
+- **Teardown versus state preservation.** Teardown-and-rebuild is the accepted
+  model (A.5, FS-6): generation N is disposed before N+1 activates. Only
+  `bitty.store` state survives (plugin-scoped, ADR 0009); in-memory generation
+  state is not migrated and no in-memory handoff is proposed for v1.
+- **Capability re-check.** Reload re-verifies `manifest_hash` and
+  `content_digest` before creating a VM (B.3), keeps grants bound to the
+  manifest hash, carries narrowed sets forward, and blocks capability-adding
+  replacements pending permission-diff consent (R-016). No bypass path is
+  added for development sources.
+- **Failure and rollback.** The host prefers restoring generation N when the
+  prior generation snapshot is still retained, and otherwise disables the
+  plugin cleanly (FS-6); no mixed-generation authority, no partially activated
+  state, and no silent fallback to a different revision or bundled content.
+- **Queue drain at disposal.** Disposal drops generation N's queued events and
+  its subscriptions; queued events are never replayed into N+1, N+1 starts
+  with empty queues, and drop/eviction counters stay attributed to N. The
+  accepted overflow policy is unchanged (`DropOldest` v1 default, per-queue
+  FIFO, RC-5 budgets), and no new drain or replay policy is introduced.
+- **Non-goals (v1).** In-memory state migration or serialization across
+  generations; zero-downtime side-by-side generations (A/B swaps); native
+  plugins; reload of Core chrome or configuration keys through this path;
+  plugin-provided watchers or reload authority; automatic hot-update of
+  installed third-party plugins without the accepted update/consent flow.
+
 ## Threat and fail-closed alignment
 
 | Proposed element                                                | Gate it preserves                                         | Threat/risk IDs |
@@ -482,7 +531,7 @@ The project initiator (user) ratified the following through
 ## References
 
 - [Open-question register](../decisions/open-questions.md) - OQ-033, OQ-034,
-  OQ-035 (Accepted).
+  OQ-035 (Accepted); OQ-072 (Open: reload/update triggers and queue drain).
 - [Decision register](../decisions/index.md) - candidate queue (accepted
   entry).
 - [ADR 0010](../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md) -
