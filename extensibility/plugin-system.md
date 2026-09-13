@@ -24,7 +24,7 @@ correctness.
 
 Core-versus-plugin ownership is authoritative in
 [Core / Plugin boundaries](../architecture/core-boundaries.md). The normative
-trust posture is defined by the [security overview](../security/overview.md).
+trust posture is defined by the [security overview](../../../security/overview.md).
 This document specializes those contracts for extension composition and must
 not weaken them.
 
@@ -153,7 +153,7 @@ Exact VM creation, reuse, unload/reload lifecycle, service transport, state
 migration, and cost optimizations are defined by the accepted
 [Plugin Host Runtime RFC](../specifications/plugin-host-runtime-rfc.md)
 (OQ-033/OQ-034/OQ-035, ratified through
-[ADR 0010](../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md)). The
+[ADR 0010](../../../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md)). The
 first sliced implementation shipped in bitty PR #554 merge `e51b5cc`
 (CTX-0328: bridge and VM lifecycle) and PR #558 merge `064b9de` (CTX-0329:
 store staging and integrity verification); hardening and the reload/update
@@ -363,7 +363,7 @@ inside the terminal grid. The two surfaces therefore do not substitute for one
 another, and the terminal-side obligation is to render prompt output faithfully
 (see the checklist below). Whether the statusline may later present
 starship-class information is tracked as
-[OQ-079](../decisions/open-questions.md), not decided here.
+[OQ-079](../../../decisions/open-questions.md), not decided here.
 
 Shell integration must observe or chain shell lifecycle hooks instead of
 overwriting `PROMPT_COMMAND` or another shell's equivalent. It should primarily
@@ -426,7 +426,7 @@ argument escaping, path resolution, and Windows/Unix differences stay in core.
 
 ## Risk ownership
 
-The authoritative [security risk register](../security/risk-register.md) tracks
+The authoritative [security risk register](../../../security/risk-register.md) tracks
 plugin authority, hot-path denial, Terminal Truth integrity, recovery, supply
 chain, capability changes, native artifacts, and rich-content resource risks as
 R-006 through R-009, R-015 through R-017, and R-021 through R-022.

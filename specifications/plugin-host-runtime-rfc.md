@@ -12,10 +12,10 @@ sidebar_order: 30
 # Plugin Host Runtime RFC
 
 > Status: **accepted** on 2026-09-11. The project initiator (user) ratified the
-> bounded resolutions for [OQ-033](../decisions/open-questions.md) (runtime
+> bounded resolutions for [OQ-033](../../../decisions/open-questions.md) (runtime
 > plugin host bridge and per-plugin VM lifecycle), OQ-034 (runtime source
 > resolution and staging), and OQ-035 (host-service wiring boundary) through
-> [ADR 0010](../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md),
+> [ADR 0010](../../../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md),
 > including the four named numeric defaults. Acceptance records the reviewed
 > contract; it does not by itself authorize shipped, stable, or
 > compatibility-guaranteed behavior beyond the verification obligations below,
@@ -51,16 +51,16 @@ Out of scope, owned elsewhere and only referenced here:
 
 - Plugin API v1 Lua surface spellings and signatures
   ([Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md), accepted
-  through [ADR 0009](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md)).
+  through [ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md)).
 - Manifest schema, capability identifier grammar, grant lifecycle, and event
   pipeline classes, batching, and budgets
   ([Plugin Platform RFC](plugin-platform-rfc.md), accepted).
 - Restricted standard library, rooted module resolution rules, diagnostics
   classes ([Lua Runtime RFC](lua-runtime-rfc.md), accepted), the `mlua` versus
   `piccolo` split and pins
-  ([ADR 0005](../decisions/adrs/ADR-0005-lua-pins-and-stdlib.md)), environment
-  reads ([ADR 0006](../decisions/adrs/ADR-0006-os-env-policy.md)), and the
-  Config VM async boundary ([ADR 0007](../decisions/adrs/ADR-0007-async-gc.md)).
+  ([ADR 0005](../../../decisions/adrs/ADR-0005-lua-pins-and-stdlib.md)), environment
+  reads ([ADR 0006](../../../decisions/adrs/ADR-0006-os-env-policy.md)), and the
+  Config VM async boundary ([ADR 0007](../../../decisions/adrs/ADR-0007-async-gc.md)).
 - Resource ceilings and their numbers
   ([Isolation Resource RFC](isolation-resource-rfc.md), accepted; `RC-1`..`RC-11`).
 - Package integrity, signature, lock, and rollback semantics
@@ -69,7 +69,7 @@ Out of scope, owned elsewhere and only referenced here:
 This RFC selects concrete mechanisms for controls the accepted sources already
 require. It moves no requirement between owners, relaxes no P0 gate, and
 changes no accepted numeric ceiling. Every number introduced below is a named
-constant; [ADR 0010](../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md)
+constant; [ADR 0010](../../../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md)
 fixes the four proposed defaults, and changing one requires an RFC revision.
 
 ## Provenance and problem statement
@@ -110,11 +110,11 @@ drafting revision.
 
 ## Normative sources this proposal must not weaken
 
-- [Security overview](../security/overview.md): untrusted-by-default posture,
+- [Security overview](../../../security/overview.md): untrusted-by-default posture,
   least-privilege capability families, invariants 2 (no ambient authority), 4
   (no hot-path execution), 8 (updates cannot silently add capabilities), and 10
   (`bitty --safe`).
-- [Threat model](../security/threat-model.md): T-06 (VM escape via
+- [Threat model](../../../security/threat-model.md): T-06 (VM escape via
   unrestricted libraries), T-07 (callback storms and hot-path execution), T-10
   (untrusted observation data), T-12 (manifest and source trust), and T-13
   (Terminal Truth integrity), with risks R-006, R-007, R-008, R-009, R-015,
@@ -154,7 +154,7 @@ The accepted three-way authority split is preserved: policy in
 stays VM-free so that capability decisions cannot be bypassed by VM-local
 state. `bitty-runtime` and `bitty-app` gain the previously missing plugin-runtime
 wiring. No new workspace crate is proposed; the accepted
-[ADR 0003](../decisions/adrs/ADR-0003-core-workspace-topology.md) topology is
+[ADR 0003](../../../decisions/adrs/ADR-0003-core-workspace-topology.md) topology is
 unchanged.
 
 ### A.2 Proposed `bitty-lua` seam extensions
@@ -351,7 +351,7 @@ treated as verified:
 ### B.6 Proposed bounds
 
 All values are named constants fixed by
-[ADR 0010](../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md);
+[ADR 0010](../../../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md);
 changing one requires an RFC revision rather than silent drift.
 
 | Constant                        | Proposed default | Applies to                                         |
@@ -418,7 +418,7 @@ rollback, and purge have independent semantics.
 ## Candidate - reload/update triggers and queue drain (OQ-072)
 
 Status: **candidate, not ratified** (bitty `CTX-0373`; registered as
-[OQ-072](../decisions/open-questions.md)). The accepted reload mechanics stay
+[OQ-072](../../../decisions/open-questions.md)). The accepted reload mechanics stay
 authoritative; this section does not revise an accepted contract and makes no
 implementation claim. It bounds what the accepted corpus leaves open after
 OQ-033/OQ-034/OQ-035:
@@ -497,11 +497,11 @@ acceptance gates for the implementing repositories:
 5. Independent review by the category owner, docs curator, and a security
    reviewer, then project-initiator ADR ratification of OQ-033, OQ-034, and
    OQ-035 (the contract ratification is satisfied by
-   [ADR 0010](../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md) on
+   [ADR 0010](../../../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md) on
    2026-09-11).
 6. Documentation synchronization: this RFC, the
-   [open-question register](../decisions/open-questions.md), the
-   [decision register](../decisions/index.md), the
+   [open-question register](../../../decisions/open-questions.md), the
+   [decision register](../../../decisions/index.md), the
    [specifications index](README.md), the
    [Plugin system](../extensibility/plugin-system.md) validation note, and the
    [Core boundaries](../architecture/core-boundaries.md) pending-decision
@@ -510,7 +510,7 @@ acceptance gates for the implementing repositories:
 ## Ratified resolutions
 
 The project initiator (user) ratified the following through
-[ADR 0010](../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md) on
+[ADR 0010](../../../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md) on
 2026-09-11; the registered OQ rows are now Accepted:
 
 1. OQ-033: adopted the `bitty-runtime` orchestration placement, the `bitty-lua`
@@ -530,18 +530,18 @@ The project initiator (user) ratified the following through
 
 ## References
 
-- [Open-question register](../decisions/open-questions.md) - OQ-033, OQ-034,
+- [Open-question register](../../../decisions/open-questions.md) - OQ-033, OQ-034,
   OQ-035 (Accepted); OQ-072 (Open: reload/update triggers and queue drain).
-- [Decision register](../decisions/index.md) - candidate queue (accepted
+- [Decision register](../../../decisions/index.md) - candidate queue (accepted
   entry).
-- [ADR 0010](../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md) -
+- [ADR 0010](../../../decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md) -
   project-initiator ratification of OQ-033, OQ-034, and OQ-035 and the four
   numeric defaults.
 - [Plugin Platform RFC](plugin-platform-rfc.md) - accepted manifest,
   capabilities, lifecycle, generations, event pipeline.
 - [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md) - accepted
   v1 surface, `init.lua` entry point, store quota, snapshot schema.
-- [ADR 0009](../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md) -
+- [ADR 0009](../../../decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md) -
   accepted Lua surface resolutions and authority split.
 - [Lua Runtime RFC](lua-runtime-rfc.md) - accepted sandbox, module resolution,
   diagnostics, host bridge ownership.
@@ -555,8 +555,8 @@ The project initiator (user) ratified the following through
   lifecycle validation note.
 - [Core boundaries](../architecture/core-boundaries.md) - ownership, authority,
   and pending decisions.
-- [Security overview](../security/overview.md) and
-  [Threat model](../security/threat-model.md) - normative gates.
+- [Security overview](../../../security/overview.md) and
+  [Threat model](../../../security/threat-model.md) - normative gates.
 - [Configuration Model RFC](configuration-model-rfc.md) - typed settings
   ownership for `bitty.settings`.
 - [TerminalRegistry and View Lifecycle Contract](terminal-registry-view-lifecycle-rfc.md) -

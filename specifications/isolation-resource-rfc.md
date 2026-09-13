@@ -11,7 +11,7 @@ sidebar_order: 17
 
 # Isolation and Resource RFC
 
-> Status: **accepted** on 2026-08-28 by the project initiator. This document defines the accepted isolation boundaries, resource ceilings, and failure semantics for PTY processes, plugins, and IPC/MCP clients; it closes [OQ-014](../decisions/open-questions.md) at the design level. It does not describe implemented behavior, relax any normative control, or authorize shipped, stable, normative, or compatibility-guaranteed behavior beyond the accepted contract. Experimental implementation may exist as review evidence but carries no compatibility promise beyond the accepted contract. Acceptance was per independent security-auditor, category-owner, and docs-curator review per the [P0 review checklist](../reviews/p0-review-checklist.md).
+> Status: **accepted** on 2026-08-28 by the project initiator. This document defines the accepted isolation boundaries, resource ceilings, and failure semantics for PTY processes, plugins, and IPC/MCP clients; it closes [OQ-014](../../../decisions/open-questions.md) at the design level. It does not describe implemented behavior, relax any normative control, or authorize shipped, stable, normative, or compatibility-guaranteed behavior beyond the accepted contract. Experimental implementation may exist as review evidence but carries no compatibility promise beyond the accepted contract. Acceptance was per independent security-auditor, category-owner, and docs-curator review per the [P0 review checklist](../../../reviews/p0-review-checklist.md).
 >
 > Wave-C P1 decision now accepted in
 > [Plugin Platform RFC](plugin-platform-rfc.md) (OQ-011/OQ-012/OQ-013,
@@ -60,7 +60,7 @@ normative isolation and budget gates?_ This specification proposes those
 mechanisms, extends the same isolation discipline to PTY child processes and
 IPC/MCP clients, defines concrete resource ceilings, specifies failure
 semantics, and adds an adversarial test specification whose cases are written
-in the style of [P0 Security Acceptance Criteria](../security/p0-acceptance-criteria.md).
+in the style of [P0 Security Acceptance Criteria](../../../security/p0-acceptance-criteria.md).
 
 In scope:
 
@@ -86,13 +86,13 @@ The following are normative and override every proposal here. If any mechanism,
 default value, or failure behavior below weakens them, the normative text wins
 and this RFC must be corrected:
 
-- [Security Overview](../security/overview.md): trust posture, invariants 1
+- [Security Overview](../../../security/overview.md): trust posture, invariants 1
   through 10, the release-blocking set (invariants 1, 5, 6, 7, 8), trust
   boundary defaults, capability families, and the rule that deferral to P1/P2
   must not create a P0 bypass.
-- [Threat Model](../security/threat-model.md): assets, actors, boundary map,
+- [Threat Model](../../../security/threat-model.md): assets, actors, boundary map,
   abuse cases T-01 through T-14, and verification-gate requirements.
-- [Security Risk Register](../security/risk-register.md): risks R-001 through
+- [Security Risk Register](../../../security/risk-register.md): risks R-001 through
   R-022 and their exit-evidence rules.
 - [Core and Plugin Boundaries](../architecture/core-boundaries.md):
   core/plugin ownership, the two-security-domain model, and normative P0 gates
@@ -101,7 +101,7 @@ and this RFC must be corrected:
 
 This RFC proposes only mechanisms, thresholds, and verification plans for those
 gates. It introduces no new trust boundary, no bypass API, and no relaxation;
-per [documentation workflow](../development/documentation-workflow.md) change
+per [documentation workflow](../../../development/documentation-workflow.md) change
 trigger rules, any future change to a trust boundary itself updates the
 security corpus first.
 
@@ -323,7 +323,7 @@ Status: **accepted contract** (2026-08-28). Numbered for reference; defines the 
 
 ## Adversarial test specification
 
-Style follows [P0 Security Acceptance Criteria conventions](../security/p0-acceptance-criteria.md#conventions): stable IDs, cited sources,
+Style follows [P0 Security Acceptance Criteria conventions](../../../security/p0-acceptance-criteria.md#conventions): stable IDs, cited sources,
 verification methods (`unit`, `integration`, `adversarial`, `manual-audit`),
 and pass thresholds stating the minimum observable outcome. These cases specify
 the proposed mechanisms of this RFC; where a P0 acceptance criterion already
@@ -609,7 +609,7 @@ prevails per Normative precedence. Independent security-auditor review was compl
 
 ## Open items remaining under OQ-014
 
-The following items were open at proposal and are now dispositioned upon acceptance on 2026-08-28. Acceptance of this RFC closes [OQ-014](../decisions/open-questions.md) at the design level; residual items below are tracked as follow-up work with no remaining OQ-014 closure blocker:
+The following items were open at proposal and are now dispositioned upon acceptance on 2026-08-28. Acceptance of this RFC closes [OQ-014](../../../decisions/open-questions.md) at the design level; residual items below are tracked as follow-up work with no remaining OQ-014 closure blocker:
 
 - Resolved by this RFC upon acceptance (closes OQ-014): isolation domains and enforcement
   mechanisms for PTY, plugin runtimes, and IPC/MCP clients; resource ceilings
@@ -642,7 +642,7 @@ The following items were open at proposal and are now dispositioned upon accepta
     `crates/bitty-lua/tests/measurement_lua.rs` 15 headless tests @ `d67a65b`
     (bitty CTX-0040), accepted 2026-08-28; concrete VM technology now
     `piccolo` 0.3.3 (workspace 15->16 members, `forbid(unsafe_code)` vendored)
-    closing the hook left by [ADR 0004](../decisions/adrs/ADR-0004-upstream-dependencies.md)
+    closing the hook left by [ADR 0004](../../../decisions/adrs/ADR-0004-upstream-dependencies.md)
     but retaining `mlua` compatibility note; per-child rlimit mapping per
     platform with the platform policy ADR (OQ-003) including Windows Job Objects
     equivalents; whether WASM/helper-process staging (P2) needs reservation hooks
@@ -677,17 +677,17 @@ now enforced measured and accepted (frontmatter `accepted`, closed OQ-014, `just
 ## P0 Review Sign-off
 
 > P0 review per CTX-0063 accepted OQ-014 via this RFC on 2026-08-28. Frontmatter is `accepted` and
-> [open-questions.md](../decisions/open-questions.md) is updated per its close
+> [open-questions.md](../../../decisions/open-questions.md) is updated per its close
 > rule. This section records the sign-off that closed OQ-014.
 
-| Role                                  | Reviewer (placeholder) | Verdict | Evidence / scope                                                                                                                                                                                                                                                                                             | Date       |
-| ------------------------------------- | ---------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
-| security-auditor                      | `bitty-security`       | pass    | R-006, R-007, R-018, T-07, T-14, RC-1 10^7/50 ms/8 ms warning / RC-2 32 MiB / Global 8192/2 MiB hard-gated fail-closed, `forbid(unsafe_code)` for `bitty-lua`/`piccolo` 0.3.3, FS-1..FS-9, adversarial AT-IR-001..015                                                                                        | 2026-08-28 |
-| category-owner (security-and-quality) | `bitty-quality`        | pass    | Queue budgets PerSub 64 strict at `EventQueue::push` / PerPlugin 1024/256 KiB / Global 8192/2 MiB hard-gated at Host admission, `DropOldest` default at `EventPipeline::publish` / `Host::publish` via `would_exceed_global_limits` + `evict_oldest_globally` with shared `DropPolicy`                       | 2026-08-28 |
-| category-owner (architecture)         | `bitty-architect`      | pass    | `VmBudgetSnapshot`, `would_exceed_lua_limits`, `piccolo` Fuel + wall deadline, `Lua::total_memory()` 32 MiB, `bitty-plugin-host` 21 tests / `bitty-lua` 15 tests headless, `cargo check --target x86_64-pc-windows-gnu` gate                                                                                 | 2026-08-28 |
-| docs-curator                          | `bitty-curator`        | pass    | Frontmatter `accepted`, lifecycle `Draft -> experimental review evidence -> Accepted (2026-08-28) -> normative`, measurement evidence CTX-0037 PR #68 / CTX-0040 `d67a65b`, links to [Security Overview](../security/overview.md) and [P0 review checklist](../reviews/p0-review-checklist.md), English-only | 2026-08-28 |
+| Role                                  | Reviewer (placeholder) | Verdict | Evidence / scope                                                                                                                                                                                                                                                                                                         | Date       |
+| ------------------------------------- | ---------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| security-auditor                      | `bitty-security`       | pass    | R-006, R-007, R-018, T-07, T-14, RC-1 10^7/50 ms/8 ms warning / RC-2 32 MiB / Global 8192/2 MiB hard-gated fail-closed, `forbid(unsafe_code)` for `bitty-lua`/`piccolo` 0.3.3, FS-1..FS-9, adversarial AT-IR-001..015                                                                                                    | 2026-08-28 |
+| category-owner (security-and-quality) | `bitty-quality`        | pass    | Queue budgets PerSub 64 strict at `EventQueue::push` / PerPlugin 1024/256 KiB / Global 8192/2 MiB hard-gated at Host admission, `DropOldest` default at `EventPipeline::publish` / `Host::publish` via `would_exceed_global_limits` + `evict_oldest_globally` with shared `DropPolicy`                                   | 2026-08-28 |
+| category-owner (architecture)         | `bitty-architect`      | pass    | `VmBudgetSnapshot`, `would_exceed_lua_limits`, `piccolo` Fuel + wall deadline, `Lua::total_memory()` 32 MiB, `bitty-plugin-host` 21 tests / `bitty-lua` 15 tests headless, `cargo check --target x86_64-pc-windows-gnu` gate                                                                                             | 2026-08-28 |
+| docs-curator                          | `bitty-curator`        | pass    | Frontmatter `accepted`, lifecycle `Draft -> experimental review evidence -> Accepted (2026-08-28) -> normative`, measurement evidence CTX-0037 PR #68 / CTX-0040 `d67a65b`, links to [Security Overview](../../../security/overview.md) and [P0 review checklist](../../../reviews/p0-review-checklist.md), English-only | 2026-08-28 |
 
 As of acceptance 2026-08-28, `bitty-plugin-host` and `bitty-lua` are accepted headless crates per
-[ADR 0003](../decisions/adrs/ADR-0003-core-workspace-topology.md) and the
+[ADR 0003](../../../decisions/adrs/ADR-0003-core-workspace-topology.md) and the
 [Proposed Delivery Sequence](../product/proposed-delivery-sequence.md); crate
 presence does not imply shipped behavior.

@@ -33,7 +33,7 @@ constraints govern them?_ It links the
 [Core and Plugin Boundaries](../architecture/core-boundaries.md)
 (mechanism/policy split, observation vs interception, declarative UI,
 generation lifecycle), and the
-[Security overview](../security/overview.md) trust posture to concrete plugin
+[Security overview](../../../security/overview.md) trust posture to concrete plugin
 sequencing.
 
 In scope: the bundled-disabled first-party set that dogfoods Plugin API v1
@@ -91,8 +91,8 @@ plugin; there is no first-party bypass flag and CI may not add one.
   surfaces with `bitty --safe` unconditional precedence, generation disposal
   and budget reclaim, and promotion criteria for any future
   enabled-by-default addition.
-- [Security overview](../security/overview.md) and
-  [Threat model](../security/threat-model.md): invariants 2, 3, 4, 8, 9, 10,
+- [Security overview](../../../security/overview.md) and
+  [Threat model](../../../security/threat-model.md): invariants 2, 3, 4, 8, 9, 10,
   PTY and package inputs as untrusted, secret-minimizing traces, and the
   requirement that MCP and Agent access is read-only with terminal content
   as untrusted observation data.
@@ -233,7 +233,7 @@ statusline is a good design that _may eventually_ carry starship-class
 information, while starship-class prompts still require perfect terminal
 compatibility. Whether the statusline should absorb prompt-class presentation
 is undecided and is tracked as
-[OQ-079](../decisions/open-questions.md); this roadmap records the possibility
+[OQ-079](../../../decisions/open-questions.md); this roadmap records the possibility
 without converging the two surfaces.
 
 ## Independent-plugin migration direction (candidate)
@@ -272,7 +272,7 @@ Candidate invariants if this migration is accepted:
 - Fresh-install behavior stays staged-and-disabled; migration must not turn
   "previously bundled" into "implicitly enabled".
 
-Tracked as [OQ-053](../decisions/open-questions.md).
+Tracked as [OQ-053](../../../decisions/open-questions.md).
 
 ### Bundled-plugin suitability rules (candidate)
 
@@ -315,12 +315,12 @@ Status: **candidate, non-normative**.
 - **Open parts.** Streaming-component registration and slot claims, the
   per-cell damage budget and coalescing, the drop policy under backpressure,
   and lifecycle (stop when hidden or when the producer exits) are undecided.
-  Tracked as [OQ-082](../decisions/open-questions.md).
+  Tracked as [OQ-082](../../../decisions/open-questions.md).
 
 ## Secrets and credential handling direction (candidate)
 
 Status: **candidate, non-normative**, except where it restates
-[ADR 0006](../decisions/adrs/ADR-0006-os-env-policy.md), which is accepted and
+[ADR 0006](../../../decisions/adrs/ADR-0006-os-env-policy.md), which is accepted and
 authoritative.
 
 Accepted baseline that this direction must not weaken:
@@ -384,7 +384,7 @@ the first-party wave grows:
    failure isolation rules for services with multiple consumers; the
    contributions/knowledge-graph open question is a concrete case.
 
-Tracked as [OQ-056](../decisions/open-questions.md); it does not re-litigate
+Tracked as [OQ-056](../../../decisions/open-questions.md); it does not re-litigate
 OQ-044/OQ-049 (appearance) or the accepted Plugin Platform RFC surface.
 
 ## Featured wave: install-time plugins that exercise the boundary
@@ -608,7 +608,7 @@ register.
   mechanism/policy split and boundary principles.
 - [Product vision](vision.md) for small core, stable API, and everything
   composable.
-- [Security overview](../security/overview.md) for invariants 2, 3, 4, 8,
+- [Security overview](../../../security/overview.md) for invariants 2, 3, 4, 8,
   9, and 10 and the P0 baseline.
 - [Plugin system](../extensibility/plugin-system.md) for extension levels,
   register vs claim, and plugin author rules.

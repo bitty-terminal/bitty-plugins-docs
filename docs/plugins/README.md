@@ -22,7 +22,7 @@ schemas and contracts, and evidence and links. The reusable starting point is
 
 The list below records documentation candidates from draft planning. None of
 these plugins is implemented, shipped, or accepted here; the
-[Plugin Roadmap](../../product/plugin-roadmap.md) (draft) is the planning
+[Plugin Roadmap](../bitty/product/plugin-roadmap.md) (draft) is the planning
 source, and names, identifiers, and batches may change before any plugin
 contract is accepted.
 
@@ -55,6 +55,6 @@ contract is accepted.
 ## Related
 
 - [Project documentation partition](../README.md)
-- [Plugin system](../../extensibility/plugin-system.md)
-- [Plugin Roadmap](../../product/plugin-roadmap.md) (draft)
-- [Default Distribution RFC](../../specifications/default-distribution-rfc.md)
+- [Plugin system](../bitty/extensibility/plugin-system.md)
+- [Plugin Roadmap](../bitty/product/plugin-roadmap.md) (draft)
+- [Default Distribution RFC](../bitty/specifications/default-distribution-rfc.md)

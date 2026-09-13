@@ -17,15 +17,15 @@ Accepted on 2026-08-27 by the project initiator. This RFC defines the accepted
 Lua runtime, sandbox construction, restricted standard-library subset, rooted
 module resolution rules, diagnostics contract, source-only loading, and host
 bridge for OQ-009. It closes open question
-[OQ-009](../decisions/open-questions.md) at the design level; residual items
-are tracked as [OQ-030](../decisions/open-questions.md),
-[OQ-031](../decisions/open-questions.md), and
-[OQ-032](../decisions/open-questions.md) which remain Open as follow-ups. It does
+[OQ-009](../../../decisions/open-questions.md) at the design level; residual items
+are tracked as [OQ-030](../../../decisions/open-questions.md),
+[OQ-031](../../../decisions/open-questions.md), and
+[OQ-032](../../../decisions/open-questions.md) which remain Open as follow-ups. It does
 not claim shipped, stable, or compatibility-guaranteed behavior. Experimental
 implementation may exist as review evidence but carries no compatibility promise
 beyond the accepted contract.
 
-[ADR 0004](../decisions/adrs/ADR-0004-upstream-dependencies.md) has selected
+[ADR 0004](../../../decisions/adrs/ADR-0004-upstream-dependencies.md) has selected
 `mlua` with Lua 5.4 as the P0 baseline (`vendored` Lua 5.4 sources built with
 the core crate; `piccolo` remains a watch-list candidate per the ADR). This RFC
 does not re-decide the runtime choice; it specifies the sandbox, standard
@@ -41,7 +41,7 @@ budgets), and the performance budgets PB-1/PB-2/PB-3 in the
 ## Problem statement
 
 OQ-009 asks: _which Lua runtime/binding, standard-library subset, module search
-rules, schema, and diagnostics contract are used?_ [DIR-003](../decisions/index.md)
+rules, schema, and diagnostics contract are used?_ [DIR-003](../../../decisions/index.md)
 accepts Lua as the plugin language and primary configuration language; nothing
 yet fixes which Lua implementation Bitty embeds, what its sandboxed standard
 library contains, how `require` resolves inside each virtual machine, or what a
@@ -53,7 +53,7 @@ owns the machine that evaluates it.
 
 Normative sources this specification must not weaken:
 
-- [Security overview](../security/overview.md): an isolated Lua VM is a
+- [Security overview](../../../security/overview.md): an isolated Lua VM is a
   namespace and failure boundary, not an OS sandbox; the host constructs a
   restricted standard library; privileged work happens only through
   capability-checked APIs; native in-process plugins are forbidden through P0
@@ -62,10 +62,10 @@ Normative sources this specification must not weaken:
 - [Core boundaries](../architecture/core-boundaries.md): security policy cannot
   be delegated to Lua; plugins never enter the terminal, render, or input hot
   paths.
-- [Technology strategy](../project/technology-strategy.md) and [ADR 0004](../decisions/adrs/ADR-0004-upstream-dependencies.md): `mlua` with Lua 5.4 is the P0 baseline (`vendored` Lua 5.4 sources built with the core crate; `piccolo` remains a watch-list candidate). Required validation covering Windows/macOS/Linux/BSD builds, sandbox capability, VM cost, and async/Send requirements still applies; Lua 5.4 is preferred over LuaJIT.
-- [Threat model](../security/threat-model.md): T-06 (VM escape via unrestricted
+- [Technology strategy](../../../project/technology-strategy.md) and [ADR 0004](../../../decisions/adrs/ADR-0004-upstream-dependencies.md): `mlua` with Lua 5.4 is the P0 baseline (`vendored` Lua 5.4 sources built with the core crate; `piccolo` remains a watch-list candidate). Required validation covering Windows/macOS/Linux/BSD builds, sandbox capability, VM cost, and async/Send requirements still applies; Lua 5.4 is preferred over LuaJIT.
+- [Threat model](../../../security/threat-model.md): T-06 (VM escape via unrestricted
   libraries) and T-14 (unsafe/FFI defects), with risks R-006, R-007, and R-018
-  in the [risk register](../security/risk-register.md).
+  in the [risk register](../../../security/risk-register.md).
 
 Out of scope: plugin capability identifiers and grant workflows (OQ-012),
 per-plugin budget numbers (OQ-014), the declarative plan pipeline (OQ-010), and
@@ -80,7 +80,7 @@ every Tier 1 platform instead of linking a system Lua.
 
 Trade-offs:
 
-- Pro: matches the [technology strategy](../project/technology-strategy.md)
+- Pro: matches the [technology strategy](../../../project/technology-strategy.md)
   candidate, so review starts from the already-recorded direction rather than a
   new one.
 - Pro: Lua 5.4 is a complete, documented language with stable semantics;
@@ -176,7 +176,7 @@ Per-VM deltas:
 | VM class            | Additional authority beyond the shared baseline                                                                                                                               |
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Configuration VM    | None by default. Trusted-user status means fewer prompts, never ambient OS authority; privileged work still goes through the capability-checked host module.                  |
-| System/distribution | Same as the Configuration VM; trust comes from source verification per the [security overview](../security/overview.md), not from extra built-ins.                            |
+| System/distribution | Same as the Configuration VM; trust comes from source verification per the [security overview](../../../security/overview.md), not from extra built-ins.                      |
 | Per-plugin VM       | Only the capability-granted host services defined by the plugin contract ([plugin system](../extensibility/plugin-system.md)); details and budgets remain with OQ-012/OQ-014. |
 
 The single host bridge in every VM is a versioned `bitty` module; its function
@@ -239,7 +239,7 @@ evidence, reviewed by a security-auditor persona before implementation starts.
 
 The following items were open at proposal and are now dispositioned upon
 acceptance on 2026-08-27. Acceptance of this RFC closes
-[OQ-009](../decisions/open-questions.md) at the design level; residual items
+[OQ-009](../../../decisions/open-questions.md) at the design level; residual items
 below are tracked as follow-up work with no remaining OQ-009 closure blocker:
 
 - Resolved by this RFC upon acceptance (closes OQ-009): sandbox construction and
@@ -248,15 +248,15 @@ below are tracked as follow-up work with no remaining OQ-009 closure blocker:
   are Accepted design as of 2026-08-27.
 - Migrated to tracked follow-up OQs (remain Open as separate questions, not as
   OQ-009 closure blockers):
-  - [OQ-030](../decisions/open-questions.md): exact Lua 5.4.x pin and `mlua`
+  - [OQ-030](../../../decisions/open-questions.md): exact Lua 5.4.x pin and `mlua`
     version pin, upgrade cadence coordinated with dependency governance (R-019),
     unsafe-surface audit of the pinned `mlua` version (or fallback to
     Candidate C recorded as ADR alongside the technology strategy), and final
     restricted standard-library and `debug` allowlist contents.
-  - [OQ-031](../decisions/open-questions.md): whether `os.getenv` is exposed to
+  - [OQ-031](../../../decisions/open-questions.md): whether `os.getenv` is exposed to
     the Configuration VM given trace-minimization defaults, and host-provided
     alternative via the versioned `bitty` module.
-  - [OQ-032](../decisions/open-questions.md): async/Send boundary for host calls
+  - [OQ-032](../../../decisions/open-questions.md): async/Send boundary for host calls
     blocking the config VM thread versus returning handles (technology strategy
     validation), whether the Configuration VM receives instruction/memory budgets
     during startup evaluation and how cost is charged against PB-1/PB-2, GC

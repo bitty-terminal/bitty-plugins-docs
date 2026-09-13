@@ -41,8 +41,8 @@ functions, comments, imports, and formatting make that unsafe and
 nondeterministic.
 
 Supply-chain requirements are normative in the
-[security overview](../security/overview.md) and tracked as R-015, R-016, and
-R-022 in the [security risk register](../security/risk-register.md). Package
+[security overview](../../../security/overview.md) and tracked as R-015, R-016, and
+R-022 in the [security risk register](../../../security/risk-register.md). Package
 design must not weaken those requirements.
 
 The boundary is:

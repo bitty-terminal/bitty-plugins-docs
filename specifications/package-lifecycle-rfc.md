@@ -14,8 +14,8 @@ sidebar_order: 18
 > Status: **accepted** on 2026-08-27 by the project initiator. This document
 > defines the accepted integrity verification chain, staged activation lifecycle
 > and safe rollback contracts; it closes
-> [OQ-021](../decisions/open-questions.md) at the design level and partially
-> addresses [OQ-022](../decisions/open-questions.md) with remaining
+> [OQ-021](../../../decisions/open-questions.md) at the design level and partially
+> addresses [OQ-022](../../../decisions/open-questions.md) with remaining
 > registry and key items migrated to OQ-026 through OQ-029. It does not describe
 > implemented behavior and does not authorize shipped, stable, or
 > compatibility-guaranteed behavior. Experimental implementation may exist as
@@ -63,17 +63,17 @@ retained-environment bounds; full and per-plugin rollback; failure and crash
 semantics.
 
 Out of scope: constraint grammar, prerelease/yanked policy, and side-by-side
-dependency versions (remaining OQ-021 items now [OQ-026](../decisions/open-questions.md) and [OQ-027](../decisions/open-questions.md)); registry service design,
+dependency versions (remaining OQ-021 items now [OQ-026](../../../decisions/open-questions.md) and [OQ-027](../../../decisions/open-questions.md)); registry service design,
 key-directory infrastructure, and revocation details (remaining OQ-022 items
-now [OQ-028](../decisions/open-questions.md) and [OQ-029](../decisions/open-questions.md));
+now [OQ-028](../../../decisions/open-questions.md) and [OQ-029](../../../decisions/open-questions.md));
 plugin runtime isolation and capability enforcement (OQ-014); CLI verb
 spelling ([package management](../extensibility/package-management.md)).
 
 ## Normative constraints this RFC must not weaken
 
-The [security overview](../security/overview.md),
-[threat model](../security/threat-model.md), and
-[P0 acceptance criteria](../security/p0-acceptance-criteria.md) are normative.
+The [security overview](../../../security/overview.md),
+[threat model](../../../security/threat-model.md), and
+[P0 acceptance criteria](../../../security/p0-acceptance-criteria.md) are normative.
 This RFC only defines mechanisms beneath them:
 
 - Invariant 7: every untrusted input has size, time, nesting, rate, and memory
@@ -290,7 +290,7 @@ Status: **accepted contract.**
 - Full rollback selects a retained generation and performs the same staged
   activation transaction in reverse; rollback executes no package code either.
 - Per-plugin rollback restores one plugin to its previously retained version;
-  targeted disable ([P0-AC-020](../security/p0-acceptance-criteria.md), risk
+  targeted disable ([P0-AC-020](../../../security/p0-acceptance-criteria.md), risk
   R-009) remains the surgical path when no prior version exists.
 - Capability gates apply symmetrically: rolling forward again to a
   higher-capability version requires the same approval diff as any update;
@@ -305,7 +305,7 @@ Testable criteria: PL-AC-010.
 ## Verification criteria
 
 These design-level criteria extend, and defer to, the normative floor in
-[P0 acceptance criteria](../security/p0-acceptance-criteria.md) section
+[P0 acceptance criteria](../../../security/p0-acceptance-criteria.md) section
 "Supply chain" (P0-AC-027 through P0-AC-030). IDs are stable. Until each
 criterion records passing evidence per its verification method, the linked
 risks stay **Open**; these criteria alone never close a risk.
@@ -487,7 +487,7 @@ this document.
 
 The following items were open at proposal and are now dispositioned upon
 acceptance on 2026-08-27. Acceptance of this RFC closes
-[OQ-021](../decisions/open-questions.md) at the design level; residual items
+[OQ-021](../../../decisions/open-questions.md) at the design level; residual items
 below are tracked as follow-up work with no remaining OQ-021 closure blocker
 unless review decides otherwise:
 
@@ -498,17 +498,17 @@ unless review decides otherwise:
   contract level, local-path development package semantics, staged activation
   lifecycle and atomic switch, retained environments, and safe rollback
   semantics. These are Accepted design as of 2026-08-27.
-- Migrated to [OQ-026](../decisions/open-questions.md) (Dependency resolver
+- Migrated to [OQ-026](../../../decisions/open-questions.md) (Dependency resolver
   and constraint grammar): constraint grammar, side-by-side dependency
   versions, and resolver selection semantics.
-- Migrated to [OQ-027](../decisions/open-questions.md) (Version lifecycle:
+- Migrated to [OQ-027](../../../decisions/open-questions.md) (Version lifecycle:
   yank, prerelease, and side-by-side policy): yanked-version policy,
   prerelease precedence, and interaction with constraint resolution.
-- Migrated to [OQ-028](../decisions/open-questions.md) (Registry service and
+- Migrated to [OQ-028](../../../decisions/open-questions.md) (Registry service and
   attestation): registry service boundaries (what the registry attests versus
   what the client verifies) and whether bundled packages ship inside the
   generation model or outside it.
-- Migrated to [OQ-029](../decisions/open-questions.md) (Key directory,
+- Migrated to [OQ-029](../../../decisions/open-questions.md) (Key directory,
   revocation, rotation, and freshness): key enrollment, rotation, revocation,
   key-directory infrastructure, freshness/snapshot timestamps for V-C, and
   whether Git-source publishers can practically sign; plus exact manifest and

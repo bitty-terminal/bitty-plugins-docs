@@ -13,9 +13,9 @@ sidebar_order: 24
 
 > Status: **draft** (post-1.0 only). This document proposes the reuse principle
 > "Lua is glue" with four explicit layers and a provider ecology for
-> [OQ-011](../decisions/open-questions.md),
-> [OQ-012](../decisions/open-questions.md), and
-> [OQ-013](../decisions/open-questions.md) as a follow-up to the accepted
+> [OQ-011](../../../decisions/open-questions.md),
+> [OQ-012](../../../decisions/open-questions.md), and
+> [OQ-013](../../../decisions/open-questions.md) as a follow-up to the accepted
 > [Plugin Platform RFC](plugin-platform-rfc.md). It does not self-accept, does
 > not authorize shipped, stable, or compatibility-guaranteed behavior, and
 > requires independent category-owner, docs-curator, and security-reviewer
@@ -23,7 +23,7 @@ sidebar_order: 24
 > evidence -> Accepted -> normative; only Accepted or normative documents
 > authorize shipped behavior. Headless note: all mechanisms apply to the
 > single-process v1.0 host and remain compatible with the headless-runtime
-> separation in [ADR 0008](../decisions/adrs/ADR-0008-headless.md).
+> separation in [ADR 0008](../../../decisions/adrs/ADR-0008-headless.md).
 
 ## Purpose and scope
 
@@ -60,7 +60,7 @@ Out of scope (owned elsewhere):
 - local IPC wire, auth, and scopes (OQ-018,
   accepted in [IPC and Agent RFC](ipc-agent-rfc.md));
 - headless daemon, detach/reattach, and remote UI trust boundary (OQ-020,
-  deferred in [ADR 0008](../decisions/adrs/ADR-0008-headless.md) to post-1.0;
+  deferred in [ADR 0008](../../../decisions/adrs/ADR-0008-headless.md) to post-1.0;
   this RFC remains single-process and daemon-agnostic).
 
 This document refines OQ-011..013 for provider composition; it does not reopen
@@ -68,12 +68,12 @@ or weaken any accepted contract.
 
 ## Normative sources this specification must not weaken
 
-- [Security Overview](../security/overview.md): untrusted-by-default posture;
+- [Security Overview](../../../security/overview.md): untrusted-by-default posture;
   invariants 2, 3, 4, 5, 8, 10; least-privilege capability families;
   generation-based lifecycle; safe-mode startup without third-party plugins.
-- [Threat Model](../security/threat-model.md): abuse cases T-06, T-07, T-10,
+- [Threat Model](../../../security/threat-model.md): abuse cases T-06, T-07, T-10,
   T-12, T-13; host mediation of privileged work; no ambient authority.
-- [Security Risk Register](../security/risk-register.md): R-006, R-007, R-008,
+- [Security Risk Register](../../../security/risk-register.md): R-006, R-007, R-008,
   R-009, R-013, R-015, R-016, R-017, R-022.
 - [Core and Plugin Boundaries](../architecture/core-boundaries.md):
   mechanism/policy split, declarative UI, ownership, observation versus
@@ -90,7 +90,7 @@ or weaken any accepted contract.
   FS-1..FS-9 failure semantics, three-level queue
   PerSubscription 64 / PerPlugin 1024 events/256 KiB / Global 8192 events/2 MiB
   with `DropOldest` default.
-- [ADR 0008](../decisions/adrs/ADR-0008-headless.md): headless runtime
+- [ADR 0008](../../../decisions/adrs/ADR-0008-headless.md): headless runtime
   separation as prerequisite, no daemon in v1.0.
 
 Where this RFC picks manifest keys or defaults it refines the above sources;
@@ -412,7 +412,7 @@ This RFC makes explicit and bounded what the accepted corpus already implies:
   assumes a viewer is attached, consistent with ADR 0008.
 - Draft tails remain draft: crates named `bitty-rich`, `bitty-ipc`, or
   `bitty-agent` in the
-  [Technology Strategy](../project/technology-strategy.md) have no evidence
+  [Technology Strategy](../../../project/technology-strategy.md) have no evidence
   weight for acceptance beyond their already accepted RFCs, and no crate
   presence in this draft self-proves a layer exists.
 
@@ -501,6 +501,6 @@ Status: **candidate direction, non-normative.** No crate below is adopted.
 - [Configuration Model RFC](configuration-model-rfc.md) (OQ-010, accepted
   2026-08-27)
 - [Plugin system](../extensibility/plugin-system.md) (directional candidate)
-- [Security Overview](../security/overview.md), [Threat Model](../security/threat-model.md), [Risk Register](../security/risk-register.md)
-- [ADR 0008](../decisions/adrs/ADR-0008-headless.md) (OQ-020, accepted
+- [Security Overview](../../../security/overview.md), [Threat Model](../../../security/threat-model.md), [Risk Register](../../../security/risk-register.md)
+- [ADR 0008](../../../decisions/adrs/ADR-0008-headless.md) (OQ-020, accepted
   2026-08-28)
