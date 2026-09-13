@@ -37,7 +37,8 @@ generation lifecycle), and the
 sequencing.
 
 In scope: the bundled-disabled first-party set that dogfoods Plugin API v1
-(shell integration, tabs, statusline, palette, project), future dogfood
+(shell integration, workspace, statusline, palette, project, file manager,
+git panel, browser panel, AI panel, mail panel), future dogfood
 candidates such as splits and search, the featured second wave (pet, activity,
 contributions to knowledge graph, peek, mirror, lock, scratchpad), their
 mechanism vs policy split, capability sketches, privacy posture
@@ -168,13 +169,13 @@ first-party runtime implementations that exercise these manifests live in
 plugin behavior.
 
 Synchronization note: the accepted
-[Default Distribution RFC](../specifications/default-distribution-rfc.md) bundled list and
-example manifest still spell the earlier five-plugin set with
-`bitty-terminal.tabs`, while the code catalog now has ten entries with the
-`workspace` rename. This roadmap records the current catalog and rename but
-does not silently rewrite the accepted RFC; moving that list requires an
-independently reviewed RFC revision or ADR. Point-in-time citations in the
-pre-studies (for example
+[Default Distribution RFC](../specifications/default-distribution-rfc.md) bundled list
+was revised on 2026-09-13 (CTX-0170) to the ten-plugin code catalog and the
+`workspace` rename, retaining the earlier five-plugin set as history in that
+RFC's
+[superseded set](../specifications/default-distribution-rfc.md#superseded-bundled-set-2026-08-29).
+This roadmap and the RFC now describe the same catalog. Point-in-time
+citations in the pre-studies (for example
 [Browser and Agent Panel Integration Pre-Study](../specifications/browser-agent-pre-study.md))
 stay as committed-snapshot references.
 
@@ -465,9 +466,9 @@ without private APIs. Minimum signals before a bundled plugin is considered
 - Manifest and capability round-trip: static graph construction rejects
   duplicate qualified names, unknown capabilities, and undeclared event
   subscriptions; lazy help and completion work without a VM.
-- Register vs claim semantics: `tabs` tabline claim exclusivity and
-  `statusline` composition both behave as specified, with diagnostics
-  instead of load-order shadowing.
+- Register vs claim semantics: `workspace` workspaceline claim exclusivity
+  (legacy `tabline` alias included) and `statusline` composition both behave
+  as specified, with diagnostics instead of load-order shadowing.
 - Observation-only verification: fuzz and property tests show no parser,
   render, or input hot-path callback registration for any first-party
   plugin.
