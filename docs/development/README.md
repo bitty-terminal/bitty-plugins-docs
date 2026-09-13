@@ -21,7 +21,7 @@ product build workflow.
 1. Read the root `AGENTS.md` and the workspace-level guidance before editing.
 2. Read the [documentation workflow](documentation-workflow.md) — it defines the
    frontmatter schema, status meanings, and review expectations for every
-   document under `docs/`.
+   canonical document.
 3. Check the [documentation map](../README.md) for the current tree and the
    planned structure.
 4. Enter the repository with a scoped CarryCtx task and a non-overlapping file

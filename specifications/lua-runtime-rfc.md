@@ -173,11 +173,11 @@ declarative configuration authoring.
 
 Per-VM deltas:
 
-| VM class            | Additional authority beyond the shared baseline                                                                                                                               |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Configuration VM    | None by default. Trusted-user status means fewer prompts, never ambient OS authority; privileged work still goes through the capability-checked host module.                  |
-| System/distribution | Same as the Configuration VM; trust comes from source verification per the [security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md), not from extra built-ins.                      |
-| Per-plugin VM       | Only the capability-granted host services defined by the plugin contract ([plugin system](../extensibility/plugin-system.md)); details and budgets remain with OQ-012/OQ-014. |
+| VM class            | Additional authority beyond the shared baseline                                                                                                                                                             |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Configuration VM    | None by default. Trusted-user status means fewer prompts, never ambient OS authority; privileged work still goes through the capability-checked host module.                                                |
+| System/distribution | Same as the Configuration VM; trust comes from source verification per the [security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md), not from extra built-ins. |
+| Per-plugin VM       | Only the capability-granted host services defined by the plugin contract ([plugin system](../extensibility/plugin-system.md)); details and budgets remain with OQ-012/OQ-014.                               |
 
 The single host bridge in every VM is a versioned `bitty` module; its function
 surface is owned by the respective API RFCs and is out of scope here.
