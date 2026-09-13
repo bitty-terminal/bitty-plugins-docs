@@ -274,6 +274,49 @@ Candidate invariants if this migration is accepted:
 
 Tracked as [OQ-053](../decisions/open-questions.md).
 
+### Bundled-plugin suitability rules (candidate)
+
+Status: **candidate, non-normative**; extends the migration candidates above
+and stays subject to OQ-053.
+
+Decision rule for where a bundled plugin's work belongs:
+
+- **Pure Lua** when the work is presentation plus CLI or service glue:
+  bounded, low-frequency, owns no layout or geometry, and parses no VT input
+  stream at input rate. This covers statusline, palette, project,
+  file-manager, git-panel, and mail-panel.
+- **Core** when the plugin owns layout lifecycle or persistence
+  (workspace/tabs: session restore and panel geometry are Core mechanisms),
+  parses terminal bytes at input rate (shell-integration: OSC 7/133 parsing
+  must stay in the Rust parser and term-state; plugins are read-only
+  observers), or needs native GPU, process, or platform integration
+  (browser-panel, and future video).
+- **Hybrid** when a Core mechanism feeds a Lua policy (ai-panel: Core owns
+  bounded snapshots, semantic-zone context, and MCP transport; Lua owns chat
+  UI, history, and commands).
+
+The parity rules above are unchanged: migration shrinks the bundled catalog
+without granting capabilities or enabling anything implicitly.
+
+### Streaming statusline components (candidate)
+
+Status: **candidate, non-normative**.
+
+- **Low-frequency components** (music metadata from MPD) should be
+  event-driven: an async `mpc idle player` subscription wakes only on change
+  and pushes one event-bus update to the statusline fragment, so idle cost is
+  zero.
+- **High-frequency components** (an audio spectrum from cava at 30-60 Hz
+  through a raw FIFO) must not be treated as ordinary statusline text
+  recomputation. Either the host exposes an isolated streaming component with
+  per-cell damage isolation (only the cells it owns are dirtied), or the user
+  runs the native tool in a normal split view, which needs no plugin work and
+  uses the full GPU path.
+- **Open parts.** Streaming-component registration and slot claims, the
+  per-cell damage budget and coalescing, the drop policy under backpressure,
+  and lifecycle (stop when hidden or when the producer exits) are undecided.
+  Tracked as [OQ-082](../decisions/open-questions.md).
+
 ## Secrets and credential handling direction (candidate)
 
 Status: **candidate, non-normative**, except where it restates

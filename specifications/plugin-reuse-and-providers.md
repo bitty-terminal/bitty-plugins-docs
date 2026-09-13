@@ -427,6 +427,28 @@ A security-auditor review of the capability scoping (especially
 `process.spawn:CONSTRAINT`), helper digest verification, and bounded-framing
 rules is required before this draft can advance beyond Draft.
 
+## Rendering status and candidate crate direction (candidate)
+
+Status: **candidate direction, non-normative.** No crate below is adopted.
+
+- Shipped limits: the renderer ships 24-bit color plus bold, italic, and
+  underline; tools such as `bat` and `glow` render within those limits, and
+  `bat` decorations degrade to grid output. Complex shaping (ZWJ sequences),
+  BiDi reordering (see the
+  [Text and Rendering RFC](text-rendering-rfc.md) BiDi contract), and in-grid
+  interactivity are unsupported.
+- Candidate direction: Markdown parsing and typography belong in a Lua plugin
+  or upper panel, while Core keeps the GPU primitive seam through a
+  declarative `RichSurface`/`SceneNode` mechanism, so Markdown churn never
+  recompiles the core and shelling out to `glow`/`bat` never grows
+  click-to-expand or form interaction.
+- Candidate crates: `pulldown-cmark` or `termimad` for Markdown, `syntect` or
+  a tree-sitter helper process for highlighting, `unicode-bidi` for
+  display-layer reordering, and `rustybuzz` for shaping.
+- This composes with the [Rich Presentation RFC](rich-presentation-rfc.md)
+  (OQ-008/OQ-015/OQ-016); adoption requires its own RFC and does not advance by
+  this draft's acceptance.
+
 ## Acceptance and lifecycle
 
 - This RFC targets OQ-011, OQ-012, and OQ-013 as a provider-ecology follow-up;
