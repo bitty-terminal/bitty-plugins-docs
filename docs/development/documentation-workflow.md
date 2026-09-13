@@ -38,19 +38,18 @@ them.
 
 ## Repository layout
 
-Documents live under `docs/` and follow the
+Canonical corpus documents live in root topic trees and follow the
 [documentation map](../README.md). New topic trees are added only when real
 content exists; empty placeholder pages are avoided so the tree does not imply
 work that has not happened.
 
-| Path                | Owns                                          |
-| ------------------- | --------------------------------------------- |
-| `docs/development/` | Contributor policy and workflow.              |
-| `docs/<topic>/`     | Canonical documents for the documented scope. |
+| Path                                            | Owns                                                         |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| `docs/`                                         | Documentation map, contributor policy, and per-plugin pages. |
+| `specifications/`, `product/`, `extensibility/` | Migrated plugin-ecosystem corpus.                            |
 
-The repository was bootstrapped with this skeleton only. Existing content is
-migrated in a later, separately tracked phase; until then the topic trees remain
-intentionally small.
+The plugin-ecosystem corpus migrated from `bitty-docs` at `c664214` (CTX-0001,
+parent bitty-docs CTX-0187); further trees are added as authored content lands.
 
 ## Per-plugin documentation
 
@@ -78,8 +77,8 @@ source of implementation evidence.
 
 ## Required metadata
 
-Every `docs/**/*.md` file begins with YAML frontmatter containing exactly these
-flat, ordered, plain scalar fields:
+Every canonical Markdown document begins with YAML frontmatter containing
+exactly these flat, ordered, plain scalar fields:
 
 | Field             | Allowed value or rule                                                                                                       |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------- |

@@ -13,12 +13,11 @@
 ## Current phase
 
 - Documentation and project foundations come before product implementation.
-- The repository was bootstrapped in CTX-0187 Phase 1 with the docs-quality
-  toolchain and an empty skeleton; plugin documents migrate in a later phase,
-  and the `bitty-plugins` composition decision is deferred.
+- The plugin-ecosystem corpus was migrated from `bitty-docs` at `c664214`
+  (CTX-0001, parent bitty-docs CTX-0187); the `bitty-plugins` composition
+  decision is deferred.
 - Never describe a planned, proposed, or unverified feature as implemented.
-  Until migration lands, the tree contains only the documentation map and the
-  development workflow.
+  The migrated corpus is design-stage unless its own evidence says otherwise.
 
 ## Read before acting
 

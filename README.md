@@ -5,11 +5,13 @@ plugin ecosystem. It owns the English-language documentation for the plugin
 SDK, plugin manifests and contracts, the plugin lifecycle, isolation and
 capability rules, and per-plugin design notes.
 
-**Current state: bootstrap skeleton (CTX-0187 Phase 1).** The repository was
-created empty and scaffolded with the docs-quality toolchain and governance
-files only. No plugin documents have been migrated yet; migration is a later,
-separately tracked phase. This README describes the repository contract, not
-migrated content.
+**Current state: plugin-ecosystem corpus migrated from `bitty-docs` at
+`c664214` (CTX-0001, parent bitty-docs CTX-0187 Phase 3).** The repository
+carries the accepted and draft plugin contracts in root topic trees
+(`specifications/`, `product/`, `extensibility/`) and the per-plugin page set
+under `docs/plugins/`. Migrated documents remain design-stage unless they state
+their own evidence; this README describes the repository contract, not shipped
+behavior.
 
 ## Scope
 
@@ -41,30 +43,34 @@ The repository is intended to be mounted at `bitty-plugins/docs` as a Git
 submodule if and when a `bitty-plugins` repository is created (currently a
 deferred design discussion). The SDK and template remain independent
 repositories (`bitty-plugin-sdk`, `bitty-plugin-template`). The standalone
-documentation repository is fully self-contained and passes its own gates.
-Until content migration lands, the tree contains only the documentation map and
-the development workflow.
+documentation repository is fully self-contained and passes its own gates. The
+plugin-ecosystem corpus migrated from `bitty-docs` at `c664214` with history;
+residual terminal and AI material stays in the sibling documentation
+repositories.
 
 ## Structure
 
-| Path                             | Purpose                                                      |
-| -------------------------------- | ------------------------------------------------------------ |
-| `docs/README.md`                 | Documentation map and authority rules for this repository.   |
-| `docs/development/`              | Contributor workflow and the normative documentation policy. |
-| `docs/plugins/<plugin>/`         | Per-plugin notes using the standard page set.                |
-| `docs/<topic>/`                  | Canonical plugin-ecosystem documents (to be migrated).       |
-| `TODO.md`                        | Work register for this repository.                           |
-| `AGENTS.md`                      | Agent scope, CarryCtx workflow, and local gate rules.        |
-| `.github/scripts/check-docs.mjs` | Links, metadata, language, budgets, and hygiene checks.      |
-| `justfile`                       | Pinned docs-quality commands; `just check` is the gate.      |
+| Path                             | Purpose                                                            |
+| -------------------------------- | ------------------------------------------------------------------ |
+| `docs/README.md`                 | Documentation map and authority rules for this repository.         |
+| `docs/development/`              | Contributor workflow and the normative documentation policy.       |
+| `docs/plugins/`                  | Per-plugin index, template, and standard page sets.                |
+| `specifications/`                | Accepted and draft plugin-ecosystem contracts (RFCs).              |
+| `product/`                       | Plugin roadmap and product planning documents.                     |
+| `extensibility/`                 | Pre-implementation plugin system and package-management contracts. |
+| `TODO.md`                        | Work register for this repository.                                 |
+| `AGENTS.md`                      | Agent scope, CarryCtx workflow, and local gate rules.              |
+| `.github/scripts/check-docs.mjs` | Links, metadata, language, budgets, and hygiene checks.            |
+| `justfile`                       | Pinned docs-quality commands; `just check` is the gate.            |
 
 ## Authority and status
 
 - The
   [documentation workflow](https://github.com/bitty-terminal/bitty-plugins-docs/blob/main/docs/development/documentation-workflow.md)
   is normative for authoring, metadata, status, and review.
-- Every document under `docs/` carries the flat frontmatter schema and declares
-  its own status; design intention must never read as implemented behavior.
+- Every canonical document carries the flat frontmatter schema and declares its
+  own status; `just metadata` enforces the schema for `docs/**`. Design
+  intention must never read as implemented behavior.
 - "Candidate" and "planned" are prose, not implementation claims. A plugin page
   must not imply shipped behavior it cannot support.
 - When statements conflict, the canonical bitty-docs security corpus takes
