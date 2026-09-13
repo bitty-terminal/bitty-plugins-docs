@@ -223,6 +223,12 @@ local git = bitty.services:get("git.repository", { version = ">=2.0" })
 local branch = git.branch(cwd)
 ```
 
+- Service results evolve by size and shape rather than one absolute rule: small
+  values pass by structured clone, large immutable resources return a
+  `ResourceId`, streams return a bounded channel, and privileged objects return
+  an opaque host-managed capability handle the plugin cannot dereference
+  (`git:diff_stream()` returns `OpaqueHandle<GitDiffStream>`). Raw native
+  handles are never exposed to plugins; the host mediates every capability.
 - Provider selection follows the accepted resolver rules: declared dependency
   with version constraint, deterministic selection, conflict as activation
   error before any VM runs, lazy reservation of service provisions during graph
@@ -289,8 +295,12 @@ sha256 = "9f1c2a..."
 
 ## Provider ecology
 
-Status: **proposed** post-1.0 provider set, reusing the three lower layers
-before the fourth.
+Status: **proposed** post-1.0 provider conventions. The three below are the
+first UI and AI conventions layered over the general host Service Protocol,
+not the final abstraction set: Provider is a convention above the Service
+Broker, not a broker limitation, and future Command, Completion, Tool, Panel,
+Action, Decoration, Notification, and Search providers follow the same broker,
+capability, and budget rules.
 
 ### Roles
 
@@ -438,10 +448,13 @@ Status: **candidate direction, non-normative.** No crate below is adopted.
   [Text and Rendering RFC](text-rendering-rfc.md) BiDi contract), and in-grid
   interactivity are unsupported.
 - Candidate direction: Markdown parsing and typography belong in a Lua plugin
-  or upper panel, while Core keeps the GPU primitive seam through a
-  declarative `RichSurface`/`SceneNode` mechanism, so Markdown churn never
-  recompiles the core and shelling out to `glow`/`bat` never grows
-  click-to-expand or form interaction.
+  or upper panel, while Core keeps the GPU primitive seam. Plugins compose
+  widget-level `RichSurface` values (Text, RichText, CodeBlock, Image, Stack,
+  Grid, ScrollView, Button, Input, Canvas) that lower into the accepted
+  declarative `SceneNode` model; plugins never receive raw scene or GPU
+  objects, so the renderer can be layered and rewritten without freezing the
+  plugin API. Markdown churn therefore never recompiles the core, and shelling
+  out to `glow`/`bat` never grows click-to-expand or form interaction.
 - Candidate crates: `pulldown-cmark` or `termimad` for Markdown, `syntect` or
   a tree-sitter helper process for highlighting, `unicode-bidi` for
   display-layer reordering, and `rustybuzz` for shaping.
