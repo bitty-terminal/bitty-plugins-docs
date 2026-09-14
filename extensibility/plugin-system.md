@@ -325,6 +325,116 @@ management warrant separate high-risk permissions. Remote-control capability
 boundaries must be shared with the CLI and IPC model described in
 [CLI](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/interfaces/cli.md).
 
+### Candidate network capability: `bitty.http` and secrets direction
+
+Status: **candidate direction, non-normative** (user companion note
+`recording/research/029.md`, bitty-docs CTX-0202 / bitty-docs#290,
+[DIR-017](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md)).
+It refines the accepted capability direction above without changing it: Core
+never initiates network connections, while plugins may request network as an
+explicit least-privilege capability. The plugin system itself is therefore not
+network-free. Install-time source mechanics (`PluginSource`, system-`git` v1,
+registry-via-git) stay canonical in the
+[Package management](package-management.md) candidate section (CTX-0201,
+PR #20); this section covers runtime plugin network only. No implementation
+claim.
+
+Lua sees one stable surface while the host owns the transport:
+
+```lua
+local res = bitty.http.get("https://api.open-meteo.com/v1/forecast?...", {
+  timeout = 5000,
+})
+if not res.ok then
+  return { text = "Weather unavailable" }
+end
+local data = res:json() -- or res:text(); res.status, res.headers, res.body
+```
+
+The chain, in prose: plugin Lua calls `bitty.http`, the plugin host runs the
+permission check, the HTTP capability executes through an `HttpBackend`, and
+only the backend touches the Internet. Lua never sees `curl`; Core and the
+host link no network client. `V1` is a `CurlBackend` over system `curl`
+(`--silent --show-error --fail --location --max-time`); a native backend may
+follow, with backend variants `curl`, `wget`, `native`, and `disabled`, all
+behind the same Lua spelling. The Piccolo VM stays free of socket libraries:
+network arrives only as a capability-checked host function, alongside
+`bitty.fs`, `bitty.process`, and `bitty.panel`.
+
+A plugin declares the need up front and the installer shows it:
+
+```toml
+[permissions.network]
+hosts = ["api.open-meteo.com"]
+methods = ["GET"]
+```
+
+```text
+Install "Weather"?
+
+Permissions:
+
+  Network
+    GET https://api.open-meteo.com
+
+  Panel
+    Create floating panel
+
+[Allow] [Cancel]
+```
+
+Consent reuses the package manager's capability-increase review gate
+([Package management](package-management.md)): added capabilities block the
+update pending explicit review. Enforcement is an exact-host allowlist with no
+wildcard default: a call outside the declared hosts fails closed with
+`PermissionDenied: network access to <host> is not allowed`.
+
+Rationale: granting `process.exec("*")` (or `os.execute` / `io.popen` with a
+`curl` command) to reach one API hands the plugin arbitrary command execution
+(`rm`, `ssh`, `git`, `python`, shells). A narrow `net.http` capability keeps
+least privilege and stays compatible with the future sandbox direction.
+
+Secrets direction (candidate): authenticated plugins must not read ambient
+environment variables (see the `os.getenv` denial in
+[ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md)).
+The direction is `bitty.secrets.get` behind a declared `secrets` permission,
+growing toward an `authenticated_request` form in which Lua never sees secret
+bytes in the strict form:
+
+```toml
+[permissions]
+secrets = ["openai"]
+```
+
+```lua
+local res = bitty.http.authenticated_request({
+  credential = "openai",
+  method = "GET",
+  url = "https://api.example.com/v1/status",
+})
+```
+
+Illustrative weather sketch only (not a shipped plugin): the manifest above
+plus the single `bitty.http.get` call, rendered into a panel. The full chain
+is plugin Lua, permission manager, HTTP capability, system `curl`, Internet;
+only the last layer understands the network.
+
+The plugin HTTP gateway and AI providers may one day share a transport
+implementation, but they must not share a permission model: plugin HTTP is
+sandboxed behind the allowlist and consent above, while AI providers are
+trusted host components. The AI provider/transport split itself (core without
+HTTP knowledge, providers per vendor, `HttpTransport` with reqwest/curl/mock
+backends, feature flags, unified `ModelRequest`/`ModelEvent`) is an ai-docs
+rollout follow-up owned by the ai-docs owners and is not recorded here beyond
+this paragraph.
+
+Registry and lockfile pointer: registry-via-git V1 distribution and the
+`bitty.lock` reproducibility record (source, version, resolved revision) stay
+as recorded in [Package management](package-management.md). If a git-registry
+reading conflicts with the accepted OQ-028 HTTPS-index contract, that reading
+is candidate and needs an RFC amendment; this section adds no new registry
+mechanism.
+
 ## Performance and observability
 
 Status: **accepted direction.**
@@ -445,6 +555,9 @@ receive ADRs and acceptance evidence.
 - Is one Lua VM per plugin sufficient isolation, or do some plugin classes need
   WASM or process isolation?
 - What are the exact capability identifiers and grant persistence rules?
+- What are the `bitty.http` response, timeout, and allowlist semantics, and
+  the strict-form secrets contract (`bitty.secrets.get`,
+  `authenticated_request`)?
 - Which presentation contributions compose, and how are decoration ordering and
   replacement ownership represented?
 - What is the supported service-version model: one provider version, multiple
