@@ -96,10 +96,53 @@ strict bounded TOML subset (per-record plugin id, manifest hash pin, enabled
 flag, and granted capabilities; version `1`). Unknown sections or keys,
 duplicate keys, malformed values, over-limit files, and unknown versions fail
 closed before any mutation, and the Lua `init.lua` is never rewritten. The
-lockfile, the package store, and non-bundled (registry/Git/local-path) sources
-are not implemented; the candidate state model above remains the target. See
-the [CLI reference](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/interfaces/cli.md) for the shipped verbs and consent
+lockfile and non-bundled sources were not implemented in that slice; the
+package store and local-path external sources are implemented in the CTX-0406
+slice below, and the candidate state model above otherwise remains the target.
+See the [CLI reference](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/interfaces/cli.md) for the shipped verbs and consent
 behavior.
+
+Shipped slice (`bitty` CTX-0406, 2026-09-14): `bitty plugin install <path>`
+installs or updates an externally authored package from a local directory into
+the XDG data store at `$XDG_DATA_HOME/bitty/plugins/`:
+
+- `packages/<plugin-id>/<version>/bitty-plugin.toml` (verified manifest body)
+  and `packages/<plugin-id>/<version>/lua/` (module root), owner-only
+  (`0700` directories, `0600` files) on Unix;
+- `current.json`, the atomic (write-temp-then-rename) index mapping each plugin
+  id to its resolved record: source class, owner-qualified id, version,
+  store-relative root, consent-bound manifest hash, module-tree content digest,
+  enabled flag, and granted capabilities.
+
+Before anything is staged, the command verifies the manifest with the same
+bounded reader the runtime uses, requires the `init.lua` entry point, re-checks
+the ratified module-tree bounds (4096 files, 16 MiB, 1024-byte paths, native
+artifacts rejected), evaluates `compat.bitty` and `compat.plugin-api` against
+the running host, and diffs the requested capabilities against the recorded
+grant. Any added capability blocks until explicit consent (`--yes` or an
+interactive `[y/N]` prompt that fails closed on EOF); unchanged or narrowed
+sets carry forward. Installation executes zero plugin code.
+
+Installed local-directory packages carry `local-path` provenance. The staged
+record root is store-relative and immutable, so a content-digest mismatch is a
+fail-closed store integrity error; an absolute canonical root keeps the
+read-only development-flow semantics (re-digested on load, drift reported as
+unverified). A store record can never claim `bundled` provenance, and `--safe`
+creates no VM for any third-party class.
+
+`bitty plugin list|info` include installed packages (a `source` column and JSON
+`source` field); `enable`/`disable` rewrite the store index atomically;
+`remove --force` deletes the record and the staged tree; re-running `install`
+with a newer version updates in place and retains the previous version. The
+runtime resolves the store through `current.json`, re-verifies the manifest
+hash and content digest before creating a VM, and enforces the recorded grant
+at activation: a record that does not cover the manifest's declared
+capabilities fails closed with no VM. Reload tears generation N down before
+activating N+1 with grants still bound to the manifest hash. A committed update
+is picked up at the next start; the live `bitty plugin reload`/IPC trigger
+surface remains open under OQ-072. Remote `git` sources, the SDK
+`bitty-plugin-lint` conformance check, the draft seven-stage pipeline, and
+rollback commands remain unimplemented.
 
 ## Source model
 
