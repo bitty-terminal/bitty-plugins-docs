@@ -244,7 +244,10 @@ does not create repositories or registry entries.
 ## Implementation status
 
 Snapshot as of 2026-09-14. Implementation is tracked by CarryCtx (`bitty`
-`CTX-0397`); this section records state and does not claim merged behavior.
+`CTX-0397` and `CTX-0398`); this section records state and does not claim merged
+behavior.
+
+### Palette
 
 | Item                          | State                 | Evidence                                                                                                                                                                            |
 | ----------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -254,6 +257,17 @@ Snapshot as of 2026-09-14. Implementation is tracked by CarryCtx (`bitty`
 | Capability difference         | Recorded              | The independent Lua package requests `ui.rich` + `ui.overlay`; the bundled Rust realization declared only `ui.overlay` (the accepted ADR 0009 Lua overlay path requires `ui.rich`). |
 | Host overlay bridge           | Gap                   | The `bitty` Lua bridge does not implement `bitty.ui.mount`/`ui.update` yet; the package activates command-only until it lands.                                                      |
 | Command / picker source       | Gap                   | v1 has no command-registry enumeration and no `PickerProvider`; the package reads a bounded entry list from its own settings namespace.                                             |
+
+### Statusline
+
+| Item                             | State                 | Evidence                                                                                                                                                            |
+| -------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `statusline` independent package | In progress (PR open) | Repository `bitty-terminal/statusline`; bootstrap `main` `c71f091`; branch `ctx-0001/feat-statusline-lua`; PR #2.                                                   |
+| Bundled catalog entry removed    | In progress (PR open) | `bitty` branch `ctx-0398/feat-statusline-split` removes `bitty-terminal.statusline` from the bundled catalog (PR #680).                                             |
+| Registry registration            | In progress (PR open) | `bitty-plugins` `registry/official/statusline.toml`, regenerated `generated/registry.json`, `plugins/statusline` submodule pin (PR #7).                             |
+| Workspaceline boundary           | Recorded              | The workspaceline claim (ordering, exclusive claim, close policy), workspace lifecycle, and shell integration stay bundled; only the statusline presentation moves. |
+| Host statusline bridge           | Gap                   | The `bitty` Lua bridge does not implement `bitty.ui.mount`/`ui.update`; the package observes snapshots but presents no block until it lands.                        |
+| Status-component provider        | Gap                   | v1 has no `StatusProvider`/`status.component` contract (draft post-1.0 provider ecology); the package composes one host-owned `Row` as the v1 adapter.              |
 
 Nothing above is merged. The Default Distribution RFC bundled-catalog revision
 and the OQ-053 register closure remain owned by `bitty` `CTX-0424`.
