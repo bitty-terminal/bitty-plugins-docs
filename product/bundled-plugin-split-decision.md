@@ -241,6 +241,23 @@ RFC. Concrete next steps — create and register the `beacon` repository
 registration (bitty `CTX-0426`) — are tracked as follow-up tasks; this record
 does not create repositories or registry entries.
 
+## Implementation status
+
+Snapshot as of 2026-09-14. Implementation is tracked by CarryCtx (`bitty`
+`CTX-0397`); this section records state and does not claim merged behavior.
+
+| Item                          | State                 | Evidence                                                                                                                                                                            |
+| ----------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `palette` independent package | In progress (PR open) | Repository `bitty-terminal/palette`; bootstrap `main` `3c07858`; branch `ctx-0001/feat-palette-lua`; PR #2.                                                                         |
+| Bundled catalog entry removed | In progress (PR open) | `bitty` branch `ctx-0397/feat-palette-split` removes `bitty-terminal.palette` from the bundled catalog.                                                                             |
+| Registry registration         | In progress (PR open) | `bitty-plugins` `registry/official/palette.toml`, regenerated `generated/registry.json`, `plugins/palette` submodule pin.                                                           |
+| Capability difference         | Recorded              | The independent Lua package requests `ui.rich` + `ui.overlay`; the bundled Rust realization declared only `ui.overlay` (the accepted ADR 0009 Lua overlay path requires `ui.rich`). |
+| Host overlay bridge           | Gap                   | The `bitty` Lua bridge does not implement `bitty.ui.mount`/`ui.update` yet; the package activates command-only until it lands.                                                      |
+| Command / picker source       | Gap                   | v1 has no command-registry enumeration and no `PickerProvider`; the package reads a bounded entry list from its own settings namespace.                                             |
+
+Nothing above is merged. The Default Distribution RFC bundled-catalog revision
+and the OQ-053 register closure remain owned by `bitty` `CTX-0424`.
+
 ## References
 
 - [Plugin Roadmap](plugin-roadmap.md) for the candidate list and suitability
