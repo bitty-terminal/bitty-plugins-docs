@@ -202,7 +202,32 @@ The draft proposes `bitty plugin doctor` (traceable to the CLI surface owned by
 the [CLI Contract RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/cli-contract-rfc.md) and the package evidence in the
 Package Lifecycle RFC) as the verifier for this layer: it resolves each
 declared tool, checks version constraints, and reports missing or mismatched
-tools with remediation guidance. No package code runs during `doctor`.
+tools with remediation guidance. No package code runs during `doctor`
+(consistent with the host rule that diagnostics never load third-party plugin
+VMs). The `plugin doctor` name is reserved for budget, queue, and generation
+diagnostics; its tool-verification output is the Layer 2 half of that surface.
+
+### Host-managed async process runner
+
+Status: **proposed**. The denial half is accepted and shipped; the runner
+below is a candidate design in this draft.
+
+- Lua never blocks on a child process. The accepted Lua Runtime restricted
+  library retains only `os.time`/`os.clock`/`os.date`; `os.execute`,
+  `io.popen`, and Lua-loaded native modules remain denied, so there is no
+  blocking popen path for plugin code to reach. CLI execution uses the
+  host-provided spawn surface only (per the capability boundary above).
+- The draft runner is host-managed and asynchronous: a spawn request returns
+  without suspending the plugin VM, completion arrives as a bounded event, and
+  every child counts toward the requesting plugin generation with explicit
+  timeout, output-cap, and failure-containment budgets from the isolation
+  contract. Exact timeout and byte numbers stay owned by the isolation
+  enforcement track (OQ-014); this draft sets the mechanism, not the numbers.
+- Tree kill on unload is proposed: when a plugin generation tears down
+  (disable, update, or unload), the host terminates that generation's live
+  children as a tree before releasing the generation, and reports the outcome
+  through the `plugin doctor` diagnostics. The kill ordering, signal grace,
+  and orphan-reaping semantics are open items below, not accepted behavior.
 
 ## Layer 3 Plugin Service
 
@@ -334,6 +359,44 @@ local ranked = fuzzy.match({ query = q, items = items, limit = 100 })
   that wants custom ranking composes by supplying a scorer through the service,
   not by replacing the host pipeline.
 
+### Search and picker provider pattern
+
+Status: **proposed** convention over Layers 2 and 3. The three roles are
+fixed: the CLI produces data, Bitty renders the overlay, and the host ranks.
+
+- A search or picker plugin shells out to a Layer 2 system CLI (`rg`, `fd`)
+  for data production and returns bounded item lists; it never embeds its own
+  matcher crate and never draws its own floating surface.
+- Bitty owns the overlay: the command palette or picker surface, its input
+  routing, and its layout are host-rendered from the provider's items, so one
+  keybinding, theme, and accessibility story covers every provider.
+- The host fuzzy service performs the ranking behind the `fuzzy` boundary
+  above (realized with a native helper or a reused system CLI; per-plugin
+  in-process `nucleo`/`skim` embeds are rejected as the normal path). Exact
+  input-item, item-byte, result-limit, and response-byte numbers are open
+  items, attributable per caller generation when set.
+
+### Native PTY hosting for session tools
+
+Status: **proposed**; the `terminal.spawn` host flow below is partly shipped,
+the plugin-facing projection is a candidate in this draft.
+
+- Session tools (`ssh`, `docker`, and their class: interactive remote or
+  container sessions a pipe cannot serve) run in host-owned PTYs, never in a
+  plugin-owned pseudoterminal. The host spawns the session command directly
+  as an argv vector with no shell and no interpolation, and the plugin never
+  receives a PTY, GPU, window, or host-Rust handle for the session.
+- The `terminal.spawn` flow is: plugin request (proposed Lua projection)
+  -> host `core.terminal.spawn` method under the `terminal.manage` scope
+  (shipped control-plane shape) -> `intercept.terminal-spawn` plugin event
+  for policy observers (shipped event kind) -> host PTY spawn with
+  `TERM=xterm-256color` and `COLORTERM=truecolor` defaults -> session output
+  stays on the terminal-truth side while the plugin sees only bounded,
+  read-only presentation data (for example the existing `terminal.snapshot`
+  bridge). Veto, audit, and safe-mode semantics follow the accepted event
+  and scope contracts; the Lua request shape and its capability grant are
+  open items below.
+
 All provider registrations remain declarative, host-composed, and subject to the
 register-versus-claim rule: pickers and context providers are per-invocation
 sources; status fragments compose where the layout defines composition; any
@@ -440,13 +503,24 @@ rules is required before this draft can advance beyond Draft.
 ## Rendering status and candidate crate direction (candidate)
 
 Status: **candidate direction, non-normative.** No crate below is adopted.
+Shipped, unsupported, and candidate claims are labelled per claim.
 
-- Shipped limits: the renderer ships 24-bit color plus bold, italic, and
-  underline; tools such as `bat` and `glow` render within those limits, and
-  `bat` decorations degrade to grid output. Complex shaping (ZWJ sequences),
-  BiDi reordering (see the
-  [Text and Rendering RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/text-rendering-rfc.md) BiDi contract), and in-grid
-  interactivity are unsupported.
+- Shipped: 24-bit truecolor (direct-color `SGR 38;2`/`48;2` parsing with
+  `COLORTERM=truecolor` PTY defaults) plus bold, italic, and underline; tools
+  such as `bat` and `glow` render within those limits, and `bat` decorations
+  degrade to grid output.
+- Shipped: emoji and CJK cell width via the single `char_cell_width`
+  implementation (wide scalars occupy two cells; combining marks, variation
+  selectors, and ZWJ arrive as zero-width scalars stored on the preceding
+  cell's bounded buffer). Width is supported; shaping is not.
+- Not supported: complex ZWJ shaping and BiDi reordering. Shaping sits
+  outside the renderer seam by design (deferred to the text RFC per
+  ADR-0004); the width and ZWJ/IME-adjacent contract is the
+  [Text Compatibility](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/text-compatibility.md)
+  draft (CTX-0079, still draft), and the reorder contract is the
+  [Text and Rendering RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/text-rendering-rfc.md)
+  BiDi section (specified, not shipped). In-grid interactivity is likewise
+  unsupported.
 - Candidate direction: Markdown parsing and typography belong in a Lua plugin
   or upper panel, while Core keeps the GPU primitive seam. Plugins compose
   widget-level `RichSurface` values (Text, RichText, CodeBlock, Image, Stack,
@@ -455,9 +529,10 @@ Status: **candidate direction, non-normative.** No crate below is adopted.
   objects, so the renderer can be layered and rewritten without freezing the
   plugin API. Markdown churn therefore never recompiles the core, and shelling
   out to `glow`/`bat` never grows click-to-expand or form interaction.
-- Candidate crates: `pulldown-cmark` or `termimad` for Markdown, `syntect` or
-  a tree-sitter helper process for highlighting, `unicode-bidi` for
-  display-layer reordering, and `rustybuzz` for shaping.
+- Candidate crates (named only; absent from the workspace dependency set, so
+  no adoption is implied): `pulldown-cmark` or `termimad` for Markdown,
+  `syntect` or a tree-sitter helper process for highlighting, `unicode-bidi`
+  for display-layer reordering, and `rustybuzz` for shaping.
 - This composes with the [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md)
   (OQ-008/OQ-015/OQ-016); adoption requires its own RFC and does not advance by
   this draft's acceptance.
@@ -490,6 +565,14 @@ Status: **candidate direction, non-normative.** No crate below is adopted.
 - Measurement artifacts for helper budgets, startup cost, and telemetry
   retention after the isolation measurement tracks `CTX-0040` and `CTX-0050` are
   extended to tools and helpers.
+- Async runner kill semantics: signal grace period, ordering across a
+  generation's process tree, orphan reaping, and the exact `plugin doctor`
+  report shape for killed-versus-reaped children.
+- Lua projection of `terminal.spawn`: request shape, capability grant, and
+  per-session budget binding over the shipped `core.terminal.spawn` method,
+  `terminal.manage` scope, and `intercept.terminal-spawn` event.
+- Fuzzy-service budget numbers: input-item, item-byte, result-limit, and
+  response-byte caps per caller generation.
 
 ## References
 
