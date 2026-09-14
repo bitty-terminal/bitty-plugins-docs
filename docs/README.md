@@ -30,9 +30,11 @@ map does not upgrade any claim.
   [bitty-terminal-docs](https://github.com/bitty-terminal/bitty-terminal-docs)
   (terminal platform) and
   [bitty-ai-docs](https://github.com/bitty-terminal/bitty-ai-docs) (AI core).
-- The repository is designed to be mounted at `bitty-plugins/docs` as a Git
-  submodule if a `bitty-plugins` repository is created; that composition is
-  deferred. The SDK and template remain independent repositories.
+- This repository is mounted at `bitty-plugins/docs` as a Git submodule
+  (branch `main`) of
+  [bitty-plugins](https://github.com/bitty-terminal/bitty-plugins), which holds
+  the plugin registry and the official plugins as pinned submodules. The SDK
+  and template remain independent repositories.
 
 ## Current tree
 

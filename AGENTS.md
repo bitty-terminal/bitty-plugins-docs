@@ -14,8 +14,8 @@
 
 - Documentation and project foundations come before product implementation.
 - The plugin-ecosystem corpus was migrated from `bitty-docs` at `c664214`
-  (CTX-0001, parent bitty-docs CTX-0187); the `bitty-plugins` composition
-  decision is deferred.
+  (CTX-0001, parent bitty-docs CTX-0187); this repository is mounted at
+  `bitty-plugins/docs` as a Git submodule (branch `main`).
 - Never describe a planned, proposed, or unverified feature as implemented.
   The migrated corpus is design-stage unless its own evidence says otherwise.
 
