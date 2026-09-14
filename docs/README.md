@@ -36,12 +36,13 @@ map does not upgrade any claim.
 
 ## Current tree
 
-| Document                                                        | Purpose                                                   |
-| --------------------------------------------------------------- | --------------------------------------------------------- |
-| [Development](development/README.md)                            | Contributor entry point and local gates.                  |
-| [Documentation workflow](development/documentation-workflow.md) | Normative authoring, metadata, status, and review policy. |
-| [Plugin index](plugins/README.md)                               | Per-plugin candidate list and standard page set.          |
-| [Plugin template](plugins/TEMPLATE.md)                          | Reusable per-plugin page template.                        |
+| Document                                                               | Purpose                                                   |
+| ---------------------------------------------------------------------- | --------------------------------------------------------- |
+| [Development](development/README.md)                                   | Contributor entry point and local gates.                  |
+| [Documentation workflow](development/documentation-workflow.md)        | Normative authoring, metadata, status, and review policy. |
+| [Plugin index](plugins/README.md)                                      | Per-plugin candidate list and standard page set.          |
+| [Plugin template](plugins/TEMPLATE.md)                                 | Reusable per-plugin page template.                        |
+| [Official plugin onboarding](../product/official-plugin-onboarding.md) | Official-status entry criteria and registration policy.   |
 
 ## Migrated corpus
 
