@@ -161,12 +161,15 @@ explicitly enabled.
 
 The canonical v1 catalog is `all_bundled_manifests()` in
 `crates/bitty-plugin-host/src/bundled.rs`: eight bundled-disabled manifests
-built from the same public `PluginManifest` types a third-party
+once [bitty PR #680](https://github.com/bitty-terminal/bitty/pull/680) merges
+(nine today), built from the same public `PluginManifest` types a third-party
 `bitty-plugin.toml` uses, with no private channel. The table below is synced to
 that catalog. It held ten manifests at `bitty` `b761c03`; `palette` and
-`statusline` split to independent first-party packages on 2026-09-14
-([Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md)),
-leaving eight. `bitty-terminal.workspace` is canonical and
+`statusline` left for independent first-party packages on 2026-09-14
+([Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md)).
+The palette removal merged; the statusline removal is open, so the catalog is
+nine today and becomes eight once #680 merges. `bitty-terminal.workspace` is
+canonical and
 `bitty-terminal.tabs` remains a deprecated alias (removal `>= v0.2.0`). The
 first-party runtime implementations that exercise these manifests live in
 `crates/bitty-runtime` as review evidence; manifest presence is not shipped
@@ -178,9 +181,11 @@ was revised on 2026-09-13 (CTX-0170) to the ten-plugin code catalog and the
 `workspace` rename, retaining the earlier five-plugin set as history in that
 RFC's
 [superseded set](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md#superseded-bundled-set-2026-08-29).
-A 2026-09-14 amendment (CTX-0424) then revised it to eight after the `palette`
-and `statusline` splits. This roadmap and the RFC now describe the same
-eight-plugin catalog. Point-in-time citations in the pre-studies (for example
+A 2026-09-14 amendment (CTX-0424) then revised it to eight once
+[bitty PR #680](https://github.com/bitty-terminal/bitty/pull/680) merges (nine
+today) after the `palette` and `statusline` splits. This roadmap and the RFC
+describe the same target catalog. Point-in-time citations in the pre-studies
+(for example
 [Browser and Agent Panel Integration Pre-Study](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/browser-agent-pre-study.md))
 stay as committed-snapshot references.
 
@@ -201,7 +206,9 @@ packages (repositories `bitty-terminal/palette` and `bitty-terminal/statusline`)
 Their policy and capability ownership is unchanged; the
 [Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md) owns
 the verdicts and the implementation-status record. The eight rows above are the
-remaining bundled set.
+remaining bundled set once
+[bitty PR #680](https://github.com/bitty-terminal/bitty/pull/680) merges; the
+code catalog is nine today.
 
 Accepted rules for this wave:
 
