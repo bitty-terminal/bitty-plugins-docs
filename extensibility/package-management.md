@@ -169,6 +169,50 @@ A registry can arrive later. Starting with Git and local paths must not prevent
 stable identity, compatibility metadata, integrity verification, or a future
 registry mapping from plugin ID to source.
 
+## Candidate source-implementation direction (Git-first, network-isolated)
+
+Status: **candidate direction, non-normative** (user architecture note,
+bitty-docs CTX-0201 / bitty-docs#288,
+[DIR-016](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md)).
+It refines the accepted source model above without changing any accepted
+contract: the source classes, the seven-stage verification pipeline and
+provenance separation in the
+[Package Follow-up RFC](../specifications/package-followup-rfc.md), and the
+package-manager/host split below stay authoritative. No implementation claim:
+`bitty-package` today models sources as the `PackageSource` data enum
+(registry / git / local-path / bundled) with no fetch behavior, and only
+local-path install has shipped (CTX-0406 slice above).
+
+- **Design: `PluginSource` trait.** Sources implement `resolve` / `fetch` /
+  `update` behind one trait. `LocalSource` and `GitSource` come first; later
+  `RegistrySource`, `HttpArchiveSource`, and OCI sources extend the same seam.
+- **v1 sources: local + system `git` only.** `GitSource` shells out to the
+  system `git`: `git clone --filter=blob:none --depth=1`, then fetch/checkout
+  by version or commit. The lockfile records source, version, and resolved
+  revision (`rev`) for reproducibility. (The user note spells the lockfile
+  `bitty.lock`; the managed-manifest and lockfile names remain open per the
+  open questions below.)
+- **Explicitly not v1.** No curl-tarball fetching (TLS/proxy/retry/checksum/
+  cache/auth matrix), no `git2` / libgit2 (heavier dependencies, and it loses
+  the system gitconfig, SSH-agent, credential-helper, proxy, and CA handling),
+  and no `reqwest` in Core. Rule: do not reimplement Git (Unix philosophy).
+- **Graceful degradation.** `bitty` runs without git, curl, or network.
+  `bitty plugin install` without `git` fails closed with a diagnostic that
+  points at manual placement under `$XDG_DATA_HOME/bitty/plugins/`.
+- **Registry hosts metadata/discovery only, never plugin binaries.** The
+  candidate distribution mechanism for the registry itself is Git: clone/fetch
+  the registry repository into the XDG cache, search local TOML records, and
+  refresh only on an explicit `registry update`. This mirrors the CarryCtx sync
+  philosophy. It is recorded as a candidate because the accepted
+  [Package Follow-up RFC](../specifications/package-followup-rfc.md) (OQ-028)
+  specifies an HTTPS index snapshot fetch; reconciling the two mechanisms
+  needs an RFC amendment, and this section does not weaken that contract.
+- **Later native HTTP.** When Git cannot serve a need, native HTTP uses
+  `reqwest + rustls` (`default-features = false`), isolated in `bitty-net` /
+  provider crates and feature-gated so `cargo build --no-default-features`
+  stays network-free. (`bitty-plugin-manager` and `bitty-net` are names from
+  the user note; the current workspace has `bitty-package` only.)
+
 ## Command semantics
 
 Status: **accepted direction.**
