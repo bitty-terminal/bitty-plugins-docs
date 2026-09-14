@@ -1,0 +1,246 @@
+---
+title: Bundled-Plugin Split Decision (OQ-053)
+description: Per-candidate decision on which bundled first-party plugins become independent first-party packages
+category: product
+audience: contributor
+document_type: register
+status: accepted
+website_publish: false
+sidebar_order: 23
+---
+
+# Bundled-Plugin Split Decision (OQ-053)
+
+> Status: **decision record** recorded 2026-09-14 under bitty `CTX-0396`. It
+> decides the OQ-053 migration set at the plugin-ecosystem level and records the
+> dependencies that unblock the candidate queue. It does not implement any
+> split, does not claim shipped behavior, and does not by itself close OQ-053:
+> the OQ register row in [bitty-docs](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md)
+> and the accepted [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)
+> bundled catalog are updated by the cross-referenced follow-up tasks, not
+> edited here.
+
+## Purpose and scope
+
+This record answers the OQ-053 question — which bundled first-party plugins
+migrate to independently versioned first-party packages — for the seven
+candidates the [Plugin Roadmap](plugin-roadmap.md) lists: `palette`,
+`statusline` (workspaceline), `file-manager`, `git-panel`, `browser-panel`,
+`ai-panel`, and `mail-panel`. Shell integration and the workspace core stay
+bundled, as the roadmap already states.
+
+In scope: the per-candidate verdict (split / stay bundled), the timing gate that
+governs each split, and the CarryCtx dependencies that let the candidate queue
+start. Out of scope: the split implementation itself, the package-manager
+mechanics (owned by the accepted [Package Lifecycle RFC](../specifications/package-lifecycle-rfc.md)
+and [Package Follow-up RFC](../specifications/package-followup-rfc.md)), and the
+panel-provider contract (owned by the draft Panel Runtime pre-study in
+`bitty-terminal-docs` and OQ-058).
+
+This record refines the roadmap's _candidate_ material; it does not move a
+requirement between owners and does not relax any capability, security, or
+distribution gate.
+
+## Decision rules applied
+
+The verdicts apply the roadmap's bundled-plugin suitability rules as the
+decision test, unchanged in substance:
+
+1. **Bundling and independence are distribution states, not privilege tiers.**
+   An independent first-party plugin passes the same manifest validation,
+   deny-by-default capability consent, permission-diff gate, lazy triggers, and
+   `bitty --safe` skip as any third-party plugin. No first-party bypass exists.
+2. **Split eligibility follows the mechanism/policy split.** Work that is Pure
+   Lua (bounded presentation plus CLI or service glue) or Hybrid (a Core or
+   `bitty-ai` mechanism feeding Lua policy) may live in an independent package.
+   Work that is itself a Core mechanism — layout lifecycle or persistence, raw
+   VT parsing, or native GPU, process, or platform integration — stays in the
+   bundled core.
+3. **A split changes no identity.** Plugin IDs, capability identifiers, grant
+   records, and manifest shape are unchanged by the move.
+4. **A split enables nothing implicitly.** Fresh-install behavior stays
+   staged-and-disabled; migration must not turn "previously bundled" into
+   "enabled by default", and safe mode is unaffected.
+5. **A split requires the independent distribution path.** The local-path and
+   registry install/verify/activation chain (accepted package contracts plus the
+   implemented install path) must exist before any manifest leaves the binary
+   catalog.
+6. **A split requires the SDK and template gates.** R-SDK-1..3 and R-TPL-1 must
+   be satisfied so an independent repository can be scaffolded, typed,
+   linted, and conformance-tested.
+
+## Gate status at decision time
+
+Evidence date 2026-09-14. Cross-repository facts are cited from the owning
+repository; CarryCtx is per-repository, so external tasks are named by parent
+repository.
+
+| Gate                                          | State                  | Evidence                                                                                                                                                       |
+| --------------------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R-SDK-1 LuaLS definitions                     | Satisfied              | `bitty-plugin-sdk` `CTX-0014` (completed) and `CTX-0025` (review); `lua/bitty.d.lua`, `scripts/generate-lua-defs.ts`.                                          |
+| R-SDK-2 manifest schema + `bitty-plugin-lint` | Satisfied              | `bitty-plugin-sdk` `CTX-0015` (completed), `CTX-0019`, `CTX-0026`; `docs/manifest.md`.                                                                         |
+| R-SDK-3 mock-host + conformance fixtures      | Satisfied              | `bitty-plugin-sdk` `CTX-0016` (completed); `conformance/cases/01..12`, `docs/mock-host.md`.                                                                    |
+| R-TPL-1 minimal runnable template             | Satisfied              | `bitty-plugin-template` `CTX-0016` (completed); `template/bitty-plugin.toml`, `template/lua/@@PLUGIN_MODULE@@/init.lua`, template CI.                          |
+| Independent install / activation path         | Implemented, in review | `bitty` `CTX-0406` (PR #670 merged, task in review); docs recording in `bitty-plugins-docs` `CTX-0001`. Package contracts accepted under OQ-021/OQ-022/OQ-028. |
+| Panel Runtime public provider contract        | Not accepted           | Panel Runtime and Event Bus Pre-Study remains `draft` in `bitty-terminal-docs`; acceptance tracked by `bitty-docs` `CTX-0181` (ready), OQ-058.                 |
+| `bitty-ai` surfaces and distribution          | Open                   | OQ-066/OQ-080/OQ-081; `bitty` `CTX-0407` (in progress) is the pressure-test vertical slice.                                                                    |
+| Credential-source contract                    | Open                   | OQ-054 and OQ-055 (secret-storage tiers, API-key references).                                                                                                  |
+| Layer 2 `[tools.*]` CLI reuse                 | Draft                  | [Plugin Reuse and Provider Ecology RFC](../specifications/plugin-reuse-and-providers.md) is `draft` (post-1.0).                                                |
+
+Any candidate whose verdict is "split later" is blocked only on the named gate
+above, not on the SDK/template gates, which are satisfied.
+
+## Per-candidate assessment and verdict
+
+Bundled implementations are review evidence in the `bitty` repository: manifests
+in `crates/bitty-plugin-host/src/bundled.rs`, runtime implementations in
+`crates/bitty-runtime/src/`, and dogfood tests in `crates/bitty-runtime/tests/`.
+Manifest presence is not shipped behavior.
+
+| Candidate       | Bundled realization                                            | Capabilities requested                                                                                                  | Isolation need                                             | Verdict                     | Gate                                          | Owner task         |
+| --------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | --------------------------- | --------------------------------------------- | ------------------ |
+| `palette`       | `palette_manifest`, `bitty-runtime/src/palette.rs`             | `ui.overlay`, command registry                                                                                          | Overlay slot, declarative primitives                       | **Split**                   | Distribution + SDK                            | `bitty` `CTX-0397` |
+| `statusline`    | `statusline_manifest`, `bitty-runtime/src/statusline.rs`       | `terminal.semantic-read`, `ui.rich`                                                                                     | Status-component composition                               | **Split** (statusline only) | Distribution + SDK                            | `bitty` `CTX-0398` |
+| `file-manager`  | `file_manager_manifest`, `bitty-runtime/src/file_manager.rs`   | `panel.provider`, `panel.create`, `terminal.semantic-read`, `fs.read`/`fs.write:~/projects/**`                          | Panel Runtime, path-scoped grants                          | **Split later**             | Panel provider contract                       | `bitty` `CTX-0399` |
+| `git-panel`     | `git_panel_manifest`, `bitty-runtime/src/git_panel.rs`         | `panel.provider`, `panel.create`, `process.spawn:git`, `terminal.semantic-read`, `fs.read`                              | Panel Runtime, allowlisted CLI                             | **Split later**             | Panel provider contract + Layer 2 `[tools.*]` | `bitty` `CTX-0400` |
+| `browser-panel` | `browser_panel_manifest`, `bitty-runtime/src/browser_panel.rs` | `panel.provider`, `panel.create`, `browser.embed/navigation/file-url/storage`, `terminal.semantic-read`                 | Native embedder, host-owned surface, untrusted web content | **Stay bundled (Core)**     | Core browser mechanism + security review      | `bitty` `CTX-0401` |
+| `ai-panel`      | `ai_panel_manifest`, `bitty-runtime/src/ai_panel.rs`           | `panel.provider`, `panel.create`, `agent.context.*`, `agent.memory:persist`, `mcp.invoke:*`, `ai.provider/stream/model` | Panel Runtime + `bitty-ai` mechanism                       | **Split later** (hybrid)    | Panel provider contract + `bitty-ai` surfaces | `bitty` `CTX-0402` |
+| `mail-panel`    | `mail_panel_manifest`, `bitty-runtime/src/mail_panel.rs`       | `panel.provider`, `panel.create`, `mcp.invoke:mail.*`, `network.connect` (imap/smtp), `fs.read`/`fs.write:~/mail/**`    | Panel Runtime, MCP, endpoint grants                        | **Split later**             | Panel provider contract + credential contract | `bitty` `CTX-0403` |
+
+### `palette` — split now
+
+Command palette and picker UI via the overlay slot, using declarative list and
+text primitives only. Pure Lua per the suitability rules: it owns presentation
+and filtering policy, consumes the accepted command registry, and owns no
+layout, geometry, or VT parsing. It requires no Panel Runtime and no privileged
+capability. Verdict: **independent first-party package**; the only gates are the
+distribution path and the already-satisfied SDK/template gates.
+
+### `statusline` — split now, workspaceline stays bundled
+
+Cwd, mode, Git, and task presentation composed through the status-component
+slot. Pure Lua: it observes the semantic snapshot and composes read-only
+fragments via host-owned layout. Two boundaries are explicit:
+
+- The **workspaceline claim** (ordering, exclusive claim, close policy) is
+  workspace-core behavior and stays bundled, consistent with rule 2 and the
+  roadmap's statement that shell integration and the workspace core remain
+  bundled. The split moves the statusline presentation only.
+- **Shell integration stays bundled** and remains the upstream provider of
+  OSC 7/133 semantic zones the statusline observes.
+
+Verdict: **statusline becomes an independent first-party package**; the
+workspaceline claim and workspace lifecycle do not. `bitty/CTX-0398` is scoped
+accordingly.
+
+### `file-manager` — split later
+
+Tiled Panel file manager with path-scoped `fs.read` and optional `fs.write`.
+Pure Lua policy over the Panel Runtime, but an independent repository cannot
+register a panel provider until the panel-provider contract is accepted; the
+Panel Runtime and Event Bus Pre-Study is still `draft`. Verdict: **split
+target**, blocked on the panel-provider contract (`bitty-docs` `CTX-0181`,
+OQ-058) in addition to distribution.
+
+### `git-panel` — split later
+
+Tiled Panel git branch/status/diff/log presentation over allowlisted
+`process.spawn:git` with manifest-declared `[tools.git]`. Pure Lua plus Layer 2
+system-CLI reuse, but it inherits the panel-provider blocker and additionally
+depends on an accepted `[tools.*]` manifest declaration, which the
+[Plugin Reuse and Provider Ecology RFC](../specifications/plugin-reuse-and-providers.md)
+still carries as draft. Verdict: **split target**, blocked on the panel-provider
+contract and Layer 2 `[tools.*]` acceptance.
+
+### `browser-panel` — stay bundled
+
+The browser surface is a native embedder with its own platform, GPU, process,
+and network risk, and `browser.embed` is a high-risk capability. Under rule 2
+the browser mechanism is Core work, not a Lua package. Verdict: **stays
+bundled**; it is not an independent Lua plugin in v1. Revisit only if a Core
+browser mechanism plus a thin hybrid Lua policy is designed and passes the
+required security review. `bitty/CTX-0401` records the stay-bundled verdict and
+the revisit condition rather than an extraction.
+
+### `ai-panel` — split later (hybrid)
+
+Agent chat, tool invocation, memory, and consent presentation over the Panel
+Runtime, MCP tool bus, and `AgentId` context budget. Hybrid per the suitability
+rules: Core owns bounded snapshots, semantic-zone context, and MCP transport;
+Lua owns chat UI, history, and commands. Verdict: **split target**, blocked on
+the panel-provider contract and the `bitty-ai` surfaces and distribution
+question (OQ-066/OQ-080/OQ-081, `bitty` `CTX-0407`).
+
+### `mail-panel` — split later
+
+Mail triage over `mcp.invoke:mail.*`, explicit IMAP/SMTP endpoint grants, and
+scoped `~/mail/**` cache access. The helper-process and MCP use is Layer 2/4
+glue, but the split depends on the panel-provider contract and on the
+credential-source contract (OQ-054/OQ-055) that governs secrets without
+plaintext storage. Verdict: **split target**, blocked on those contracts.
+
+## Verdict summary
+
+- **Split, gated on distribution and SDK only (start now):** `palette`,
+  `statusline` (workspaceline claim stays bundled).
+- **Split, gated additionally on the panel-provider contract:** `file-manager`,
+  `git-panel`, `ai-panel`, `mail-panel`. `git-panel` also needs Layer 2
+  `[tools.*]`; `ai-panel` also needs the `bitty-ai` surfaces; `mail-panel` also
+  needs the credential-source contract.
+- **Stay bundled (Core mechanism):** `browser-panel`.
+- **Unchanged:** `shell-integration` and the workspace core (including the
+  workspaceline claim) stay bundled.
+
+## Cross-references to accepted positions
+
+- The accepted [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)
+  defines the current ten-plugin bundled catalog. This record does not edit that
+  catalog; shrinking it as splits land is a gated follow-up task in the owning
+  documentation repository, tracked below.
+- OQ-053 and the panel, credential, and AI questions remain in the canonical
+  [open-question register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).
+  This record is their plugin-ecosystem consequence, not a unilateral register
+  closure.
+- The accepted [Package Follow-up RFC](../specifications/package-followup-rfc.md)
+  keeps `bundled` and `registry` package classes distinct; a migrated plugin
+  becomes a `registry`-class first-party package without mutating any remaining
+  bundled generation.
+
+## Follow-up tasks
+
+| Task                               | Owner                                | Purpose                                                                                |
+| ---------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------- |
+| `CTX-0397`                         | `bitty`                              | Extract `palette` to an independent first-party package.                               |
+| `CTX-0398`                         | `bitty`                              | Extract `statusline` (workspaceline claim stays bundled).                              |
+| `CTX-0399`                         | `bitty`                              | Extract `file-manager` once the panel-provider contract is accepted.                   |
+| `CTX-0400`                         | `bitty`                              | Extract `git-panel`; needs the panel-provider and Layer 2 contracts.                   |
+| `CTX-0401`                         | `bitty`                              | Record the stay-bundled verdict for `browser-panel` and the revisit condition.         |
+| `CTX-0402`                         | `bitty`                              | Extract `ai-panel` as a hybrid plugin over `bitty-ai` surfaces.                        |
+| `CTX-0403`                         | `bitty`                              | Extract `mail-panel`; needs the credential-source contract.                            |
+| `bitty-docs` `CTX-0181`            | `bitty-docs`                         | Accept the Panel Runtime contract (OQ-058).                                            |
+| OQ-053 register + catalog revision | `bitty-docs` / `bitty-terminal-docs` | Close the OQ-053 row and revise the accepted Default Distribution RFC bundled catalog. |
+
+## Related ecosystem follow-ups
+
+Separate from the OQ-053 split set, the `bitty-plugins` registry repository
+carries one registered official plugin (`bitty-featured.activity`) with an empty
+community set, and no `beacon` repository exists. The Bitty Beacon spatial
+action engine is an open question (OQ-089) recorded in the Semantic Terminal
+RFC. Concrete next steps — create the `beacon` repository and register it, and
+record the official plugin onboarding order — are tracked as follow-up tasks;
+this record does not create repositories or registry entries.
+
+## References
+
+- [Plugin Roadmap](plugin-roadmap.md) for the candidate list and suitability
+  rules.
+- [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) for the
+  accepted API v1 surface, capability grammar, and manifest model.
+- [Plugin Host Runtime RFC](../specifications/plugin-host-runtime-rfc.md) for
+  the accepted host bridge and per-plugin VM lifecycle.
+- [Plugin Reuse and Provider Ecology RFC](../specifications/plugin-reuse-and-providers.md)
+  for the Pure Lua / System CLI / Plugin Service / Native Helper layers and the
+  provider ecology.
+- [Package Lifecycle RFC](../specifications/package-lifecycle-rfc.md) and
+  [Package Follow-up RFC](../specifications/package-followup-rfc.md) for the
+  integrity, activation, and bundled-versus-registry generation contracts.

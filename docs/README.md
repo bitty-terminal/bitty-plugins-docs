@@ -61,6 +61,7 @@ each document's frontmatter owns its status.
 | [Package Follow-up RFC](../specifications/package-followup-rfc.md)                       | accepted | Resolver, yank, prerelease, registry, key management.          |
 | [UI Extensibility Architecture](../specifications/ui-extensibility-architecture.md)      | draft    | UI extension points, ownership boundaries, Lua surface.        |
 | [Plugin Roadmap](../product/plugin-roadmap.md)                                           | draft    | First-party and featured plugin sequencing.                    |
+| [Bundled-Plugin Split Decision (OQ-053)](../product/bundled-plugin-split-decision.md)    | accepted | Per-candidate split/stay-bundled verdicts and their gates.     |
 | [Plugin system](../extensibility/plugin-system.md)                                       | draft    | Plugin boundaries, isolation, composition, and lifecycle.      |
 | [Plugin package management](../extensibility/package-management.md)                      | draft    | Manifests, sources, updates, rollback, and trust.              |
 
