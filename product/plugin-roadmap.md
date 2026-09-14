@@ -37,8 +37,9 @@ generation lifecycle), and the
 sequencing.
 
 In scope: the bundled-disabled first-party set that dogfoods Plugin API v1
-(shell integration, workspace, statusline, palette, project, file manager,
-git panel, browser panel, AI panel, mail panel), future dogfood
+(shell integration, workspace, project, file manager, git panel, browser panel,
+AI panel, mail panel), the `palette` and `statusline` independent first-party
+packages split from it, future dogfood
 candidates such as splits and search, the featured second wave (pet, activity,
 contributions to knowledge graph, peek, mirror, lock, scratchpad), their
 mechanism vs policy split, capability sketches, privacy posture
@@ -159,10 +160,13 @@ Bundled presence alone creates zero VM, queue, or handler cost until
 explicitly enabled.
 
 The canonical v1 catalog is `all_bundled_manifests()` in
-`crates/bitty-plugin-host/src/bundled.rs` (`bitty` revision `b761c03`): ten
-bundled-disabled manifests built from the same public `PluginManifest` types a
-third-party `bitty-plugin.toml` uses, with no private channel. The table below
-is synced to that catalog. `bitty-terminal.workspace` is canonical and
+`crates/bitty-plugin-host/src/bundled.rs`: eight bundled-disabled manifests
+built from the same public `PluginManifest` types a third-party
+`bitty-plugin.toml` uses, with no private channel. The table below is synced to
+that catalog. It held ten manifests at `bitty` `b761c03`; `palette` and
+`statusline` split to independent first-party packages on 2026-09-14
+([Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md)),
+leaving eight. `bitty-terminal.workspace` is canonical and
 `bitty-terminal.tabs` remains a deprecated alias (removal `>= v0.2.0`). The
 first-party runtime implementations that exercise these manifests live in
 `crates/bitty-runtime` as review evidence; manifest presence is not shipped
@@ -174,8 +178,9 @@ was revised on 2026-09-13 (CTX-0170) to the ten-plugin code catalog and the
 `workspace` rename, retaining the earlier five-plugin set as history in that
 RFC's
 [superseded set](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md#superseded-bundled-set-2026-08-29).
-This roadmap and the RFC now describe the same catalog. Point-in-time
-citations in the pre-studies (for example
+A 2026-09-14 amendment (CTX-0424) then revised it to eight after the `palette`
+and `statusline` splits. This roadmap and the RFC now describe the same
+eight-plugin catalog. Point-in-time citations in the pre-studies (for example
 [Browser and Agent Panel Integration Pre-Study](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/browser-agent-pre-study.md))
 stay as committed-snapshot references.
 
@@ -183,14 +188,20 @@ stay as committed-snapshot references.
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `bitty-terminal.shell-integration` | OSC 7/133 semantic zones, cwd and title propagation, prompt and command-region marks, fail-closed fallback when absent | VT parser OSC 7/133 derivation, semantic zones, `ImageStore` anchor fallback         | `terminal.semantic-read` read-only                                                                                                                              | Zones consumed by search, statusline, and peek without plugin-side VT parsing; absence degrades gracefully                          |
 | `bitty-terminal.workspace`         | Workspace commands, workspaceline presentation, ordering, key bindings, and closing policy                             | `LayoutNode` and split primitives, workspaceline exclusive claim, status composition | `ui.rich` or status-component slot plus `workspaceline` claim                                                                                                   | Exclusive claim validated: duplicate claim rejected, not last-wins; close policy observable via `bitty plugin doctor`               |
-| `bitty-terminal.statusline`        | Presentation of cwd, mode, Git and task state, status component composition policy                                     | Statusline slot composition, semantic snapshot, zone metadata from shell integration | `terminal.semantic-read`, status-component composition                                                                                                          | Composition validated: many providers compose, ordering explicit, no ambient capability via composition                             |
-| `bitty-terminal.palette`           | Command palette and picker UI, fuzzy filtering, preview presentation                                                   | Command registry, overlay slot, declarative list and text primitives                 | `ui.overlay`                                                                                                                                                    | Validates palette as overlay composition using declarative primitives only, no shader or native window path                         |
 | `bitty-terminal.project`           | Project discovery and session presentation                                                                             | Constrained project discovery and session metadata                                   | `fs.read:PROJECT_GLOB` constrained                                                                                                                              | Validates project-scoped discovery and session presentation without widening trust or filesystem authority                          |
 | `bitty-terminal.file-manager`      | Tiled Panel file manager with constrained `fs.read` and optional `fs.write`                                            | Panel Runtime, `ViewContent::Panel(PanelId)`, semantic snapshot                      | `panel.provider`, `panel.create`, `terminal.semantic-read`, `fs.read:~/projects/**`, optional `fs.write:~/projects/**`                                          | Validates a P1 tiled panel with path-scoped grants and bounded `8 KiB`/`32`/`64` payloads                                           |
 | `bitty-terminal.git-panel`         | Tiled Panel git branch/status/diff/log presentation                                                                    | Panel Runtime plus allowlisted `process.spawn:git` under manifest `[tools.git]`      | `process.spawn:git` allowlisted, `panel.provider`, `panel.create`, `terminal.semantic-read`                                                                     | Validates CLI reuse (Layer 2) against an allowlisted binary with bounded output under `[tools.git]` argv                            |
 | `bitty-terminal.browser-panel`     | View `Browser(BrowserSurfaceId)` plus tiled Panel placement and navigation policy                                      | Browser surface contracts plus Panel Runtime                                         | `browser.embed`, `browser.navigation`, `browser.file-url`, `browser.storage`, `network.connect:...:443`                                                         | Validates Browser view plus Panel composition with a default `https` allowlist and bounded BA-1..BA-3 surfaces                      |
 | `bitty-terminal.ai-panel`          | Agent panel surface: chat, tool invocation, memory and consent presentation with an ephemeral workspace                | Panel Runtime, MCP tool bus, `AgentId` context budget contract                       | `ai.provider`, `ai.stream`, `ai.model`, `agent.context.terminal`, `agent.context.workspace`, `agent.memory:persist`, `mcp.invoke:read_file`, `mcp.invoke:fetch` | Validates agent surfaces on generic primitives, and the CP-5 per-turn context contract, and bounded memory without core AI coupling |
 | `bitty-terminal.mail-panel`        | Mail triage panel: list, read, search, and send policy through MCP and explicit network endpoints                      | Panel Runtime, MCP adapter, `network.connect` host:port allowlist, scoped `fs`       | `mcp.invoke:mail.list/read/search/send`, `network.connect:imap.example.com:993`, `network.connect:smtp.example.com:465`, `fs.read`/`fs.write:~/mail/**`         | Validates a P3 panel that needs explicit endpoint grants and remains disabled on a fresh install without consent                    |
+
+`bitty-terminal.palette` and `bitty-terminal.statusline` were in this wave and
+left the bundled catalog on 2026-09-14 to become independent first-party
+packages (repositories `bitty-terminal/palette` and `bitty-terminal/statusline`).
+Their policy and capability ownership is unchanged; the
+[Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md) owns
+the verdicts and the implementation-status record. The eight rows above are the
+remaining bundled set.
 
 Accepted rules for this wave:
 
@@ -213,11 +224,12 @@ Accepted rules for this wave:
 
 ## Statusline and shell-prompt boundary
 
-The bundled `bitty-terminal.statusline` is terminal-owned chrome: a
+The `bitty-terminal.statusline` plugin is terminal-owned chrome: a
 waybar/Hyprland-class status surface that occupies a terminal UI slot (the
 statusline/workspaceline slot) and presents terminal and workspace state such
-as cwd, mode, Git and task state from the semantic snapshot. It is not a shell
-prompt.
+as cwd, mode, Git and task state from the semantic snapshot. It shipped
+bundled-disabled in v1 and became an independent first-party package on
+2026-09-14; the surface description is unchanged. It is not a shell prompt.
 
 Starship, Oh My Posh, Powerlevel10k, and similar tools are shell-prompt
 producers: the shell renders their Unicode/ANSI output inside the terminal
@@ -243,6 +255,9 @@ without converging the two surfaces.
 > [Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md).
 > This section remains the rationale and candidate invariants; where the two
 > disagree, the decision record is authoritative for the verdict and its gate.
+> OQ-053 is closed by that record (2026-09-14); the residual panel-provider
+> gate it cites stays open as
+> [OQ-058](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).
 
 Status: **candidate, non-normative**. Bundled-disabled and independent are
 distribution states, not privilege tiers: an independent first-party plugin
@@ -278,7 +293,9 @@ Candidate invariants if this migration is accepted:
 - Fresh-install behavior stays staged-and-disabled; migration must not turn
   "previously bundled" into "implicitly enabled".
 
-Tracked as [OQ-053](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).
+Closed as [OQ-053](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md)
+by the decision record on 2026-09-14; the residual panel-provider gate is
+tracked as [OQ-058](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).
 
 ### Bundled-plugin suitability rules (candidate)
 
@@ -290,7 +307,8 @@ Tracked as [OQ-053](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/
 > stays bundled as a Core mechanism.
 
 Status: **candidate, non-normative**; extends the migration candidates above
-and stays subject to OQ-053.
+and is refined by the accepted
+[Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md).
 
 Decision rule for where a bundled plugin's work belongs:
 

@@ -15,12 +15,13 @@ sidebar_order: 23
 > owner directive (2026-09-13/14) and owning task bitty `CTX-0396`. This
 > decision record owns the OQ-053 migration set at the plugin-ecosystem level
 > and records the dependencies that unblock the candidate queue. It does not
-> implement any split and does not claim shipped behavior. OQ-053 stays
-> **Open**: the OQ register row in [bitty-docs](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md)
-> and the accepted [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)
-> bundled catalog are not edited here. Closing the register row and revising the
-> catalog are owned by bitty `CTX-0424`; accepting the Panel Runtime provider
-> contract is owned by `bitty-docs` `CTX-0181`.
+> implement any split and does not claim shipped behavior. Follow-through is
+> complete (bitty `CTX-0424`, 2026-09-14): the
+> [OQ-053 register row](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md)
+> is closed and the accepted
+> [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)
+> bundled catalog is amended from ten to eight. Accepting the Panel Runtime
+> provider contract remains owned by `bitty-docs` `CTX-0181`.
 
 ## Purpose and scope
 
@@ -203,10 +204,11 @@ plaintext storage. Verdict: **split target**, blocked on those contracts.
 ## Cross-references to accepted positions
 
 - The accepted [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)
-  defines the current ten-plugin bundled catalog. This record does not edit that
-  catalog; shrinking it as splits land is a gated follow-up task in the owning
-  documentation repository, tracked below.
-- OQ-053 and the panel, credential, and AI questions remain in the canonical
+  defined the ten-plugin bundled catalog. Its 2026-09-14 amendment (bitty
+  `CTX-0424`) revises the catalog to eight after the `palette` and `statusline`
+  splits and records the merge evidence and capability deltas.
+- OQ-053 is closed by this record's follow-through (bitty `CTX-0424`); the
+  panel, credential, and AI questions it cites remain in the canonical
   [open-question register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).
   This record is their plugin-ecosystem consequence, not a unilateral register
   closure.
@@ -230,6 +232,9 @@ plaintext storage. Verdict: **split target**, blocked on those contracts.
 | `bitty` `CTX-0424`      | `bitty-docs` / `bitty-terminal-docs` | Close the OQ-053 register row and revise the Default Distribution RFC bundled catalog. |
 | `bitty` `CTX-0425`      | `bitty-plugins-docs`                 | Accept the Layer 2 `[tools.*]` system-CLI reuse declaration (`git-panel` gate).        |
 
+`bitty` `CTX-0424` completed 2026-09-14 (OQ-053 register closure and Default
+Distribution RFC catalog revision).
+
 ## Related ecosystem follow-ups
 
 Separate from the OQ-053 split set, the `bitty-plugins` registry repository
@@ -243,34 +248,38 @@ does not create repositories or registry entries.
 
 ## Implementation status
 
-Snapshot as of 2026-09-14. Implementation is tracked by CarryCtx (`bitty`
-`CTX-0397` and `CTX-0398`); this section records state and does not claim merged
-behavior.
+Snapshot as of 2026-09-14 after the split merges. Implementation is tracked by
+CarryCtx (`bitty` `CTX-0397` and `CTX-0398`); this section records state and
+does not claim behavior beyond the cited merged repositories.
 
 ### Palette
 
-| Item                          | State                 | Evidence                                                                                                                                                                            |
-| ----------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `palette` independent package | In progress (PR open) | Repository `bitty-terminal/palette`; bootstrap `main` `3c07858`; branch `ctx-0001/feat-palette-lua`; PR #2.                                                                         |
-| Bundled catalog entry removed | In progress (PR open) | `bitty` branch `ctx-0397/feat-palette-split` removes `bitty-terminal.palette` from the bundled catalog.                                                                             |
-| Registry registration         | In progress (PR open) | `bitty-plugins` `registry/official/palette.toml`, regenerated `generated/registry.json`, `plugins/palette` submodule pin.                                                           |
-| Capability difference         | Recorded              | The independent Lua package requests `ui.rich` + `ui.overlay`; the bundled Rust realization declared only `ui.overlay` (the accepted ADR 0009 Lua overlay path requires `ui.rich`). |
-| Host overlay bridge           | Gap                   | The `bitty` Lua bridge does not implement `bitty.ui.mount`/`ui.update` yet; the package activates command-only until it lands.                                                      |
-| Command / picker source       | Gap                   | v1 has no command-registry enumeration and no `PickerProvider`; the package reads a bounded entry list from its own settings namespace.                                             |
+| Item                          | State    | Evidence                                                                                                                                                                            |
+| ----------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `palette` independent package | Merged   | Repository `bitty-terminal/palette`; package PR #2 squash `3497c70ac5b22e52826304b801af302da454d262`.                                                                               |
+| Bundled catalog entry removed | Merged   | `bitty` PR #678 squash `dd46c7a287fa7a8ab83783816b37877d634e5f3a` removes `bitty-terminal.palette` from the bundled catalog (ten to nine).                                          |
+| Registry registration         | Merged   | `bitty-plugins` PR #6 squash `d38e8ff3ad2a1538512fd212fba55422b6dbaf65`: `registry/official/palette.toml`, regenerated `generated/registry.json`, `plugins/palette` submodule pin.  |
+| Capability difference         | Recorded | The independent Lua package requests `ui.rich` + `ui.overlay`; the bundled Rust realization declared only `ui.overlay` (the accepted ADR 0009 Lua overlay path requires `ui.rich`). |
+| Host overlay bridge           | Gap      | The `bitty` Lua bridge does not implement `bitty.ui.mount`/`ui.update` yet; the package activates command-only until it lands.                                                      |
+| Command / picker source       | Gap      | v1 has no command-registry enumeration and no `PickerProvider`; the package reads a bounded entry list from its own settings namespace.                                             |
 
 ### Statusline
 
-| Item                             | State                 | Evidence                                                                                                                                                            |
-| -------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `statusline` independent package | In progress (PR open) | Repository `bitty-terminal/statusline`; bootstrap `main` `c71f091`; branch `ctx-0001/feat-statusline-lua`; PR #2.                                                   |
-| Bundled catalog entry removed    | In progress (PR open) | `bitty` branch `ctx-0398/feat-statusline-split` removes `bitty-terminal.statusline` from the bundled catalog (PR #680).                                             |
-| Registry registration            | In progress (PR open) | `bitty-plugins` `registry/official/statusline.toml`, regenerated `generated/registry.json`, `plugins/statusline` submodule pin (PR #7).                             |
-| Workspaceline boundary           | Recorded              | The workspaceline claim (ordering, exclusive claim, close policy), workspace lifecycle, and shell integration stay bundled; only the statusline presentation moves. |
-| Host statusline bridge           | Gap                   | The `bitty` Lua bridge does not implement `bitty.ui.mount`/`ui.update`; the package observes snapshots but presents no block until it lands.                        |
-| Status-component provider        | Gap                   | v1 has no `StatusProvider`/`status.component` contract (draft post-1.0 provider ecology); the package composes one host-owned `Row` as the v1 adapter.              |
+| Item                             | State    | Evidence                                                                                                                                                                                                                                                                                                                     |
+| -------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `statusline` independent package | Merged   | Repository `bitty-terminal/statusline`; package PR #2 squash `3eab0f44b9bf76fc8c01a029176a9bd885f91d07`.                                                                                                                                                                                                                     |
+| Bundled catalog entry removed    | Pending  | `bitty` PR #680 (branch `ctx-0398/feat-statusline-split`, rebased head `5591216fa7eb15f7fed59b10a6ec4f15e0e2d773`) removes `bitty-terminal.statusline` (nine to eight); open, awaiting merge.                                                                                                                                |
+| Registry registration            | Merged   | `bitty-plugins` PR #9 squash `1d203e67146b02edc8c483a61a7c82b9b6e84753`: `registry/official/statusline.toml`, regenerated `generated/registry.json`, `plugins/statusline` submodule pin.                                                                                                                                     |
+| Workspaceline boundary           | Recorded | The workspaceline claim (ordering, exclusive claim, close policy), workspace lifecycle, and shell integration stay bundled; only the statusline presentation moves.                                                                                                                                                          |
+| Host statusline bridge           | Gap      | The `bitty` Lua bridge does not implement `bitty.ui.mount`/`ui.update`; the package observes snapshots but presents no block until it lands.                                                                                                                                                                                 |
+| Status-component provider        | Gap      | v1 has no `StatusProvider`/`status.component` contract (draft post-1.0 provider ecology); the package composes one host-owned `Row` as the v1 adapter.                                                                                                                                                                       |
+| Exit-code selection difference   | Recorded | The Lua package selects the latest semantic zone carrying any `metadata.exit_code` (scanning newest-first); the bundled Rust realization selected the last `ZoneKind::OutputEnd` zone's code. The observable `exit:` component can differ when a later non-`OutputEnd` zone carries a code. Recorded from the split reviews. |
 
-Nothing above is merged. The Default Distribution RFC bundled-catalog revision
-and the OQ-053 register closure remain owned by `bitty` `CTX-0424`.
+The panel candidates (`file-manager`, `git-panel`, `ai-panel`, `mail-panel`)
+stay bundled and unmodified, pending the panel-provider contract. The Default
+Distribution RFC bundled-catalog amendment and the OQ-053 register closure are
+complete under `bitty` `CTX-0424`. The palette capability delta and the
+statusline exit-code delta are tracked as `bitty-plugins` `CTX-0005`.
 
 ## References
 
