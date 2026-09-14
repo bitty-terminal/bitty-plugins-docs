@@ -235,8 +235,9 @@ CarryCtx tasks rather than silently implemented as new gates:
 2. **No official-entry to submodule mapping check.** Missing local manifests are
    skipped, and `.gitmodules` URLs are not compared with registry repository
    fields: `bitty-plugins` `CTX-0006`.
-3. **Per-plugin page sets missing.** Registered official plugins have no
-   `docs/plugins/<plugin>/` page sets yet: `bitty-plugins-docs` `CTX-0004`.
+3. **Per-plugin page sets (delivered).** The three registered official plugins
+   now have `docs/plugins/<plugin>/` page sets, created by `bitty-plugins-docs`
+   `CTX-0004`.
 
 ## Current state (2026-09-14)
 
