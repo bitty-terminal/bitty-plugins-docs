@@ -238,6 +238,12 @@ without converging the two surfaces.
 
 ## Independent-plugin migration direction (candidate)
 
+> Decision recorded 2026-09-14 (bitty `CTX-0396`): the per-candidate verdicts
+> for the seven migration candidates are owned by the
+> [Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md).
+> This section remains the rationale and candidate invariants; where the two
+> disagree, the decision record is authoritative for the verdict and its gate.
+
 Status: **candidate, non-normative**. Bundled-disabled and independent are
 distribution states, not privilege tiers: an independent first-party plugin
 goes through the same manifest validation, deny-by-default capability consent,
@@ -275,6 +281,13 @@ Candidate invariants if this migration is accepted:
 Tracked as [OQ-053](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).
 
 ### Bundled-plugin suitability rules (candidate)
+
+> Decision recorded 2026-09-14 (bitty `CTX-0396`): these rules were applied as
+> the decision test in the
+> [Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md).
+> Statusline and palette split on distribution and SDK gates only; the panel
+> candidates split later, gated on the panel-provider contract; browser-panel
+> stays bundled as a Core mechanism.
 
 Status: **candidate, non-normative**; extends the migration candidates above
 and stays subject to OQ-053.
