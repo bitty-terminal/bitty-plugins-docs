@@ -39,14 +39,19 @@ Cross-project contracts and registers are linked, never copied.
 
 ## Composition
 
-The repository is intended to be mounted at `bitty-plugins/docs` as a Git
-submodule if and when a `bitty-plugins` repository is created (currently a
-deferred design discussion). The SDK and template remain independent
-repositories (`bitty-plugin-sdk`, `bitty-plugin-template`). The standalone
-documentation repository is fully self-contained and passes its own gates. The
-plugin-ecosystem corpus migrated from `bitty-docs` at `c664214` with history;
-residual terminal and AI material stays in the sibling documentation
-repositories.
+This repository is mounted at `bitty-plugins/docs` as a Git submodule
+(branch `main`) of the
+[bitty-plugins](https://github.com/bitty-terminal/bitty-plugins) composition
+repository, which holds the plugin registry and the official plugins as pinned
+submodules (`plugins/activity`, `plugins/palette`, `plugins/statusline`) plus
+the `sdk`
+([bitty-plugin-sdk](https://github.com/bitty-terminal/bitty-plugin-sdk)) and
+`template`
+([bitty-plugin-template](https://github.com/bitty-terminal/bitty-plugin-template))
+submodules. The standalone documentation repository remains fully
+self-contained and passes its own gates. The plugin-ecosystem corpus migrated
+from `bitty-docs` at `c664214` with history; residual terminal and AI material
+stays in the sibling documentation repositories.
 
 ## Structure
 

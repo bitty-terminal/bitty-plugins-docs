@@ -13,13 +13,13 @@ than accumulating here.
       fourteen documents imported from `bitty-docs` `c664214` with history,
       rewritten cross-repository links, and preserved status and
       `website_publish` flags.
-- [ ] Later phase: decide and wire submodule composition (`bitty-plugins/docs`)
-      if a `bitty-plugins` repository is created.
+- [x] Submodule composition (`bitty-plugins/docs`, CTX-0006): `bitty-plugins`
+      exists with `sdk`/`template`/`docs` submodules and
+      `plugins/activity`+`palette`+`statusline`; this repository is mounted at
+      `bitty-plugins/docs` (branch `main`).
 
 ## Blocked / open
 
-- The submodule composition decision is deferred behind the `bitty-plugins`
-  repository discussion.
 - Classification follow-ups from the plugin migration: `status-system.md` stays
   terminal-owned, and `default-distribution-rfc.md` remains with terminal docs
   pending an ownership decision.
