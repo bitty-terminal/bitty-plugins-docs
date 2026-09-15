@@ -34,21 +34,22 @@ product release contains them.
 ## Candidate plugins
 
 The list below records documentation candidates from draft planning. None of
-these candidates has a repository, a page set, or an accepted contract; the
+these candidates has a page set or an accepted contract, though `file-manager`
+now has an independent observation-only package without a page set here yet; the
 [Plugin Roadmap](../../product/plugin-roadmap.md) (draft) is the planning
 source, and names, identifiers, and batches may change before any plugin
 contract is accepted.
 
-| Plugin        | Batch | Documentation status | Planning notes                                               |
-| ------------- | ----- | -------------------- | ------------------------------------------------------------ |
-| scratchpad    | First | Not started          | Ephemeral per-directory notes.                               |
-| peek          | First | Not started          | Hover and preview anchored to semantic zones or rich blocks. |
-| pet           | First | Not started          | Non-blocking companion overlay.                              |
-| file-manager  | Later | Not started          | Tiled file-manager panel (`bitty-terminal.file-manager`).    |
-| git-panel     | Later | Not started          | Tiled Git panel (`bitty-terminal.git-panel`).                |
-| browser-panel | Later | Not started          | Browser view and panel (`bitty-terminal.browser-panel`).     |
-| ai-panel      | Later | Not started          | Agent panel surface (`bitty-terminal.ai-panel`).             |
-| mail-panel    | Later | Not started          | Mail triage panel (`bitty-terminal.mail-panel`).             |
+| Plugin        | Batch | Documentation status                           | Planning notes                                                                                                                                                                                                                 |
+| ------------- | ----- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| scratchpad    | First | Not started                                    | Ephemeral per-directory notes.                                                                                                                                                                                                 |
+| peek          | First | Not started                                    | Hover and preview anchored to semantic zones or rich blocks.                                                                                                                                                                   |
+| pet           | First | Not started                                    | Non-blocking companion overlay.                                                                                                                                                                                                |
+| file-manager  | Later | Observation-only implemented, page set pending | Observation-only listing, navigation, and preview (`bitty-terminal.file-manager`); panel presentation deferred pending the panel-provider contract, `fs.*` deferred (no Plugin API v1 `bitty.fs` surface; host bridge absent). |
+| git-panel     | Later | Not started                                    | Tiled Git panel (`bitty-terminal.git-panel`).                                                                                                                                                                                  |
+| browser-panel | Later | Not started                                    | Browser view and panel (`bitty-terminal.browser-panel`).                                                                                                                                                                       |
+| ai-panel      | Later | Not started                                    | Agent panel surface (`bitty-terminal.ai-panel`).                                                                                                                                                                               |
+| mail-panel    | Later | Not started                                    | Mail triage panel (`bitty-terminal.mail-panel`).                                                                                                                                                                               |
 
 ## Creating a plugin directory
 
