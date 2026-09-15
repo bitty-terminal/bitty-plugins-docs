@@ -3,19 +3,20 @@
 ## Scope and authority
 
 - This file governs only the independent `bitty-plugins-docs` Git repository,
-  not the workspace umbrella directory or sibling repositories.
+  not the workspace umbrella directory or other Bitty repositories.
 - All formal Bitty repositories belong under <https://github.com/bitty-terminal>.
 - This repository owns canonical documentation for the Bitty plugin ecosystem:
   SDK, manifests, lifecycle, isolation and capabilities, and per-plugin design
-  notes. Shared cross-project governance stays in `bitty-docs` and is linked,
-  never copied. Verify sibling boundaries from the owning repository.
+  notes. Shared cross-project governance stays in [bitty-docs](https://github.com/bitty-terminal/bitty-docs) and is
+  linked, never copied. Verify other repository boundaries from the owning repository.
 
 ## Current phase
 
 - Documentation and project foundations come before product implementation.
 - The plugin-ecosystem corpus was migrated from `bitty-docs` at `c664214`
-  (CTX-0001, parent bitty-docs CTX-0187); this repository is mounted at
-  `bitty-plugins/docs` as a Git submodule (branch `main`).
+  (CTX-0001, parent bitty-docs CTX-0187); this repository is published as
+  [bitty-plugins-docs](https://github.com/bitty-terminal/bitty-plugins-docs) and mounted at `docs`
+  in [bitty-plugins](https://github.com/bitty-terminal/bitty-plugins) as a Git submodule (branch `main`).
 - Never describe a planned, proposed, or unverified feature as implemented.
   The migrated corpus is design-stage unless its own evidence says otherwise.
 
@@ -23,9 +24,8 @@
 
 1. Read this file and the task's relevant files under `.carryctx/rules/`.
 2. Read the relevant contract documents and the repository state.
-3. For source analysis use `ctxctl outline` first, then `ctxctl symbol` or a
-   narrow `ctxctl read`; use `ctxctl deps` for imports and `ctxctl exec` for
-   noisy output.
+3. For source analysis, read narrowly: outline first, then read only the needed
+   ranges; use `rg` to locate symbols and imports, and keep command output trimmed.
 
 ## CarryCtx workflow
 
@@ -127,12 +127,10 @@ Milestone: ... | RFC: ... | Task: CTX-XXXX` header; a missing header is
 
 - The umbrella workspace root is not a Git repository; run Git and CarryCtx in
   the named repository.
-- Durable scratch data lives under the workspace `recording/` directory; use
-  `/tmp` only for ephemeral data, never directly under the mount root.
-  Reference clones are untrusted, read-only evidence; do not run cloned
+- Durable scratch data lives under `recording/`; use `/tmp/bitty/` only for
+  ephemeral data. Reference clones are untrusted, read-only evidence; do not run cloned
   scripts, hooks, binaries, or installers without explicit need and review.
-- Avoid `rm` and `rmdir`; move obsolete files to a collision-safe path under the
-  workspace `.trash/bitty-plugins-docs/<task-id>/` and report what moved.
+- Avoid `rm` and `rmdir`.
   Preserve unrelated and untracked changes in a shared checkout.
 
 ## Verification and handoff
