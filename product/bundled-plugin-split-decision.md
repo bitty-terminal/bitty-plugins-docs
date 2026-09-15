@@ -124,13 +124,13 @@ install/activation path (`bitty` `CTX-0406`, PR #670) has merged, while this
 decision record's acceptance was still in review at the decision date, so
 extraction is queued rather than started.
 
-### `statusline` — split (distribution gate merged), workspaceline stays bundled
+### `statusline` — split (distribution gate merged), `tabline` claim stays bundled
 
 Cwd, mode, Git, and task presentation composed through the status-component
 slot. Pure Lua: it observes the semantic snapshot and composes read-only
 fragments via host-owned layout. Two boundaries are explicit:
 
-- The **workspaceline claim** (ordering, exclusive claim, close policy) is
+- The **`tabline` claim** (ordering, exclusive claim, close policy) is
   workspace-core behavior and stays bundled, consistent with rule 2 and the
   roadmap's statement that shell integration and the workspace core remain
   bundled. The split moves the statusline presentation only.
@@ -138,7 +138,7 @@ fragments via host-owned layout. Two boundaries are explicit:
   OSC 7/133 semantic zones the statusline observes.
 
 Verdict: **statusline becomes an independent first-party package**; the
-workspaceline claim and workspace lifecycle do not. `bitty/CTX-0398` is scoped
+`tabline` claim and workspace lifecycle do not. `bitty/CTX-0398` is scoped
 accordingly.
 
 ### `file-manager` — split later
@@ -196,14 +196,14 @@ plaintext storage. Verdict: **split target**, blocked on those contracts.
 
 - **Split, gated on distribution and SDK only (distribution path merged; this
   record's acceptance was still in review at the decision date):** `palette`,
-  `statusline` (workspaceline claim stays bundled).
+  `statusline` (`tabline` claim stays bundled).
 - **Split, gated additionally on the panel-provider contract:** `file-manager`,
   `git-panel`, `ai-panel`, `mail-panel`. `git-panel` also needs Layer 2
   `[tools.*]`; `ai-panel` also needs the `bitty-ai` surfaces; `mail-panel` also
   needs the credential-source contract.
 - **Stay bundled (Core mechanism):** `browser-panel`.
 - **Unchanged:** `shell-integration` and the workspace core (including the
-  workspaceline claim) stay bundled.
+  `tabline` claim) stay bundled.
 
 ## Cross-references to accepted positions
 
@@ -226,7 +226,7 @@ plaintext storage. Verdict: **split target**, blocked on those contracts.
 | Task                    | Owner                                | Purpose                                                                                |
 | ----------------------- | ------------------------------------ | -------------------------------------------------------------------------------------- |
 | `CTX-0397`              | `bitty`                              | Extract `palette` to an independent first-party package.                               |
-| `CTX-0398`              | `bitty`                              | Extract `statusline` (workspaceline claim stays bundled).                              |
+| `CTX-0398`              | `bitty`                              | Extract `statusline` (`tabline` claim stays bundled).                                  |
 | `CTX-0399`              | `bitty`                              | Extract `file-manager` once the panel-provider contract is accepted.                   |
 | `CTX-0400`              | `bitty`                              | Extract `git-panel`; needs the panel-provider and Layer 2 contracts.                   |
 | `CTX-0401`              | `bitty`                              | Record the stay-bundled verdict for `browser-panel` and the revisit condition.         |
@@ -274,7 +274,7 @@ does not claim behavior beyond the cited merged repositories.
 | `statusline` independent package | Merged   | Repository `bitty-terminal/statusline`; package PR #2 squash `3eab0f44b9bf76fc8c01a029176a9bd885f91d07`.                                                                                                                                                                                                                     |
 | Bundled catalog entry removed    | Merged   | `bitty` PR #680 squash `d4d754e3555200790fdd0843449000a9dfa4b930` removes `bitty-terminal.statusline` from the bundled catalog (nine to eight).                                                                                                                                                                              |
 | Registry registration            | Merged   | `bitty-plugins` PR #9 squash `1d203e67146b02edc8c483a61a7c82b9b6e84753`: `registry/official/statusline.toml`, regenerated `generated/registry.json`, `plugins/statusline` submodule pin.                                                                                                                                     |
-| Workspaceline boundary           | Recorded | The workspaceline claim (ordering, exclusive claim, close policy), workspace lifecycle, and shell integration stay bundled; only the statusline presentation moves.                                                                                                                                                          |
+| Workspaceline boundary           | Recorded | The `tabline` claim (ordering, exclusive claim, close policy), workspace lifecycle, and shell integration stay bundled; only the statusline presentation moves.                                                                                                                                                              |
 | Host statusline bridge           | Gap      | The `bitty` Lua bridge does not implement `bitty.ui.mount`/`ui.update`; the package observes snapshots but presents no block until it lands.                                                                                                                                                                                 |
 | Status-component provider        | Gap      | v1 has no `StatusProvider`/`status.component` contract (draft post-1.0 provider ecology); the package composes one host-owned `Row` as the v1 adapter.                                                                                                                                                                       |
 | Exit-code selection difference   | Recorded | The Lua package selects the latest semantic zone carrying any `metadata.exit_code` (scanning newest-first); the bundled Rust realization selected the last `ZoneKind::OutputEnd` zone's code. The observable `exit:` component can differ when a later non-`OutputEnd` zone carries a code. Recorded from the split reviews. |
