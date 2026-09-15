@@ -1,0 +1,8 @@
+# bitty-plugins-docs: workspace identity descriptor (kind/lang/role mirror workspace.toml).
+[repo]
+name = "bitty-plugins-docs"
+kind = "docs"
+lang = "md"
+role = "plugin-ecosystem architecture and interface docs"
+owner = "TBD"
+docs = "self"
