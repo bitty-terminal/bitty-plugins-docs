@@ -180,9 +180,12 @@ keeps identity stable.
   `Content-Length` pre-check plus a streaming cap); an oversized body only warns
   and also keeps the previous metadata.
 - `compat.bitty`, `compat.plugin-api`, and `plugin.version` are separate fields
-  in the accepted manifest schema. Registry entries mirror the application
-  range as `[compatibility] bitty` and the SDK range as `sdk`; the Plugin API
-  range lives only in the manifest. Ranges are per-plugin and are reviewed, not
+  in the accepted manifest schema. Registry entries mirror both compatibility
+  ranges with alternate key names: `[compatibility] bitty` carries the manifest
+  `compat.bitty` range, and `[compatibility] sdk` carries the manifest
+  `compat.plugin-api` (Plugin API) range. The registry `sdk` key is the Plugin
+  API range under its registry spelling, not a separate SDK range; both ranges
+  live in the manifest. Ranges are per-plugin and are reviewed, not
   policy-fixed values.
 - Install and update fail before staging when declared compatibility does not
   include the running host (Package Lifecycle RFC, compatibility check).

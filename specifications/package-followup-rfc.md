@@ -180,6 +180,25 @@ Examples:
 - `~0.8.2` selects `>=0.8.2 <0.9.0`
 - `>=1.4.1, <1.6.0` selects the closed interval
 
+> **Open reconciliation item — registry range grammar vs resolver constraint
+> grammar.** A registry-side validator currently disagrees with the accepted
+> resolver grammar above; this note records the discrepancy and does not change
+> the accepted contract text.
+>
+> - **Resolver constraint grammar** (this section, owned by the package resolver
+>   / `bitty-package`): closed; denies `*` and `||`, requires a strict `X.Y.Z`
+>   version, and permits build metadata.
+> - **Registry compatibility-range grammar** (`VERSION_RANGE_SYNTAX` in
+>   `bitty-plugins` `scripts/semver.ts`, owned by the registry validator for
+>   `[compatibility]` ranges): accepts `*` and `||` disjunction, allows one to
+>   three numeric segments, and rejects build metadata.
+>
+> The registry validates compatibility metadata while the resolver consumes
+> dependency requirements, so the two layers may legitimately differ or may
+> need to converge; that call is an open decision tracked as `bitty-plugins`
+> `CTX-0016`. Until it lands, neither grammar is authoritative for the other
+> component, and the closed resolver grammar above stands for resolver inputs.
+
 ### Resolver contract
 
 The resolver is a pure function
@@ -257,7 +276,7 @@ environments.
 
 ### Compatibility interaction
 
-Compatibility (`compat.bitty` and `compat.plugin_api` in the package
+Compatibility (`compat.bitty` and `compat.plugin-api` in the package
 manifest) is checked by the verification pipeline before staging, after the
 lock is chosen. A yanked version that is also incompatible is rejected on
 both grounds, but the user-visible error prioritizes incompatibility when
@@ -613,7 +632,10 @@ review decides otherwise:
 - Whether `*` wildcard or `||` disjunction ever enters the constraint grammar;
   this RFC keeps the grammar closed and denies both, deferring them to a
   future ADR only if user research demonstrates need without harming
-  determinism.
+  determinism. This is also the register entry for the cross-component
+  reconciliation flagged under "Constraint grammar (closed)": the registry
+  compatibility-range validator in `bitty-plugins` already accepts both, and
+  the reconciliation decision is tracked as `bitty-plugins` `CTX-0016`.
 - The exact registry HTTP API and index serialization (JSON, TOML, or custom)
   and the exact key-directory wire format; only their security properties
   (signatures, monotonic version, timestamp, expiry) are contracted here.
