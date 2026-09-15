@@ -16,16 +16,16 @@ first-party statusline package.
 
 ## Identity
 
-| Field             | Value                                            |
-| ----------------- | ------------------------------------------------ |
-| Plugin id         | `bitty-terminal.statusline`                      |
-| Name              | Statusline                                       |
-| Package version   | 0.1.0                                            |
-| Owning repository | <https://github.com/bitty-terminal/statusline>   |
-| Lua module        | `lua/statusline/`                                |
-| Capabilities      | `terminal.semantic-read`, `ui.rich`              |
-| Lazy commands     | none                                             |
-| Lazy events       | `terminal.cwd-changed`, `terminal.title-changed` |
+| Field             | Value                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| Plugin id         | `bitty-terminal.statusline`                                                          |
+| Name              | Statusline                                                                           |
+| Package version   | 0.0.1                                                                                |
+| Owning repository | <https://github.com/bitty-terminal/statusline>                                       |
+| Lua module        | `lua/statusline/`                                                                    |
+| Capabilities      | `terminal.semantic-read`, `ui.rich`                                                  |
+| Lazy commands     | none                                                                                 |
+| Lazy events       | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed`, `terminal.opened` |
 
 ## Stage
 

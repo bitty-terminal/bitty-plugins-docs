@@ -17,7 +17,7 @@ sidebar_order: 40
 | --------------------- | --------------------------- |
 | `[plugin].id`         | `bitty-terminal.statusline` |
 | `[plugin].name`       | Statusline                  |
-| `[plugin].version`    | 0.1.0                       |
+| `[plugin].version`    | 0.0.1                       |
 | `[compat].bitty`      | `>=0.1,<1.0`                |
 | `[compat].plugin-api` | `^1.0`                      |
 
@@ -28,10 +28,10 @@ validation and there is no allow-all identifier.
 
 ## Lazy surface
 
-| Trigger  | Values                                           |
-| -------- | ------------------------------------------------ |
-| Commands | none                                             |
-| Events   | `terminal.cwd-changed`, `terminal.title-changed` |
+| Trigger  | Values                                                                               |
+| -------- | ------------------------------------------------------------------------------------ |
+| Commands | none                                                                                 |
+| Events   | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed`, `terminal.opened` |
 
 Static triggers let the host register the plugin without creating a VM; the
 observation events activate and drive recomposition.
