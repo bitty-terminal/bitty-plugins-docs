@@ -201,15 +201,19 @@ false` means the plugin degrades and remains activatable with reduced
 ### Accepted `[tools.git]` contract (v1)
 
 Status: **accepted** (CTX-0425,
-`bitty-terminal/bitty#687` / `bitty-terminal/bitty#690`). This subsection is
-the canonical record for the `[tools.git]` slice. The rest of this RFC stays
-draft: only the declaration, allowlist, bounds, and verification plan below
-are accepted, so an independent git-panel can declare `[tools.git]` and spawn
-only the allowlisted `git` binary with bounded output. It gates the git-panel
-split (CTX-0400). OQ-013 is accepted (Plugin Platform RFC); OQ-053 is accepted
-and closed (Bundled-Plugin Split Decision, 2026-09-14; git-panel splits later
-behind this contract). The `process.spawn:CONSTRAINT` grammar is owned by the
-accepted [Plugin Platform RFC](plugin-platform-rfc.md).
+`bitty-terminal/bitty#687` / `bitty-terminal/bitty#690`; risky-flag sync
+CTX-0008 folding CTX-0444 `64e1709` / `bitty-terminal/bitty#716`). This
+subsection is the canonical record for the `[tools.git]` slice. The rest of
+this RFC stays draft: only the declaration, allowlist, bounds, and
+verification plan below are accepted, so an independent git-panel can declare
+`[tools.git]` and spawn only the allowlisted `git` binary with bounded
+output. It gates the git-panel split (CTX-0400). OQ-013 is accepted (Plugin
+Platform RFC); OQ-053 is accepted and closed (Bundled-Plugin Split Decision,
+2026-09-14; git-panel splits later behind this contract). The
+`process.spawn:CONSTRAINT` grammar is owned by the accepted [Plugin Platform
+RFC](plugin-platform-rfc.md). The CTX-0008 sync only folds already-enforced
+denials into the record; it adds no acceptance beyond what
+`is_allowed_git_args` enforces.
 
 #### Accepted `[tools.git]` declaration (versioned)
 
@@ -233,25 +237,43 @@ work under CTX-0400, not part of this acceptance.
 
 - Capability string is exactly `process.spawn:git`: closed `process.spawn`
   family plus the `:git` parameter. Any other executable is denied; the
-  implementation check is `GitIntegration::is_process_spawn_git_allowed` with
-  no I/O.
+  canonical spawn check is `is_tool_spawn_allowed` (`is_accepted_tool`
+  git-only plus `is_valid_tool_name`) in
+  [tools.rs](https://github.com/bitty-terminal/bitty/blob/main/crates/bitty-plugin-host/src/tools.rs)
+  with no I/O. The panel capability check
+  `GitIntegration::is_process_spawn_git_allowed` mirrors the same exact
+  string.
 - Spawn goes through the host-provided surface only, never through
   `os.execute`, `io.popen`, or a Lua-loaded native module (denied by the Lua
   Runtime restricted library). Outputs are piped to panel UI, never raw PTY
   injection.
 - Read-only verbs only: `status`, `diff`, `log`, `branch`, `show`,
-  `rev-parse`, `ls-files` (`GIT_ALLOWED_SUBCOMMANDS` in
+  `rev-parse`, `ls-files` (`GIT_ALLOWED_SUBCOMMANDS` in `tools.rs`,
+  identical list in
   [git_panel.rs](https://github.com/bitty-terminal/bitty/blob/main/crates/bitty-runtime/src/git_panel.rs)).
   Write verbs (`commit`, `push`, `reset`, mutating `checkout`, etc.) are
   absent; staging or commit UX needs explicit user action plus a broader grant.
-- `GitIntegration::is_allowed_git_args` fails closed on: empty args, more than
-  `GIT_PANEL_MAX_GIT_ARGS` (`32`) args, any arg longer than
-  `GIT_PANEL_MAX_GIT_ARG_BYTES` (`256`), total args over
-  `GIT_PANEL_MAX_GIT_TOTAL_BYTES` (`8 KiB` = `BUS_EVENT_MAX_BYTES`),
-  null/control characters, denied shell metacharacters (`;` `&` `|` backtick
-  `$` `(` `)` `<` `>` backslash `"` `'`), a non-allowlisted first-arg
-  subcommand, or risky flags (exact `--upload-pack`, `--receive-pack`,
-  `--exec`, plus the `--upload-pack=` / `--receive-pack=` prefixed forms).
+- `is_allowed_git_args` in `tools.rs` (canonical, `64e1709`) fails closed on:
+  empty args, more than `MAX_GIT_ARGS` (`32`) args, any empty arg or arg
+  longer than `MAX_GIT_ARG_BYTES` (`256`), total args over
+  `MAX_GIT_TOTAL_BYTES` (`8 KiB`), null/control characters, denied shell
+  metacharacters (`;` `&` `|` backtick `$` `(` `)` `<` `>` backslash `"` `'`),
+  a non-allowlisted first-arg subcommand, verb-smuggling flags (exact
+  `--upload-pack`, `--receive-pack`, `--exec`, plus the `--upload-pack=` /
+  `--receive-pack=` / `--exec=` contained forms), config override (exact
+  `-c`; `--cached` / `--color` stay allowed), repo-escape and env-config
+  prefixes (`--git-dir`, `--work-tree`, `--config-env`), file-write and
+  external-driver prefixes (`--output`, `--ext-diff`, `--textconv`;
+  `--no-ext-diff` / `--no-textconv` stay allowed), and verb-aware `branch`
+  pinning only for `branch` (exact `-d` / `-D` / `-m` / `-M` / `-c` / `-C` /
+  `-f` / `-u` / `-t` plus deprecated exact `--set-upstream`; prefixes
+  `--delete` / `--move` / `--copy` / `--rename` / `--force` /
+  `--set-upstream-to` / `--unset-upstream` / `--track` /
+  `--edit-description`; bundled single-dash clusters containing `d` / `D` /
+  `m` / `M` / `c` / `C` / `f` / `u` / `t`; bare `branch <name>` creation
+  denied unless explicit `--list` / `-l` forces list mode, where the
+  positional is a display pattern). `-m` stays allowed for `log` / `show`;
+  `--no-track` stays allowed.
 
 #### Accepted bounded-output rules
 
@@ -271,11 +293,14 @@ work under CTX-0400, not part of this acceptance.
   generation (RC-1/RC-2 attribution); `is_untrusted_surface = true` for
   reflected terminal bytes.
 
-Constant values above are copied from
+Allowlist values above are enforced by
+[tools.rs](https://github.com/bitty-terminal/bitty/blob/main/crates/bitty-plugin-host/src/tools.rs)
+(`GIT_ALLOWED_SUBCOMMANDS`, `MAX_GIT_ARGS`, `MAX_GIT_ARG_BYTES`,
+`MAX_GIT_TOTAL_BYTES`, `is_allowed_git_args`, `is_tool_spawn_allowed`);
+panel bounds below are copied from
 [git_panel.rs](https://github.com/bitty-terminal/bitty/blob/main/crates/bitty-runtime/src/git_panel.rs)
-(`GIT_ALLOWED_SUBCOMMANDS`, `GIT_PANEL_MAX_*`,
-`GIT_PANEL_PROCESS_SPAWN_GIT`); that module is implementation evidence, not
-the contract.
+(`GIT_PANEL_MAX_*`, `GIT_PANEL_PROCESS_SPAWN_GIT`); those modules are
+implementation evidence, not the contract.
 
 #### Verification plan
 
