@@ -192,7 +192,7 @@ stay as committed-snapshot references.
 | Plugin ID                          | Policy owned by the plugin                                                                                                                                                                        | Core mechanism relied on                                                                                                                   | Capability sketch (illustrative)                                                                                                                                | Dogfood validation signal                                                                                                           |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `bitty-terminal.shell-integration` | OSC 7/133 semantic zones, cwd and title propagation, prompt and command-region marks, fail-closed fallback when absent                                                                            | VT parser OSC 7/133 derivation, semantic zones, `ImageStore` anchor fallback                                                               | `terminal.semantic-read` read-only                                                                                                                              | Zones consumed by search, statusline, and peek without plugin-side VT parsing; absence degrades gracefully                          |
-| `bitty-terminal.workspace`         | Workspace commands, workspaceline presentation, ordering, key bindings, and closing policy                                                                                                        | `LayoutNode` and split primitives, workspaceline exclusive claim, status composition                                                       | `ui.rich` or status-component slot plus `workspaceline` claim                                                                                                   | Exclusive claim validated: duplicate claim rejected, not last-wins; close policy observable via `bitty plugin doctor`               |
+| `bitty-terminal.workspace`         | Workspace commands, workspaceline presentation, ordering, key bindings, and closing policy                                                                                                        | `LayoutNode` and split primitives, `tabline` exclusive claim, status composition                                                           | `ui.rich` or status-component slot plus `tabline` claim                                                                                                         | Exclusive claim validated: duplicate claim rejected, not last-wins; close policy observable via `bitty plugin doctor`               |
 | `bitty-terminal.project`           | Project discovery and session presentation                                                                                                                                                        | Constrained project discovery and session metadata                                                                                         | `fs.read:PROJECT_GLOB` constrained                                                                                                                              | Validates project-scoped discovery and session presentation without widening trust or filesystem authority                          |
 | `bitty-terminal.file-manager`      | Observation-only file-manager policy (bounded listing, navigation, and preview) over the observed cwd with a root-parameterized, fail-closed scope; panel presentation and `fs.*` access deferred | Semantic snapshot (`terminal.semantic-read`); Panel Runtime and `ViewContent::Panel(PanelId)` deferred pending the panel-provider contract | `terminal.semantic-read` only (implemented observation-only); `panel.provider`, `panel.create`, and root-scoped `fs.read`/`fs.write` deferred                   | Validates root-parameterized scope and the bounded `8 KiB` listing payload; tiled-panel and `fs.*` dogfood deferred                 |
 | `bitty-terminal.git-panel`         | Tiled Panel git branch/status/diff/log presentation                                                                                                                                               | Panel Runtime plus allowlisted `process.spawn:git` under manifest `[tools.git]`                                                            | `process.spawn:git` allowlisted, `panel.provider`, `panel.create`, `terminal.semantic-read`                                                                     | Validates CLI reuse (Layer 2) against an allowlisted binary with bounded output under `[tools.git]` argv                            |
@@ -507,11 +507,17 @@ retention and aggregation policy within those mechanisms.
 - Every plugin above passes through the identical deny-by-default
   capability model (no wildcards, path and destination parameters attached
   to identifiers). Official and featured plugins have no private channel.
-- High-risk identifiers (`terminal.input.all`, `terminal.raw-read`,
-  `ui.protocol-register`, `debug.control`, `runtime.plugin-manage`) are
-  not requested by any first-party or featured plugin in `v1` and, where
-  relevant, cannot be granted implicitly by workspace configuration or by
-  service indirection.
+- High-risk identifiers: the accepted consent set (`terminal.input.all`,
+  `terminal.raw-read`, `ui.protocol-register`, `debug.control`,
+  `runtime.plugin-manage`) is not requested by any first-party or featured
+  plugin in `v1` and cannot be granted implicitly by workspace configuration or
+  by service indirection. The SDK's broader `capabilities.high-risk`
+  escalation-warning set
+  ([Platform RFC capability model](../specifications/plugin-platform-rfc.md#capability-model-oq-012-part-2))
+  also inventories heads these plugins do request with narrowed parameters and
+  explicit consent (`process.spawn:git`, `fs.write:~/mail/**`,
+  `network.connect:...`, `browser.embed`, `agent.memory`, `mcp.invoke`); that
+  warning is least-privilege guidance and does not block them.
 - Installing or updating any featured plugin runs no package code; the
   staging step executes only manifest validation, compatibility checks, and
   checksum verification, per invariant 8 and R-015/R-016. Capability-
@@ -547,8 +553,8 @@ without private APIs. Minimum signals before a bundled plugin is considered
 - Manifest and capability round-trip: static graph construction rejects
   duplicate qualified names, unknown capabilities, and undeclared event
   subscriptions; lazy help and completion work without a VM.
-- Register vs claim semantics: `workspace` workspaceline claim exclusivity
-  (legacy `tabline` alias included) and `statusline` composition both behave
+- Register vs claim semantics: `workspace` `tabline` claim exclusivity and
+  `statusline` composition both behave
   as specified, with diagnostics instead of load-order shadowing.
 - Observation-only verification: fuzz and property tests show no parser,
   render, or input hot-path callback registration for any first-party
