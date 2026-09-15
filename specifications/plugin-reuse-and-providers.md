@@ -278,12 +278,14 @@ work under CTX-0400, not part of this acceptance.
 #### Accepted bounded-output rules
 
 - Panel observation payloads are bounded by `GIT_PANEL_PAYLOAD_MAX_BYTES`
-  (`8 KiB` = `BUS_EVENT_MAX_BYTES`, bus admission boundary PR-5); listings
-  truncate deterministically after sorting and dedup.
+  (`8 KiB` = `BUS_EVENT_MAX_BYTES`, bus admission boundary PR-5); status and
+  branch listings sort then truncate deterministically after dedup, while
+  commit listings preserve `git log` reverse-chronological order and truncate
+  after dedup (a display-only hash-sorted view exists separately and is never
+  used for ingestion).
 - `GIT_PANEL_MAX_ENTRIES` (`128`) status entries, `GIT_PANEL_MAX_COMMITS`
-  (`64`) commits, `GIT_PANEL_MAX_BRANCHES` (`32`) branches,
-  `GIT_PANEL_MAX_SELECTION` (`64` = `BUS_PER_SUBSCRIPTION_LIMIT`) selected
-  items.
+  (`64`) commits, `GIT_PANEL_MAX_BRANCHES` (`32`) branches (the single branch
+  bound for ingestion and presentation).
 - `GIT_PANEL_MAX_NAME_CHARS` (`128` = `MAX_OVERLAY_TEXT_LEN`) per branch/file
   name, `GIT_PANEL_MAX_COMMIT_MESSAGE_CHARS` (`256` =
   `MAX_OVERLAY_TOOLTIP_LEN`) per commit message, `GIT_PANEL_MAX_PATH_BYTES`
