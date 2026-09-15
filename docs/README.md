@@ -105,6 +105,13 @@ real content lands; empty placeholder pages are not added.
 | `reference/`             | Factual lookup material derived from implementation evidence. |
 | `docs/plugins/<plugin>/` | Per-plugin pages using the standard page set.                 |
 
+The `manifests/` tree will document the registry-entry integrity field
+contract: optional `manifest_hash` and `signature` (`algorithm`, `value`,
+optional `signer`) fields that are shape-checked when present and only warned
+about when absent, plus the advisory per-entry `signature_status` (`verified` |
+`unverified` | `unsigned`) recorded in the generated index. Phase 1 records no
+`verified` status; the value is display-only and is not a tamper defense.
+
 ## Maintaining the corpus
 
 1. Update the canonical topic document first.

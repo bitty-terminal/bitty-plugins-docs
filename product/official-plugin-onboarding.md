@@ -107,8 +107,12 @@ Run the steps in order. Every step names the repository that owns it.
    `registry/official/<name>.toml` with hand-maintained identity data only:
    `id`, `name`, `repository`, and the optional `kind`, `author`,
    `description`, `tags`, `categories`, `license`, `[compatibility] bitty` /
-   `sdk`. The `<name>` is the repository basename, and `id` must match the
-   manifest's `plugin.id`. Never add version, stars, dates, or downloads.
+   `sdk`. The optional `manifest_hash` and `signature` (`algorithm`, `value`,
+   optional `signer`) fields carry advisory integrity data: they are
+   shape-checked when present, while an absent value only warns, so unsigned
+   entries still publish. The `<name>` is the repository basename, and `id` must
+   match the manifest's `plugin.id`. Never add version, stars, dates, or
+   downloads.
 6. **Submodule (bitty-plugins).** Add `plugins/<name>` and pin it to a commit
    reachable from the plugin repository's mainline (default branch). Never pin
    a feature-branch commit or an unmerged commit.
@@ -170,7 +174,11 @@ keeps identity stable.
 - The plugin repository owns `plugin.version` (SemVer 2) in `bitty-plugin.toml`.
   The registry entry never duplicates the version; `just registry-sync`
   populates the optional `metadata` object of the generated index from the
-  manifest.
+  manifest. Sync binds the fetched manifest to the entry: the fetched
+  `plugin.id` must equal the entry `id`, or the entry is reported as an error
+  and keeps its previous metadata. Fetches are capped at 256 KiB (a
+  `Content-Length` pre-check plus a streaming cap); an oversized body only warns
+  and also keeps the previous metadata.
 - `compat.bitty`, `compat.plugin-api`, and `plugin.version` are separate fields
   in the accepted manifest schema. Registry entries mirror the application
   range as `[compatibility] bitty` and the SDK range as `sdk`; the Plugin API
@@ -238,6 +246,13 @@ CarryCtx tasks rather than silently implemented as new gates:
 3. **Per-plugin page sets (delivered).** The three registered official plugins
    now have `docs/plugins/<plugin>/` page sets, created by `bitty-plugins-docs`
    `CTX-0004`.
+4. **Signature verification and keys (deferred).** Registry entries accept
+   optional `manifest_hash` and `signature` fields, but no verification keys are
+   configured: phase 1 (`bitty-plugins` `CTX-0012`) is warn-not-block and the
+   recorded `signature_status` is advisory (`unsigned` or `unverified`, never
+   `verified`). A trustworthy `verified` status follows the accepted
+   key-directory contract (enrollment, rotation, revocation) in the
+   [Package Follow-up RFC](../specifications/package-followup-rfc.md) (OQ-029).
 
 ## Current state (2026-09-14)
 
