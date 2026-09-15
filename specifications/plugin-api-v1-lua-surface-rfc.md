@@ -34,9 +34,9 @@ candidate spellings recorded in the corpus:
 
 Evidence revisions inspected read-only during drafting: `bitty` `1ea2f66`
 (local checkout; `bitty-plugin-host` and `bitty-lua` sources; the workspace was
-behind `origin/main` at inspection time), `bitty-plugin-sdk` worktree CTX-0015
-branch `ctx-0015/feat-manifest-lint` at `d2cad1f` (manifest/lint in review, not
-accepted). The SDK produces no authoritative surface: per
+behind `origin/main` at inspection time), `bitty-plugin-sdk` main at `0fbefe7`
+(manifest/lint, mock host, and conformance merged via CTX-0032/#57,
+CTX-0033/#58, and CTX-0036/#60). The SDK produces no authoritative surface: per
 [core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) and the Plugin Platform
 RFC, an SDK surface must derive from an accepted host contract.
 
@@ -180,7 +180,7 @@ excludes Levels 3 and 4.
 | L1 Control          | Included  | `bitty.env.get` / `bitty.env.has` (already accepted in ADR 0006)      | `env:<KEY>` for plugins                      |
 | Cross-cutting       | Included  | `bitty.services.get` (consumer side)                                  | none; provider grants stay with the callee   |
 | L2 UI               | Included  | `bitty.ui.mount` / `bitty.ui.update` (declarative slot contributions) | `ui.rich`; `ui.overlay` for the overlay slot |
-| L2 UI / observation | Included  | `bitty.terminal.snapshot` (`scope = "semantic"` only)                 | `terminal.semantic-read`                     |
+| L2 UI / observation | Included  | `bitty.terminal.snapshot` (`scope? = "semantic"`, default)            | `terminal.semantic-read`                     |
 | L3 Presentation     | Excluded  | decorations, annotations, highlighting, replacement                   | —                                            |
 | L4 Protocol         | Excluded  | OSC/APC and structured-output handler registration                    | —                                            |
 
@@ -353,9 +353,11 @@ bitty.ui.update(handle, component) -> boolean
 bitty.terminal.snapshot(opts) -> Snapshot
 ```
 
-`opts = { scope = "semantic", terminal_id? = integer }` is the only v1 scope
-and requires `terminal.semantic-read`. `scope = "raw"` is rejected in v1; it
-would require `terminal.raw-read` and is explicitly high-risk. Without
+`opts = { scope? = "semantic", terminal_id? = integer }`; `scope` is optional
+and defaults to `"semantic"`, the only accepted v1 scope, and the call requires
+`terminal.semantic-read`. Any other explicit scope (for example `scope = "raw"`)
+is rejected in v1; a raw scope would require `terminal.raw-read` and is
+explicitly high-risk. Without
 `terminal_id` the snapshot targets the focused view's attached terminal; an
 explicit id is allowed within `terminal.semantic-read` so consumers can answer
 observation events for other terminals. Terminal enumeration remains excluded
@@ -533,8 +535,9 @@ is consistent with the accepted no-hot-path-events rule.
   or removing an event name requires a major version and migration notes.
 - The manifest `compat.plugin-api` range is the compatibility gate; the runtime
   `bitty.api_version` and the manifest range must agree at activation.
-- Unknown future fields in payload tables are ignored, not errors; unknown
-  event names are registration errors, not implicit subscriptions.
+- Unknown future fields in payload tables are ignored, not errors, except on
+  payload-less kinds (whose v1 shape declares no fields), which reject any key;
+  unknown event names are registration errors, not implicit subscriptions.
 
 ## Security alignment and traceability
 
@@ -631,5 +634,5 @@ dispositions are:
 - `bitty` `1ea2f66` — `crates/bitty-plugin-host/src/event.rs` (closed
   `EventKind`/`EventPayload`), `registry.rs`, `host.rs`, `capability.rs`,
   `manifest.rs`; `crates/bitty-lua/src/lib.rs` (VM budgets, no host bridge).
-- `bitty-plugin-sdk` CTX-0015 `d2cad1f` — manifest/lint work in review, evidence
-  only.
+- `bitty-plugin-sdk` `0fbefe7` (main) — manifest/lint, mock host, and
+  conformance; merged CTX-0032/#57, CTX-0033/#58, CTX-0036/#60, evidence only.

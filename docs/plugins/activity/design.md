@@ -33,8 +33,9 @@ Command arguments are never stored (`store_command_args` defaults to `false`).
   and has no allow-all identifier.
 - Plugins alter presentation, never terminal truth; activity consumes
   observation events and does not enter the input, parser, or render hot paths.
-- High-risk identifiers (filesystem, process, network, clipboard, terminal
-  input) are intentionally absent from the manifest.
+- High-risk categories such as filesystem writes, process spawn, network,
+  clipboard, terminal input, and agent/MCP calls are intentionally absent from
+  the manifest.
 
 ## Failure behavior
 

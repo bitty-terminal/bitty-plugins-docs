@@ -201,6 +201,11 @@ Accepted validation rules:
    [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md); schema
    fragments are bounded per the
    [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md).
+7. Every `[lazy].events` entry must be one of the closed v1 event names that
+   `bitty.events.subscribe` accepts
+   ([Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md#event-names-and-payloads));
+   an unknown event kind is a validation error, not a forward-compatible
+   extension.
 
 Dependency resolution evaluates the full graph before activation: cycles are
 rejected, incompatible constraints are resolver errors, and lazy plugins
@@ -268,6 +273,27 @@ Rules:
 5. Native in-process plugins remain forbidden (R-017); the capability model
    assumes the restricted-VM runtime and confers nothing on native payloads.
 
+The five identifiers in rule 3 are the accepted consent set. The SDK manifest
+linter (`bitty-plugin-lint`) additionally emits a `capabilities.high-risk`
+warning (never an error, and never a grant requirement) over a broader
+escalation set used as least-privilege authoring guidance. That set is a
+superset of rule 3 and covers escalation shapes that reach beyond presentation:
+
+| Escalation shape        | Heads                                                                                     |
+| ----------------------- | ----------------------------------------------------------------------------------------- |
+| Host management         | `terminal.manage`, `runtime.plugin-manage`, `debug.control`                               |
+| Sensitive input reads   | `terminal.raw-read`, `terminal.input.all`, `clipboard.read`                               |
+| Execution or writes     | `fs.write`, `process.spawn`, `ui.protocol-register`, `protocol.register`, `browser.embed` |
+| Outbound network        | `network.connect`                                                                         |
+| Agent or external calls | `agent.context.terminal`, `agent.context.workspace`, `agent.memory`, `mcp.invoke`         |
+
+Read-only surfaces deliberately stay out of the warning set: `fs.read` keeps
+the signal sharp while destructive `fs.write:PATTERN` is included. Presentation
+capabilities (`platform.notify`, `platform.open-url`, `ui.rich`,
+`clipboard.write`) are likewise excluded. The warning changes neither the
+manifest verdict nor any grant requirement; rule 3 remains the normative
+consent floor.
+
 ### Grant lifecycle
 
 | Stage       | Accepted behavior                                                                                                                                                                                                                                                                                                                                              |
@@ -279,6 +305,15 @@ Rules:
 | Revocation  | `bitty plugin revoke <id> [<capability>]` and the equivalent plugin-manager action remove grants immediately; the host detaches affected handlers at the next dispatch boundary and reports what was revoked.                                                                                                                                                  |
 | Re-grant    | A revoked plugin re-prompts on next activation; a denied decision persists as a denial record so hostile packages cannot re-prompt in a loop.                                                                                                                                                                                                                  |
 | Workspace   | Project/workspace configuration may narrow grants but may never add any (system policy cannot be weakened by user configuration, and workspace trust is weaker than user consent).                                                                                                                                                                             |
+
+Harness note (SDK mock host): the `bitty-plugin-sdk` mock host clears its
+in-memory grant set on `dispose()` — never on `suspend` — as a deliberate,
+stricter-than-the-accepted-record simplification so a reload starts from
+deny-by-default and tests re-authorize explicitly. The real host keeps the
+persistent, manifest-hash-addressed grant record described above and re-prompts
+only on a manifest-hash change that adds capabilities or after revocation. The
+divergence is more restrictive only and never makes the harness more permissive
+than the accepted contract.
 
 Prompt-UX constraints (accepted): one dialog per capability family group,
 never a single accept-all toggle; high-risk identifiers render with distinct
