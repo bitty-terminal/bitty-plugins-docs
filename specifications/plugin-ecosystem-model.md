@@ -28,6 +28,9 @@ accepted corpus already covers a point, this page links that document.
   terminal-direction work uses them too.
 - `origin/040.md` is the plugin-system record; `origin/039.md` is the
   Panel/activity/native-UI record.
+- A third record, `origin/041.md`, is recorded in the sibling
+  [Plugin IPC Boundary](plugin-ipc-boundary.md) page because it covers the
+  distinct out-of-process and IPC extension-boundary topic.
 - Section 11 lists the decisions still required before this becomes contract.
 
 ## 2. Plugin taxonomy

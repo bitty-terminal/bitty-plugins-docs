@@ -24,3 +24,11 @@ and this project adheres to
   non-escalation, extension-platform API versioning, the plugin graph, and
   Panel/Activity implications. Research-derived design input, not an accepted
   contract.
+- Record the plugin-relevant conclusions of the workspace `research` record
+  `origin/041.md` as the draft `specifications/plugin-ipc-boundary.md`:
+  out-of-process plugins as a second extension boundary, the plugin event bus,
+  the unified Lua/IPC/CLI capability model, capability-token and
+  permission-display candidates, crash isolation and supervision questions,
+  control-CLI and multi-instance addressing sketches, and the candidate
+  three-layer extension framing. Research-derived design input, not an accepted
+  contract; the diverging `[permissions]` sketch is marked unaccepted.
