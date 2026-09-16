@@ -17,3 +17,7 @@
 {"created_at":"2026-09-15T23:42:16.369564324+00:00","id":"01M2KQ699HAVKHEJZQQK26BRX9","kind":"include","pattern":"product/plugin-roadmap.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M2KQ3CEN6Q0N58VRNE86XMYK"}
 {"created_at":"2026-09-16T03:31:28.310282125+00:00","id":"01M2M49YXP04R4JGEW98ZMRPDN","kind":"include","pattern":"specifications/package-followup-rfc.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M2M49YVKHTS33CNBHF95MG36"}
 {"created_at":"2026-09-16T03:31:28.369725630+00:00","id":"01M2M49YZHHV8903MKKSQ70D6Y","kind":"include","pattern":"specifications/plugin-platform-rfc.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M2M49YVKHTS33CNBHF95MG36"}
+{"created_at":"2026-09-16T04:27:10.560984693+00:00","id":"01M2M7FYV1WHSBKWWRF6S1GND3","kind":"include","pattern":"specifications","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M2M7FPF4N6Y00TZXBH0EYRTQ"}
+{"created_at":"2026-09-16T04:27:10.621234949+00:00","id":"01M2M7FYWXJCQ54J9VWDHSPG8Z","kind":"include","pattern":"product","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M2M7FPF4N6Y00TZXBH0EYRTQ"}
+{"created_at":"2026-09-16T04:27:10.671092043+00:00","id":"01M2M7FYYFWSECRV5TBM2D0MX3","kind":"include","pattern":"docs/README.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M2M7FPF4N6Y00TZXBH0EYRTQ"}
+{"created_at":"2026-09-16T04:27:10.716422548+00:00","id":"01M2M7FYZWB2N5R0924N9ZQ94V","kind":"include","pattern":"CHANGELOG.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M2M7FPF4N6Y00TZXBH0EYRTQ"}
