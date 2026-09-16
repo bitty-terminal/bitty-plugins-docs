@@ -51,6 +51,12 @@ and this project adheres to
   and external history tools as providers and sinks. Research-derived design
   input, not an accepted contract; Plugin API v1 defines no `fs.*` Lua entry
   point.
+- Disambiguate the `composer` term in the Plugin API v1 Lua Surface RFC and
+  record the research 002 API stability priority order as a non-normative
+  candidate in the plugin system extension-levels section (CTX-0025, related
+  to Issue #43): the user-facing Command Composer stays a terminal-interaction
+  concept owned by `bitty-terminal-docs`, distinct from the internal scene-diff
+  step. No normative behavior changes.
 
 ### Changed
 
