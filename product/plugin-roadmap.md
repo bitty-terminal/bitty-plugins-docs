@@ -473,8 +473,10 @@ This list records ecosystem direction only. It does not add a Panel API,
 distribution manifest, runtime, Event Bus, or implementation claim. The
 research-derived [Plugin Ecosystem Model](../specifications/plugin-ecosystem-model.md)
 records the plugin taxonomy, extension-point direction, and Panel-as-host
-implications behind this candidate list; it is design input, not an accepted
-contract.
+implications behind this candidate list, and the
+[Plugin IPC Boundary](../specifications/plugin-ipc-boundary.md) records the
+out-of-process and IPC-shaped extension-boundary direction behind the
+IPC-adjacent candidates above; both are design input, not an accepted contract.
 
 ### Privacy-first activity: `store_command_args: false`
 
