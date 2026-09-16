@@ -39,6 +39,18 @@ and this project adheres to
   (tiled panel over allowlisted `process.spawn:git` plus accepted
   `[tools.git]` v1) packages; panel presentation deferred pending the
   panel-provider contract. Nothing here is verified or shipped.
+- Record the plugin-side conclusions of the workspace `research` records
+  `origin/032.md` (pluggable model access) and `origin/038.md` (pluggable pane
+  history) as candidate directions in
+  `specifications/plugin-reuse-and-providers.md` with open-item acceptance
+  rows: core keeps the provider contract/registry/routing while vendor
+  auth/billing/discovery and the management UI live in plugins with opaque
+  credential handles composed with the Secrets direction, and durable history
+  becomes an official plugin with append-only compressed segments, storage
+  capabilities instead of direct database access, command/output/replay tiers,
+  and external history tools as providers and sinks. Research-derived design
+  input, not an accepted contract; Plugin API v1 defines no `fs.*` Lua entry
+  point.
 
 ### Changed
 
