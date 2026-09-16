@@ -332,7 +332,11 @@ bitty.ui.update(handle, component) -> boolean
 - The handle is an opaque, generation-owned integer (`block_id`);
   `bitty.ui.update` replaces the block's scene subtree under the same
   `block_id` with an incremented version, which is exactly the accepted
-  `RichBlock` replacement rule, and the composer diffs the subtree. `update`
+  `RichBlock` replacement rule, and the composer diffs the subtree. Here
+  "composer" names only this internal scene-diff step, not the user-facing
+  Command Composer (multi-line input, history recall, `Alt+E` external-editor
+  handoff), which is a terminal-interaction concept owned by
+  [Semantic Terminal RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/semantic-terminal-rfc.md). `update`
   returns `false` for a stale or foreign handle and raises
   `E_UI_COMPONENT_INVALID` for a component that violates the scene contract
   ([LUA-OQ-7](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-7-ui-update-model)).
@@ -535,6 +539,10 @@ is consistent with the accepted no-hot-path-events rule.
   or removing an event name requires a major version and migration notes.
 - The manifest `compat.plugin-api` range is the compatibility gate; the runtime
   `bitty.api_version` and the manifest range must agree at activation.
+- The research-recorded API stability priority order (Panel first, Plugin
+  last) is a non-normative candidate noted in the
+  [Plugin system](../extensibility/plugin-system.md#extension-levels), not a
+  `1.x` guarantee.
 - Unknown future fields in payload tables are ignored, not errors, except on
   payload-less kinds (whose v1 shape declares no fields), which reject any key;
   unknown event names are registration errors, not implicit subscriptions.

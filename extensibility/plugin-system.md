@@ -130,6 +130,11 @@ stability expectations are visible:
 There is intentionally no public level for mutating terminal state. Internal
 debug and test hooks, if any, are not a compatibility promise.
 
+Research-recorded candidate: workspace `research` record `origin/002.md`
+proposes an API stability priority order of Panel, Workspace, Layout, Command,
+Keybinding, Event, Capability, Service, Widget, Plugin. This order is
+non-normative here; adopting it would need acceptance in the owning contract.
+
 Direct access to `wgpu::Device`, `wgpu::Queue`, or textures is also out of the
 initial plugin boundary. The core should first expose stable scene primitives
 such as text, rectangles, images, transforms, clipping, layout, opacity,
