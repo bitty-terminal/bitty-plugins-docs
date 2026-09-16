@@ -62,9 +62,9 @@ Out of scope (owned elsewhere):
   (OQ-008/OQ-015/OQ-016,
   [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md)).
 - Panel container semantics, Panel Runtime, and inter-Panel Event Bus; these
-  remain candidate work described by the future Panel Extensibility Vision
-  document (CTX-0094, pending review) and draft
-  [Workspace Compositor](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md).
+  remain candidate work described by the draft
+  [Panel Extensibility Vision](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/panel-vision.md)
+  and the draft [Workspace Compositor](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md).
 
 No new trust boundary is introduced. Every plugin below uses the same
 capability-checked, generation-scoped, bounded-queue host as any community
@@ -448,12 +448,12 @@ policy within its declared capabilities.
 
 ## Post-v1.0 Panel ecosystem candidates
 
-The future Panel Extensibility Vision document (CTX-0094, pending review)
-describes Panel as a candidate workspace-managed application container that
-generalizes View content. It is not an OS Window or a PTY. A future Panel RFC
-must define the
-Panel lifecycle, Panel Runtime, and inter-Panel Event Bus before any provider
-or ecosystem surface can be treated as an implementation target.
+The accepted Panel Runtime RFC (2026-09-14, sibling `bitty-terminal-docs`,
+`specifications/panel-runtime-rfc.md`) defines Panel as a workspace-managed
+application container that generalizes View content; it is not an OS Window or
+a PTY. Its open questions (`RFC-OQ-1` through `RFC-OQ-9`) still govern the
+provider and ecosystem surface, which remains a post-v1.0 implementation
+target.
 
 Accordingly, the following are post-v1.0 candidates with no date or publication
 promise:
@@ -470,7 +470,11 @@ promise:
   mechanism and must not imply enabled-by-default plugins.
 
 This list records ecosystem direction only. It does not add a Panel API,
-distribution manifest, runtime, Event Bus, or implementation claim.
+distribution manifest, runtime, Event Bus, or implementation claim. The
+research-derived [Plugin Ecosystem Model](../specifications/plugin-ecosystem-model.md)
+records the plugin taxonomy, extension-point direction, and Panel-as-host
+implications behind this candidate list; it is design input, not an accepted
+contract.
 
 ### Privacy-first activity: `store_command_args: false`
 
