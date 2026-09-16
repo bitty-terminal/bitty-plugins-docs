@@ -35,6 +35,14 @@ and this project adheres to
 
 ### Changed
 
+- Reconcile the bundled-plugin split decision with the `file-manager` and
+  `git-panel` catalog removals (`bitty` PR #725/`CTX-0399` commit `65aac5c`
+  and PR #713/`CTX-0400` commit `e84da34`, both 2026-09-15): both candidates
+  move from "split later" to split with catalog entry removed, independent
+  package implemented headlessly, and registry entry published
+  (`bitty-plugins` PR #23 commit `84f0b7d` and PR #19 commit `9899c1e`);
+  panel presentation stays deferred pending the panel-provider contract
+  (`bitty-docs` `CTX-0181`, OQ-058).
 - Repository metadata baseline: [CONTRIBUTING.md](CONTRIBUTING.md) documents the
   delivery lifecycle, the contributor-branch convention
   (`ctx-XXXX/<type>-<slug>`; external contributors use
