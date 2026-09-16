@@ -102,15 +102,15 @@ in `crates/bitty-plugin-host/src/bundled.rs`, runtime implementations in
 `crates/bitty-runtime/src/`, and dogfood tests in `crates/bitty-runtime/tests/`.
 Manifest presence is not shipped behavior.
 
-| Candidate       | Bundled realization                                            | Capabilities requested                                                                                                                                                                     | Isolation need                                             | Verdict                     | Gate                                          | Owner task         |
-| --------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- | --------------------------- | --------------------------------------------- | ------------------ |
-| `palette`       | `palette_manifest`, `bitty-runtime/src/palette.rs`             | `ui.overlay`, command registry                                                                                                                                                             | Overlay slot, declarative primitives                       | **Split**                   | Distribution + SDK                            | `bitty` `CTX-0397` |
-| `statusline`    | `statusline_manifest`, `bitty-runtime/src/statusline.rs`       | `terminal.semantic-read`, `ui.rich`                                                                                                                                                        | Status-component composition                               | **Split** (statusline only) | Distribution + SDK                            | `bitty` `CTX-0398` |
-| `file-manager`  | `file_manager_manifest`, `bitty-runtime/src/file_manager.rs`   | `terminal.semantic-read` only (observation-only); the former `panel.provider`, `panel.create`, and root-scoped `fs.read`/`fs.write` requests are removed as phantom authority and deferred | Panel Runtime, path-scoped grants                          | **Split later**             | Panel provider contract                       | `bitty` `CTX-0399` |
-| `git-panel`     | `git_panel_manifest`, `bitty-runtime/src/git_panel.rs`         | `panel.provider`, `panel.create`, `process.spawn:git`, `terminal.semantic-read`, `fs.read`                                                                                                 | Panel Runtime, allowlisted CLI                             | **Split later**             | Panel provider contract + Layer 2 `[tools.*]` | `bitty` `CTX-0400` |
-| `browser-panel` | `browser_panel_manifest`, `bitty-runtime/src/browser_panel.rs` | `panel.provider`, `panel.create`, `browser.embed/navigation/file-url/storage`, `terminal.semantic-read`                                                                                    | Native embedder, host-owned surface, untrusted web content | **Stay bundled (Core)**     | Core browser mechanism + security review      | `bitty` `CTX-0401` |
-| `ai-panel`      | `ai_panel_manifest`, `bitty-runtime/src/ai_panel.rs`           | `panel.provider`, `panel.create`, `agent.context.*`, `agent.memory:persist`, `mcp.invoke:*`, `ai.provider/stream/model`                                                                    | Panel Runtime + `bitty-ai` mechanism                       | **Split later** (hybrid)    | Panel provider contract + `bitty-ai` surfaces | `bitty` `CTX-0402` |
-| `mail-panel`    | `mail_panel_manifest`, `bitty-runtime/src/mail_panel.rs`       | `panel.provider`, `panel.create`, `mcp.invoke:mail.*`, `network.connect` (imap/smtp), `fs.read`/`fs.write:~/mail/**`                                                                       | Panel Runtime, MCP, endpoint grants                        | **Split later**             | Panel provider contract + credential contract | `bitty` `CTX-0403` |
+| Candidate       | Bundled realization                                                                                    | Capabilities requested                                                                                                                                                                     | Isolation need                                             | Verdict                                                        | Gate                                                                         | Owner task         |
+| --------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------ |
+| `palette`       | `palette_manifest`, `bitty-runtime/src/palette.rs`                                                     | `ui.overlay`, command registry                                                                                                                                                             | Overlay slot, declarative primitives                       | **Split**                                                      | Distribution + SDK                                                           | `bitty` `CTX-0397` |
+| `statusline`    | `statusline_manifest`, `bitty-runtime/src/statusline.rs`                                               | `terminal.semantic-read`, `ui.rich`                                                                                                                                                        | Status-component composition                               | **Split** (statusline only)                                    | Distribution + SDK                                                           | `bitty` `CTX-0398` |
+| `file-manager`  | `file_manager_manifest` (removed 2026-09-15), `bitty-runtime/src/file_manager.rs` (removed 2026-09-15) | `terminal.semantic-read` only (observation-only); the former `panel.provider`, `panel.create`, and root-scoped `fs.read`/`fs.write` requests are removed as phantom authority and deferred | Panel Runtime, path-scoped grants                          | **Split** (catalog entry removed; panel presentation deferred) | Panel provider contract (presentation only)                                  | `bitty` `CTX-0399` |
+| `git-panel`     | `git_panel_manifest` (removed 2026-09-15), `bitty-runtime/src/git_panel.rs` (removed 2026-09-15)       | `panel.provider`, `panel.create`, `process.spawn:git`, `terminal.semantic-read`, `fs.read`                                                                                                 | Panel Runtime, allowlisted CLI                             | **Split** (catalog entry removed; panel presentation deferred) | Panel provider contract (presentation only) + Layer 2 `[tools.*]` (accepted) | `bitty` `CTX-0400` |
+| `browser-panel` | `browser_panel_manifest`, `bitty-runtime/src/browser_panel.rs`                                         | `panel.provider`, `panel.create`, `browser.embed/navigation/file-url/storage`, `terminal.semantic-read`                                                                                    | Native embedder, host-owned surface, untrusted web content | **Stay bundled (Core)**                                        | Core browser mechanism + security review                                     | `bitty` `CTX-0401` |
+| `ai-panel`      | `ai_panel_manifest`, `bitty-runtime/src/ai_panel.rs`                                                   | `panel.provider`, `panel.create`, `agent.context.*`, `agent.memory:persist`, `mcp.invoke:*`, `ai.provider/stream/model`                                                                    | Panel Runtime + `bitty-ai` mechanism                       | **Split later** (hybrid)                                       | Panel provider contract + `bitty-ai` surfaces                                | `bitty` `CTX-0402` |
+| `mail-panel`    | `mail_panel_manifest`, `bitty-runtime/src/mail_panel.rs`                                               | `panel.provider`, `panel.create`, `mcp.invoke:mail.*`, `network.connect` (imap/smtp), `fs.read`/`fs.write:~/mail/**`                                                                       | Panel Runtime, MCP, endpoint grants                        | **Split later**                                                | Panel provider contract + credential contract                                | `bitty` `CTX-0403` |
 
 ### `palette` — split (distribution gate merged)
 
@@ -141,29 +141,40 @@ Verdict: **statusline becomes an independent first-party package**; the
 `tabline` claim and workspace lifecycle do not. `bitty/CTX-0398` is scoped
 accordingly.
 
-### `file-manager` — split later
+### `file-manager` — split (catalog entry removed; panel presentation deferred)
 
 Observation-only file-manager policy (bounded listing, navigation, and preview)
 over the observed terminal cwd, with a root-parameterized, fail-closed scope and
-`terminal.semantic-read` as its single capability. The independent package is
-implemented and tested headlessly; panel presentation and `fs.*` access stay
-deferred because Plugin API v1 has no panel-mount or filesystem surface
-(`bitty.ui.register_panel` is post-v1.0 and there is no `bitty.fs`). An
-independent repository therefore cannot register a panel provider until the
-panel-provider contract is accepted; the Panel Runtime and Event Bus Pre-Study
-is still `draft`. Verdict: **split target**, blocked on the panel-provider
-contract (`bitty-docs` `CTX-0181`, OQ-058) in addition to distribution.
+`terminal.semantic-read` as its single capability. The bundled catalog entry was
+removed (`bitty` PR #725, `CTX-0399`, commit `65aac5c`, 2026-09-15) and the
+independent package is implemented and tested headlessly in
+`bitty-terminal/file-manager` with a published registry entry
+(`registry/official/file-manager.toml`, `bitty-plugins` PR #23,
+`bitty-plugins` `CTX-0010`, commit `84f0b7d`, 2026-09-15). Panel presentation
+and `fs.*` access stay deferred because Plugin API v1 has no panel-mount or
+filesystem surface (`bitty.ui.register_panel` is post-v1.0 and there is no
+`bitty.fs`). An independent repository therefore cannot present a panel until
+the panel-provider contract is accepted; the Panel Runtime and Event Bus
+Pre-Study is still `draft`. Verdict: **split** (catalog entry removed); panel
+presentation remains blocked on the panel-provider contract (`bitty-docs`
+`CTX-0181`, OQ-058) in addition to distribution.
 
-### `git-panel` — split later
+### `git-panel` — split (catalog entry removed; panel presentation deferred)
 
 Tiled Panel git branch/status/diff/log presentation over allowlisted
 `process.spawn:git` with manifest-declared `[tools.git]`. Pure Lua plus Layer 2
-system-CLI reuse, but it inherits the panel-provider blocker and additionally
-depends on an accepted `[tools.*]` manifest declaration, which the
-[Plugin Reuse and Provider Ecology RFC](../specifications/plugin-reuse-and-providers.md)
-still carries as draft. Verdict: **split target**, blocked on the panel-provider
-contract and Layer 2 `[tools.*]` acceptance; the Layer 2 acceptance is owned by
-bitty `CTX-0425`.
+system-CLI reuse, with the bundled catalog entry removed (`bitty` PR #713,
+`CTX-0400`, commit `e84da34`, 2026-09-15) and the independent package
+implemented and tested headlessly in `bitty-terminal/git-panel` with a
+published registry entry (`registry/official/git-panel.toml`, `bitty-plugins`
+PR #19, `bitty-plugins` `CTX-0008`, commit `9899c1e`, 2026-09-15). The Layer 2
+`[tools.git]` declaration is accepted (v1) under `bitty` `CTX-0425`, recorded
+canonically in the
+[Plugin Reuse and Provider Ecology RFC](../specifications/plugin-reuse-and-providers.md#accepted-toolsgit-contract-v1);
+the rest of that RFC stays draft. Verdict: **split** (catalog entry removed);
+panel presentation remains blocked on the panel-provider contract, which the
+Layer 2 acceptance does not replace; that acceptance is owned by bitty
+`CTX-0425`.
 
 ### `browser-panel` — stay bundled
 
@@ -197,9 +208,14 @@ plaintext storage. Verdict: **split target**, blocked on those contracts.
 - **Split, gated on distribution and SDK only (distribution path merged; this
   record's acceptance was still in review at the decision date):** `palette`,
   `statusline` (`tabline` claim stays bundled).
-- **Split, gated additionally on the panel-provider contract:** `file-manager`,
-  `git-panel`, `ai-panel`, `mail-panel`. `git-panel` also needs Layer 2
-  `[tools.*]`; `ai-panel` also needs the `bitty-ai` surfaces; `mail-panel` also
+- **Split (bundled catalog entry removed 2026-09-15; panel presentation still
+  deferred pending the panel-provider contract):** `file-manager`,
+  `git-panel`. `git-panel` additionally relies on the accepted Layer 2
+  `[tools.git]` slice (v1, `bitty` `CTX-0425`); `ai-panel` and `mail-panel`
+  below additionally need the `bitty-ai` surfaces and the credential-source
+  contract respectively.
+- **Split later, gated additionally on the panel-provider contract:** `ai-panel`,
+  `mail-panel`. `ai-panel` also needs the `bitty-ai` surfaces; `mail-panel` also
   needs the credential-source contract.
 - **Stay bundled (Core mechanism):** `browser-panel`.
 - **Unchanged:** `shell-integration` and the workspace core (including the
@@ -223,18 +239,18 @@ plaintext storage. Verdict: **split target**, blocked on those contracts.
 
 ## Follow-up tasks
 
-| Task                    | Owner                                | Purpose                                                                                |
-| ----------------------- | ------------------------------------ | -------------------------------------------------------------------------------------- |
-| `CTX-0397`              | `bitty`                              | Extract `palette` to an independent first-party package.                               |
-| `CTX-0398`              | `bitty`                              | Extract `statusline` (`tabline` claim stays bundled).                                  |
-| `CTX-0399`              | `bitty`                              | Extract `file-manager` once the panel-provider contract is accepted.                   |
-| `CTX-0400`              | `bitty`                              | Extract `git-panel`; needs the panel-provider and Layer 2 contracts.                   |
-| `CTX-0401`              | `bitty`                              | Record the stay-bundled verdict for `browser-panel` and the revisit condition.         |
-| `CTX-0402`              | `bitty`                              | Extract `ai-panel` as a hybrid plugin over `bitty-ai` surfaces.                        |
-| `CTX-0403`              | `bitty`                              | Extract `mail-panel`; needs the credential-source contract.                            |
-| `bitty-docs` `CTX-0181` | `bitty-docs`                         | Accept the Panel Runtime contract (OQ-058).                                            |
-| `bitty` `CTX-0424`      | `bitty-docs` / `bitty-terminal-docs` | Close the OQ-053 register row and revise the Default Distribution RFC bundled catalog. |
-| `bitty` `CTX-0425`      | `bitty-plugins-docs`                 | Accept the Layer 2 `[tools.*]` system-CLI reuse declaration (`git-panel` gate).        |
+| Task                    | Owner                                | Purpose                                                                                                                           |
+| ----------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| `CTX-0397`              | `bitty`                              | Extract `palette` to an independent first-party package.                                                                          |
+| `CTX-0398`              | `bitty`                              | Extract `statusline` (`tabline` claim stays bundled).                                                                             |
+| `CTX-0399`              | `bitty`                              | Extract `file-manager` (catalog entry removed; independent package and registry entry merged; panel presentation still deferred). |
+| `CTX-0400`              | `bitty`                              | Extract `git-panel` (catalog entry removed; independent package and registry entry merged; panel presentation still deferred).    |
+| `CTX-0401`              | `bitty`                              | Record the stay-bundled verdict for `browser-panel` and the revisit condition.                                                    |
+| `CTX-0402`              | `bitty`                              | Extract `ai-panel` as a hybrid plugin over `bitty-ai` surfaces.                                                                   |
+| `CTX-0403`              | `bitty`                              | Extract `mail-panel`; needs the credential-source contract.                                                                       |
+| `bitty-docs` `CTX-0181` | `bitty-docs`                         | Accept the Panel Runtime contract (OQ-058).                                                                                       |
+| `bitty` `CTX-0424`      | `bitty-docs` / `bitty-terminal-docs` | Close the OQ-053 register row and revise the Default Distribution RFC bundled catalog.                                            |
+| `bitty` `CTX-0425`      | `bitty-plugins-docs`                 | Accept the Layer 2 `[tools.*]` system-CLI reuse declaration (`git-panel` gate).                                                   |
 
 `bitty` `CTX-0424` completed 2026-09-14 (OQ-053 register closure and Default
 Distribution RFC catalog revision).
@@ -252,8 +268,8 @@ does not create repositories or registry entries.
 
 ## Implementation status
 
-Snapshot as of 2026-09-14 after the split merges. Implementation is tracked by
-CarryCtx (`bitty` `CTX-0397` and `CTX-0398`); this section records state and
+Snapshot as of 2026-09-16 after the split merges. Implementation is tracked by
+CarryCtx (`bitty` `CTX-0397` through `CTX-0400`); this section records state and
 does not claim behavior beyond the cited merged repositories.
 
 ### Palette
@@ -279,11 +295,35 @@ does not claim behavior beyond the cited merged repositories.
 | Status-component provider        | Gap      | v1 has no `StatusProvider`/`status.component` contract (draft post-1.0 provider ecology); the package composes one host-owned `Row` as the v1 adapter.                                                                                                                                                                       |
 | Exit-code selection difference   | Recorded | The Lua package selects the latest semantic zone carrying any `metadata.exit_code` (scanning newest-first); the bundled Rust realization selected the last `ZoneKind::OutputEnd` zone's code. The observable `exit:` component can differ when a later non-`OutputEnd` zone carries a code. Recorded from the split reviews. |
 
+### File-manager
+
+| Item                               | State    | Evidence                                                                                                                                                                                                                                                            |
+| ---------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `file-manager` independent package | Merged   | Repository `bitty-terminal/file-manager`; initial independent plugin commit `e5cc68a` (2026-09-15, `CTX-0399`) with headless follow-ups through docs/toolchain pin `cd3da87` (2026-09-16).                                                                          |
+| Bundled catalog entry removed      | Merged   | `bitty` PR #725 squash `65aac5caf51b4329158cd25122ac60825b8d58d2` (2026-09-15, `CTX-0399`) removes `bitty-terminal.file-manager` from the bundled catalog and deletes the bundled `bitty-runtime` review implementation.                                            |
+| Registry registration              | Merged   | `bitty-plugins` PR #23 squash `84f0b7d3396b672bb0c011665301b0a7f1f165b2` (2026-09-15, `CTX-0010`): `registry/official/file-manager.toml`, regenerated `generated/registry.json`, `plugins/file-manager` submodule pin.                                              |
+| Capability scope                   | Recorded | The independent Lua package requests `terminal.semantic-read` only (observation-only); the former `panel.provider`, `panel.create`, and root-scoped `fs.read`/`fs.write` requests are recorded as removed phantom authority, matching the decision-time assessment. |
+| Panel presentation                 | Gap      | The panel-provider contract is not accepted (draft Panel Runtime pre-study; `bitty-docs` `CTX-0181`, OQ-058); the package implements listing, navigation, and preview headlessly with no panel surface until it lands.                                              |
+| Filesystem surface                 | Gap      | Plugin API v1 has no `bitty.fs` surface; `fs.*` access stays deferred with no host bridge.                                                                                                                                                                          |
+
+### Git-panel
+
+| Item                            | State    | Evidence                                                                                                                                                                                                                                                                                                            |
+| ------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `git-panel` independent package | Merged   | Repository `bitty-terminal/git-panel`; initial independent plugin commit `b6b4136` (2026-09-15, `CTX-0400`) with headless follow-ups through docs/toolchain pin `528a62b` (2026-09-16).                                                                                                                             |
+| Bundled catalog entry removed   | Merged   | `bitty` PR #713 squash `e84da34cb512e243d2f6bbb49bacd6ce25580ba5` (2026-09-15, `CTX-0400`) removes `bitty-terminal.git-panel` from the bundled catalog and deletes the bundled `bitty-runtime` review implementation.                                                                                               |
+| Registry registration           | Merged   | `bitty-plugins` PR #19 squash `9899c1e15436445b21bc2fbc0b3f9f633b888cf7` (2026-09-15, `CTX-0008`): `registry/official/git-panel.toml`, regenerated `generated/registry.json`, `plugins/git-panel` submodule pin.                                                                                                    |
+| Layer 2 `[tools.git]` slice     | Accepted | Accepted `[tools.git]` contract (v1) under `bitty` `CTX-0425`, recorded canonically in the [Plugin Reuse and Provider Ecology RFC](../specifications/plugin-reuse-and-providers.md#accepted-toolsgit-contract-v1); the rest of that RFC stays draft.                                                                |
+| Panel presentation              | Gap      | The panel-provider contract is not accepted (draft Panel Runtime pre-study; `bitty-docs` `CTX-0181`, OQ-058); the package implements the listing/allowlist policy headlessly with no panel surface until it lands. The Layer 2 acceptance covers the `[tools.git]` declaration only and does not replace this gate. |
+| Host `[tools.*]` table check    | Gap      | Manifest-side `[tools.git]` shape is enforced by the pinned SDK linter; host-side table enforcement in the `bitty` install path is follow-up work under `CTX-0400`, not part of this acceptance.                                                                                                                    |
+
 `file-manager` and `git-panel` migrated to independent first-party packages
-(`bitty` `CTX-0399` and `CTX-0400`); `file-manager` is observation-only
+(`bitty` `CTX-0399` and `CTX-0400`, catalog entries removed and registry
+entries published 2026-09-15); `file-manager` is observation-only
 (`terminal.semantic-read`), while `git-panel` still carries its Tiled Panel and
-`[tools.git]` surfaces. The `ai-panel` and `mail-panel` candidates stay bundled
-and unmodified, pending the panel-provider contract. The Default Distribution
+accepted `[tools.git]` surfaces pending the panel-provider contract. The
+`ai-panel` and `mail-panel` candidates stay bundled and unmodified, pending
+the panel-provider contract. The Default Distribution
 RFC bundled-catalog amendment and the OQ-053 register closure are complete under
 `bitty` `CTX-0424`. The palette capability delta and the statusline exit-code
 delta are tracked as `bitty-plugins` `CTX-0005`.
