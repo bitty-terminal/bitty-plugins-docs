@@ -151,7 +151,9 @@ bitty = ">=0.5,<1.0"          # application version range
 plugin-api = "^1.0"           # Plugin API range; v1 line is ^1.0
 
 [dependencies]                # optional; plugin dependencies by ID
-"xuepoo.gitcore" = ">=2.0"
+"xuepoo.gitcore" = ">=2.0"    # string form (version requirement only)
+# Inline-table form (ADR 0009 convention); opt one edge into prereleases:
+# "xuepoo.gitcore" = { version = ">=2.0", prerelease = true }
 
 [services.provided]           # optional; interface name -> version or table
 "markdown.render" = "1.0"     # string form (version only)
@@ -206,6 +208,36 @@ Accepted validation rules:
    ([Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md#event-names-and-payloads));
    an unknown event kind is a validation error, not a forward-compatible
    extension.
+8. A `[dependencies]` entry accepts the string form (version requirement only)
+   or the inline-table form `{ version = "...", prerelease = <boolean> }`. The
+   `version` value is validated by the closed resolver constraint grammar, and
+   `prerelease` is optional and defaults to `false`; `prerelease = true` opts
+   that single edge into prerelease selection per the
+   [Package Follow-up RFC](package-followup-rfc.md#prerelease-policy). No other
+   table key is accepted. See the open reconciliation item below for the chosen
+   shape rationale and implementation status.
+
+> **Open reconciliation item — manifest dependency prerelease TOML shape.**
+> The accepted [Package Follow-up RFC](package-followup-rfc.md#prerelease-policy)
+> defines a per-edge `prerelease` opt-in but no manifest TOML shape for it, and
+> the string-only example above left the dependency table ambiguous. This note
+> fixes the shape and records the reconciliation instead of rewriting the
+> accepted example.
+>
+> - **Chosen shape.** A dependency entry is either the string form
+>   `"xuepoo.gitcore" = ">=2.0"` or the inline-table form
+>   `"xuepoo.gitcore" = { version = ">=2.0", prerelease = true }`. `version`
+>   carries the same closed version-requirement string as the string form;
+>   `prerelease` is an optional boolean, default `false`.
+> - **Rationale.** The inline table mirrors the ADR 0009 table form already
+>   accepted for `[services.provided]` and `[lazy].commands` in this manifest,
+>   including the `version` key spelling, and maps directly to the resolver's
+>   per-edge prerelease flag.
+> - **Status.** This definition closes the corpus ambiguity (`PX-0056`); the
+>   reference host dependency list and the SDK validator still accept only the
+>   string form and reject the table form, so validator support is follow-up
+>   work and the shape is specified but not yet enforced. Registered as open
+>   item 10 in "Open points".
 
 Dependency resolution evaluates the full graph before activation: cycles are
 rejected, incompatible constraints are resolver errors, and lazy plugins
@@ -644,6 +676,13 @@ review with security-auditor; residual items are tracked below:
    budgets elsewhere reference the single authoritative statement in
    [Delivery, ordering, batching, and coalescing](#delivery-ordering-batching-and-coalescing)
    instead of fixing a policy of their own.
+10. Manifest dependency prerelease TOML syntax: the accepted string form is
+    preserved and the inline-table form
+    `{ version = "...", prerelease = true }` is specified as the prerelease
+    opt-in shape for consistency with the ADR 0009 table form and the resolver
+    `prerelease` flag. The host and SDK validators still accept only the string
+    form, so updating them is follow-up work. See "Open reconciliation item —
+    manifest dependency prerelease TOML shape" above.
 
 ## Acceptance criteria
 
