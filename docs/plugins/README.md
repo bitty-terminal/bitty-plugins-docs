@@ -21,20 +21,19 @@ and contracts, and evidence and links. The reusable starting point is
 ## Registered official plugins
 
 These plugins have independent repositories under `bitty-terminal` and a
-published registry entry in `bitty-plugins`. The `palette` and `statusline`
-page sets below are implemented in this tree; `file-manager` and `git-panel`
-page sets are pending (separate task) but their packages and registry entries
-already exist. Each is implemented and tested headlessly in its owning
+published registry entry in `bitty-plugins`. The `palette`, `statusline`,
+`file-manager`, and `git-panel` page sets below are implemented in this tree.
+Each is implemented and tested headlessly in its owning
 repository; none is verified, compatible, or shipped, and no product release
 contains them.
 
-| Plugin       | Repository                                       | Plugin id                     | Stage                                                                                                                                                   | Documentation                      |
-| ------------ | ------------------------------------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| activity     | <https://github.com/bitty-terminal/activity>     | `bitty-featured.activity`     | Implementation present, host integration landing                                                                                                        | [activity](activity/README.md)     |
-| palette      | <https://github.com/bitty-terminal/palette>      | `bitty-terminal.palette`      | Package implemented headlessly, host bridge landing                                                                                                     | [palette](palette/README.md)       |
-| statusline   | <https://github.com/bitty-terminal/statusline>   | `bitty-terminal.statusline`   | Package implemented headlessly, host bridge landing                                                                                                     | [statusline](statusline/README.md) |
-| file-manager | <https://github.com/bitty-terminal/file-manager> | `bitty-terminal.file-manager` | Independent package implemented headlessly, panel presentation deferred pending the panel-provider contract; registry entry published; page set pending | Pending                            |
-| git-panel    | <https://github.com/bitty-terminal/git-panel>    | `bitty-terminal.git-panel`    | Independent package implemented headlessly, panel presentation deferred pending the panel-provider contract; registry entry published; page set pending | Pending                            |
+| Plugin       | Repository                                       | Plugin id                     | Stage                                                                                                                                 | Documentation                          |
+| ------------ | ------------------------------------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| activity     | <https://github.com/bitty-terminal/activity>     | `bitty-featured.activity`     | Implementation present, host integration landing                                                                                      | [activity](activity/README.md)         |
+| palette      | <https://github.com/bitty-terminal/palette>      | `bitty-terminal.palette`      | Package implemented headlessly, host bridge landing                                                                                   | [palette](palette/README.md)           |
+| statusline   | <https://github.com/bitty-terminal/statusline>   | `bitty-terminal.statusline`   | Package implemented headlessly, host bridge landing                                                                                   | [statusline](statusline/README.md)     |
+| file-manager | <https://github.com/bitty-terminal/file-manager> | `bitty-terminal.file-manager` | Independent package implemented headlessly, panel presentation deferred pending the panel-provider contract; registry entry published | [file-manager](file-manager/README.md) |
+| git-panel    | <https://github.com/bitty-terminal/git-panel>    | `bitty-terminal.git-panel`    | Independent package implemented headlessly, panel presentation deferred pending the panel-provider contract; registry entry published | [git-panel](git-panel/README.md)       |
 
 ## Candidate plugins
 
