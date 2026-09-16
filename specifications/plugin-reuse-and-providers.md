@@ -531,6 +531,76 @@ the plugin-facing projection is a candidate in this draft.
   and scope contracts; the Lua request shape and its capability grant are
   open items below.
 
+### Model-provider direction (candidate)
+
+Status: **candidate, non-normative.** Research-derived design input from the
+workspace `research` record `origin/032.md` (Pluggable Model Access and
+Subscription Management, 2026-09-15); the plugin-side conclusions only. The
+AI-side boundary is recorded in the sibling
+[Provider Plugin Boundary](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/provider-plugin-boundary.md)
+draft; that page owns the core/provider-cut detail and this subsection records
+only what it means for this corpus.
+
+- Core keeps the provider contract, model description, capability vocabulary,
+  registry, selection routing, fallback, and usage semantics; vendor
+  integration, authentication, subscription adaptation, model discovery, and
+  the management UI live in plugins, with the management UI separated from
+  adapters. The AI core ships with zero vendor dependencies; model and
+  provider plugins install on demand.
+- Subscription-style supply is expressed through transport abstractions such as
+  CLI wrappers (Layer 2 shape), without unofficial token workarounds.
+- Agents declare only capability needs through semantic aliases; routing policy
+  selects the actual model.
+- Credentials resolve on the host side and reach plugins only as opaque handles
+  from the host keystore, invisible in plaintext to both the management UI and
+  agents. This subsection does not restate the secret tiers; the candidate
+  storage shapes live in the
+  [Secrets and credential handling direction](../product/plugin-roadmap.md#secrets-and-credential-handling-direction-candidate),
+  and the accepted environment baseline stays in ADR 0006.
+- Acceptance path: an RFC-level provider-interface contract (versioned
+  capability identifiers, grant shape, registry and routing rules) with
+  category-owner, docs-curator, and security-reviewer evidence per the
+  [Acceptance and lifecycle](#acceptance-and-lifecycle) section below; none of
+  the interface names above are accepted until that lands.
+
+### History-provider direction (candidate)
+
+Status: **candidate, non-normative.** Research-derived design input from the
+workspace `research` record `origin/038.md` (Pluggable Pane History and
+External History Integration, 2026-09-15); the plugin-side conclusions only.
+The AI-side consumption boundary is recorded in the sibling
+[History Consumption Boundary](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/history-consumption-boundary.md)
+draft; that page owns the agent-read contract detail and this subsection
+records only what it means for this corpus.
+
+- Core keeps only the volatile scrollback buffer, pane lifecycles, and a
+  structured event bus, without taking a database dependency for history.
+  Event classes, budgets, and fail-open rules stay owned by the accepted
+  [Plugin Platform RFC](plugin-platform-rfc.md); this direction adds no event
+  contract.
+- Durable history is an official plugin, not core: command records are stored
+  separately from raw output, the latter in append-only compressed segments,
+  and databases serve only as rebuildable query indexes, never as the source
+  of truth.
+- Plugins reach sandboxed directories through controlled storage capabilities
+  instead of connecting to databases directly. Plugin API v1 defines no Lua
+  entry point for `fs.*` (see
+  [Not in Plugin API v1](plugin-api-v1-lua-surface-rfc.md#not-in-plugin-api-v1)),
+  so the storage-capability shape is future contract work, not a v1 grant.
+- History offers command, output, and full-replay tiers with a lightweight
+  default; agents consume only the unified history interface without owning
+  history, and exports build on host query capabilities.
+- External history tools act as command-history providers and sinks, while pane
+  output and agent linkage stay on the terminal side; the terminal natively
+  understands semantic-prompt markers, unifying the command-block and
+  output-boundary model.
+- Acceptance path: a versioned history-provider interface plus the
+  storage-capability contract above, with category-owner, docs-curator, and
+  security-reviewer evidence per the
+  [Acceptance and lifecycle](#acceptance-and-lifecycle) section below; the
+  segment layout, tier shapes, and provider/sink protocol stay candidate
+  until that lands.
+
 All provider registrations remain declarative, host-composed, and subject to the
 register-versus-claim rule: pickers and context providers are per-invocation
 sources; status fragments compose where the layout defines composition; any
@@ -707,6 +777,15 @@ Shipped, unsupported, and candidate claims are labelled per claim.
   `terminal.manage` scope, and `intercept.terminal-spawn` event.
 - Fuzzy-service budget numbers: input-item, item-byte, result-limit, and
   response-byte caps per caller generation.
+- Model-provider acceptance (032): versioned provider-interface contract
+  (capability identifiers, grant shape, registry and routing rules) plus the
+  opaque-credential-handle contract composed with the Secrets direction; no
+  interface name above is accepted before that.
+- History-provider acceptance (038): versioned history-provider interface plus
+  the storage-capability contract (sandboxed-directory access shape,
+  segment/index relationship, command/output/replay tier shapes, external
+  provider/sink protocol); durable history stays an official-plugin candidate,
+  never a core database dependency.
 
 ## References
 

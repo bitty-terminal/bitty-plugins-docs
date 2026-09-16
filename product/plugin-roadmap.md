@@ -390,7 +390,10 @@ plugins receive redacted handles or nothing; the consent ledger records which
 `(PluginId, generation)` or `(AgentId, generation)` requested which key and
 when; a failed or absent resolution is fail-closed, never an empty-string
 fallback; and `.env` files are never read or written by Bitty on behalf of
-Lua. Tracked as OQ-054 and OQ-055.
+Lua. Tracked as OQ-054 and OQ-055. The model-provider direction (research
+032, candidate) composes with this section: credentials reach model plugins
+only as opaque handles from the host keystore; see the
+[Model-provider direction](../specifications/plugin-reuse-and-providers.md#model-provider-direction-candidate).
 
 ## Plugin capability dimensions (candidate)
 
@@ -503,6 +506,14 @@ IPC-adjacent candidates above; both are design input, not an accepted contract.
 - **Transparency:** `bitty plugin doctor` and an activity-specific status
   component surface active retention, stored-field list, and quota use;
   `bitty debug/trace` redaction policy applies to exported traces.
+
+Durable pane history is a separate candidate from this activity timeline: the
+history-provider direction (research 038, candidate) makes durable history an
+official plugin with append-only compressed output segments, storage
+capabilities instead of direct database access, and external history tools as
+providers and sinks; see the
+[History-provider direction](../specifications/plugin-reuse-and-providers.md#history-provider-direction-candidate).
+It is not a commitment that a history plugin ships in any wave below.
 
 The same mechanism vs policy split applies here: core owns the bounded
 storage, trace redaction, and capability gate; the activity plugin owns the
@@ -627,6 +638,20 @@ minimal-ui`) should compose a named group of bundled plugins atomically
    on this exact capability profile or a restricted profile of it
    (corpus-kept open; this roadmap does not force user-trusted code into
    the third-party grant flow).
+9. Model-provider shape (research 032, candidate): versioned
+   provider-interface contract for pluggable model access (core keeps the
+   provider contract/registry/routing, vendor auth/billing/discovery and
+   the management UI live in plugins, opaque credential handles composed
+   with the Secrets direction above); recorded in the
+   [Model-provider direction](../specifications/plugin-reuse-and-providers.md#model-provider-direction-candidate),
+   not accepted.
+10. History-plugin shape (research 038, candidate): versioned
+    history-provider interface plus the storage-capability contract for the
+    durable-history official plugin (append-only compressed segments,
+    storage capabilities not direct database access, command/output/replay
+    tiers, external tools as providers/sinks); recorded in the
+    [History-provider direction](../specifications/plugin-reuse-and-providers.md#history-provider-direction-candidate),
+    not accepted.
 
 ## Future topics to assess and candidate risks
 
