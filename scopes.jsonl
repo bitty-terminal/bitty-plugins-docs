@@ -15,3 +15,5 @@
 {"created_at":"2026-09-15T23:18:38.690648990+00:00","id":"01M2KNV0V27PHTT59TQEJM9D95","kind":"include","pattern":"docs/plugins","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M2KNRJSH9M7GND6S0PKY6SQK"}
 {"created_at":"2026-09-15T23:42:16.347904148+00:00","id":"01M2KQ698VX70PA4TPFNBSPXVJ","kind":"include","pattern":"product/bundled-plugin-split-decision.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M2KQ3CEN6Q0N58VRNE86XMYK"}
 {"created_at":"2026-09-15T23:42:16.369564324+00:00","id":"01M2KQ699HAVKHEJZQQK26BRX9","kind":"include","pattern":"product/plugin-roadmap.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M2KQ3CEN6Q0N58VRNE86XMYK"}
+{"created_at":"2026-09-16T03:31:28.310282125+00:00","id":"01M2M49YXP04R4JGEW98ZMRPDN","kind":"include","pattern":"specifications/package-followup-rfc.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M2M49YVKHTS33CNBHF95MG36"}
+{"created_at":"2026-09-16T03:31:28.369725630+00:00","id":"01M2M49YZHHV8903MKKSQ70D6Y","kind":"include","pattern":"specifications/plugin-platform-rfc.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M2M49YVKHTS33CNBHF95MG36"}
