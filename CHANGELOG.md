@@ -57,6 +57,13 @@ and this project adheres to
   to Issue #43): the user-facing Command Composer stays a terminal-interaction
   concept owned by `bitty-terminal-docs`, distinct from the internal scene-diff
   step. No normative behavior changes.
+- Bridge the research-recorded ActivityStack direction to the P2 panel-identity
+  candidate (CTX-0026, related to Issue #43): the UI extensibility P2 section
+  now points plugin authors to the Plugin Ecosystem Model section 9.2 for the
+  Panel-is-not-Activity and session-survival direction (acceptance path: the
+  Panel Runtime RFC provider/ecosystem open questions `RFC-OQ-1` through
+  `RFC-OQ-9`), and admits non-tiled presentation modes remain a gated host
+  surface with no plugin-facing contract yet.
 
 ### Changed
 
