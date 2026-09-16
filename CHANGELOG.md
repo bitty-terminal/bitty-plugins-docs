@@ -32,6 +32,13 @@ and this project adheres to
   control-CLI and multi-instance addressing sketches, and the candidate
   three-layer extension framing. Research-derived design input, not an accepted
   contract; the diverging `[permissions]` sketch is marked unaccepted.
+- Add `docs/plugins/file-manager/` and `docs/plugins/git-panel/` per-plugin
+  page sets (CTX-0023, related to Issue #43): README index, design, schemas,
+  and evidence for the independent `bitty-terminal.file-manager`
+  (observation-only, `terminal.semantic-read`) and `bitty-terminal.git-panel`
+  (tiled panel over allowlisted `process.spawn:git` plus accepted
+  `[tools.git]` v1) packages; panel presentation deferred pending the
+  panel-provider contract. Nothing here is verified or shipped.
 
 ### Changed
 
