@@ -17,3 +17,10 @@ and this project adheres to
   parent bitty-docs CTX-0187 Phase 3) with path-limited Git history: nine
   specifications, the plugin roadmap, two extensibility contracts, and the
   per-plugin index and template, with cross-repository links rewritten.
+- Record plugin-ecosystem direction from the workspace `research` records
+  `origin/040.md` and `origin/039.md` as the draft
+  `specifications/plugin-ecosystem-model.md`: plugin taxonomy, platform versus
+  extension plugins, extension points, manifest candidates, capability
+  non-escalation, extension-platform API versioning, the plugin graph, and
+  Panel/Activity implications. Research-derived design input, not an accepted
+  contract.
