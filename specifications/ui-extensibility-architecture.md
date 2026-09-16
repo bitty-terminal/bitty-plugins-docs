@@ -212,7 +212,13 @@ deliberately introduces no `PanelId`. A rushed contract would freeze the wrong
 identity model.
 
 Disposition: candidate; blocked on the future Panel RFC. Do not invent
-`PanelId` here.
+`PanelId` here. The research-recorded ActivityStack direction (Panel is not
+Activity; `panel:push`/`panel:pop` session survival) lives in the
+[Plugin Ecosystem Model](plugin-ecosystem-model.md) section 9.2 and would be
+carried by the accepted Panel Runtime RFC provider/ecosystem open questions
+(`RFC-OQ-1` through `RFC-OQ-9`). Non-tiled presentation modes have no
+plugin-facing contract yet: the panel-provider surface above is unaccepted,
+so from the plugin author's perspective they remain a gated host surface.
 
 ### P3 — Plugin-supplied appearance under a capability (candidate)
 
