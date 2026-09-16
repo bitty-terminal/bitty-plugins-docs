@@ -1,56 +1,60 @@
 # Security Policy
 
+This document describes how security reports for the `bitty-plugins-docs`
+repository are handled. Normative product security requirements live in the
+canonical `bitty-docs` security corpus (`docs/security/`) and take precedence
+over anything stated here.
+
 ## Supported Versions
 
-No version of Bitty or its plugin ecosystem has been released yet. There are no
-supported releases; all documented behavior is pre-implementation design
-material.
+| Version    | Supported                                         |
+| ---------- | ------------------------------------------------- |
+| Unreleased | No — no version of this project has been released |
 
-| Version           | Supported |
-| ----------------- | --------- |
-| (no releases yet) | No        |
-
-Once releases exist, this table will list each supported version range and its
-support status.
+There are currently no supported releases. Do not rely on this repository for
+production use; all documented behavior is pre-implementation design material.
 
 ## Reporting a Vulnerability
 
-To report a security vulnerability, open a private
+Report security vulnerabilities privately by opening a
 [GitHub Security Advisory](https://github.com/bitty-terminal/bitty-plugins-docs/security/advisories/new).
 
-Do not report security vulnerabilities via public GitHub issues, pull
-requests, discussions, or chat channels.
+Do not report security vulnerabilities through public GitHub issues, pull
+requests, or discussion channels.
 
-When reporting, include as much of the following as applicable:
+When reporting, please include as much of the following as possible:
 
-- A description of the suspected vulnerability and its impact.
-- The affected document, specification section, or (once they exist) plugin,
-  SDK version, and manifest.
-- Steps or inputs needed to reproduce the issue.
-- Any suggested mitigation, if you have one.
+- A description of the vulnerability and its potential impact.
+- Steps to reproduce, or a proof of concept.
+- Affected specification sections, contracts, or generated outputs, and (once
+  they exist) plugin, SDK version, and manifest.
+- Any known mitigations or workarounds.
 
 ## Disclosure Policy
 
-- Reports are handled privately from intake through fix, coordination, and
-  disclosure. Details are not discussed publicly while a fix or mitigation is
-  being prepared.
-- Reporters will receive an acknowledgment and a tracking reference, and will
-  be kept informed of assessment outcomes and resolution timelines.
-- Coordinated disclosure is the default: a public advisory accompanies or
-  follows the release of a fix. Credit for reporters is given by default and
-  may be declined on request.
-- Security requirements for future Bitty implementations live in the canonical
-  security corpus under `bitty-docs` `docs/security/`; that corpus takes
-  precedence over historical notes when statements conflict.
+Reports are handled through coordinated disclosure:
+
+1. The report is acknowledged and triaged privately.
+2. A fix is developed and validated out of public view.
+3. Once releases exist, a release containing the fix is published.
+4. A public advisory is published afterward, crediting the reporter unless
+   anonymity is requested.
 
 ## Response Expectations
 
-These targets are process commitments for this documentation repository, not
-claims about shipped product behavior:
+The targets below take effect once this repository accepts them:
 
-- Acknowledgment of a new report: within 5 business days.
-- Initial severity and impact assessment: within 10 business days of
-  acknowledgment.
-- Fix or mitigation guidance for confirmed issues: targeted within 90 days,
-  sooner for high-severity findings; complex issues receive a communicated
-  timeline instead of silence.
+- Acknowledge a new advisory within 5 business days.
+- Provide a status update at least every 14 calendar days while a report is
+  open.
+- Publish the advisory after a fixed version is available, or after 90 days if
+  no fix is feasible, whichever comes first.
+
+## Scope Note
+
+This repository is a documentation corpus: it ships no executable product and
+grants no runtime authority. In-scope findings include a specification that
+would let a plugin escape the capability model, contradict a P0 trust boundary,
+or define an install path that executes package code. Security requirements for
+future implementations live in the canonical `bitty-docs` security corpus,
+which takes precedence when statements conflict.

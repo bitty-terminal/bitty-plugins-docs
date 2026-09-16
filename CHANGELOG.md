@@ -32,3 +32,12 @@ and this project adheres to
   control-CLI and multi-instance addressing sketches, and the candidate
   three-layer extension framing. Research-derived design input, not an accepted
   contract; the diverging `[permissions]` sketch is marked unaccepted.
+
+### Changed
+
+- Repository metadata baseline: [CONTRIBUTING.md](CONTRIBUTING.md) documents the
+  delivery lifecycle, the contributor-branch convention
+  (`ctx-XXXX/<type>-<slug>`; external contributors use
+  `<handle>/<type>-<slug>`), and the local quality gates;
+  [SECURITY.md](SECURITY.md) follows the canonical reporting structure; and
+  `.gitattributes` normalizes text files to LF.
