@@ -1,99 +1,93 @@
-# Contributing
+# Contributing to bitty-plugins-docs
 
-Thank you for contributing to `bitty-plugins-docs`, the canonical documentation
-repository for the Bitty plugin ecosystem. The project is in a
-documentation-first, pre-implementation phase: documents are the contract
-source, and nothing here should be described as implemented product behavior.
+This guide is for contributors to the `bitty-plugins-docs` repository. The
+repository is documentation-first and pre-implementation: documents are the
+contract source, and nothing here may be described as implemented product
+behavior.
+
+## Repository ground rules
+
+- Read [AGENTS.md](AGENTS.md) before making any change. It defines scope,
+  authority, the CarryCtx workflow, the documentation contract, and workspace
+  hygiene that override convenience.
+- Canonical plugin-ecosystem contracts live in this repository; shared
+  cross-project governance lives in `bitty-docs` and is linked, never copied.
+  Do not duplicate normative specifications across repositories.
+- Every document under `docs/` uses the exact flat frontmatter schema defined
+  in `docs/development/documentation-workflow.md`; its `title` must match the
+  H1. English is the only canonical documentation language.
+- Label statements as normative, accepted, proposed, experimental, implemented,
+  or unverified; never turn a design intention into a shipped-behavior claim.
+- Never commit, push, publish, or mutate remote state without explicit
+  authorization from the owning task.
 
 ## Prerequisites
 
-- `just` — command runner; every quality gate runs through the justfile
-- Bun 1.4.0 — JavaScript execution and package management (`bun` / `bunx --bun`)
-- `actionlint` 1.7.12 — GitHub Actions workflow validation (pinned in the
-  justfile)
-- `xmllint` (libxml2-utils) — SVG well-formedness validation
-- `act` 0.2.x — optional local workflow dry-run (`act -n`)
+Toolchain expectations (tool versions are pinned in exactly one place, the
+[justfile](justfile); never invoke formatters or linters by name):
 
-Never use `npm`, `npx`, or `yarn` in this repository. Tool versions are pinned
-in exactly one place: the justfile and lockfiles.
+- `just` — command runner owning all quality-gate invocations.
+- `bun` / `bunx --bun` — JavaScript execution; the justfile runs pinned tools
+  through `bunx --bun` and repository scripts through `bun`. Never use `npm`,
+  `npx`, or `yarn` in any Bitty repository.
+- `actionlint` 1.7.12 — GitHub Actions workflow validation, checked against the
+  justfile pin.
+- `xmllint` (libxml2-utils) — SVG well-formedness validation.
+- `act` 0.2.x — optional local workflow dry-run (`act -n`).
 
-## Setup
+## Development setup
 
-Clone the repository and confirm the gates run:
-
-```bash
-just check
-```
-
-`just check` is read-only: it verifies Prettier formatting, markdownlint,
-repository-local links, frontmatter metadata, English-only content, agent-file
-line budgets, hygiene, SVG well-formedness, and Actions syntax.
-
-## Development loop
-
-```bash
-just fmt-check           # verify formatting without changing files
-just fmt                 # format every supported file type
-just links               # validate repository-local Markdown links
-just metadata            # validate the flat docs/ frontmatter schema
-just language            # keep repository-owned Markdown English-only
-just check               # full local gate pipeline (same logical gates as CI)
-```
-
-## Documentation rules
-
-- Read `AGENTS.md` before working. It defines scope, authority, the CarryCtx
-  workflow, and workspace hygiene for this repository.
-- Every document under `docs/` uses the exact flat frontmatter schema defined
-  in `docs/development/documentation-workflow.md`; its `title` must match the
-  H1.
-- English is the only canonical documentation language.
-- Label statements as normative, accepted, proposed, experimental,
-  implemented, or unverified. Never turn a design intention into a
-  shipped-behavior claim; "candidate" and "planned" are prose, not status.
-- Keep one authoritative definition per concept and link to it instead of
-  copying divergent wording.
+1. Enter this repository before running Git, CarryCtx, or toolchain commands.
+2. Confirm the gates run from a clone: `just check`.
+3. Enable Git hooks (optional): `just hooks-install`.
+4. Run all quality gates: `just check` (Prettier format check, markdownlint,
+   repository-local links, frontmatter metadata, English-only content, agent
+   file budgets, hygiene, SVG well-formedness, and Actions syntax). CI runs the
+   same logical gates, and individual gates are available as `just fmt-check`,
+   `just markdownlint`, `just links`, `just metadata`, `just language`,
+   `just agents`, `just hygiene`, and `just svg`.
+5. Record scoped work in CarryCtx (task, session, progress, checkpoint) and
+   stop at review; independent review is required for acceptance.
 
 ## Delivery lifecycle
 
-The primary lifecycle is:
+Changes follow Issue -> Branch -> Commit -> Pull Request -> Review -> Merge,
+where independent review plus required CI must pass before merge. Every pull
+request states its Issue and CarryCtx task links, impact areas, security and
+privacy impact, reproducible gate evidence, and documentation synchronization
+status. Labels (`feat`/`fix`/`docs`/`chore`, `P0`/`P1`/`P2`, `area:*`) and
+milestone `v0.1.0` are kept in sync. Commits are Conventional Commits validated
+against [commitlint.config.ts](commitlint.config.ts).
 
-```text
-Issue -> Branch -> Commit -> Pull Request -> Review + CI -> Merge
-```
+## Contributor branches
 
-- Link each change to a GitHub Issue and a CarryCtx task with a declared,
-  non-overlapping scope.
-- Keep commits coherent, scoped, reviewable, and written as Conventional
-  Commits.
-- Review is independent from implementation. Merge only after required review
-  findings and CI failures are resolved.
-- Documentation synchronization is part of the definition of done: affected
-  navigation, decision registers, open questions, risks, redirects, and release
-  notes must be updated together with the underlying change.
-
-### Branch and worktree naming
-
-Task branches follow `ctx-XXXX/<type>-<short-slug>`: `XXXX` is the owning
-CarryCtx task number, `<type>` is one of `feat|fix|chore|docs`, and
-`<short-slug>` is kebab-case (for example `ctx-0187/docs-split-bootstrap`).
+Branches are managed with CarryCtx. Official branches use
+`ctx-XXXX/<type>-<slug>`, where `XXXX` is the owning CarryCtx task number,
+`<type>` is one of `feat|fix|chore|docs`, and the slug is short kebab-case;
+commander housekeeping branches may use `cmd/<slug>`. External contributors
+must use a distinguishable prefix, for example `<github-handle>/<type>-<slug>`.
 Worktrees live at `.worktrees/ctx-XXXX-<type>-<short-slug>`, mapping `/` to
-`-`. Use one branch per task; commander housekeeping may use `cmd/<slug>`.
+`-`.
 
-## Committing
+## Capabilities and privacy
 
-Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
+Plugin packages, manifests, project files, and update channels are untrusted
+until a narrow capability or policy grants access. Capabilities are deny by
+default; plugins may alter presentation, never terminal truth, and receive no
+ambient Lua or OS authority. Installation executes no package code. Never add a
+temporary bypass API, broaden a capability implicitly through documentation, or
+describe an unreviewed grant as automatic approval.
 
-```text
-docs(plugins): add lifecycle overview for the first-party plugin
-chore(ci): pin actionlint to 1.7.12
-fix(links): correct broken cross-reference in the documentation map
-```
+## Workflow snapshots
 
-Commit messages are validated against the conventional-commit configuration in
-`commitlint.config.ts`.
+The engineering workflow snapshot lives in this repository on the branch
+`refs/heads/carryctx-snapshots`. Merges run `just workflow-publish` (dry run:
+`just workflow-publish-dry`) as part of the commander closeout; snapshots are
+redacted publication artifacts and are never merged back. Fresh clones restore
+with `just workflow-import` (`just workflow-import-dry`).
 
-## Questions
+## Reporting
 
-Open a GitHub Issue in this repository, or consult `AGENTS.md` and `README.md`
-for repository-specific guidance.
+Report bugs and feature requests through the GitHub issue templates. Report
+security issues privately per [SECURITY.md](SECURITY.md); never open a public
+issue for a vulnerability.
