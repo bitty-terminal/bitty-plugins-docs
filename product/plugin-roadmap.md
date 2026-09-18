@@ -55,7 +55,7 @@ Out of scope (owned elsewhere):
   [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)).
 - Per-plugin instruction, memory, task, and queue budgets and their
   enforcement (OQ-014,
-  [Isolation Resource RFC](../specifications/isolation-resource-rfc.md)).
+  [Isolation Resource RFC](../runtime/isolation-resource-rfc.md)).
 - Configuration pipeline, layer precedence, and project trust
   (OQ-010, [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md)).
 - Rich block, scene, semantic zone, and structured transport contracts
@@ -393,7 +393,7 @@ fallback; and `.env` files are never read or written by Bitty on behalf of
 Lua. Tracked as OQ-054 and OQ-055. The model-provider direction (research
 032, candidate) composes with this section: credentials reach model plugins
 only as opaque handles from the host keystore; see the
-[Model-provider direction](../specifications/plugin-reuse-and-providers.md#model-provider-direction-candidate).
+[Model-provider direction](../packaging/plugin-reuse-and-providers.md#model-provider-direction-candidate).
 
 ## Plugin capability dimensions (candidate)
 
@@ -474,10 +474,10 @@ promise:
 
 This list records ecosystem direction only. It does not add a Panel API,
 distribution manifest, runtime, Event Bus, or implementation claim. The
-research-derived [Plugin Ecosystem Model](../specifications/plugin-ecosystem-model.md)
+research-derived [Plugin Ecosystem Model](../architecture/plugin-ecosystem-model.md)
 records the plugin taxonomy, extension-point direction, and Panel-as-host
 implications behind this candidate list, and the
-[Plugin IPC Boundary](../specifications/plugin-ipc-boundary.md) records the
+[Plugin IPC Boundary](../architecture/plugin-ipc-boundary.md) records the
 out-of-process and IPC-shaped extension-boundary direction behind the
 IPC-adjacent candidates above; both are design input, not an accepted contract.
 
@@ -512,7 +512,7 @@ history-provider direction (research 038, candidate) makes durable history an
 official plugin with append-only compressed output segments, storage
 capabilities instead of direct database access, and external history tools as
 providers and sinks; see the
-[History-provider direction](../specifications/plugin-reuse-and-providers.md#history-provider-direction-candidate).
+[History-provider direction](../packaging/plugin-reuse-and-providers.md#history-provider-direction-candidate).
 It is not a commitment that a history plugin ships in any wave below.
 
 The same mechanism vs policy split applies here: core owns the bounded
@@ -643,14 +643,14 @@ minimal-ui`) should compose a named group of bundled plugins atomically
    provider contract/registry/routing, vendor auth/billing/discovery and
    the management UI live in plugins, opaque credential handles composed
    with the Secrets direction above); recorded in the
-   [Model-provider direction](../specifications/plugin-reuse-and-providers.md#model-provider-direction-candidate),
+   [Model-provider direction](../packaging/plugin-reuse-and-providers.md#model-provider-direction-candidate),
    not accepted.
 10. History-plugin shape (research 038, candidate): versioned
     history-provider interface plus the storage-capability contract for the
     durable-history official plugin (append-only compressed segments,
     storage capabilities not direct database access, command/output/replay
     tiers, external tools as providers/sinks); recorded in the
-    [History-provider direction](../specifications/plugin-reuse-and-providers.md#history-provider-direction-candidate),
+    [History-provider direction](../packaging/plugin-reuse-and-providers.md#history-provider-direction-candidate),
     not accepted.
 
 ## Future topics to assess and candidate risks

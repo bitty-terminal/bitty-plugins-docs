@@ -31,8 +31,8 @@ the bundled-split order of operations and its merge-order hazards, version and
 compatibility declarations, review requirements, and maintenance rules.
 
 Out of scope: package-manager and trust mechanics (owned by the accepted
-[Package Lifecycle RFC](../specifications/package-lifecycle-rfc.md) and
-[Package Follow-up RFC](../specifications/package-followup-rfc.md)), the
+[Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md) and
+[Package Follow-up RFC](../packaging/package-followup-rfc.md)), the
 capability grammar and manifest schema (owned by the accepted
 [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)), and the
 per-candidate split verdicts and gates (owned by the accepted
@@ -255,7 +255,7 @@ CarryCtx tasks rather than silently implemented as new gates:
    recorded `signature_status` is advisory (`unsigned` or `unverified`, never
    `verified`). A trustworthy `verified` status follows the accepted
    key-directory contract (enrollment, rotation, revocation) in the
-   [Package Follow-up RFC](../specifications/package-followup-rfc.md) (OQ-029).
+   [Package Follow-up RFC](../packaging/package-followup-rfc.md) (OQ-029).
 
 ## Current state (2026-09-14)
 
@@ -271,8 +271,8 @@ bundled. This paragraph records provenance, not shipped behavior.
 - [Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md)
 - [Plugin Roadmap](plugin-roadmap.md)
 - [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)
-- [Package Lifecycle RFC](../specifications/package-lifecycle-rfc.md)
-- [Package Follow-up RFC](../specifications/package-followup-rfc.md)
+- [Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md)
+- [Package Follow-up RFC](../packaging/package-followup-rfc.md)
 - [Documentation workflow](../docs/development/documentation-workflow.md)
 - [Plugin documentation](../docs/plugins/README.md)
 - [Security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md)

@@ -45,5 +45,5 @@ shipped, and no product release contains it.
 - [Plugin documentation](../README.md)
 - [Plugin Roadmap](../../../product/plugin-roadmap.md) (draft)
 - [Plugin Platform RFC](../../../specifications/plugin-platform-rfc.md)
-- [Plugin API v1 Lua Surface RFC](../../../specifications/plugin-api-v1-lua-surface-rfc.md)
-- [Plugin Host Runtime RFC](../../../specifications/plugin-host-runtime-rfc.md)
+- [Plugin API v1 Lua Surface RFC](../../../sdk/plugin-api-v1-lua-surface-rfc.md)
+- [Plugin Host Runtime RFC](../../../runtime/plugin-host-runtime-rfc.md)

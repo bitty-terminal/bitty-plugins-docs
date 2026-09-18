@@ -17,7 +17,7 @@ sidebar_order: 20
 > candidate contracts except where the security contract is normative. The
 > integrity verification chain, staged activation lifecycle and safe rollback
 > semantics are accepted in
-> [Package Lifecycle RFC](../specifications/package-lifecycle-rfc.md)
+> [Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md)
 > (OQ-021, 2026-08-27) as normative for staged activation and rollback; real
 > signature verification, registry service, and key-directory contracts remain
 > draft under OQ-022 and OQ-026 through OQ-029.
@@ -177,7 +177,7 @@ bitty-docs CTX-0201 / bitty-docs#288,
 It refines the accepted source model above without changing any accepted
 contract: the source classes, the seven-stage verification pipeline and
 provenance separation in the
-[Package Follow-up RFC](../specifications/package-followup-rfc.md), and the
+[Package Follow-up RFC](../packaging/package-followup-rfc.md), and the
 package-manager/host split below stay authoritative. No implementation claim:
 `bitty-package` today models sources as the `PackageSource` data enum
 (registry / git / local-path / bundled) with no fetch behavior, and only
@@ -204,7 +204,7 @@ local-path install has shipped (CTX-0406 slice above).
   the registry repository into the XDG cache, search local TOML records, and
   refresh only on an explicit `registry update`. This mirrors the CarryCtx sync
   philosophy. It is recorded as a candidate because the accepted
-  [Package Follow-up RFC](../specifications/package-followup-rfc.md) (OQ-028)
+  [Package Follow-up RFC](../packaging/package-followup-rfc.md) (OQ-028)
   specifies an HTTPS index snapshot fetch; reconciling the two mechanisms
   needs an RFC amendment, and this section does not weaken that contract.
 - **Later native HTTP.** When Git cannot serve a need, native HTTP uses

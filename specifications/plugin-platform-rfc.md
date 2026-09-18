@@ -49,7 +49,7 @@ rules.
 Out of scope (each remains owned elsewhere):
 
 - Lua runtime/binding choice and standard-library subset (OQ-009, accepted in
-  [Lua Runtime RFC](lua-runtime-rfc.md)) and the
+  [Lua Runtime RFC](../runtime/lua-runtime-rfc.md)) and the
   configuration model (OQ-010). This RFC assumes the accepted direction of one
   isolated Lua VM per plugin and defines only the host side of the boundary.
 - Per-plugin budget thresholds, instruction/memory/task enforcement mechanisms,
@@ -194,10 +194,10 @@ Accepted validation rules:
    (`args_schema`/`result_schema`) recorded by
    [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md); schema
    fragments are bounded per the
-   [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md).
+   [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md).
 7. Every `[lazy].events` entry must be one of the closed v1 event names that
    `bitty.events.subscribe` accepts
-   ([Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md#event-names-and-payloads));
+   ([Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md#event-names-and-payloads));
    an unknown event kind is a validation error, not a forward-compatible
    extension.
 8. A `[dependencies]` entry accepts the string form (version requirement only)
@@ -205,12 +205,12 @@ Accepted validation rules:
    `version` value is validated by the closed resolver constraint grammar, and
    `prerelease` is optional and defaults to `false`; `prerelease = true` opts
    that single edge into prerelease selection per the
-   [Package Follow-up RFC](package-followup-rfc.md#prerelease-policy). No other
+   [Package Follow-up RFC](../packaging/package-followup-rfc.md#prerelease-policy). No other
    table key is accepted. See the open reconciliation item below for the chosen
    shape rationale and implementation status.
 
 > **Open reconciliation item — manifest dependency prerelease TOML shape.**
-> The accepted [Package Follow-up RFC](package-followup-rfc.md#prerelease-policy)
+> The accepted [Package Follow-up RFC](../packaging/package-followup-rfc.md#prerelease-policy)
 > defines a per-edge `prerelease` opt-in but no manifest TOML shape for it, and
 > the string-only example above left the dependency table ambiguous. This note
 > fixes the shape and records the reconciliation instead of rewriting the
@@ -252,7 +252,7 @@ event time. This adopts the determinism and ownership properties from the
   [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md) and
   [core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md#extension-api-composition):
   the accepted contract text is the
-  [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md) in the
+  [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) in the
   `bitty-docs` corpus, the `bitty` repository owns the implementation and parity
   evidence, and the SDK is generated output.
 
@@ -359,7 +359,7 @@ namespaces follow.
 ### Host namespaces
 
 The v1 spellings and signatures are accepted in the
-[Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md), ratified
+[Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md), ratified
 through [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md);
 nothing here is implemented yet:
 
@@ -413,7 +413,7 @@ Accepted v1 rules per namespace:
    plugin ID (not by generation) and persisted under the platform data
    directory; values are JSON-compatible bounded data with quota `RC-11`, and
    the store survives suspension, reload, and generation disposal
-   ([Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md)).
+   ([Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)).
    Filesystem access beyond this requires explicit `fs.*` grants.
 
 ### Terminal access in v1
@@ -547,7 +547,7 @@ Accepted rules:
    budgets.
 6. Three-level queue budgets (accepted, OQ-014, aligned with
    `bitty-plugin-host/src/event.rs` and the
-   [Isolation Resource RFC](isolation-resource-rfc.md#proposed-resource-ceilings)
+   [Isolation Resource RFC](../runtime/isolation-resource-rfc.md#proposed-resource-ceilings)
    RC-5 family): **PerSubscription 64 events** per `(plugin, event-type)` queue
    (strict FIFO bound in `EventQueue::push`); **PerPlugin 1024 events / 256 KiB**
    aggregate across all queues of one plugin (enforced at
@@ -670,7 +670,7 @@ Acceptance of this RFC on 2026-08-27 applies these same-change updates:
 - [Specifications index](README.md): the Plugin Platform RFC row moves from
   Draft to Accepted.
 - [Proposed delivery sequence](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/proposed-delivery-sequence.md) and
-  [Isolation Resource RFC](isolation-resource-rfc.md): stale proposed references
+  [Isolation Resource RFC](../runtime/isolation-resource-rfc.md): stale proposed references
   are swept to the accepted contract.
 
 No new repository, crate, or workflow is added by this RFC.
@@ -759,11 +759,11 @@ reopen the closed design-level questions.
 - [Core and Plugin Boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) and
   [Plugin system](../extensibility/plugin-system.md): ownership boundary and
   extension-level model this RFC refines.
-- [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md) and
+- [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) and
   [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md): accepted v1 host
   spellings, signatures, and the authority split.
-- [Package Follow-up RFC](package-followup-rfc.md) and
-  [Isolation Resource RFC](isolation-resource-rfc.md): dependency
+- [Package Follow-up RFC](../packaging/package-followup-rfc.md) and
+  [Isolation Resource RFC](../runtime/isolation-resource-rfc.md): dependency
   prerelease-shape reconciliation and the RC-5 resource-ceiling family.
 - [Open-question register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) and
   [Decision register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md): acceptance and closure records for

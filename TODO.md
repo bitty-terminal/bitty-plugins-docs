@@ -23,6 +23,14 @@ than accumulating here.
       reconciled the research 053/054 archive-status wording, repointed
       `docs/README.md` to canonical documents, and verified per-directory
       index routes.
+- [x] Materialize the thematic topic-tree taxonomy (CTX-0035, Issue #65): moved
+      the runtime, SDK, packaging, and architecture contracts out of
+      `specifications/` into `runtime/`, `sdk/`, `packaging/`, and
+      `architecture/`, added a route-only index per new tree, kept
+      `specifications/` for the platform contract and research register,
+      updated `docs/README.md`, the tree indexes, and every relative
+      cross-reference, and reconciled the `Document form` section with
+      bitty-ai-docs.
 
 ## Blocked / open
 

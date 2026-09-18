@@ -47,7 +47,7 @@ The accepted Layer 2 slice (`bitty` `CTX-0425`):
 Static, validated before VM creation, and included in the manifest hash for
 grant binding. The canonical record is the accepted `[tools.git]` contract
 (v1) in the
-[Plugin Reuse and Provider Ecology RFC](../../../specifications/plugin-reuse-and-providers.md#accepted-toolsgit-contract-v1);
+[Plugin Reuse and Provider Ecology RFC](../../../packaging/plugin-reuse-and-providers.md#accepted-toolsgit-contract-v1);
 the rest of that RFC stays draft.
 
 ## Lazy surface

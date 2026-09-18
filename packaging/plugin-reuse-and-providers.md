@@ -16,7 +16,7 @@ sidebar_order: 24
 > [OQ-011](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md),
 > [OQ-012](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md), and
 > [OQ-013](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) as a follow-up to the accepted
-> [Plugin Platform RFC](plugin-platform-rfc.md). It does not self-accept, does
+> [Plugin Platform RFC](../specifications/plugin-platform-rfc.md). It does not self-accept, does
 > not authorize shipped, stable, or compatibility-guaranteed behavior, and
 > requires independent category-owner, docs-curator, and security-reviewer
 > evidence before acceptance. The lifecycle is Draft -> experimental review
@@ -49,11 +49,11 @@ Out of scope (owned elsewhere):
 
 - Plugin API v1 surface, capability families, and event pipeline classes and
   budgets (OQ-011/OQ-012/OQ-013, accepted in
-  [Plugin Platform RFC](plugin-platform-rfc.md));
+  [Plugin Platform RFC](../specifications/plugin-platform-rfc.md));
 - per-plugin instruction, memory, task, and queue enforcement (OQ-014, accepted
-  in [Isolation Resource RFC](isolation-resource-rfc.md));
+  in [Isolation Resource RFC](../runtime/isolation-resource-rfc.md));
 - Lua standard-library subset, rooted `require`, and diagnostics (OQ-009,
-  accepted in [Lua Runtime RFC](lua-runtime-rfc.md); pins OQ-030/OQ-031/OQ-032);
+  accepted in [Lua Runtime RFC](../runtime/lua-runtime-rfc.md); pins OQ-030/OQ-031/OQ-032);
 - package manifest, lockfile, and activation model (OQ-021/OQ-022,
   accepted in [Package Lifecycle RFC](package-lifecycle-rfc.md) and
   [Package Follow-up RFC](package-followup-rfc.md));
@@ -80,13 +80,13 @@ or weaken any accepted contract.
   interception.
 - [Plugin system](../extensibility/plugin-system.md): extension levels 1 to 4,
   register versus claim, qualified naming, service boundary direction.
-- [Lua Runtime RFC](lua-runtime-rfc.md): isolated VM per plugin, restricted
+- [Lua Runtime RFC](../runtime/lua-runtime-rfc.md): isolated VM per plugin, restricted
   standard library, rooted module resolution, source-only loading, one `bitty`
   host bridge.
-- [Plugin Platform RFC](plugin-platform-rfc.md): manifest `bitty-plugin.toml`,
+- [Plugin Platform RFC](../specifications/plugin-platform-rfc.md): manifest `bitty-plugin.toml`,
   capability grammar, grant per manifest hash, service `get` with version
   constraint, lazy triggers.
-- [Isolation Resource RFC](isolation-resource-rfc.md): RC-1..RC-10 ceilings,
+- [Isolation Resource RFC](../runtime/isolation-resource-rfc.md): RC-1..RC-10 ceilings,
   FS-1..FS-9 failure semantics, three-level queue
   PerSubscription 64 / PerPlugin 1024 events/256 KiB / Global 8192 events/2 MiB
   with `DropOldest` default.
@@ -155,9 +155,9 @@ illustrative; the mechanism is general.
 - System CLI reuse requires capability `process.spawn` narrowed by a declared
   allowlist, not an ambient spawn authority. The capability identifier grammar
   and grant binding per manifest hash are owned by the
-  [Plugin Platform RFC](plugin-platform-rfc.md)
+  [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)
   (`process.spawn:CONSTRAINT` naming an allowlisted program and argument shape
-  per [plugin-platform-rfc.md:230](plugin-platform-rfc.md)); this draft
+  per [plugin-platform-rfc.md:230](../specifications/plugin-platform-rfc.md)); this draft
   proposes the constraint spelling `process.spawn:rg(...)` where `rg` maps to
   the manifest-declared `[tools.rg]` entry and `(...)` is the `args` shape
   from that entry, so a grant can be reasoned as one tool at a time and is
@@ -213,7 +213,7 @@ Platform RFC); OQ-053 is accepted and closed (Bundled-Plugin Split Decision,
 package plus registry entry published, with panel presentation still deferred
 pending the panel-provider contract). The
 `process.spawn:CONSTRAINT` grammar is owned by the accepted [Plugin Platform
-RFC](plugin-platform-rfc.md). The CTX-0008 sync only folds already-enforced
+RFC](../specifications/plugin-platform-rfc.md). The CTX-0008 sync only folds already-enforced
 denials into the record; it adds no acceptance beyond what
 `is_allowed_git_args` enforces.
 
@@ -429,14 +429,14 @@ concrete package name when a declared interface suffices.
 
 The accepted baseline already distinguishes rooted, source-only in-package
 `require` from cross-plugin services: the
-[Lua Runtime RFC](lua-runtime-rfc.md) and
-[Plugin Host Runtime RFC A.2/A.3](plugin-host-runtime-rfc.md#a2-proposed-bitty-lua-seam-extensions)
+[Lua Runtime RFC](../runtime/lua-runtime-rfc.md) and
+[Plugin Host Runtime RFC A.2/A.3](../runtime/plugin-host-runtime-rfc.md#a2-proposed-bitty-lua-seam-extensions)
 permit no filesystem imports across packages, path traversal, package-path
 extension, shared module cache, or direct peer-VM access. Packaging a dependency
 does not turn its private modules into a public API.
 
 The source's typed SDK direction builds on the accepted
-[Services contract](plugin-api-v1-lua-surface-rfc.md#services): declared interface
+[Services contract](../sdk/plugin-api-v1-lua-surface-rfc.md#services): declared interface
 name/version and bounded argument/result schemas, with host-selected providers.
 Typed annotations and editor hints would help authors, but never replace runtime
 schema validation. Candidate versioned adapters would translate a provider's
@@ -451,7 +451,7 @@ not functions, mutable shared tables, or live objects.
 installed) from **service requirement** (some eligible provider must supply a
 versioned interface). The accepted `[dependencies]` and `[services.provided]`
 manifest fields remain authoritative in the
-[Plugin Platform RFC](plugin-platform-rfc.md); the source's `requires`,
+[Plugin Platform RFC](../specifications/plugin-platform-rfc.md); the source's `requires`,
 `plugin_dependencies`, `service_dependencies`, and `services.required` variants
 are alternatives, not valid new schema. Likewise `ctx.services.require`,
 `optional`, and the `interface@major` sketches are not accepted API spellings.
@@ -470,9 +470,9 @@ selection policy need explicit lifecycle and permission review.
 
 Proposed local/remote adapters, async-first calls, cancellation, and streams are
 recorded separately in
-[Plugin IPC Boundary section 13](plugin-ipc-boundary.md#13-local-and-remote-service-proxies-053-candidate).
+[Plugin IPC Boundary section 13](../architecture/plugin-ipc-boundary.md#13-local-and-remote-service-proxies-053-candidate).
 053's domain-specific model/tool/agent API sketches remain
-[owner-pending](plugin-ecosystem-model.md#97-research-053-coverage-and-owner-handoff),
+[owner-pending](../architecture/plugin-ecosystem-model.md#97-research-053-coverage-and-owner-handoff),
 not implementations or newly accepted services in this RFC.
 
 ## Layer 4 Native Helper Process (post-1.0)
@@ -655,7 +655,7 @@ records only what it means for this corpus.
 - Core keeps only the volatile scrollback buffer, pane lifecycles, and a
   structured event bus, without taking a database dependency for history.
   Event classes, budgets, and fail-open rules stay owned by the accepted
-  [Plugin Platform RFC](plugin-platform-rfc.md); this direction adds no event
+  [Plugin Platform RFC](../specifications/plugin-platform-rfc.md); this direction adds no event
   contract.
 - Durable history is an official plugin, not core: command records are stored
   separately from raw output, the latter in append-only compressed segments,
@@ -664,7 +664,7 @@ records only what it means for this corpus.
 - Plugins reach sandboxed directories through controlled storage capabilities
   instead of connecting to databases directly. Plugin API v1 defines no Lua
   entry point for `fs.*` (see
-  [Not in Plugin API v1](plugin-api-v1-lua-surface-rfc.md#not-in-plugin-api-v1)),
+  [Not in Plugin API v1](../sdk/plugin-api-v1-lua-surface-rfc.md#not-in-plugin-api-v1)),
   so the storage-capability shape is future contract work, not a v1 grant.
 - History offers command, output, and full-replay tiers with a lightweight
   default; agents consume only the unified history interface without owning
@@ -868,10 +868,10 @@ Shipped, unsupported, and candidate claims are labelled per claim.
 
 ## References
 
-- [Plugin Platform RFC](plugin-platform-rfc.md) (OQ-011/OQ-012/OQ-013, accepted
+- [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) (OQ-011/OQ-012/OQ-013, accepted
   2026-08-27)
-- [Lua Runtime RFC](lua-runtime-rfc.md) (OQ-009, accepted 2026-08-27)
-- [Isolation Resource RFC](isolation-resource-rfc.md) (OQ-014, accepted
+- [Lua Runtime RFC](../runtime/lua-runtime-rfc.md) (OQ-009, accepted 2026-08-27)
+- [Isolation Resource RFC](../runtime/isolation-resource-rfc.md) (OQ-014, accepted
   2026-08-28)
 - [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md) (OQ-010, accepted
   2026-08-27)

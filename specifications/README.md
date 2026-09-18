@@ -17,31 +17,17 @@ implementation, and each document's own evidence rules still apply. Draft work
 is listed separately and does not authorize shipped, stable, normative, or
 compatibility-guaranteed behavior.
 
+Contracts that belong to a narrower theme live in their own topic tree; this
+register routes to those tree indexes instead of duplicating their route
+tables.
+
 ## Accepted specifications
 
-| Specification                                                                                | Closes                                                                      | Status   |
-| -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | -------- |
-| [Plugin Platform RFC](plugin-platform-rfc.md)                                                | OQ-011, OQ-012, OQ-013                                                      | Accepted |
-| [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md)                            | OQ-011 (v1 surface spelling refinement)                                     | Accepted |
-| [Plugin Host Runtime RFC](plugin-host-runtime-rfc.md)                                        | OQ-033, OQ-034, OQ-035                                                      | Accepted |
-| [Lua Runtime RFC](lua-runtime-rfc.md)                                                        | OQ-009                                                                      | Accepted |
-| [Isolation and Resource RFC](isolation-resource-rfc.md)                                      | OQ-014                                                                      | Accepted |
-| [Package integrity, activation, and rollback](package-lifecycle-rfc.md)                      | OQ-021 (partially OQ-022; residual items migrated to OQ-026 through OQ-029) | Accepted |
-| [Package Resolver, Version Lifecycle, Registry, and Key Management](package-followup-rfc.md) | OQ-022, OQ-026, OQ-027, OQ-028, OQ-029                                      | Accepted |
+| Specification                                 | Closes                 | Status   |
+| --------------------------------------------- | ---------------------- | -------- |
+| [Plugin Platform RFC](plugin-platform-rfc.md) | OQ-011, OQ-012, OQ-013 | Accepted |
 
 ## Draft specifications
-
-| Specification                                                          | Targets                                                                        | Status |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------ |
-| [Plugin Reuse and Provider Ecology RFC](plugin-reuse-and-providers.md) | OQ-011, OQ-012, OQ-013 (provider-ecology follow-up)                            | Draft  |
-| [UI Extensibility Architecture](ui-extensibility-architecture.md)      | OQ-043, OQ-044, OQ-049 (OQ-041 and OQ-045 accepted in RFC-0001)                | Draft  |
-| [Plugin Ecosystem Model](plugin-ecosystem-model.md)                    | — (research-derived design input from records 039, 040, and 053; no OQ)        | Draft  |
-| [Plugin IPC Boundary](plugin-ipc-boundary.md)                          | — (research-derived design input from record 041; aligns with accepted OQ-018) | Draft  |
-
-Acceptance for these drafts requires independent category-owner, docs-curator,
-and security-reviewer evidence before the status changes.
-
-## Research-type specifications
 
 | Specification                                                                          | Provenance                                                                        | Status |
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------ |
@@ -49,6 +35,18 @@ and security-reviewer evidence before the status changes.
 
 Research-type pages preserve provenance and observations; they never become a
 decision or an implementation claim by implication.
+
+## Contracts by topic tree
+
+The remaining plugin-ecosystem contracts are grouped by theme. Each tree index
+carries its own status table and admission rule.
+
+| Tree                                      | Contracts                                                                                                  |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| [Runtime](../runtime/README.md)           | Plugin Host Runtime RFC, Lua Runtime RFC, Isolation and Resource RFC (all accepted).                       |
+| [SDK](../sdk/README.md)                   | Plugin API v1 Lua Surface RFC (accepted).                                                                  |
+| [Packaging](../packaging/README.md)       | Package Lifecycle RFC and Package Follow-up RFC (accepted), Plugin Reuse and Provider Ecology RFC (draft). |
+| [Architecture](../architecture/README.md) | Plugin Ecosystem Model, Plugin IPC Boundary, UI Extensibility Architecture (all draft).                    |
 
 ## Admission criteria
 

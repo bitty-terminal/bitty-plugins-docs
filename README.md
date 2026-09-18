@@ -7,11 +7,11 @@ capability rules, and per-plugin design notes.
 
 **Current state: plugin-ecosystem corpus migrated from `bitty-docs` at
 `c664214` (CTX-0001, parent bitty-docs CTX-0187 Phase 3).** The repository
-carries the accepted and draft plugin contracts in root topic trees
-(`specifications/`, `product/`, `extensibility/`) and the per-plugin page set
-under `docs/plugins/`. Migrated documents remain design-stage unless they state
-their own evidence; this README describes the repository contract, not shipped
-behavior.
+carries the accepted and draft plugin contracts in theme topic trees
+(`runtime/`, `sdk/`, `packaging/`, `architecture/`, `specifications/`,
+`product/`, `extensibility/`) and the per-plugin page set under `docs/plugins/`.
+Migrated documents remain design-stage unless they state their own evidence;
+this README describes the repository contract, not shipped behavior.
 
 ## Scope
 
@@ -61,7 +61,11 @@ stays in the sibling documentation repositories.
 | `docs/architecture/`             | Plugin-side glossary-driven diagram set and node provenance.       |
 | `docs/development/`              | Contributor workflow and the normative documentation policy.       |
 | `docs/plugins/`                  | Per-plugin index, template, and standard page sets.                |
-| `specifications/`                | Register index plus accepted, draft, and research contracts.       |
+| `runtime/`                       | Plugin host runtime, Lua runtime, and isolation and resource.      |
+| `sdk/`                           | Public plugin SDK Lua surface contract.                            |
+| `packaging/`                     | Package lifecycle, resolver, registry, and provider ecology.       |
+| `architecture/`                  | Plugin ecosystem model, IPC boundary, and UI extensibility.        |
+| `specifications/`                | Platform contract and research-type register index.                |
 | `product/`                       | Plugin roadmap and product planning documents.                     |
 | `extensibility/`                 | Pre-implementation plugin system and package-management contracts. |
 | `TODO.md`                        | Work register for this repository.                                 |

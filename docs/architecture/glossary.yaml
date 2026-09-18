@@ -12,15 +12,15 @@ description: Canonical node and edge inventory for plugin-side architecture diag
 sources:
   - specifications/research-053-054-plugin-conclusions.md (draft, CTX-0029)
   - specifications/plugin-platform-rfc.md (accepted, OQ-011/OQ-012/OQ-013)
-  - specifications/package-lifecycle-rfc.md (accepted, OQ-021)
-  - specifications/package-followup-rfc.md (accepted, OQ-022/OQ-026..OQ-029)
-  - specifications/plugin-host-runtime-rfc.md (accepted, OQ-033/OQ-034/OQ-035)
-  - specifications/lua-runtime-rfc.md (accepted, OQ-009)
-  - specifications/plugin-api-v1-lua-surface-rfc.md (accepted, ADR 0009)
-  - specifications/isolation-resource-rfc.md (accepted, OQ-014)
-  - specifications/plugin-reuse-and-providers.md (draft, post-1.0)
-  - specifications/plugin-ecosystem-model.md (draft, research-derived)
-  - specifications/ui-extensibility-architecture.md (draft, candidate review)
+  - packaging/package-lifecycle-rfc.md (accepted, OQ-021)
+  - packaging/package-followup-rfc.md (accepted, OQ-022/OQ-026..OQ-029)
+  - runtime/plugin-host-runtime-rfc.md (accepted, OQ-033/OQ-034/OQ-035)
+  - runtime/lua-runtime-rfc.md (accepted, OQ-009)
+  - sdk/plugin-api-v1-lua-surface-rfc.md (accepted, ADR 0009)
+  - runtime/isolation-resource-rfc.md (accepted, OQ-014)
+  - packaging/plugin-reuse-and-providers.md (draft, post-1.0)
+  - architecture/plugin-ecosystem-model.md (draft, research-derived)
+  - architecture/ui-extensibility-architecture.md (draft, candidate review)
   - product/bundled-plugin-split-decision.md (accepted, OQ-053)
   - product/official-plugin-onboarding.md (normative policy)
   - extensibility/plugin-system.md (draft, accepted direction where marked)
@@ -72,7 +72,7 @@ nodes:
     level: L0
     status: accepted
     description: Attestation and index service, not a trusted execution authority
-    source: specifications/package-followup-rfc.md
+    source: packaging/package-followup-rfc.md
   - id: sdk-template
     label: SDK and Template
     kind: module
@@ -88,7 +88,7 @@ nodes:
     level: L0
     status: draft
     description: Generic container and Event Bus accepted; plugin-facing registration and mount open
-    source: specifications/ui-extensibility-architecture.md
+    source: architecture/ui-extensibility-architecture.md
 
   # --- Registry (L1) ---
   - id: official-entry
@@ -114,7 +114,7 @@ nodes:
     level: L1
     status: accepted
     description: Signed versioned index mapping package ID to version records
-    source: specifications/package-followup-rfc.md
+    source: packaging/package-followup-rfc.md
   - id: client-verify
     label: Client Verify
     kind: module
@@ -122,7 +122,7 @@ nodes:
     level: L1
     status: accepted
     description: Client validates signatures and freshness, then re-validates H-A, H-B, capability diff
-    source: specifications/package-followup-rfc.md
+    source: packaging/package-followup-rfc.md
   - id: key-directory
     label: Key Directory
     kind: module
@@ -130,7 +130,7 @@ nodes:
     level: L1
     status: accepted
     description: Enrollment, rotation, revocation, signed freshness for signed releases
-    source: specifications/package-followup-rfc.md
+    source: packaging/package-followup-rfc.md
   - id: source-classes
     label: Source Classes
     kind: data
@@ -138,7 +138,7 @@ nodes:
     level: L1
     status: accepted
     description: Bundled, registry, git, local-path with per-class provenance records
-    source: specifications/package-followup-rfc.md
+    source: packaging/package-followup-rfc.md
   - id: resolver
     label: Resolver
     kind: module
@@ -146,7 +146,7 @@ nodes:
     level: L1
     status: accepted
     description: Deterministic resolver, closed constraint grammar, one version per ID
-    source: specifications/package-followup-rfc.md
+    source: packaging/package-followup-rfc.md
   - id: lockfile
     label: Lockfile
     kind: data
@@ -154,7 +154,7 @@ nodes:
     level: L1
     status: accepted
     description: Exact reproducible resolution with H-A, H-B, Merkle H-C digests
-    source: specifications/package-lifecycle-rfc.md
+    source: packaging/package-lifecycle-rfc.md
 
   # --- Lifecycle (L1/L2) ---
   - id: manifest
@@ -172,7 +172,7 @@ nodes:
     level: L2
     status: accepted
     description: Source declares ID and version, nothing trusted
-    source: specifications/package-lifecycle-rfc.md
+    source: packaging/package-lifecycle-rfc.md
   - id: fetched
     label: Fetched
     kind: data
@@ -180,7 +180,7 @@ nodes:
     level: L2
     status: accepted
     description: Bytes in quarantine, framing and budget enforced
-    source: specifications/package-lifecycle-rfc.md
+    source: packaging/package-lifecycle-rfc.md
   - id: verified
     label: Verified
     kind: data
@@ -188,7 +188,7 @@ nodes:
     level: L2
     status: accepted
     description: Full integrity chain H-A plus H-B plus capability diff passed
-    source: specifications/package-lifecycle-rfc.md
+    source: packaging/package-lifecycle-rfc.md
   - id: staged
     label: Staged
     kind: data
@@ -196,7 +196,7 @@ nodes:
     level: L2
     status: accepted
     description: Verified generation in store, not yet active
-    source: specifications/package-lifecycle-rfc.md
+    source: packaging/package-lifecycle-rfc.md
   - id: activated
     label: Activated
     kind: data
@@ -204,7 +204,7 @@ nodes:
     level: L2
     status: accepted
     description: Atomic switch makes staged generation active
-    source: specifications/package-lifecycle-rfc.md
+    source: packaging/package-lifecycle-rfc.md
   - id: retained
     label: Retained
     kind: data
@@ -212,7 +212,7 @@ nodes:
     level: L2
     status: accepted
     description: Superseded generations bounded for rollback
-    source: specifications/package-lifecycle-rfc.md
+    source: packaging/package-lifecycle-rfc.md
   - id: integrity-chain
     label: Integrity Chain
     kind: capability
@@ -220,7 +220,7 @@ nodes:
     level: L2
     status: accepted
     description: Fetch framing, artifact checksum, manifest validation, hash binding, capability diff
-    source: specifications/package-lifecycle-rfc.md
+    source: packaging/package-lifecycle-rfc.md
   - id: publisher-trust
     label: Publisher Trust
     kind: capability
@@ -228,7 +228,7 @@ nodes:
     level: L2
     status: accepted
     description: V-A lock pinning, V-B TOFU, V-C signed releases
-    source: specifications/package-lifecycle-rfc.md
+    source: packaging/package-lifecycle-rfc.md
   - id: lifecycle-states
     label: Declared to Disposed
     kind: capability
@@ -252,7 +252,7 @@ nodes:
     level: L1
     status: accepted
     description: Per-plugin isolated Lua VM with restricted stdlib and Fuel budgets
-    source: specifications/lua-runtime-rfc.md
+    source: runtime/lua-runtime-rfc.md
   - id: generation
     label: Generation
     kind: capability
@@ -276,7 +276,7 @@ nodes:
     level: L1
     status: accepted
     description: Quota-bounded key-value state scoped by plugin ID, survives generation disposal
-    source: specifications/plugin-host-runtime-rfc.md
+    source: runtime/plugin-host-runtime-rfc.md
   - id: safe-mode
     label: bitty safe
     kind: capability
@@ -336,7 +336,7 @@ nodes:
     level: L1
     status: draft
     description: Plugin registration and mount surface behind RFC-OQ-2, RFC-OQ-3, RFC-OQ-5
-    source: specifications/ui-extensibility-architecture.md
+    source: architecture/ui-extensibility-architecture.md
   - id: declarative-slots
     label: Declarative Slots
     kind: capability
@@ -344,7 +344,7 @@ nodes:
     level: L1
     status: accepted
     description: v1 bitty.ui.mount and update into closed semantic slots
-    source: specifications/plugin-api-v1-lua-surface-rfc.md
+    source: sdk/plugin-api-v1-lua-surface-rfc.md
   - id: presentation-modes
     label: Presentation Modes
     kind: capability
@@ -352,7 +352,7 @@ nodes:
     level: L1
     status: draft
     description: Tiled, floating, overlay, fullscreen and further modes as runtime properties
-    source: specifications/plugin-ecosystem-model.md
+    source: architecture/plugin-ecosystem-model.md
 
   # --- Research 053/054 proposal direction (draft) ---
   - id: service-registry
@@ -370,7 +370,7 @@ nodes:
     level: L1
     status: draft
     description: Post-1.0 Picker, Status, Context providers over the host Service Protocol
-    source: specifications/plugin-reuse-and-providers.md
+    source: packaging/plugin-reuse-and-providers.md
   - id: lua-is-glue
     label: Lua Is Glue
     kind: capability
@@ -378,7 +378,7 @@ nodes:
     level: L1
     status: draft
     description: Pure Lua, then system CLI, then peer service, then post-1.0 native helper
-    source: specifications/plugin-reuse-and-providers.md
+    source: packaging/plugin-reuse-and-providers.md
   - id: self-contained-artifact
     label: Self-Contained Artifact
     kind: data

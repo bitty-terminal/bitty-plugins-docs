@@ -249,7 +249,7 @@ Status: **accepted contract on 2026-08-28.**
   edge opts in via an explicit `prerelease = true` flag in the manifest
   dependency entry. Bare `^1.0` never selects `1.1.0-alpha.1` implicitly.
   The concrete manifest TOML shape of that flag is owned by the
-  [Plugin Platform RFC manifest schema](plugin-platform-rfc.md#accepted-manifest-schema).
+  [Plugin Platform RFC manifest schema](../specifications/plugin-platform-rfc.md#accepted-manifest-schema).
 - Lockfile records whether the resolved version is prerelease; `outdated`
   distinguishes `current`, `wanted` (max satisfying current constraints),
   and `latest` (max stable across registry) so users see prerelease as an

@@ -46,4 +46,4 @@ verified, compatible, or shipped beyond its manifest `[compat]` ranges.
 - [Plugin documentation](../README.md)
 - [Bundled plugin split decision](../../../product/bundled-plugin-split-decision.md)
 - [Plugin Roadmap](../../../product/plugin-roadmap.md) (draft)
-- [Plugin Reuse and Provider Ecology RFC](../../../specifications/plugin-reuse-and-providers.md)
+- [Plugin Reuse and Provider Ecology RFC](../../../packaging/plugin-reuse-and-providers.md)

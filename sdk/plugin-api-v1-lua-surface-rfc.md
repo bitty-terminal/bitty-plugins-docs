@@ -22,15 +22,15 @@ beyond the `1.x` stability policy below, and does not weaken any normative
 security control.
 
 The contract resolves the deferred "final spelling" left open by the
-[Plugin Platform RFC](plugin-platform-rfc.md) for OQ-011 and the conflicting
+[Plugin Platform RFC](../specifications/plugin-platform-rfc.md) for OQ-011 and the conflicting
 candidate spellings recorded in the corpus:
 
-| Candidate                                                        | Recorded in                                                                                                 |
-| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `bitty.commands.*`, `bitty.events.*`, `bitty.ui.*` namespaces    | [Plugin Platform RFC host namespaces](plugin-platform-rfc.md) (explicitly illustrative)                     |
-| `bitty.api.register_panel/on_event/get_terminal_state`           | `bitty-docs` finding `FIND-0003` `ECO-SDK-01` (recorded in the shared checkout; not yet on `origin/main`)   |
-| `register_panel/on_event/get_terminal_state` (R-SDK-1 gate list) | `bitty` CarryCtx note `PX-1199` (CTX-0221 first-plugin-batch plan, planning only)                           |
-| `bitty.services:get(...)` colon-style methods                    | [Plugin Reuse and Provider Ecology RFC](plugin-reuse-and-providers.md) (Draft, post-1.0 provider follow-up) |
+| Candidate                                                        | Recorded in                                                                                                              |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `bitty.commands.*`, `bitty.events.*`, `bitty.ui.*` namespaces    | [Plugin Platform RFC host namespaces](../specifications/plugin-platform-rfc.md) (explicitly illustrative)                |
+| `bitty.api.register_panel/on_event/get_terminal_state`           | `bitty-docs` finding `FIND-0003` `ECO-SDK-01` (recorded in the shared checkout; not yet on `origin/main`)                |
+| `register_panel/on_event/get_terminal_state` (R-SDK-1 gate list) | `bitty` CarryCtx note `PX-1199` (CTX-0221 first-plugin-batch plan, planning only)                                        |
+| `bitty.services:get(...)` colon-style methods                    | [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md) (Draft, post-1.0 provider follow-up) |
 
 Evidence revisions inspected read-only during drafting: `bitty` `1ea2f66`
 (local checkout; `bitty-plugin-host` and `bitty-lua` sources; the workspace was
@@ -48,10 +48,10 @@ owns the executable implementation and the machine-checkable parity evidence,
 and may refine mechanics but may not add or rename v1 identifiers without a
 `bitty-docs` revision. The SDK is generated from the accepted surface and may
 not invent identifiers. [Core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md)
-and the [Plugin Platform RFC](plugin-platform-rfc.md) record the same
+and the [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) record the same
 three-way split. The accepted statements below remain in force:
 
-1. [Lua Runtime RFC](lua-runtime-rfc.md) fixes the single host bridge in every
+1. [Lua Runtime RFC](../runtime/lua-runtime-rfc.md) fixes the single host bridge in every
    VM as a versioned `bitty` module whose "function surface is owned by the
    respective API RFCs"; [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md)
    already fixes `bitty.env.get` and `bitty.env.has` under that module.
@@ -68,14 +68,14 @@ Out of scope; owned elsewhere and only referenced here:
 
 - Manifest format, capability identifier grammar, grant lifecycle, and the event
   pipeline classes, batching, budgets, and drop policy
-  ([Plugin Platform RFC](plugin-platform-rfc.md), accepted).
+  ([Plugin Platform RFC](../specifications/plugin-platform-rfc.md), accepted).
 - VM construction, restricted standard library, rooted module resolution,
-  diagnostics classes ([Lua Runtime RFC](lua-runtime-rfc.md), accepted), pins and
+  diagnostics classes ([Lua Runtime RFC](../runtime/lua-runtime-rfc.md), accepted), pins and
   allowlist ([ADR 0005](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0005-lua-pins-and-stdlib.md)),
   environment reads ([ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md)),
   async boundary and tasks/timers ([ADR 0007](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0007-async-gc.md)).
 - Resource ceilings and enforcement numbers
-  ([Isolation Resource RFC](isolation-resource-rfc.md), accepted).
+  ([Isolation Resource RFC](../runtime/isolation-resource-rfc.md), accepted).
 - Scene content contract ([Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md),
   accepted).
 - Panel identity, lifecycle, and providers
@@ -97,7 +97,7 @@ Out of scope; owned elsewhere and only referenced here:
 - [Plugin system](../extensibility/plugin-system.md): extension levels 1-4,
   register-versus-claim, qualified naming, key-binding precedence, and the
   governing boundary that plugins alter presentation but never Terminal Truth.
-- [Plugin Platform RFC](plugin-platform-rfc.md): accepted manifest, capability
+- [Plugin Platform RFC](../specifications/plugin-platform-rfc.md): accepted manifest, capability
   identifiers, v1 surface coverage, namespace rules, and event pipeline.
 
 This RFC selects spellings for controls the sources already accept. It moves no
@@ -112,7 +112,7 @@ which is the only exact, machine-checkable representation today.
 
 | Option                                                        | Disposition     | Rationale                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | ------------------------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Module root `bitty`, namespaced functions                     | **Adopted**     | Accepted by [Lua Runtime RFC](lua-runtime-rfc.md) ("the single host bridge in every VM is a versioned `bitty` module") and already used by accepted `bitty.env.get`/`bitty.env.has` in [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md). The Plugin Platform RFC namespace rules give each namespace an accepted contract.                                                                                                                                                                 |
+| Module root `bitty`, namespaced functions                     | **Adopted**     | Accepted by [Lua Runtime RFC](../runtime/lua-runtime-rfc.md) ("the single host bridge in every VM is a versioned `bitty` module") and already used by accepted `bitty.env.get`/`bitty.env.has` in [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md). The Plugin Platform RFC namespace rules give each namespace an accepted contract.                                                                                                                                                      |
 | Module root `bitty.api.*`                                     | Rejected        | Adds an unaccepted nesting level with no contract behind it; conflicts with the accepted `bitty.env.*` shape; would force one concept to have two spellings. Only source is a finding recommendation that itself cites no accepted spelling.                                                                                                                                                                                                                                                                                                               |
 | Flat `bitty.register_command`/`on_event`/`get_terminal_state` | Rejected        | Accepted material uses namespaced shapes (`bitty.commands.register`, `bitty.events.subscribe`, `bitty.terminal.snapshot`); flat verbs consume the global module namespace, collide with future accepted additions (`bitty.env`), and lose the per-namespace capability mapping.                                                                                                                                                                                                                                                                            |
 | `register_panel` for a panel provider                         | Rejected for v1 | Panel identity and lifecycle are not accepted: [Workspace Compositor](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md) explicitly introduces no `PanelId`, and the [Panel pre-study](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-pre-study.md) leaves the provider contract and `panel.*` mapping open. Panel providers are post-v1.0 per the [plugin roadmap](../product/plugin-roadmap.md#post-v10-panel-ecosystem-candidates) pending that RFC. |
@@ -237,7 +237,7 @@ bitty.events.subscribe(name, handler) -> handle
 - Interception handlers: return `false` to veto, anything else to approve.
   Rewriting content is not expressible.
 - Coalescing, queue bounds, drop policy, batching, and failure policy are the
-  accepted [Plugin Platform RFC pipeline](plugin-platform-rfc.md#event-pipeline-oq-013)
+  accepted [Plugin Platform RFC pipeline](../specifications/plugin-platform-rfc.md#event-pipeline-oq-013)
   and are not restated here.
 
 ### Key-binding suggestions
@@ -285,7 +285,7 @@ bitty.store.set(key, value) -> boolean
   - Quota: `STORE_QUOTA_BYTES` default 256 KiB persisted per plugin; overflow
     fails closed with `E_STORE_QUOTA` (`budget` class), never evicting or
     partially writing. The numbers are recorded as `RC-11` in the
-    [Isolation Resource RFC](isolation-resource-rfc.md).
+    [Isolation Resource RFC](../runtime/isolation-resource-rfc.md).
   - Persistence: the store survives suspension, reload, and generation
     disposal; writes from generation N are committed synchronously before N is
     disposed, so N+1 reads the same values. Data is deleted only by uninstall
@@ -439,7 +439,7 @@ bitty.services.provide(iface, impl) -> handle
   stale handle remains callable.
 - This freezes only the minimal v1 consumer/provider contract. Provider ecology
   (pickers, status, context providers, side-by-side versions) stays post-1.0
-  under the Draft [provider-ecology RFC](plugin-reuse-and-providers.md)
+  under the Draft [provider-ecology RFC](../packaging/plugin-reuse-and-providers.md)
   ([LUA-OQ-8](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-8-service-provider-side)).
 
 ### Tasks and timers
@@ -580,14 +580,14 @@ and are not satisfied by this documentation change alone:
 5. **Independent review:** category owner, docs curator, and a security reviewer
    accept the surface, the exclusions, and every high-risk boundary.
 6. **Documentation synchronization:** the
-   [Plugin Platform RFC](plugin-platform-rfc.md) host-namespace section,
+   [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) host-namespace section,
    [core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) authority statement,
    the [specifications index](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/README.md), the
    [decision register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md), the
    [ADR index](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/README.md),
    [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md),
    [ADR 0007](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0007-async-gc.md), the
-   [Isolation Resource RFC](isolation-resource-rfc.md), and the CarryCtx task
+   [Isolation Resource RFC](../runtime/isolation-resource-rfc.md), and the CarryCtx task
    record were updated in the same ratification change; no divergent copy is
    created.
 
@@ -617,9 +617,9 @@ dispositions are:
 
 - [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md) — accepted
   resolutions for LUA-OQ-1 through LUA-OQ-12, ratified 2026-09-11.
-- [Plugin Platform RFC](plugin-platform-rfc.md) — accepted manifest,
+- [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) — accepted manifest,
   capabilities, namespace rules, event pipeline.
-- [Lua Runtime RFC](lua-runtime-rfc.md) — accepted `bitty` host bridge, sandbox,
+- [Lua Runtime RFC](../runtime/lua-runtime-rfc.md) — accepted `bitty` host bridge, sandbox,
   module resolution, diagnostics.
 - [Core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) — ownership and
   authority statement.
@@ -627,7 +627,7 @@ dispositions are:
   register-versus-claim, key-binding precedence.
 - [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md) — accepted `SceneNode` and
   `RichBlock` contracts.
-- [Isolation Resource RFC](isolation-resource-rfc.md) — RC budgets and queue
+- [Isolation Resource RFC](../runtime/isolation-resource-rfc.md) — RC budgets and queue
   ceilings.
 - [Workspace Compositor](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md) and
   [Panel Runtime pre-study](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-pre-study.md) — panel identity and
