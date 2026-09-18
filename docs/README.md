@@ -38,13 +38,15 @@ map does not upgrade any claim.
 
 ## Current tree
 
-| Document                                                               | Purpose                                                             |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| [Development](development/README.md)                                   | Contributor entry point and local gates.                            |
-| [Documentation workflow](development/documentation-workflow.md)        | Normative authoring, metadata, status, and review policy.           |
-| [Plugin index](plugins/README.md)                                      | Registered official plugins, candidate list, and standard page set. |
-| [Plugin template](plugins/TEMPLATE.md)                                 | Reusable per-plugin page template.                                  |
-| [Official plugin onboarding](../product/official-plugin-onboarding.md) | Official-status entry criteria and registration policy.             |
+| Document                                                        | Purpose                                                             |
+| --------------------------------------------------------------- | ------------------------------------------------------------------- |
+| [Development](development/README.md)                            | Contributor entry point and local gates.                            |
+| [Documentation workflow](development/documentation-workflow.md) | Normative authoring, metadata, status, and review policy.           |
+| [Documentation process TODO](TODO.md)                           | Pointer to the repository work register.                            |
+| [Documentation process handoff](HANDOFF.md)                     | Pointer to handoff records for documentation work.                  |
+| [Plugin index](plugins/README.md)                               | Registered official plugins, candidate list, and standard page set. |
+| [Plugin template](plugins/TEMPLATE.md)                          | Reusable per-plugin page template.                                  |
+| [Official plugin onboarding](../product/README.md)              | Index route to onboarding policy, split decision, and roadmap.      |
 
 ## Migrated corpus
 
@@ -65,10 +67,10 @@ each document's frontmatter owns its status.
 | [UI Extensibility Architecture](../specifications/ui-extensibility-architecture.md)      | draft    | UI extension points, ownership boundaries, Lua surface.                |
 | [Plugin Ecosystem Model](../specifications/plugin-ecosystem-model.md)                    | draft    | Research-derived plugin taxonomy and Panel-as-host direction.          |
 | [Plugin IPC Boundary](../specifications/plugin-ipc-boundary.md)                          | draft    | Research-derived out-of-process boundary and unified capability model. |
-| [Plugin Roadmap](../product/plugin-roadmap.md)                                           | draft    | First-party and featured plugin sequencing.                            |
-| [Bundled-Plugin Split Decision (OQ-053)](../product/bundled-plugin-split-decision.md)    | accepted | Per-candidate split/stay-bundled verdicts and their gates.             |
-| [Plugin system](../extensibility/plugin-system.md)                                       | draft    | Plugin boundaries, isolation, composition, and lifecycle.              |
-| [Plugin package management](../extensibility/package-management.md)                      | draft    | Manifests, sources, updates, rollback, and trust.                      |
+| [Plugin Roadmap](../product/README.md)                                                   | draft    | Index route to roadmap, onboarding, and split decision.                |
+| [Bundled-Plugin Split Decision (OQ-053)](../product/README.md)                           | accepted | Index route to roadmap, onboarding, and split decision.                |
+| [Plugin system](../extensibility/README.md)                                              | draft    | Index route to plugin system and package management.                   |
+| [Plugin package management](../extensibility/README.md)                                  | draft    | Index route to plugin system and package management.                   |
 
 ## Per-plugin standard page set
 
@@ -92,27 +94,10 @@ Rules:
 - Create only pages that have real content; empty placeholder pages are avoided
   so the tree does not imply work that has not happened.
 
-## Planned structure
+## Related
 
-The initial migration covers `specifications/`, `product/`, and
-`extensibility/` plus the per-plugin pages. Remaining trees are added only as
-real content lands; empty placeholder pages are not added.
-
-| Tree                     | Content                                                       |
-| ------------------------ | ------------------------------------------------------------- |
-| `sdk/`                   | Public plugin API surface, versioning, and compatibility.     |
-| `manifests/`             | Manifest fields, schemas, and validation contracts.           |
-| `lifecycle/`             | Install, activation, update, disable, and removal semantics.  |
-| `isolation/`             | Capability model, resource limits, and failure semantics.     |
-| `reference/`             | Factual lookup material derived from implementation evidence. |
-| `docs/plugins/<plugin>/` | Per-plugin pages using the standard page set.                 |
-
-The `manifests/` tree will document the registry-entry integrity field
-contract: optional `manifest_hash` and `signature` (`algorithm`, `value`,
-optional `signer`) fields that are shape-checked when present and only warned
-about when absent, plus the advisory per-entry `signature_status` (`verified` |
-`unverified` | `unsigned`) recorded in the generated index. Phase 1 records no
-`verified` status; the value is display-only and is not a tamper defense.
+- [Extensibility index](../extensibility/README.md)
+- [Product index](../product/README.md)
 
 ## Maintaining the corpus
 

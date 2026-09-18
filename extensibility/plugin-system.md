@@ -332,9 +332,14 @@ boundaries must be shared with the CLI and IPC model described in
 
 ### Candidate network capability: `bitty.http` and secrets direction
 
-Status: **candidate direction, non-normative** (user companion note
-`recording/research/029.md`, bitty-docs CTX-0202 / bitty-docs#290,
+Status: **candidate direction, non-normative** (research-derived user
+companion note on network-free core with controlled extension boundaries,
+bitty-docs CTX-0202 / bitty-docs#290,
 [DIR-017](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md)).
+The note concludes that the terminal core stays free of network
+dependencies, that plugin package sources start local and repository-based,
+and that later plugin runtime networking goes through host-controlled
+interfaces with explicit least-privilege declarations.
 It refines the accepted capability direction above without changing it: Core
 never initiates network connections, while plugins may request network as an
 explicit least-privilege capability. The plugin system itself is therefore not
