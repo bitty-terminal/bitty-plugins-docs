@@ -75,6 +75,43 @@ The maintained topic document is the source of truth. Historical conversations
 and external references are provenance. The implementation repository is the
 source of implementation evidence.
 
+## Document form
+
+Each `document_type` has a fixed section spine. The spine order is normative: a
+document presents the sections of its type in the order below, and a section
+may be omitted only when it is genuinely inapplicable, never because it is
+inconvenient or unfinished. A present section uses the canonical vocabulary
+named in the spine; a synonym such as `Source provenance` or `Scope and inputs`
+for `Purpose and scope`, or `Next steps` for `Open items`, signals a document
+that has not adopted the spine. A numbered heading in the `1. Purpose, status,
+and attribution` style likewise signals a document that has not adopted the
+spine. Use `Provenance` only for source notes.
+
+The leading `Document status` position may be satisfied by the short status
+block that immediately follows the H1 (the pattern used by the accepted RFCs)
+rather than by a heading; when written as a heading, it leads the document.
+
+| `document_type`             | Section spine (in order)                                                                                                                                                                                                                                                                                                                                                                |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `specification`             | Document status / Purpose and scope / Normative sources this specification must not weaken (or Normative constraints this RFC must not weaken) / Terminology / body / Security review (or Security alignment and traceability) / Verification plan / Alternatives considered / Affected contracts / Open points (or Open items) / Acceptance criteria / P0 Review Sign-off / References |
+| `research`                  | Purpose and scope / Status vocabulary / source-slice sections (`T-1`..`Tn`) / Owner-pending pointers / Relation to existing systems / Open items (not global open questions) / Provenance                                                                                                                                                                                               |
+| `index`                     | Admission criteria / Authority and status / route tables                                                                                                                                                                                                                                                                                                                                |
+| `register`                  | Purpose / Source identity / Disposition / Verification backlog                                                                                                                                                                                                                                                                                                                          |
+| `overview` or `explanation` | Purpose and scope / body / Relation to existing systems / References                                                                                                                                                                                                                                                                                                                    |
+| `policy` (and `contract`)   | Purpose and scope / Normative sources / requirements / Security review / Verification                                                                                                                                                                                                                                                                                                   |
+| `reference`                 | Purpose and scope / body / Compatibility and versioning / References                                                                                                                                                                                                                                                                                                                    |
+| `guide`                     | Purpose / Prerequisites / Procedure / Failure and recovery / References                                                                                                                                                                                                                                                                                                                 |
+
+`body`, `requirements`, and `route tables` mark where a document's own content
+sections go; they are placeholders, not literal headings. `contract` shares the
+`policy` spine because the document-type table above defines the two together.
+
+This section is a form rule only. It does not change the frontmatter schema,
+status meanings, or review ownership defined elsewhere in this policy. The
+spine is shared with
+[bitty-ai-docs](https://github.com/bitty-terminal/bitty-ai-docs), and
+the two repositories must not diverge.
+
 ## Required metadata
 
 Every canonical Markdown document begins with YAML frontmatter containing
