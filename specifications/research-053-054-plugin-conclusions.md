@@ -17,20 +17,12 @@ sidebar_order: 50
 > self-contained artifacts). This page is **not** an accepted contract, an RFC,
 > or an implementation claim.
 
-## 1. Purpose, status, and attribution
+## Purpose and scope
 
-- This page is built only from the trimmed English summaries of research
-  records 053 and 054 in the workspace research archive
-  ([bitty-terminal/research](https://github.com/bitty-terminal/research)). The
-  archive marked records 044 through 055 Captured and renamed the originals
-  with a `.completed` suffix on 2026-09-18 under an owner directive; the
-  archive states the `*-docs` corpora are the working corpus and it records
-  discussion provenance. Record 053 has no recorded discussion date; record
-  054's archive receipt is dated 2026-09-18. This page asserts no independent
-  verification of canonical capture for either record.
 - Only the plugin-side conclusions are distilled here. Model, provider, tool,
   agent, context, registry, SDK-packaging, and governance conclusions are
-  recorded as owner-pending pointers in section 4, not as decisions of this
+  recorded as owner-pending pointers in
+  [Owner-pending pointers](#owner-pending-pointers), not as decisions of this
   corpus.
 - A parallel in-review capture (CTX-0027) covers the 053 plugin-service and
   framework-layering direction in the specifications tree. This page is scoped
@@ -41,7 +33,16 @@ sidebar_order: 50
 - Documentation capture only: no SDK, framework, transport, registry, or
   product feature is implemented by this page.
 
-## 2. Public plugin contracts and layered frameworks (053, plugin slice)
+## Status vocabulary
+
+| Status        | Meaning in this document                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------ |
+| Accepted      | An accepted document already decides the point; this page only links or restates it.             |
+| Candidate     | Proposed by the cited research record only; no review has accepted it.                           |
+| Owner-pending | Belongs to another repository owner; recorded here as a pointer, never as content.               |
+| Captured      | The archive's marking of a research record; this page asserts no independent verification of it. |
+
+## T-1 Public plugin contracts and layered frameworks (053, plugin slice)
 
 Proposal direction from research record 053. Every item below is a candidate
 unless it cites an accepted document.
@@ -94,12 +95,7 @@ unless it cites an accepted document.
   are illustrative mechanism needs, never ambient access. Framework wrappers
   cannot bypass host enforcement.
 
-The accepted plugin-composition baseline lives in
-[Plugin system](../extensibility/plugin-system.md): per-plugin isolated VMs,
-no cross-plugin private imports, and versioned host-mediated services. Service
-multiplicity, provider selection, and capability grants stay host-controlled.
-
-## 3. Lua dependency management and self-contained artifacts (054, plugin slice)
+## T-2 Lua dependency management and self-contained artifacts (054, plugin slice)
 
 Proposal direction from research record 054. Every item below is a candidate
 unless it cites an accepted document.
@@ -146,35 +142,40 @@ unless it cites an accepted document.
   the Lua runtime: host network dependencies stay out of install and resolve
   paths, and the plugin registry and index serve as the distribution point.
 
-The accepted package-management baseline lives in
-[Plugin package management](../extensibility/package-management.md): the
-manager-versus-host split, the staged verify-then-activate transaction model,
-and the installation-executes-no-code rule. This page weakens none of them.
-
-## 4. Owner-pending pointers (not captured here)
+## Owner-pending pointers
 
 The following conclusions from the two summaries belong to other owners and
 are pointers only, not decisions of this corpus.
 
-| Theme                                                                                       | Disposition                                                                                         |
-| ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| 053 model APIs, provider substitution, normalized model streams                             | Pending AI and Wheel owner capture; only the generic bounded-stream direction is noted in section 2 |
-| 053 tool discovery and registry, schema and permission DSL, host execution wrapper          | Pending AI and Wheel owner capture; no tool contract is accepted here                               |
-| 053 agent, context, workflow, and multi-agent orchestration                                 | Pending AI and Wheel owner capture; no agent API is accepted here                                   |
-| 053 host enforcement and SDK boundaries                                                     | Core and SDK documentation owners; linked, never copied                                             |
-| 053 UI mechanism and composition boundaries                                                 | Terminal-platform documentation owner; linked, never copied                                         |
-| 054 plugin-manager ownership, manifest and permission model, resolver and loader boundaries | Core and plugin documentation owners; open approval                                                 |
-| 054 Lua subset and build-time Lux flow                                                      | SDK and packaging owners; open approval                                                             |
-| 054 registry and index role                                                                 | Plugin-ecosystem owners; open approval                                                              |
-| Shared governance, security corpus, and decisions                                           | Canonical [bitty-docs](https://github.com/bitty-terminal/bitty-docs) corpus; linked, never copied   |
+| Theme                                                                                       | Disposition                                                                                       |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 053 model APIs, provider substitution, normalized model streams                             | Pending AI and Wheel owner capture; only the generic bounded-stream direction is noted in T-1     |
+| 053 tool discovery and registry, schema and permission DSL, host execution wrapper          | Pending AI and Wheel owner capture; no tool contract is accepted here                             |
+| 053 agent, context, workflow, and multi-agent orchestration                                 | Pending AI and Wheel owner capture; no agent API is accepted here                                 |
+| 053 host enforcement and SDK boundaries                                                     | Core and SDK documentation owners; linked, never copied                                           |
+| 053 UI mechanism and composition boundaries                                                 | Terminal-platform documentation owner; linked, never copied                                       |
+| 054 plugin-manager ownership, manifest and permission model, resolver and loader boundaries | Core and plugin documentation owners; open approval                                               |
+| 054 Lua subset and build-time Lux flow                                                      | SDK and packaging owners; open approval                                                           |
+| 054 registry and index role                                                                 | Plugin-ecosystem owners; open approval                                                            |
+| Shared governance, security corpus, and decisions                                           | Canonical [bitty-docs](https://github.com/bitty-terminal/bitty-docs) corpus; linked, never copied |
 
-Sibling corpora: [bitty-docs](https://github.com/bitty-terminal/bitty-docs)
-(shared governance),
-[bitty-terminal-docs](https://github.com/bitty-terminal/bitty-terminal-docs)
-(terminal platform), and
-[bitty-ai-docs](https://github.com/bitty-terminal/bitty-ai-docs) (AI core).
+## Relation to existing systems
 
-## 5. Open items and acceptance path
+- The accepted plugin-composition baseline lives in
+  [Plugin system](../extensibility/plugin-system.md): per-plugin isolated VMs,
+  no cross-plugin private imports, and versioned host-mediated services. Service
+  multiplicity, provider selection, and capability grants stay host-controlled.
+- The accepted package-management baseline lives in
+  [Plugin package management](../extensibility/package-management.md): the
+  manager-versus-host split, the staged verify-then-activate transaction model,
+  and the installation-executes-no-code rule. This page weakens none of them.
+- Sibling corpora: [bitty-docs](https://github.com/bitty-terminal/bitty-docs)
+  (shared governance),
+  [bitty-terminal-docs](https://github.com/bitty-terminal/bitty-terminal-docs)
+  (terminal platform), and
+  [bitty-ai-docs](https://github.com/bitty-terminal/bitty-ai-docs) (AI core).
+
+## Open items (not global open questions)
 
 - Owner approval of the manager and Lux split, artifact format, manifest
   fields, lockfile shapes, trust-prompt UX, and registry scope (054).
@@ -182,9 +183,22 @@ Sibling corpora: [bitty-docs](https://github.com/bitty-terminal/bitty-docs)
   substitution, dependency declarations, async, cancellation, and streaming
   semantics, and the framework-versus-SDK boundary where existing
   specifications do not already decide them (053).
-- The AI and Wheel owner-pending rows in section 4. The archive marked records
+- The AI and Wheel owner-pending rows in
+  [Owner-pending pointers](#owner-pending-pointers). The archive marked records
   053 and 054 Captured under the 2026-09-18 owner directive, but this corpus
   does not assert owner-verified capture of the model, tool, and agent
   conclusions those rows route elsewhere.
+
+## Provenance
+
+- This page is built only from the trimmed English summaries of research
+  records 053 and 054 in the workspace research archive
+  ([bitty-terminal/research](https://github.com/bitty-terminal/research)). The
+  archive marked records 044 through 055 Captured and renamed the originals
+  with a `.completed` suffix on 2026-09-18 under an owner directive; the
+  archive states the `*-docs` corpora are the working corpus and it records
+  discussion provenance. Record 053 has no recorded discussion date; record
+  054's archive receipt is dated 2026-09-18. This page asserts no independent
+  verification of canonical capture for either record.
 - This page asserts no capture claim or destination link beyond the plugin-side
   distillation recorded here.

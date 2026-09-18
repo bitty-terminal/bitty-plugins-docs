@@ -122,17 +122,9 @@ control; it may not downgrade the control to an optional candidate.
 
 ## Manifest and identity (OQ-012, part 1)
 
-### Format options considered
-
-| Option    | Trade-offs                                                                                                                                                                                                                         | Verdict                                                |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| TOML      | Matches the candidate fragments already in the corpus; static, declarative, no execution during parsing; comments survive round-trips; well-understood schema tooling. Loses computed values, which is the desired property here.  | **Proposed.**                                          |
-| JSON      | Widely tooled, but no comments, verbose for humans, and encourages machine-only editing of a file users are asked to review during consent.                                                                                        | Rejected for the author-facing manifest.               |
-| Lua table | One language across config and plugins, but a manifest must be inspectable and diffable without creating a VM; executable manifests would run attacker-controlled code during discovery, weakening the no-code-at-install posture. | Rejected; contradicts T-06/T-12 containment direction. |
-| YAML      | Ergonomic but ambiguous (implicit typing, anchors), historically fuzz-hostile, and over-expressive for a security-reviewed artifact.                                                                                               | Rejected.                                              |
-
 Status of this choice: **accepted**. The file name, key spelling, and version
-grammar are now the accepted contract.
+grammar are the accepted contract. The format options weighed for this choice
+are recorded in [Alternatives considered](#manifest-format).
 
 ### Accepted manifest schema
 
@@ -353,23 +345,16 @@ severity and cannot be pre-checked; the dialog is reachable again from the
 plugin manager; consent screens show capability identifiers verbatim so that
 review tools and documentation can reference the same symbols.
 
-Options considered for grant storage: (a) inline in the managed manifest
-(rejected: mixes desired state with audited decisions, breaks dotfile
-portability of intent versus consent), (b) per-capability OS keychain entries
-(rejected: poor diffability and no atomic view of one plugin's authority),
-(c) a dedicated grant record bound to the manifest hash (accepted: auditable,
-diffable, revocation-friendly, and consistent with the path-and-hash approval
-pattern the corpus already accepts for project configuration).
+The grant-storage options weighed, and the reason the manifest-hash-bound
+record was accepted, are recorded in
+[Alternatives considered](#grant-storage).
 
 ## Plugin API v1 surface (OQ-011)
 
-### Surface options considered
-
-| Option                                                              | Trade-offs                                                                                                                                                                                                                      | Verdict                                   |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| A. Minimal kernel: commands plus observation events only            | Smallest review surface and fastest to stabilize, but tabs/status-line-class plugins cannot ship without UI, so the first real ecosystem wave would be blocked or fork private patterns.                                        | Rejected.                                 |
-| B. Level 1 plus minimal Level 2 and read-only terminal (accepted)   | Covers the candidate plugin ownership table (tabs, status line, palette, search-style consumers) with declarative UI only; keeps renderer replaceable; defers the two highest-risk areas (presentation replacement, protocols). | **Accepted.**                             |
-| C. Full levels 1-4 including presentation replacement and protocols | Maximizes early capability, but level 3 composition rules and level 4 protocol handling are exactly where Terminal Truth and PTY-peer-reachable attack surface live (T-07, T-13, R-008); premature freezing risks a broken v2.  | Rejected v1; revisit as `2.x` candidates. |
+Option B is the accepted v1 surface; the rejected and deferred options are
+recorded in
+[Alternatives considered](#plugin-api-v1-surface-options). The accepted host
+namespaces follow.
 
 ### Host namespaces
 
@@ -639,6 +624,57 @@ Mechanisms and numeric budgets for instruction/memory/task enforcement are
 owned by OQ-014 and are prerequisites for shipping, not for accepting this
 contract.
 
+## Alternatives considered
+
+### Manifest format
+
+| Option    | Trade-offs                                                                                                                                                                                                                         | Verdict                                                |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| TOML      | Matches the candidate fragments already in the corpus; static, declarative, no execution during parsing; comments survive round-trips; well-understood schema tooling. Loses computed values, which is the desired property here.  | **Proposed.**                                          |
+| JSON      | Widely tooled, but no comments, verbose for humans, and encourages machine-only editing of a file users are asked to review during consent.                                                                                        | Rejected for the author-facing manifest.               |
+| Lua table | One language across config and plugins, but a manifest must be inspectable and diffable without creating a VM; executable manifests would run attacker-controlled code during discovery, weakening the no-code-at-install posture. | Rejected; contradicts T-06/T-12 containment direction. |
+| YAML      | Ergonomic but ambiguous (implicit typing, anchors), historically fuzz-hostile, and over-expressive for a security-reviewed artifact.                                                                                               | Rejected.                                              |
+
+TOML is now the accepted choice: the file name, key spelling, and version
+grammar are the accepted contract.
+
+### Grant storage
+
+Options considered for grant storage: (a) inline in the managed manifest
+(rejected: mixes desired state with audited decisions, breaks dotfile
+portability of intent versus consent), (b) per-capability OS keychain entries
+(rejected: poor diffability and no atomic view of one plugin's authority),
+(c) a dedicated grant record bound to the manifest hash (accepted: auditable,
+diffable, revocation-friendly, and consistent with the path-and-hash approval
+pattern the corpus already accepts for project configuration).
+
+### Plugin API v1 surface options
+
+| Option                                                              | Trade-offs                                                                                                                                                                                                                      | Verdict                                   |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| A. Minimal kernel: commands plus observation events only            | Smallest review surface and fastest to stabilize, but tabs/status-line-class plugins cannot ship without UI, so the first real ecosystem wave would be blocked or fork private patterns.                                        | Rejected.                                 |
+| B. Level 1 plus minimal Level 2 and read-only terminal (accepted)   | Covers the candidate plugin ownership table (tabs, status line, palette, search-style consumers) with declarative UI only; keeps renderer replaceable; defers the two highest-risk areas (presentation replacement, protocols). | **Accepted.**                             |
+| C. Full levels 1-4 including presentation replacement and protocols | Maximizes early capability, but level 3 composition rules and level 4 protocol handling are exactly where Terminal Truth and PTY-peer-reachable attack surface live (T-07, T-13, R-008); premature freezing risks a broken v2.  | Rejected v1; revisit as `2.x` candidates. |
+
+## Affected contracts
+
+Acceptance of this RFC on 2026-08-27 applies these same-change updates:
+
+- [Core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) and
+  [Plugin system](../extensibility/plugin-system.md): the capability examples
+  and pending-decision notes reference the accepted identifiers.
+- [Open-question register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md): OQ-011, OQ-012, and OQ-013
+  moved from pointer to closure per the close rule.
+- [Decision register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md): the candidate queue and accepted
+  artifacts gain this RFC, and DIR-001 records it as the accepting contract.
+- [Specifications index](README.md): the Plugin Platform RFC row moves from
+  Draft to Accepted.
+- [Proposed delivery sequence](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/proposed-delivery-sequence.md) and
+  [Isolation Resource RFC](isolation-resource-rfc.md): stale proposed references
+  are swept to the accepted contract.
+
+No new repository, crate, or workflow is added by this RFC.
+
 ## Open points
 
 Deliberately unresolved at acceptance time. The following remain Open as
@@ -700,3 +736,35 @@ following criteria were satisfied per the
    identifiers, and the open-question rows moved from pointer to closure.
 3. No element weakens a normative P0 gate; any discovered conflict returns the
    conflicting clause to revision rather than downgrading the gate.
+
+## P0 Review Sign-off
+
+> P0 review tracks acceptance of OQ-011, OQ-012, and OQ-013 via this RFC.
+> Frontmatter is `accepted` and the
+> [open-question register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) is updated per its close
+> rule. This section records the sign-off described by the acceptance criteria
+> above.
+
+The RFC was accepted on 2026-08-27 by the project initiator per independent
+review with the security-auditor, the category owner, and a docs curator, and
+the Wave-C P1 decisions recorded in the status block above are the accepted
+contract. Residual runtime enforcement tuning stays with OQ-014 and does not
+reopen the closed design-level questions.
+
+## References
+
+- [Security Overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md), [Threat Model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md), and
+  [Security Risk Register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/risk-register.md): normative gates and the
+  threat/risk identifiers cited in [Security alignment and traceability](#security-alignment-and-traceability).
+- [Core and Plugin Boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) and
+  [Plugin system](../extensibility/plugin-system.md): ownership boundary and
+  extension-level model this RFC refines.
+- [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md) and
+  [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md): accepted v1 host
+  spellings, signatures, and the authority split.
+- [Package Follow-up RFC](package-followup-rfc.md) and
+  [Isolation Resource RFC](isolation-resource-rfc.md): dependency
+  prerelease-shape reconciliation and the RC-5 resource-ceiling family.
+- [Open-question register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) and
+  [Decision register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md): acceptance and closure records for
+  OQ-011, OQ-012, and OQ-013.
