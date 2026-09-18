@@ -11,7 +11,7 @@ sidebar_order: 14
 
 # Lua Runtime RFC
 
-## Status
+## Document status
 
 Accepted on 2026-08-27 by the project initiator. This RFC defines the accepted
 Lua runtime, sandbox construction, restricted standard-library subset, rooted
@@ -224,7 +224,7 @@ Neovim-style ambient global runtime paths.
    during evaluation) abort evaluation with the `budget` class and are treated
    as ordinary diagnostics, never as crashes.
 
-## Security review notes
+## Security review
 
 This accepted contract strengthens, and nowhere relaxes, the P0 posture: the
 restricted-library construction answers R-006/T-06 for both VM classes;
@@ -235,7 +235,7 @@ protects R-009 recovery. Acceptance of any binding choice must ship the
 unsafe-surface audit and fuzz targets for the binding layer as R-018/T-14 exit
 evidence, reviewed by a security-auditor persona before implementation starts.
 
-## Open items remaining under OQ-009
+## Open points
 
 The following items were open at proposal and are now dispositioned upon
 acceptance on 2026-08-27. Acceptance of this RFC closes
