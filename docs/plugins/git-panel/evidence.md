@@ -21,7 +21,7 @@ sidebar_order: 49
   bundled manifest and the `bitty-runtime::git_panel` review implementation.
 - `bitty` `CTX-0425` — accepted the Layer 2 `[tools.git]` declaration (v1),
   recorded canonically in the
-  [Plugin Reuse and Provider Ecology RFC](../../../specifications/plugin-reuse-and-providers.md#accepted-toolsgit-contract-v1).
+  [Plugin Reuse and Provider Ecology RFC](../../../packaging/plugin-reuse-and-providers.md#accepted-toolsgit-contract-v1).
 - `bitty-plugins` `CTX-0008` — registry entry published as
   `registry/official/git-panel.toml` (`bitty-plugins` PR #19, commit
   `9899c1e`, 2026-09-15).

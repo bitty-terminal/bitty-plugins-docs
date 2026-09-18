@@ -49,9 +49,9 @@ analysis for new appearance and panel capabilities.
 Out of scope and owned elsewhere:
 
 - the accepted Plugin API v1 surface
-  ([Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md), accepted)
+  ([Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md), accepted)
   and its manifest, capability, and event contracts
-  ([Plugin Platform RFC](plugin-platform-rfc.md), accepted);
+  ([Plugin Platform RFC](../specifications/plugin-platform-rfc.md), accepted);
 - the accepted `Workspace`/`LayoutTree` compositor and Core-owned decoration
   ([Workspace Compositor Specification](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md), accepted);
 - the accepted `LayoutProvider` plugin mechanism and its open trait spelling
@@ -95,21 +95,21 @@ and the accepted contract documents; it claims no new behavior.
 
 | Extension point          | Mechanism                                                              | Status                | Authority                                                                                                                                                                                                                                                         |
 | ------------------------ | ---------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Commands                 | `bitty.commands.register`; qualified IDs, bounded JSON Schema          | Accepted              | [Plugin API v1](plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                                 |
-| Events                   | `bitty.events.subscribe`; closed kind set, observation/interception    | Accepted              | [Plugin Platform RFC](plugin-platform-rfc.md)                                                                                                                                                                                                                     |
-| Lifecycle                | generation-scoped `plugin.*` events; lazy activation                   | Accepted              | [Plugin Host Runtime RFC](plugin-host-runtime-rfc.md)                                                                                                                                                                                                             |
-| Key suggestions          | `bitty.keymaps.suggest`; user mapping wins                             | Accepted              | [Plugin API v1](plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                                 |
-| UI slots                 | `bitty.ui.mount`/`update`; closed slot set, `SceneNode` subset         | Accepted              | [Plugin API v1](plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                                 |
-| Terminal observation     | `bitty.terminal.snapshot` semantic scope only                          | Accepted              | [Plugin API v1](plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                                 |
-| Services                 | `bitty.services.get`/`provide`; versioned interfaces                   | Accepted              | [Plugin API v1](plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                                 |
+| Commands                 | `bitty.commands.register`; qualified IDs, bounded JSON Schema          | Accepted              | [Plugin API v1](../sdk/plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                          |
+| Events                   | `bitty.events.subscribe`; closed kind set, observation/interception    | Accepted              | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                                                                                                                                                                                                   |
+| Lifecycle                | generation-scoped `plugin.*` events; lazy activation                   | Accepted              | [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md)                                                                                                                                                                                                  |
+| Key suggestions          | `bitty.keymaps.suggest`; user mapping wins                             | Accepted              | [Plugin API v1](../sdk/plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                          |
+| UI slots                 | `bitty.ui.mount`/`update`; closed slot set, `SceneNode` subset         | Accepted              | [Plugin API v1](../sdk/plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                          |
+| Terminal observation     | `bitty.terminal.snapshot` semantic scope only                          | Accepted              | [Plugin API v1](../sdk/plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                          |
+| Services                 | `bitty.services.get`/`provide`; versioned interfaces                   | Accepted              | [Plugin API v1](../sdk/plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                          |
 | Layout algorithms        | `LayoutProvider` pure geometry proposal                                | Accepted (trait open) | [Workspace Compositor](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md)                                                                                                                                    |
 | Rich/declarative content | `SceneNode`/`RichBlock` scene contract                                 | Accepted              | [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md)                                                                                                                                  |
 | Appearance configuration | `init.lua` `ConfigPlan` keys; theme presets                            | Accepted/partial      | [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md), [RFC-0001](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/rfcs/RFC-0001-appearance-configuration.md) |
 | Panel background image   | `decoration.background_image` / `_fit` / `_image_roots` (contract)     | Accepted (contract)   | [RFC-0001](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/rfcs/RFC-0001-appearance-configuration.md) (OQ-042)                                                                                                                              |
 | Per-View appearance      | `views.<selector>.*` override layer                                    | Accepted (contract)   | [RFC-0001](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/rfcs/RFC-0001-appearance-configuration.md) (OQ-041)                                                                                                                              |
 | Outline width            | `decoration.border_width` / `_focused` / `_idle`, per-View overridable | Accepted (contract)   | [RFC-0001](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/rfcs/RFC-0001-appearance-configuration.md) (OQ-045)                                                                                                                              |
-| Panel providers          | `register_panel`, `PanelId`, panel lifecycle                           | Excluded from v1      | [Plugin API v1](plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                                 |
-| Protocol registration    | OSC/APC and structured-output handlers                                 | Excluded from v1      | [Plugin API v1](plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                                 |
+| Panel providers          | `register_panel`, `PanelId`, panel lifecycle                           | Excluded from v1      | [Plugin API v1](../sdk/plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                          |
+| Protocol registration    | OSC/APC and structured-output handlers                                 | Excluded from v1      | [Plugin API v1](../sdk/plugin-api-v1-lua-surface-rfc.md)                                                                                                                                                                                                          |
 | Decoration/annotation    | Level 3 presentation contributions                                     | Excluded from v1      | [Plugin system](../extensibility/plugin-system.md)                                                                                                                                                                                                                |
 
 Two structural facts follow from the inventory:
@@ -175,7 +175,7 @@ frame timing, hit-testing and accessibility mechanisms on the Rust side, with
 widgets, components, themes, layout composition, lists, chat, tables, palettes,
 and dashboards as potential Lua framework/application concerns. These are
 candidate responsibilities, not an accepted primitive or widget inventory.
-Current [Plugin API v1 UI contributions](plugin-api-v1-lua-surface-rfc.md#ui-contributions-l2)
+Current [Plugin API v1 UI contributions](../sdk/plugin-api-v1-lua-surface-rfc.md#ui-contributions-l2)
 remain bounded declarative slots; neither this proposal nor its `ui.*` sketches
 opens a panel-provider, canvas, focus, clipboard, animation-tick, or low-level
 rendering API.
@@ -194,7 +194,7 @@ modules, service-mediated composition across isolated plugin VMs, versioned
 adapters, widget schema and event ownership, focus/accessibility integration,
 and compatibility tests against the public SDK. Separately installed frameworks
 cannot use cross-package `require`; the
-[private-module/public-contract distinction](plugin-reuse-and-providers.md#cross-package-contracts-053-candidate)
+[private-module/public-contract distinction](../packaging/plugin-reuse-and-providers.md#cross-package-contracts-053-candidate)
 still applies. Frameworks remain optional ordinary plugins with host-enforced
 grants and generation/resource budgets; "Lua policy" never delegates network,
 secret, process-spawn, or scheduler enforcement. The source's AI/tool/model/agent
@@ -328,7 +328,7 @@ supported until `bitty` implements it.
 ### Already accepted elsewhere (do not re-litigate here)
 
 - Plugin API v1 Level 1 plus minimal Level 2
-  ([Plugin API v1](plugin-api-v1-lua-surface-rfc.md)): commands, events,
+  ([Plugin API v1](../sdk/plugin-api-v1-lua-surface-rfc.md)): commands, events,
   services, slots, semantic snapshot.
 - `LayoutProvider` as a plugin with pure, deterministic proposals
   ([Workspace Compositor](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md)).
@@ -448,9 +448,9 @@ focused width change does not move the content grid. Evidence belongs in
 - [Panel Animations and Effects RFC](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/rfcs/RFC-0002-panel-animations.md)
   (OQ-040 accepted).
 - [Workspace Compositor Specification](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md).
-- [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md).
-- [Plugin Platform RFC](plugin-platform-rfc.md).
-- [Plugin Host Runtime RFC](plugin-host-runtime-rfc.md).
+- [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md).
+- [Plugin Platform RFC](../specifications/plugin-platform-rfc.md).
+- [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md).
 - [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md).
 - [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md).
 - [Panel Runtime and Event Bus Pre-Study](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-pre-study.md).

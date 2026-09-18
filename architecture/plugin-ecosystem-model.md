@@ -71,7 +71,7 @@ The layering is semantic, not a nesting of runtimes:
   `contribution`.
 - Summarized as **runtime flat, semantics layered**, consistent with the
   accepted one-VM-per-plugin-identity-and-generation rule in the
-  [Isolation and Resource RFC](isolation-resource-rfc.md) (`IR-D2`).
+  [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md) (`IR-D2`).
 
 ## 4. Extension points as a first-class concept
 
@@ -91,7 +91,7 @@ The recorded consequence is that the plugin system stops being "load Lua files"
 and becomes "compose different extension graphs". The accepted inventory of
 existing extension mechanisms is in the
 [UI Extensibility Architecture](ui-extensibility-architecture.md) and the
-[Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md); a formal
+[Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md); a formal
 extension-point registration model is not addressed there.
 
 ## 5. Manifest expression candidates
@@ -99,7 +99,7 @@ extension-point registration model is not addressed there.
 ### Accepted dependency declaration
 
 The `[dependencies]` table is **accepted** in the
-[Plugin Platform RFC accepted manifest schema](plugin-platform-rfc.md). An
+[Plugin Platform RFC accepted manifest schema](../specifications/plugin-platform-rfc.md). An
 entry is the string form `"owner.name" = ">=2.0"` or the inline-table form
 `"owner.name" = { version = ">=2.0", prerelease = true }`; the version is
 validated by the closed resolver grammar, `prerelease` defaults to `false`, and
@@ -108,19 +108,19 @@ the table-form convention follows
 The inline-table form is **specified but not yet enforced**: the reference host
 dependency list and the SDK validator still accept only the string form and
 reject the table form
-([Plugin Platform RFC](plugin-platform-rfc.md)).
+([Plugin Platform RFC](../specifications/plugin-platform-rfc.md)).
 
 Registry versus manifest asymmetry: the author-facing manifest is the
 declaration source, while the registry is an attestation and index service that
 only reads and records the dependency edges and compatibility declarations from
 it, and is not authoritative for them (see the registry boundaries in the
-[Package Follow-up RFC](package-followup-rfc.md)).
+[Package Follow-up RFC](../packaging/package-followup-rfc.md)).
 
 ### Candidate contribution shapes (unaccepted)
 
 040 sketches two unaccepted manifest shapes for extension contributions; the
 accepted corpus defines only what the
-[Plugin Platform RFC](plugin-platform-rfc.md) accepted schema states. Neither
+[Plugin Platform RFC](../specifications/plugin-platform-rfc.md) accepted schema states. Neither
 shape below is accepted, and neither matches the accepted owner-qualified
 `[plugin] id` grammar:
 
@@ -162,9 +162,9 @@ not inherited by the extension. Recorded contrast:
 Without this rule, `evil-plugin -> depends on bitter` would indirectly inherit
 every Bitter capability and the sandbox would lose its meaning. This extends the
 accepted deny-by-default capability model in the
-[Plugin Platform RFC capability model](plugin-platform-rfc.md) and the
+[Plugin Platform RFC capability model](../specifications/plugin-platform-rfc.md) and the
 containment rules in the
-[Isolation and Resource RFC](isolation-resource-rfc.md): grants stay per plugin
+[Isolation and Resource RFC](../runtime/isolation-resource-rfc.md): grants stay per plugin
 identity and manifest hash, and a dependency edge is not a grant.
 
 ## 7. Extension-platform API versioning
@@ -182,9 +182,9 @@ bitty-ai.context@2
 A host can then refactor internals without breaking the ecosystem as long as
 the versioned contract is unchanged. The accepted corpus already versions the
 Plugin API itself (`compat.plugin-api`, `bitty.api_version` in the
-[Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md)) and services
+[Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)) and services
 (`[services.provided]` in the
-[Plugin Platform RFC](plugin-platform-rfc.md)); per-extension-platform API
+[Plugin Platform RFC](../specifications/plugin-platform-rfc.md)); per-extension-platform API
 versioning is the additive candidate those records do not yet define.
 
 ## 8. The plugin graph
@@ -250,7 +250,7 @@ entirely (`Lua Plugin -> Bitty UI Tree -> Layout -> wgpu`) and is
 
 v1 stays the accepted declarative slot UI: `bitty.ui.mount` / `bitty.ui.update`
 with a closed slot set and only `Text`, `Row`, `Column`, and `List` nodes, per
-the [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md). The
+the [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md). The
 record's proposed later stage is a retained/declarative **Widget Tree**
 (including `RichText`, `TextInput`, `Editor`, `Button`, `Toggle`, `Slider`,
 `VirtualList`, `Tree`, `Table`, `Tabs`, `ScrollView`, `Canvas`, `Image`,
@@ -265,8 +265,8 @@ Mail, Telegram, and Docker need more than UI. The record lists the required
 service surface — `process`, `network`, `fs`, `store`, `secrets`, `tasks`,
 `notifications`, `clipboard`, `commands`, `events`, `services` — each behind
 the same deny-by-default sandbox described by the
-[Plugin Platform RFC](plugin-platform-rfc.md) and the
-[Isolation and Resource RFC](isolation-resource-rfc.md). Panel state is split
+[Plugin Platform RFC](../specifications/plugin-platform-rfc.md) and the
+[Isolation and Resource RFC](../runtime/isolation-resource-rfc.md). Panel state is split
 into distinct axes (lifecycle, focus, visibility, interaction, attention)
 rather than one enum. For v1 the record keeps the accepted animation
 restrictions: only Core-owned chrome animates, plugin shaders and native
@@ -287,7 +287,7 @@ Status: **research proposal, not accepted or implemented**. Research record
 
 This is an **abstraction/stability** model, distinct from the Pure Lua / System
 CLI / Plugin Service / Native Helper **reuse** layers in
-[Plugin Reuse and Provider Ecology](plugin-reuse-and-providers.md). It does not
+[Plugin Reuse and Provider Ecology](../packaging/plugin-reuse-and-providers.md). It does not
 introduce nested VMs: section 3 and the accepted isolation contract still apply.
 A framework implemented as a separate plugin uses the public service boundary;
 a packaged private Lua helper uses rooted `require`. A source sketch importing
@@ -299,7 +299,7 @@ change. Stability belongs to reviewed public contracts, not exposed renderer,
 windowing, IPC, font-engine, or scheduler internals. Keeping that SDK small is
 the proposal; the source's `ipc`, `panel`, `process`, `filesystem`, `async`, and
 other namespace inventory is not an addition to
-[Plugin API v1](plugin-api-v1-lua-surface-rfc.md#not-in-plugin-api-v1).
+[Plugin API v1](../sdk/plugin-api-v1-lua-surface-rfc.md#not-in-plugin-api-v1).
 UI-specific alternatives and their limits are recorded under
 [Framework-level Lua UI](ui-extensibility-architecture.md#framework-level-lua-ui-053-candidate).
 
@@ -322,16 +322,16 @@ or ownership expansion. The immutable source was read in full (lines 1-1328).
 The following map distinguishes plugin-generic capture from domain conclusions
 that this corpus cannot capture on behalf of excluded owners.
 
-| Source lines and theme                                                                                         | Destination in this corpus                                                                                                                            | Disposition                                                                                                                                                                                  |
-| -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1-209, 564-680: private modules versus public services, typed contracts, public lookup/registration vocabulary | [Cross-package contracts](plugin-reuse-and-providers.md#cross-package-contracts-053-candidate), Layer 3                                               | Captured as generic proposal with accepted-boundary reconciliation; source API spellings are not adopted                                                                                     |
-| 211-330: install dependencies versus required services, replaceable providers                                  | Same Layer 3 subsection                                                                                                                               | Captured as distinction and open declaration/selection contract, not new manifest syntax                                                                                                     |
-| 332-448, 564-680: local/remote proxies and async-first calls                                                   | [Local and remote service proxies](plugin-ipc-boundary.md#13-local-and-remote-service-proxies-053-candidate)                                          | Captured as candidate; bounded synchronous v1 calls and VM marshalling retained                                                                                                              |
-| 450-499: uniform streaming over different transports                                                           | Same proxy section                                                                                                                                    | Generic bounded stream proposal captured; model event semantics pending AI/Wheel owner                                                                                                       |
-| 682-921, 1116-1327: four layers, small SDK, replaceable frameworks, stable public boundary                     | Section 9.6 and [Framework-level Lua UI](ui-extensibility-architecture.md#framework-level-lua-ui-053-candidate)                                       | Captured as proposal, including immediate-mode conflict and independent framework iteration                                                                                                  |
-| 72-209, 268-330, 450-499, 975-1020: model APIs, provider substitution and normalized model streams             | This handoff; existing [Model-provider direction](plugin-reuse-and-providers.md#model-provider-direction-candidate) is context, not 053 owner capture | Pending AI/Wheel owner capture: model list/resolve/generate/stream semantics; model selection; vendor transport adaptation; start/text/reasoning/tool-call/usage/finish/error event meanings |
-| 502-560, 922-973, 1024-1065: user/project tool discovery and framework authoring                               | This handoff                                                                                                                                          | Pending AI/Wheel owner capture: tool registry, discovery/trust of installed versus user/project packages, schema/permission DSL, host execution wrapper and tool-result contract             |
-| 1069-1112, 653-674, 1116-1157: agent/context/workflow framework and dashboard composition                      | This handoff                                                                                                                                          | Pending AI/Wheel owner capture: spawn/task/context/checkpoint/message/tool abstractions, event semantics, delegation and scheduling authority; no agent API accepted here                    |
+| Source lines and theme                                                                                         | Destination in this corpus                                                                                                                                         | Disposition                                                                                                                                                                                  |
+| -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1-209, 564-680: private modules versus public services, typed contracts, public lookup/registration vocabulary | [Cross-package contracts](../packaging/plugin-reuse-and-providers.md#cross-package-contracts-053-candidate), Layer 3                                               | Captured as generic proposal with accepted-boundary reconciliation; source API spellings are not adopted                                                                                     |
+| 211-330: install dependencies versus required services, replaceable providers                                  | Same Layer 3 subsection                                                                                                                                            | Captured as distinction and open declaration/selection contract, not new manifest syntax                                                                                                     |
+| 332-448, 564-680: local/remote proxies and async-first calls                                                   | [Local and remote service proxies](plugin-ipc-boundary.md#13-local-and-remote-service-proxies-053-candidate)                                                       | Captured as candidate; bounded synchronous v1 calls and VM marshalling retained                                                                                                              |
+| 450-499: uniform streaming over different transports                                                           | Same proxy section                                                                                                                                                 | Generic bounded stream proposal captured; model event semantics pending AI/Wheel owner                                                                                                       |
+| 682-921, 1116-1327: four layers, small SDK, replaceable frameworks, stable public boundary                     | Section 9.6 and [Framework-level Lua UI](ui-extensibility-architecture.md#framework-level-lua-ui-053-candidate)                                                    | Captured as proposal, including immediate-mode conflict and independent framework iteration                                                                                                  |
+| 72-209, 268-330, 450-499, 975-1020: model APIs, provider substitution and normalized model streams             | This handoff; existing [Model-provider direction](../packaging/plugin-reuse-and-providers.md#model-provider-direction-candidate) is context, not 053 owner capture | Pending AI/Wheel owner capture: model list/resolve/generate/stream semantics; model selection; vendor transport adaptation; start/text/reasoning/tool-call/usage/finish/error event meanings |
+| 502-560, 922-973, 1024-1065: user/project tool discovery and framework authoring                               | This handoff                                                                                                                                                       | Pending AI/Wheel owner capture: tool registry, discovery/trust of installed versus user/project packages, schema/permission DSL, host execution wrapper and tool-result contract             |
+| 1069-1112, 653-674, 1116-1157: agent/context/workflow framework and dashboard composition                      | This handoff                                                                                                                                                       | Pending AI/Wheel owner capture: spawn/task/context/checkpoint/message/tool abstractions, event semantics, delegation and scheduling authority; no agent API accepted here                    |
 
 The domain rows are distinct conclusions, not expendable examples. Replacing
 them all with a generic service proposal would lose their intended model, tool,
@@ -354,17 +354,17 @@ cannot be hidden by calling the whole record a generic proposal.
 
 ## 10. Mapping to the existing corpus
 
-| Theme                                             | Existing document                                                                                                                                                                   | Relationship                                                                                                                    |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Five-role plugin taxonomy                         | [Plugin system](../extensibility/plugin-system.md)                                                                                                                                  | Extends; the taxonomy itself is unaddressed here                                                                                |
-| Platform/host versus extension plugin             | [Plugin Reuse and Provider Ecology RFC](plugin-reuse-and-providers.md)                                                                                                              | Extends; provider ecology is close but does not name host plugins                                                               |
-| Extension points and contribution manifest        | [UI Extensibility Architecture](ui-extensibility-architecture.md); none for `[contributes]`                                                                                         | Extends; the inventory exists, a formal extension-point model is unaddressed                                                    |
-| Accepted `[dependencies]` manifest                | [Plugin Platform RFC](plugin-platform-rfc.md)                                                                                                                                       | Aligns; accepted schema already defines the dependency shape                                                                    |
-| Capability non-escalation                         | [Plugin Platform RFC](plugin-platform-rfc.md), [Isolation and Resource RFC](isolation-resource-rfc.md)                                                                              | Aligns; the dependency-edge framing is new                                                                                      |
-| Extension-platform API versioning                 | [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md), [Plugin Platform RFC](plugin-platform-rfc.md)                                                                    | Extends; host API versioning is candidate                                                                                       |
-| Plugin graph                                      | [Plugin system](../extensibility/plugin-system.md)                                                                                                                                  | Extends the dependency and service direction                                                                                    |
-| Panel as host / Activity stack                    | [UI Extensibility Architecture](ui-extensibility-architecture.md) (P2), [Plugin Roadmap](../product/plugin-roadmap.md)                                                              | Unaddressed here; the accepted sibling Panel Runtime RFC leaves provider details as its open questions (`RFC-OQ-1`..`RFC-OQ-9`) |
-| Native UI, widget layer, and application services | [UI Extensibility Architecture](ui-extensibility-architecture.md), [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md), [Plugin Platform RFC](plugin-platform-rfc.md) | Extends the ownership boundaries, v1 slot UI, and capability families                                                           |
+| Theme                                             | Existing document                                                                                                                                                                                            | Relationship                                                                                                                    |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Five-role plugin taxonomy                         | [Plugin system](../extensibility/plugin-system.md)                                                                                                                                                           | Extends; the taxonomy itself is unaddressed here                                                                                |
+| Platform/host versus extension plugin             | [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md)                                                                                                                          | Extends; provider ecology is close but does not name host plugins                                                               |
+| Extension points and contribution manifest        | [UI Extensibility Architecture](ui-extensibility-architecture.md); none for `[contributes]`                                                                                                                  | Extends; the inventory exists, a formal extension-point model is unaddressed                                                    |
+| Accepted `[dependencies]` manifest                | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                                                                                                                                              | Aligns; accepted schema already defines the dependency shape                                                                    |
+| Capability non-escalation                         | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md)                                                                          | Aligns; the dependency-edge framing is new                                                                                      |
+| Extension-platform API versioning                 | [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md), [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                                                                    | Extends; host API versioning is candidate                                                                                       |
+| Plugin graph                                      | [Plugin system](../extensibility/plugin-system.md)                                                                                                                                                           | Extends the dependency and service direction                                                                                    |
+| Panel as host / Activity stack                    | [UI Extensibility Architecture](ui-extensibility-architecture.md) (P2), [Plugin Roadmap](../product/plugin-roadmap.md)                                                                                       | Unaddressed here; the accepted sibling Panel Runtime RFC leaves provider details as its open questions (`RFC-OQ-1`..`RFC-OQ-9`) |
+| Native UI, widget layer, and application services | [UI Extensibility Architecture](ui-extensibility-architecture.md), [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md), [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) | Extends the ownership boundaries, v1 slot UI, and capability families                                                           |
 
 ## 11. Research open items
 

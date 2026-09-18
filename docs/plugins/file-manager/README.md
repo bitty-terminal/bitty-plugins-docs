@@ -46,4 +46,4 @@ beyond its manifest `[compat]` ranges.
 - [Plugin documentation](../README.md)
 - [Bundled plugin split decision](../../../product/bundled-plugin-split-decision.md)
 - [Plugin Roadmap](../../../product/plugin-roadmap.md) (draft)
-- [Plugin API v1 Lua Surface RFC](../../../specifications/plugin-api-v1-lua-surface-rfc.md)
+- [Plugin API v1 Lua Surface RFC](../../../sdk/plugin-api-v1-lua-surface-rfc.md)

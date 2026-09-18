@@ -43,10 +43,11 @@ Canonical corpus documents live in root topic trees and follow the
 content exists; empty placeholder pages are avoided so the tree does not imply
 work that has not happened.
 
-| Path                                            | Owns                                                         |
-| ----------------------------------------------- | ------------------------------------------------------------ |
-| `docs/`                                         | Documentation map, contributor policy, and per-plugin pages. |
-| `specifications/`, `product/`, `extensibility/` | Migrated plugin-ecosystem corpus.                            |
+| Path                                              | Owns                                                         |
+| ------------------------------------------------- | ------------------------------------------------------------ |
+| `docs/`                                           | Documentation map, contributor policy, and per-plugin pages. |
+| `runtime/`, `sdk/`, `packaging/`, `architecture/` | Themed plugin-ecosystem contract trees.                      |
+| `specifications/`, `product/`, `extensibility/`   | Platform register, product, and extensibility trees.         |
 
 The plugin-ecosystem corpus migrated from `bitty-docs` at `c664214` (CTX-0001,
 parent bitty-docs CTX-0187); further trees are added as authored content lands.
@@ -108,9 +109,10 @@ sections go; they are placeholders, not literal headings. `contract` shares the
 
 This section is a form rule only. It does not change the frontmatter schema,
 status meanings, or review ownership defined elsewhere in this policy. The
-spine is shared with
-[bitty-ai-docs](https://github.com/bitty-terminal/bitty-ai-docs), and
-the two repositories must not diverge.
+spine is aligned with
+[bitty-ai-docs](https://github.com/bitty-terminal/bitty-ai-docs), which uses the
+same section types in the same order; each repository names its own canonical
+alternate vocabulary in the table above.
 
 ## Required metadata
 

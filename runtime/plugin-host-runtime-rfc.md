@@ -50,11 +50,11 @@ In scope:
 Out of scope, owned elsewhere and only referenced here:
 
 - Plugin API v1 Lua surface spellings and signatures
-  ([Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md), accepted
+  ([Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md), accepted
   through [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md)).
 - Manifest schema, capability identifier grammar, grant lifecycle, and event
   pipeline classes, batching, and budgets
-  ([Plugin Platform RFC](plugin-platform-rfc.md), accepted).
+  ([Plugin Platform RFC](../specifications/plugin-platform-rfc.md), accepted).
 - Restricted standard library, rooted module resolution rules, diagnostics
   classes ([Lua Runtime RFC](lua-runtime-rfc.md), accepted), the `mlua` versus
   `piccolo` split and pins
@@ -64,7 +64,7 @@ Out of scope, owned elsewhere and only referenced here:
 - Resource ceilings and their numbers
   ([Isolation Resource RFC](isolation-resource-rfc.md), accepted; `RC-1`..`RC-11`).
 - Package integrity, signature, lock, and rollback semantics
-  ([Package Lifecycle RFC](package-lifecycle-rfc.md), accepted).
+  ([Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md), accepted).
 
 This RFC selects concrete mechanisms for controls the accepted sources already
 require. It moves no requirement between owners, relaxes no P0 gate, and
@@ -77,7 +77,7 @@ fixes the four proposed defaults, and changing one requires an RFC revision.
 The accepted [Lua Runtime RFC](lua-runtime-rfc.md) fixes the single host bridge
 in every VM as a versioned `bitty` module whose function surface is owned by the
 respective API RFCs, and fixes rooted source-only module resolution. The
-accepted [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md)
+accepted [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)
 fixes the surface, the fixed `init.lua` activation entry point, and
 generation-owned resources. Neither defines the bridge implementation,
 callback marshalling, VM lifecycle mechanics, or `require` construction.
@@ -85,14 +85,14 @@ callback marshalling, VM lifecycle mechanics, or `require` construction.
 The draft [Plugin system](../extensibility/plugin-system.md) document records
 that "exact VM creation, reuse, unload/reload lifecycle, service transport,
 state migration, and cost optimizations still require validation". The accepted
-[Plugin Platform RFC](plugin-platform-rfc.md) defines lifecycle and generation
+[Plugin Platform RFC](../specifications/plugin-platform-rfc.md) defines lifecycle and generation
 semantics but leaves the runtime mechanism to the `bitty` repository. The
 [Core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) document lists the
 "implementation mechanism for per-plugin VMs, asynchronous callbacks, and
 resource-budget thresholds and enforcement" as a pending decision.
 
 For source staging, the accepted
-[Package Lifecycle RFC](package-lifecycle-rfc.md) describes a staged
+[Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md) describes a staged
 activation transaction whose `wake` phase loads plugins in fresh VMs, but
 delegates the stored tree location to the draft
 [Package management](../extensibility/package-management.md) candidate layout.
@@ -129,8 +129,8 @@ drafting revision.
   plugin identity and generation, `RC-1` instruction and wall budget, `RC-2`
   memory ceiling, `RC-4` tasks and timers, `RC-5` queue budgets, and `RC-11`
   plugin store quota.
-- [Plugin Platform RFC](plugin-platform-rfc.md) and
-  [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md): manifest,
+- [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) and
+  [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md): manifest,
   grants, lifecycle, generation disposal, closed event set, and the accepted
   service surface.
 
@@ -219,7 +219,7 @@ host-mediated resolution step, not plugin-visible filesystem authority, and
 5. Lazy plugins run `init.lua` in a fresh VM on first invocation and then
    replay the triggering command once; replay is single-shot and reentrant
    replay is rejected, per the accepted
-   [Plugin Platform RFC](plugin-platform-rfc.md) lazy-load semantics.
+   [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) lazy-load semantics.
 6. `bitty --safe` never creates a third-party VM and never reads the
    third-party store tree; the safe startup path of `R-009` and invariant 10
    is preserved.
@@ -537,9 +537,9 @@ The project initiator (user) ratified the following through
 - [ADR 0010](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md) -
   project-initiator ratification of OQ-033, OQ-034, and OQ-035 and the four
   numeric defaults.
-- [Plugin Platform RFC](plugin-platform-rfc.md) - accepted manifest,
+- [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) - accepted manifest,
   capabilities, lifecycle, generations, event pipeline.
-- [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md) - accepted
+- [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) - accepted
   v1 surface, `init.lua` entry point, store quota, snapshot schema.
 - [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md) -
   accepted Lua surface resolutions and authority split.
@@ -547,7 +547,7 @@ The project initiator (user) ratified the following through
   diagnostics, host bridge ownership.
 - [Isolation Resource RFC](isolation-resource-rfc.md) - `IR-D2`, `RC-1`,
   `RC-2`, `RC-4`, `RC-5`, `RC-11`.
-- [Package Lifecycle RFC](package-lifecycle-rfc.md) - staged activation,
+- [Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md) - staged activation,
   local-path development semantics, rollback.
 - [Package management](../extensibility/package-management.md) - source model
   and candidate store layout.

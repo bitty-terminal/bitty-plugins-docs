@@ -19,13 +19,13 @@ and this project adheres to
   per-plugin index and template, with cross-repository links rewritten.
 - Record plugin-ecosystem direction from the workspace `research` records
   `origin/040.md` and `origin/039.md` as the draft
-  `specifications/plugin-ecosystem-model.md`: plugin taxonomy, platform versus
+  `architecture/plugin-ecosystem-model.md`: plugin taxonomy, platform versus
   extension plugins, extension points, manifest candidates, capability
   non-escalation, extension-platform API versioning, the plugin graph, and
   Panel/Activity implications. Research-derived design input, not an accepted
   contract.
 - Record the plugin-relevant conclusions of the workspace `research` record
-  `origin/041.md` as the draft `specifications/plugin-ipc-boundary.md`:
+  `origin/041.md` as the draft `architecture/plugin-ipc-boundary.md`:
   out-of-process plugins as a second extension boundary, the plugin event bus,
   the unified Lua/IPC/CLI capability model, capability-token and
   permission-display candidates, crash isolation and supervision questions,
@@ -42,7 +42,7 @@ and this project adheres to
 - Record the plugin-side conclusions of the workspace `research` records
   `origin/032.md` (pluggable model access) and `origin/038.md` (pluggable pane
   history) as candidate directions in
-  `specifications/plugin-reuse-and-providers.md` with open-item acceptance
+  `packaging/plugin-reuse-and-providers.md` with open-item acceptance
   rows: core keeps the provider contract/registry/routing while vendor
   auth/billing/discovery and the management UI live in plugins with opaque
   credential handles composed with the Secrets direction, and durable history
@@ -79,6 +79,16 @@ and this project adheres to
 
 ### Changed
 
+- Materialize the approved thematic topic-tree taxonomy (CTX-0035, Issue #65):
+  move the plugin-host runtime, Lua runtime, and isolation and resource
+  contracts to `runtime/`; the Plugin API v1 Lua surface contract to `sdk/`;
+  the package lifecycle, package follow-up, and reuse/provider contracts to
+  `packaging/`; and the ecosystem model, IPC boundary, and UI extensibility
+  contracts to `architecture/`. `specifications/` keeps the accepted Plugin
+  Platform RFC and the research 053/054 distillation register. Each new tree
+  gains a route-only index, the maps and every relative cross-reference are
+  updated, and the `Document form` section is aligned with bitty-ai-docs.
+  Links only; no document status, claim, or `website_publish` flag changes.
 - Reconcile the bundled-plugin split decision with the `file-manager` and
   `git-panel` catalog removals (`bitty` PR #725/`CTX-0399` commit `65aac5c`
   and PR #713/`CTX-0400` commit `e84da34`, both 2026-09-15): both candidates

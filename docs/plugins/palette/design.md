@@ -33,7 +33,7 @@ no authority beyond its declared capabilities.
   lower-level Panel Runtime overlay path; the accepted Plugin API v1 Lua
   overlay path requires both. This intentional difference is recorded in the
   owning repository manifest and the
-  [Plugin API v1 Lua Surface RFC](../../../specifications/plugin-api-v1-lua-surface-rfc.md).
+  [Plugin API v1 Lua Surface RFC](../../../sdk/plugin-api-v1-lua-surface-rfc.md).
 - Deny by default: no allow-all identifier, and no filesystem, process,
   network, clipboard, or terminal-input authority is requested.
 

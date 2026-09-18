@@ -156,7 +156,7 @@ Status: **accepted contract; first slice shipped.**
 
 Exact VM creation, reuse, unload/reload lifecycle, service transport, state
 migration, and cost optimizations are defined by the accepted
-[Plugin Host Runtime RFC](../specifications/plugin-host-runtime-rfc.md)
+[Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md)
 (OQ-033/OQ-034/OQ-035, ratified through
 [ADR 0010](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md)). The
 first sliced implementation shipped in bitty PR #554 merge `e51b5cc`
