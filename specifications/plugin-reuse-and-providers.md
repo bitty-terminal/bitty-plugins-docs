@@ -418,6 +418,63 @@ local branch = git.branch(cwd)
   budgets, its own grant per manifest hash, and its own generation lifecycle.
   It does not receive ambient authority for serving a consumer.
 
+### Cross-package contracts (053, candidate)
+
+Status: **research-derived proposal**, from workspace `research/origin/053.md`
+lines 1-330 and 564-680; no new manifest keys or Lua methods are accepted here.
+The record separates a repository's publication boundary from a package's
+private modules and its public service/capability contracts. A consumer should
+not need the provider's checkout location, private implementation layout, or
+concrete package name when a declared interface suffices.
+
+The accepted baseline already distinguishes rooted, source-only in-package
+`require` from cross-plugin services: the
+[Lua Runtime RFC](lua-runtime-rfc.md) and
+[Plugin Host Runtime RFC A.2/A.3](plugin-host-runtime-rfc.md#a2-proposed-bitty-lua-seam-extensions)
+permit no filesystem imports across packages, path traversal, package-path
+extension, shared module cache, or direct peer-VM access. Packaging a dependency
+does not turn its private modules into a public API.
+
+The source's typed SDK direction builds on the accepted
+[Services contract](plugin-api-v1-lua-surface-rfc.md#services): declared interface
+name/version and bounded argument/result schemas, with host-selected providers.
+Typed annotations and editor hints would help authors, but never replace runtime
+schema validation. Candidate versioned adapters would translate a provider's
+internal representation into the public contract, keeping provider refactors
+private; adapter packaging, compatibility negotiation, supported version ranges,
+and migration/conformance tests require an owning contract before adoption.
+A provider's local implementation table accepted by `provide` is not a raw table
+shared with callers: arguments/results cross VM boundaries as bounded values,
+not functions, mutable shared tables, or live objects.
+
+053 explicitly distinguishes **installation dependency** (this package must be
+installed) from **service requirement** (some eligible provider must supply a
+versioned interface). The accepted `[dependencies]` and `[services.provided]`
+manifest fields remain authoritative in the
+[Plugin Platform RFC](plugin-platform-rfc.md); the source's `requires`,
+`plugin_dependencies`, `service_dependencies`, and `services.required` variants
+are alternatives, not valid new schema. Likewise `ctx.services.require`,
+`optional`, and the `interface@major` sketches are not accepted API spellings.
+The v1 `bitty.services.get(iface, opts)` optional/version behavior remains the
+reference. An independent service-requirement declaration, its relation to the
+package resolver, and provider multiplicity remain open design work, not a
+promise of automatic provider installation.
+
+Provider selection, activation order, lazy reservations, conflicts, revocation,
+and generation teardown stay host-controlled. A declared dependency is no grant;
+callee grants do not become caller authority. The accepted `E_SERVICE_RESOLUTION`
+and `E_SERVICE_GONE` behavior stays intact, including optional absence and
+invalidating disappeared providers. Replaceability does not mean silently
+switching a live call to a different provider. Rebinding and any broader
+selection policy need explicit lifecycle and permission review.
+
+Proposed local/remote adapters, async-first calls, cancellation, and streams are
+recorded separately in
+[Plugin IPC Boundary section 13](plugin-ipc-boundary.md#13-local-and-remote-service-proxies-053-candidate).
+053's domain-specific model/tool/agent API sketches remain
+[owner-pending](plugin-ecosystem-model.md#97-research-053-coverage-and-owner-handoff),
+not implementations or newly accepted services in this RFC.
+
 ## Layer 4 Native Helper Process (post-1.0)
 
 Status: **proposed** and **deferred to v2 (post-1.0)**, does not authorize

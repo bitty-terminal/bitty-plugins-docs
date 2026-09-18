@@ -159,6 +159,48 @@ The dividing line for the appearance work: **Core owns chrome; a plugin may
 only ever contribute policy that Core validates and resolves.** The accepted
 per-View override layer is user configuration, not a plugin hook.
 
+### Framework-level Lua UI (053, candidate)
+
+Status: **research proposal, not accepted or implemented**. Workspace
+`research/origin/053.md` lines 682-921 and 1164-1327 proposes optional,
+replaceable Lua UI frameworks above a small public Lua SDK. The
+[four-layer model](plugin-ecosystem-model.md#96-four-layer-framework-ecosystem-053-candidate)
+separates Rust enforcement/mechanisms, stable public wrappers, independently
+versioned frameworks, and application plugins. A framework breaking change
+should not force unrelated Core changes; plugins consume public semantics, not
+raw renderer, windowing, font-engine, scheduler, or Rust internal API objects.
+
+The source places rendering, shaping, IME, input dispatch, GPU/window resources,
+frame timing, hit-testing and accessibility mechanisms on the Rust side, with
+widgets, components, themes, layout composition, lists, chat, tables, palettes,
+and dashboards as potential Lua framework/application concerns. These are
+candidate responsibilities, not an accepted primitive or widget inventory.
+Current [Plugin API v1 UI contributions](plugin-api-v1-lua-surface-rfc.md#ui-contributions-l2)
+remain bounded declarative slots; neither this proposal nor its `ui.*` sketches
+opens a panel-provider, canvas, focus, clipboard, animation-tick, or low-level
+rendering API.
+
+The record encourages several framework styles (reactive, immediate-mode,
+terminal-oriented, canvas, dashboard) rather than requiring one official UI
+framework. That diversity is a proposal, not acceptance of Lua execution in a
+per-frame draw loop: immediate-mode sketches conflict with the recorded
+retained/declarative preference in
+[Plugin Ecosystem Model section 9.4](plugin-ecosystem-model.md#94-native-widget-layer-progression)
+and cannot weaken the normative no-hot-path rule. Any reconciliation needs a
+bounded composition contract and independent review before adoption.
+
+Open framework contracts include packaging/distribution versus private helper
+modules, service-mediated composition across isolated plugin VMs, versioned
+adapters, widget schema and event ownership, focus/accessibility integration,
+and compatibility tests against the public SDK. Separately installed frameworks
+cannot use cross-package `require`; the
+[private-module/public-contract distinction](plugin-reuse-and-providers.md#cross-package-contracts-053-candidate)
+still applies. Frameworks remain optional ordinary plugins with host-enforced
+grants and generation/resource budgets; "Lua policy" never delegates network,
+secret, process-spawn, or scheduler enforcement. The source's AI/tool/model/agent
+framework directions remain an [owner handoff](plugin-ecosystem-model.md#97-research-053-coverage-and-owner-handoff),
+not an accepted UI or AI contract here.
+
 ## Prioritized change candidates
 
 Ordered by expected increase in plugin freedom per unit of risk. Every item is
