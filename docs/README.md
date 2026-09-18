@@ -83,7 +83,9 @@ and [framework-level UI](../specifications/ui-extensibility-architecture.md#fram
 are captured as proposals against unchanged accepted boundaries. Distinct
 AI/Wheel model, tool, and agent conclusions remain owner-pending; this capture
 does not authorize the research origin's `.completed` rename, accept APIs, or
-claim implementation.
+claim implementation. A complementary single-entry distillation of the 053 and
+054 research summaries is recorded in
+[Research 053 and 054 plugin-side conclusions](research-053-054-plugin-conclusions.md).
 
 ## Per-plugin standard page set
 
