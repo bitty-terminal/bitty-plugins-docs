@@ -471,7 +471,7 @@ selection policy need explicit lifecycle and permission review.
 
 Proposed local/remote adapters, async-first calls, cancellation, and streams are
 recorded separately in
-[Plugin IPC Boundary section 13](../architecture/plugin-ipc-boundary.md#local-and-remote-service-proxies-candidate).
+[Plugin IPC Boundary local/remote service proxies](../architecture/plugin-ipc-boundary.md#local-and-remote-service-proxies-candidate).
 Domain-specific model/tool/agent API sketches remain
 [owner-pending](../architecture/plugin-ecosystem-model.md#97-four-layer-coverage-and-owner-handoff),
 not implementations or newly accepted services in this RFC.
