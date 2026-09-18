@@ -64,6 +64,15 @@ and this project adheres to
   Panel Runtime RFC provider/ecosystem open questions `RFC-OQ-1` through
   `RFC-OQ-9`), and admits non-tiled presentation modes remain a gated host
   surface with no plugin-facing contract yet.
+- Capture research `origin/053.md` plugin-generic proposals in the existing
+  ecosystem, reuse/provider, IPC-boundary, and UI architecture specifications
+  (CTX-0027): private modules versus versioned public services, install versus
+  provider requirements, candidate typed adapters and async/stream proxies,
+  and a small public Lua SDK with optional replaceable framework plugins.
+  Accepted VM isolation, marshalling, synchronous bounded calls, and host
+  enforcement remain unchanged. The coverage map records distinct AI/Wheel
+  model/tool/agent conclusions as owner-pending; archive recommendation remains
+  Partial, not eligible for `.completed`. Documentation capture only.
 
 ### Changed
 

@@ -1,6 +1,6 @@
 ---
 title: Plugin IPC Boundary
-description: Research-derived design input for out-of-process plugins, the plugin event bus, and a unified Lua/IPC/CLI capability model from research record 041
+description: Research-derived out-of-process plugin boundary and candidate local remote service proxies from records 041 and 053
 category: specifications
 audience: plugin-author
 document_type: specification
@@ -25,7 +25,9 @@ only the plugin-facing consequences and cites the accepted document instead of
 restating its wire contract. Where a statement aligns with an accepted
 document, this page links it — relative for documents in this corpus, absolute
 for sibling repositories; every other conclusion below is a **proposal or
-observation from 041**, with source line ranges.
+observation from 041**, with source line ranges. Section 13 adds the candidate
+053 service-proxy direction; it does not change any accepted local IPC or
+plugin-runtime contract.
 
 ## 1. Purpose, status, and attribution
 
@@ -269,3 +271,65 @@ decided in the owning contract before any conclusion here becomes contract:
    without splitting ownership.
 7. Whether external processes are a distinct plugin class in the manifest and
    package model or a transport option of the existing plugin model.
+
+## 13. Local and remote service proxies (053, candidate)
+
+Status: **research proposal, not accepted or implemented**. Workspace
+`research/origin/053.md` lines 332-499 and 564-680 proposes location-transparent
+public services: the consumer uses one interface while the host selects a local
+plugin, another process or panel, a daemon, or a Rust-backed provider. This is
+an interface-design goal, not a claim that these routes exist or that a panel is
+a process/isolation boundary. Generic contract and dependency distinctions live
+in [Cross-package contracts](plugin-reuse-and-providers.md#cross-package-contracts-053-candidate).
+
+### Accepted local baseline versus proposed transport
+
+The source's direct local-function-call shortcut must not be imported literally.
+The accepted [Isolation RFC IR-D2](isolation-resource-rfc.md#ir-d2-plugin-runtimes)
+keeps one VM per plugin identity/generation with no shared globals or module
+trees; [Host Runtime A.3](plugin-host-runtime-rfc.md#a3-bridge-marshalling-contract)
+requires bounded copied arguments/results, non-reentrant bridge calls, and
+capability checks before effects. Local v1 calls may be synchronous within a
+bounded, non-blocking VM slice. That is not a raw shared Lua table, a direct
+peer implementation reference, or permission to bypass marshalling for speed.
+
+053 recommends async-first semantics for services that may cross IPC, so a
+remote operation never masquerades as an immediate call that blocks the UI.
+This does **not** replace the accepted local contract with a new promise/await
+API. Existing [Host Runtime C.2](plugin-host-runtime-rfc.md#c2-sync-versus-async-and-send-contract)
+keeps the VM thread-confined and uses the admitted completion paths for work
+that cannot finish synchronously. Source `await`, `then_`, `coroutine.await`,
+and streaming-loop sketches are unaccepted pseudocode, not executable examples.
+
+### Open proxy, cancellation, and streaming contracts
+
+Before adopting the proposal, plugin/service owners and the IPC/AI owner need
+reviewed contracts for the following; these are research follow-ups, not new
+numbered OQs or an accepted wire protocol:
+
+- A versioned proxy/adapter mapping from the public schema to each admitted
+  transport, including serialization, payload budgets, typed errors, provider
+  identity and generation, and conformance between local and remote behavior.
+- Async completion and explicit cancellation: deadline propagation, ownership
+  of in-flight work, cancellation acknowledgement and completion races, teardown
+  on revocation/disable, and rejection of late results from stale generations.
+  These are questions exposed by the proposal, not defined `cancel` methods.
+- Stream framing and bounded backpressure: ordering, chunk schema/version,
+  capacity, overflow, finish/error behavior, consumer abandonment and resource
+  reclamation. Uniform streaming is the source conclusion; exact limits and
+  delivery guarantees remain unaccepted. The model-specific normalized event
+  vocabulary belongs to the AI/Wheel owner, not this transport capture.
+- Provider loss/reconnect and any retries: no silent replay of side effects or
+  stale-handle resurrection. Local service failure rules remain the baseline;
+  transport-specific semantics require explicit review.
+- Authentication, per-action scope, grant composition, and endpoint/lifecycle
+  ownership. A service requirement grants neither an IPC connection nor network
+  access. The accepted local-user IPC boundary and deferred daemon/remote-UI
+  gates cited above remain intact; this proposal adds no ambient IPC or default
+  network listener.
+
+The source's minimal service/event authoring facade is a usability goal only;
+its registration, required/optional lookup, event emit/on names, and domain
+identifiers do not extend the accepted service or event inventory. Full-source
+coverage and the AI/Wheel ownership blocker are tracked in
+[Plugin Ecosystem Model section 9.7](plugin-ecosystem-model.md#97-research-053-coverage-and-owner-handoff).

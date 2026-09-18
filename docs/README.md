@@ -72,6 +72,21 @@ each document's frontmatter owns its status.
 | [Plugin system](../extensibility/README.md)                                              | draft    | Index route to plugin system and package management.                   |
 | [Plugin package management](../extensibility/README.md)                                  | draft    | Index route to plugin system and package management.                   |
 
+### Research 053 capture (partial)
+
+The [Plugin Ecosystem Model sections 9.6-9.7](../specifications/plugin-ecosystem-model.md#96-four-layer-framework-ecosystem-053-candidate)
+record the proposed Rust host / small public Lua SDK / optional framework /
+application layering and a full-source coverage/owner-handoff map. Generic
+[private-module/public-service contracts](../specifications/plugin-reuse-and-providers.md#cross-package-contracts-053-candidate),
+[local/remote async proxy questions](../specifications/plugin-ipc-boundary.md#13-local-and-remote-service-proxies-053-candidate),
+and [framework-level UI](../specifications/ui-extensibility-architecture.md#framework-level-lua-ui-053-candidate)
+are captured as proposals against unchanged accepted boundaries. Distinct
+AI/Wheel model, tool, and agent conclusions remain owner-pending; this capture
+does not authorize the research origin's `.completed` rename, accept APIs, or
+claim implementation. A complementary single-entry distillation of the 053 and
+054 research summaries is recorded in
+[Research 053 and 054 plugin-side conclusions](research-053-054-plugin-conclusions.md).
+
 ## Per-plugin standard page set
 
 Each documented plugin gets `docs/plugins/<plugin>/` following the standard page
