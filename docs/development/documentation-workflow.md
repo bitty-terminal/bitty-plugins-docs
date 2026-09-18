@@ -36,6 +36,35 @@ locale directories, translated URL routing, and synchronization between
 languages are deferred until a reviewed cross-repository decision activates
 them.
 
+## Docs self-containment
+
+Canonical documents in this repository must be self-contained: a reader must be
+able to use the corpus with any external discussion archive absent. A canonical
+document must not depend on, cite, or route through a `research` repository, and
+must not reference an archive record by number, path, or status.
+
+- Do not cite record numbers (for example `053.md`), archive paths (`origin/`,
+  `summary/`, `.completed` suffixes), or archive-status wording in a canonical
+  document.
+- Do not frame content as "distilled from record NNN" or carry a
+  record-to-document coverage or provenance ledger. Coverage mappings belong to
+  the archive that owns them, never to a canonical document.
+- When candidate direction is adopted from external material, summarize it into
+  a standalone, appropriately named canonical document. The document's own
+  `status` and its own candidate qualifiers carry the trust level; no citation
+  to the source archive is required or allowed.
+- A genuinely unowned or unresolved point is expressed as ordinary prose: name
+  the owner or the decision still required, not the archive record that raised
+  it.
+- A `research` `document_type` in this repository denotes provenance-preserving
+  observations authored here; it is not a pointer into an external archive and
+  is subject to the same self-containment rule.
+
+This rule applies to every canonical document in the corpus, including topic
+trees, registers, indexes, and per-plugin pages. It does not forbid naming a
+sibling documentation repository, an accepted specification, or a decision
+register; those are canonical sources and remain linked.
+
 ## Repository layout
 
 Canonical corpus documents live in root topic trees and follow the

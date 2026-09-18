@@ -130,9 +130,9 @@ stability expectations are visible:
 There is intentionally no public level for mutating terminal state. Internal
 debug and test hooks, if any, are not a compatibility promise.
 
-Research-recorded candidate: workspace `research` record `origin/002.md`
-proposes an API stability priority order of Panel, Workspace, Layout, Command,
-Keybinding, Event, Capability, Service, Widget, Plugin. This order is
+Candidate direction: an API stability priority order of Panel, Workspace,
+Layout, Command, Keybinding, Event, Capability, Service, Widget, Plugin. This
+order is
 non-normative here; adopting it would need acceptance in the owning contract.
 
 Direct access to `wgpu::Device`, `wgpu::Queue`, or textures is also out of the
@@ -332,7 +332,7 @@ boundaries must be shared with the CLI and IPC model described in
 
 ### Candidate network capability: `bitty.http` and secrets direction
 
-Status: **candidate direction, non-normative** (research-derived user
+Status: **candidate direction, non-normative** (a user
 companion note on network-free core with controlled extension boundaries,
 bitty-docs CTX-0202 / bitty-docs#290,
 [DIR-017](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md)).

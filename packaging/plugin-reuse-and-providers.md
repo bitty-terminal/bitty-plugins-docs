@@ -418,14 +418,14 @@ local branch = git.branch(cwd)
   budgets, its own grant per manifest hash, and its own generation lifecycle.
   It does not receive ambient authority for serving a consumer.
 
-### Cross-package contracts (053, candidate)
+### Cross-package contracts (candidate)
 
-Status: **research-derived proposal**, from research record 053 lines 1-330 and
-564-680; no new manifest keys or Lua methods are accepted here.
-The record separates a repository's publication boundary from a package's
-private modules and its public service/capability contracts. A consumer should
-not need the provider's checkout location, private implementation layout, or
-concrete package name when a declared interface suffices.
+Status: **candidate proposal**; no new manifest keys or Lua methods are accepted
+here. This direction separates a repository's publication boundary from a
+package's private modules and its public service/capability contracts. A
+consumer should not need the provider's checkout location, private
+implementation layout, or concrete package name when a declared interface
+suffices.
 
 The accepted baseline already distinguishes rooted, source-only in-package
 `require` from cross-plugin services: the
@@ -435,7 +435,7 @@ permit no filesystem imports across packages, path traversal, package-path
 extension, shared module cache, or direct peer-VM access. Packaging a dependency
 does not turn its private modules into a public API.
 
-The source's typed SDK direction builds on the accepted
+This direction's typed SDK proposal builds on the accepted
 [Services contract](../sdk/plugin-api-v1-lua-surface-rfc.md#services): declared interface
 name/version and bounded argument/result schemas, with host-selected providers.
 Typed annotations and editor hints would help authors, but never replace runtime
@@ -447,18 +447,19 @@ A provider's local implementation table accepted by `provide` is not a raw table
 shared with callers: arguments/results cross VM boundaries as bounded values,
 not functions, mutable shared tables, or live objects.
 
-053 explicitly distinguishes **installation dependency** (this package must be
-installed) from **service requirement** (some eligible provider must supply a
-versioned interface). The accepted `[dependencies]` and `[services.provided]`
-manifest fields remain authoritative in the
-[Plugin Platform RFC](../specifications/plugin-platform-rfc.md); the source's `requires`,
-`plugin_dependencies`, `service_dependencies`, and `services.required` variants
-are alternatives, not valid new schema. Likewise `ctx.services.require`,
-`optional`, and the `interface@major` sketches are not accepted API spellings.
-The v1 `bitty.services.get(iface, opts)` optional/version behavior remains the
-reference. An independent service-requirement declaration, its relation to the
-package resolver, and provider multiplicity remain open design work, not a
-promise of automatic provider installation.
+This direction explicitly distinguishes **installation dependency** (this
+package must be installed) from **service requirement** (some eligible provider
+must supply a versioned interface). The accepted `[dependencies]` and
+`[services.provided]` manifest fields remain authoritative in the
+[Plugin Platform RFC](../specifications/plugin-platform-rfc.md); the proposed
+`requires`, `plugin_dependencies`, `service_dependencies`, and
+`services.required` variants are alternatives, not valid new schema. Likewise
+`ctx.services.require`, `optional`, and the `interface@major` sketches are not
+accepted API spellings. The v1 `bitty.services.get(iface, opts)`
+optional/version behavior remains the reference. An independent
+service-requirement declaration, its relation to the package resolver, and
+provider multiplicity remain open design work, not a promise of automatic
+provider installation.
 
 Provider selection, activation order, lazy reservations, conflicts, revocation,
 and generation teardown stay host-controlled. A declared dependency is no grant;
@@ -470,9 +471,9 @@ selection policy need explicit lifecycle and permission review.
 
 Proposed local/remote adapters, async-first calls, cancellation, and streams are
 recorded separately in
-[Plugin IPC Boundary section 13](../architecture/plugin-ipc-boundary.md#13-local-and-remote-service-proxies-053-candidate).
-053's domain-specific model/tool/agent API sketches remain
-[owner-pending](../architecture/plugin-ecosystem-model.md#97-research-053-coverage-and-owner-handoff),
+[Plugin IPC Boundary section 13](../architecture/plugin-ipc-boundary.md#13-local-and-remote-service-proxies-candidate).
+Domain-specific model/tool/agent API sketches remain
+[owner-pending](../architecture/plugin-ecosystem-model.md#97-four-layer-coverage-and-owner-handoff),
 not implementations or newly accepted services in this RFC.
 
 ## Layer 4 Native Helper Process (post-1.0)
@@ -612,9 +613,8 @@ the plugin-facing projection is a candidate in this draft.
 
 ### Model-provider direction (candidate)
 
-Status: **candidate, non-normative.** Research-derived design input from the
-workspace `research` record `origin/032.md` (Pluggable Model Access and
-Subscription Management, 2026-09-15); the plugin-side conclusions only. The
+Status: **candidate, non-normative.** Candidate design input; the plugin-side
+conclusions only. The
 AI-side boundary is recorded in the sibling
 [Provider Plugin Boundary](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/provider-plugin-boundary.md)
 draft; that page owns the core/provider-cut detail and this subsection records
@@ -644,9 +644,8 @@ only what it means for this corpus.
 
 ### History-provider direction (candidate)
 
-Status: **candidate, non-normative.** Research-derived design input from the
-workspace `research` record `origin/038.md` (Pluggable Pane History and
-External History Integration, 2026-09-15); the plugin-side conclusions only.
+Status: **candidate, non-normative.** Candidate design input; the plugin-side
+conclusions only.
 The AI-side consumption boundary is recorded in the sibling
 [History Consumption Boundary](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/history-consumption-boundary.md)
 draft; that page owns the agent-read contract detail and this subsection
@@ -856,11 +855,11 @@ Shipped, unsupported, and candidate claims are labelled per claim.
   `terminal.manage` scope, and `intercept.terminal-spawn` event.
 - Fuzzy-service budget numbers: input-item, item-byte, result-limit, and
   response-byte caps per caller generation.
-- Model-provider acceptance (032): versioned provider-interface contract
+- Model-provider acceptance: versioned provider-interface contract
   (capability identifiers, grant shape, registry and routing rules) plus the
   opaque-credential-handle contract composed with the Secrets direction; no
   interface name above is accepted before that.
-- History-provider acceptance (038): versioned history-provider interface plus
+- History-provider acceptance: versioned history-provider interface plus
   the storage-capability contract (sandboxed-directory access shape,
   segment/index relationship, command/output/replay tier shapes, external
   provider/sink protocol); durable history stays an official-plugin candidate,

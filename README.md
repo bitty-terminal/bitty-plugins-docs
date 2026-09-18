@@ -65,7 +65,7 @@ stays in the sibling documentation repositories.
 | `sdk/`                           | Public plugin SDK Lua surface contract.                            |
 | `packaging/`                     | Package lifecycle, resolver, registry, and provider ecology.       |
 | `architecture/`                  | Plugin ecosystem model, IPC boundary, and UI extensibility.        |
-| `specifications/`                | Platform contract and research-type register index.                |
+| `specifications/`                | Platform contract and candidate-direction register index.          |
 | `product/`                       | Plugin roadmap and product planning documents.                     |
 | `extensibility/`                 | Pre-implementation plugin system and package-management contracts. |
 | `TODO.md`                        | Work register for this repository.                                 |

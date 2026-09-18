@@ -22,7 +22,7 @@ when real content exists; empty placeholder pages are avoided.
 
 ## Authority and status
 
-All three pages are draft, research-derived design input that authorizes no
+All three pages are draft, candidate design input that authorizes no
 shipped behavior. Accepted boundaries they reconcile against live in the
 [runtime](../runtime/README.md), [sdk](../sdk/README.md), and
 [packaging](../packaging/README.md) trees and in the accepted
@@ -33,8 +33,8 @@ copied.
 
 ## Contracts
 
-| Document                                                          | Status | Purpose                                                                |
-| ----------------------------------------------------------------- | ------ | ---------------------------------------------------------------------- |
-| [Plugin Ecosystem Model](plugin-ecosystem-model.md)               | Draft  | Research-derived plugin taxonomy and Panel-as-host direction.          |
-| [Plugin IPC Boundary](plugin-ipc-boundary.md)                     | Draft  | Research-derived out-of-process boundary and unified capability model. |
-| [UI Extensibility Architecture](ui-extensibility-architecture.md) | Draft  | UI extension points, ownership boundaries, and Lua surface.            |
+| Document                                                          | Status | Purpose                                                         |
+| ----------------------------------------------------------------- | ------ | --------------------------------------------------------------- |
+| [Plugin Ecosystem Model](plugin-ecosystem-model.md)               | Draft  | Candidate plugin taxonomy and Panel-as-host direction.          |
+| [Plugin IPC Boundary](plugin-ipc-boundary.md)                     | Draft  | Candidate out-of-process boundary and unified capability model. |
+| [UI Extensibility Architecture](ui-extensibility-architecture.md) | Draft  | UI extension points, ownership boundaries, and Lua surface.     |

@@ -159,31 +159,30 @@ The dividing line for the appearance work: **Core owns chrome; a plugin may
 only ever contribute policy that Core validates and resolves.** The accepted
 per-View override layer is user configuration, not a plugin hook.
 
-### Framework-level Lua UI (053, candidate)
+### Framework-level Lua UI (candidate)
 
-Status: **research proposal, not accepted or implemented**. Research record
-053 lines 682-921 and 1164-1327 proposes optional,
-replaceable Lua UI frameworks above a small public Lua SDK. The
-[four-layer model](plugin-ecosystem-model.md#96-four-layer-framework-ecosystem-053-candidate)
+Status: **candidate proposal, not accepted or implemented**. This direction
+proposes optional, replaceable Lua UI frameworks above a small public Lua SDK.
+The [four-layer model](plugin-ecosystem-model.md#96-four-layer-framework-ecosystem-candidate)
 separates Rust enforcement/mechanisms, stable public wrappers, independently
 versioned frameworks, and application plugins. A framework breaking change
 should not force unrelated Core changes; plugins consume public semantics, not
 raw renderer, windowing, font-engine, scheduler, or Rust internal API objects.
 
-The source places rendering, shaping, IME, input dispatch, GPU/window resources,
-frame timing, hit-testing and accessibility mechanisms on the Rust side, with
-widgets, components, themes, layout composition, lists, chat, tables, palettes,
-and dashboards as potential Lua framework/application concerns. These are
-candidate responsibilities, not an accepted primitive or widget inventory.
+This direction places rendering, shaping, IME, input dispatch, GPU/window
+resources, frame timing, hit-testing and accessibility mechanisms on the Rust
+side, with widgets, components, themes, layout composition, lists, chat, tables,
+palettes, and dashboards as potential Lua framework/application concerns. These
+are candidate responsibilities, not an accepted primitive or widget inventory.
 Current [Plugin API v1 UI contributions](../sdk/plugin-api-v1-lua-surface-rfc.md#ui-contributions-l2)
 remain bounded declarative slots; neither this proposal nor its `ui.*` sketches
 opens a panel-provider, canvas, focus, clipboard, animation-tick, or low-level
 rendering API.
 
-The record encourages several framework styles (reactive, immediate-mode,
+This direction encourages several framework styles (reactive, immediate-mode,
 terminal-oriented, canvas, dashboard) rather than requiring one official UI
 framework. That diversity is a proposal, not acceptance of Lua execution in a
-per-frame draw loop: immediate-mode sketches conflict with the recorded
+per-frame draw loop: immediate-mode sketches conflict with the candidate
 retained/declarative preference in
 [Plugin Ecosystem Model section 9.4](plugin-ecosystem-model.md#94-native-widget-layer-progression)
 and cannot weaken the normative no-hot-path rule. Any reconciliation needs a
@@ -194,11 +193,11 @@ modules, service-mediated composition across isolated plugin VMs, versioned
 adapters, widget schema and event ownership, focus/accessibility integration,
 and compatibility tests against the public SDK. Separately installed frameworks
 cannot use cross-package `require`; the
-[private-module/public-contract distinction](../packaging/plugin-reuse-and-providers.md#cross-package-contracts-053-candidate)
+[private-module/public-contract distinction](../packaging/plugin-reuse-and-providers.md#cross-package-contracts-candidate)
 still applies. Frameworks remain optional ordinary plugins with host-enforced
 grants and generation/resource budgets; "Lua policy" never delegates network,
-secret, process-spawn, or scheduler enforcement. The source's AI/tool/model/agent
-framework directions remain an [owner handoff](plugin-ecosystem-model.md#97-research-053-coverage-and-owner-handoff),
+secret, process-spawn, or scheduler enforcement. The AI/tool/model/agent
+framework directions remain an [owner handoff](plugin-ecosystem-model.md#97-four-layer-coverage-and-owner-handoff),
 not an accepted UI or AI contract here.
 
 ## Prioritized change candidates
@@ -254,7 +253,7 @@ deliberately introduces no `PanelId`. A rushed contract would freeze the wrong
 identity model.
 
 Disposition: candidate; blocked on the future Panel RFC. Do not invent
-`PanelId` here. The research-recorded ActivityStack direction (Panel is not
+`PanelId` here. The candidate ActivityStack direction (Panel is not
 Activity; `panel:push`/`panel:pop` session survival) lives in the
 [Plugin Ecosystem Model](plugin-ecosystem-model.md) section 9.2 and would be
 carried by the accepted Panel Runtime RFC provider/ecosystem open questions
