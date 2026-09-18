@@ -29,12 +29,13 @@ tables.
 
 ## Draft specifications
 
-| Specification                                                                          | Provenance                                                                        | Status |
-| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------ |
-| [Research 053 and 054 plugin-side conclusions](research-053-054-plugin-conclusions.md) | Research records 053 and 054 (plugin-side conclusions; draft distillation, no OQ) | Draft  |
+| Specification                                                         | Scope                                                                                                     | Status |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------ |
+| [Plugin contract direction (candidate)](plugin-contract-direction.md) | Candidate plugin-side public-contract, framework-layering, and artifact direction; no accepted interface. | Draft  |
 
-Research-type pages preserve provenance and observations; they never become a
-decision or an implementation claim by implication.
+Research-type pages preserve candidate direction and observations authored in
+this repository; they never become a decision or an implementation claim by
+implication.
 
 ## Contracts by topic tree
 

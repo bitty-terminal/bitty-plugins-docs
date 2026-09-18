@@ -1,7 +1,7 @@
 ---
-title: Research 053 and 054 plugin-side conclusions
-description: Draft candidate distillation of the plugin-side conclusions of research records 053 and 054
-category: provenance
+title: Plugin contract direction (candidate)
+description: Draft candidate direction for public plugin contracts layered Lua frameworks and Lua dependency management with self-contained artifacts
+category: specifications
 audience: plugin-author
 document_type: research
 status: draft
@@ -9,43 +9,45 @@ website_publish: false
 sidebar_order: 50
 ---
 
-# Research 053 and 054 plugin-side conclusions
+# Plugin contract direction (candidate)
 
-> Status: **draft**, research-derived design input distilling the plugin-side
-> conclusions of two research records — record 053 (public plugin contracts,
-> layered Lua frameworks) and record 054 (Lux-based Lua dependency management,
-> self-contained artifacts). This page is **not** an accepted contract, an RFC,
-> or an implementation claim.
+> Status: **draft**, candidate plugin-side design input proposing public plugin
+> contracts, layered Lua frameworks, and Lux-based Lua dependency management with
+> self-contained artifacts. This page is **not** an accepted contract, an RFC, or
+> an implementation claim.
 
 ## Purpose and scope
 
-- Only the plugin-side conclusions are distilled here. Model, provider, tool,
-  agent, context, registry, SDK-packaging, and governance conclusions are
-  recorded as owner-pending pointers in
-  [Owner-pending pointers](#owner-pending-pointers), not as decisions of this
-  corpus.
-- A parallel in-review capture (CTX-0027) covers the 053 plugin-service and
-  framework-layering direction in the specifications tree. This page is scoped
-  as a complementary single-entry distillation built only from the two
-  summaries named above; it introduces no competing normative wording. Where an
-  accepted document already decides a point, this page links it instead of
-  restating it, and accepted contracts always win over proposals recorded here.
-- Documentation capture only: no SDK, framework, transport, registry, or
-  product feature is implemented by this page.
+- This page records candidate plugin-side direction for two related concerns:
+  public plugin contracts with layered Lua frameworks, and Lua dependency
+  management with self-contained artifacts. Model, provider, tool, agent,
+  context, registry, SDK-packaging, and governance directions are recorded as
+  owner-pending pointers in [Owner-pending pointers](#owner-pending-pointers),
+  not as decisions of this corpus.
+- A companion direction is recorded in the
+  [architecture tree](../architecture/README.md), which covers the plugin-service
+  and framework-layering contract boundary in
+  [Plugin Reuse and Provider Ecology](../packaging/plugin-reuse-and-providers.md)
+  and the [Plugin Ecosystem Model](../architecture/plugin-ecosystem-model.md).
+  This page is scoped as a complementary single-entry register and introduces no
+  competing normative wording. Where an accepted document already decides a
+  point, this page links it instead of restating it, and accepted contracts
+  always win over proposals recorded here.
+- Documentation only: no SDK, framework, transport, registry, or product
+  feature is implemented by this page.
 
 ## Status vocabulary
 
-| Status        | Meaning in this document                                                                         |
-| ------------- | ------------------------------------------------------------------------------------------------ |
-| Accepted      | An accepted document already decides the point; this page only links or restates it.             |
-| Candidate     | Proposed by the cited research record only; no review has accepted it.                           |
-| Owner-pending | Belongs to another repository owner; recorded here as a pointer, never as content.               |
-| Captured      | The archive's marking of a research record; this page asserts no independent verification of it. |
+| Status        | Meaning in this document                                                             |
+| ------------- | ------------------------------------------------------------------------------------ |
+| Accepted      | An accepted document already decides the point; this page only links or restates it. |
+| Candidate     | Proposed direction that no review has accepted.                                      |
+| Owner-pending | Belongs to another repository owner; recorded here as a pointer, never as content.   |
 
-## T-1 Public plugin contracts and layered frameworks (053, plugin slice)
+## T-1 Public plugin contracts and layered frameworks
 
-Proposal direction from research record 053. Every item below is a candidate
-unless it cites an accepted document.
+Candidate plugin-side direction for public contracts and framework layering.
+Every item below is a candidate unless it cites an accepted document.
 
 - **Private modules versus public contracts.** Ordinary `require()` is for
   private modules inside one plugin. Cross-plugin consumers use declared
@@ -70,8 +72,9 @@ unless it cites an accepted document.
   remote calls as ordinary synchronous calls that block the UI or event loop.
   The direction is async-first calls with standardized streaming; any accepted
   contract must also define cancellation and lifecycle behavior explicitly.
-  Recorded await, promise, coroutine, callback, and stream-iteration spellings
-  are discussion alternatives, not accepted SDK methods.
+  Proposed await, promise, coroutine, callback, and stream-iteration spellings
+  are discussion alternatives, not accepted SDK methods or evidence of runtime
+  support.
 - **Four layers.** Rust enforcement and mechanisms (rendering, font shaping,
   input and IME, scheduling, resource lifecycles) lead to a narrow public Lua
   SDK (stable general wrappers over explicitly admitted host operations),
@@ -89,16 +92,17 @@ unless it cites an accepted document.
   dashboard-oriented approaches are illustrative alternatives, not approved
   packages, APIs, or a roadmap.
 - **Authority and lifecycle take precedence.** Accepted security requirements
-  and lifecycle schemas override the record's speculative service methods,
-  coroutine and stream interfaces, custom event vocabulary, and SDK facility
-  lists. Process execution, agent spawning, IPC, networking, and credentials
-  are illustrative mechanism needs, never ambient access. Framework wrappers
-  cannot bypass host enforcement.
+  and lifecycle schemas override the speculative service methods, coroutine
+  and stream interfaces, custom event vocabulary, and SDK facility lists
+  proposed below. Process execution, agent spawning, IPC, networking, and
+  credentials are illustrative mechanism needs, never ambient access. Framework
+  wrappers cannot bypass host enforcement.
 
-## T-2 Lua dependency management and self-contained artifacts (054, plugin slice)
+## T-2 Lua dependency management and self-contained artifacts
 
-Proposal direction from research record 054. Every item below is a candidate
-unless it cites an accepted document.
+Candidate plugin-side direction for dependency management and artifact
+packaging. Every item below is a candidate unless it cites an accepted
+document.
 
 - **Two graphs behind one CLI.** The Bitty plugin graph (lifecycle,
   permissions, services, compatibility; managed by Bitty) and the Lua package
@@ -144,20 +148,20 @@ unless it cites an accepted document.
 
 ## Owner-pending pointers
 
-The following conclusions from the two summaries belong to other owners and
+The following directions from the same discussion belong to other owners and
 are pointers only, not decisions of this corpus.
 
-| Theme                                                                                       | Disposition                                                                                       |
-| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| 053 model APIs, provider substitution, normalized model streams                             | Pending AI and Wheel owner capture; only the generic bounded-stream direction is noted in T-1     |
-| 053 tool discovery and registry, schema and permission DSL, host execution wrapper          | Pending AI and Wheel owner capture; no tool contract is accepted here                             |
-| 053 agent, context, workflow, and multi-agent orchestration                                 | Pending AI and Wheel owner capture; no agent API is accepted here                                 |
-| 053 host enforcement and SDK boundaries                                                     | Core and SDK documentation owners; linked, never copied                                           |
-| 053 UI mechanism and composition boundaries                                                 | Terminal-platform documentation owner; linked, never copied                                       |
-| 054 plugin-manager ownership, manifest and permission model, resolver and loader boundaries | Core and plugin documentation owners; open approval                                               |
-| 054 Lua subset and build-time Lux flow                                                      | SDK and packaging owners; open approval                                                           |
-| 054 registry and index role                                                                 | Plugin-ecosystem owners; open approval                                                            |
-| Shared governance, security corpus, and decisions                                           | Canonical [bitty-docs](https://github.com/bitty-terminal/bitty-docs) corpus; linked, never copied |
+| Theme                                                                                   | Owner and disposition                                                                             |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Model APIs, provider substitution, normalized model streams                             | AI and Wheel owners; only the generic bounded-stream direction is noted above                     |
+| Tool discovery and registry, schema and permission DSL, host execution wrapper          | AI and Wheel owners; no tool contract is accepted here                                            |
+| Agent, context, workflow, and multi-agent orchestration                                 | AI and Wheel owners; no agent API is accepted here                                                |
+| Host enforcement and SDK boundaries                                                     | Core and SDK documentation owners; linked, never copied                                           |
+| UI mechanism and composition boundaries                                                 | Terminal-platform documentation owner; linked, never copied                                       |
+| Plugin-manager ownership, manifest and permission model, resolver and loader boundaries | Core and plugin documentation owners; open approval                                               |
+| Lua subset and build-time Lux flow                                                      | SDK and packaging owners; open approval                                                           |
+| Registry and index role                                                                 | Plugin-ecosystem owners; open approval                                                            |
+| Shared governance, security corpus, and decisions                                       | Canonical [bitty-docs](https://github.com/bitty-terminal/bitty-docs) corpus; linked, never copied |
 
 ## Relation to existing systems
 
@@ -178,27 +182,21 @@ are pointers only, not decisions of this corpus.
 ## Open items (not global open questions)
 
 - Owner approval of the manager and Lux split, artifact format, manifest
-  fields, lockfile shapes, trust-prompt UX, and registry scope (054).
+  fields, lockfile shapes, trust-prompt UX, and registry scope.
 - Contract schemas and version compatibility, provider selection and
   substitution, dependency declarations, async, cancellation, and streaming
   semantics, and the framework-versus-SDK boundary where existing
-  specifications do not already decide them (053).
+  specifications do not already decide them.
 - The AI and Wheel owner-pending rows in
-  [Owner-pending pointers](#owner-pending-pointers). The archive marked records
-  053 and 054 Captured under the 2026-09-18 owner directive, but this corpus
-  does not assert owner-verified capture of the model, tool, and agent
-  conclusions those rows route elsewhere.
+  [Owner-pending pointers](#owner-pending-pointers) remain unresolved; this
+  corpus does not decide the model, tool, and agent conclusions those rows
+  route elsewhere.
 
 ## Provenance
 
-- This page is built only from the trimmed English summaries of research
-  records 053 and 054 in the workspace research archive
-  ([bitty-terminal/research](https://github.com/bitty-terminal/research)). The
-  archive marked records 044 through 055 Captured and renamed the originals
-  with a `.completed` suffix on 2026-09-18 under an owner directive; the
-  archive states the `*-docs` corpora are the working corpus and it records
-  discussion provenance. Record 053 has no recorded discussion date; record
-  054's archive receipt is dated 2026-09-18. This page asserts no independent
-  verification of canonical capture for either record.
-- This page asserts no capture claim or destination link beyond the plugin-side
-  distillation recorded here.
+- This page records candidate plugin-side direction assembled in this
+  repository. Every item is a candidate unless it cites an accepted document,
+  and the accepted contracts it reconciles against are linked inline. It
+  asserts no canonical decision for the directions it records.
+- This page asserts no destination link beyond the plugin-side direction
+  recorded here.

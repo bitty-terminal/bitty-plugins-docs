@@ -17,20 +17,19 @@ and this project adheres to
   parent bitty-docs CTX-0187 Phase 3) with path-limited Git history: nine
   specifications, the plugin roadmap, two extensibility contracts, and the
   per-plugin index and template, with cross-repository links rewritten.
-- Record plugin-ecosystem direction from the workspace `research` records
-  `origin/040.md` and `origin/039.md` as the draft
+- Record candidate plugin-ecosystem direction as the draft
   `architecture/plugin-ecosystem-model.md`: plugin taxonomy, platform versus
   extension plugins, extension points, manifest candidates, capability
   non-escalation, extension-platform API versioning, the plugin graph, and
-  Panel/Activity implications. Research-derived design input, not an accepted
+  Panel/Activity implications. Candidate design input, not an accepted
   contract.
-- Record the plugin-relevant conclusions of the workspace `research` record
-  `origin/041.md` as the draft `architecture/plugin-ipc-boundary.md`:
+- Record candidate out-of-process plugin-boundary direction as the draft
+  `architecture/plugin-ipc-boundary.md`:
   out-of-process plugins as a second extension boundary, the plugin event bus,
   the unified Lua/IPC/CLI capability model, capability-token and
   permission-display candidates, crash isolation and supervision questions,
   control-CLI and multi-instance addressing sketches, and the candidate
-  three-layer extension framing. Research-derived design input, not an accepted
+  three-layer extension framing. Candidate design input, not an accepted
   contract; the diverging `[permissions]` sketch is marked unaccepted.
 - Add `docs/plugins/file-manager/` and `docs/plugins/git-panel/` per-plugin
   page sets (CTX-0023, related to Issue #43): README index, design, schemas,
@@ -39,53 +38,60 @@ and this project adheres to
   (tiled panel over allowlisted `process.spawn:git` plus accepted
   `[tools.git]` v1) packages; panel presentation deferred pending the
   panel-provider contract. Nothing here is verified or shipped.
-- Record the plugin-side conclusions of the workspace `research` records
-  `origin/032.md` (pluggable model access) and `origin/038.md` (pluggable pane
-  history) as candidate directions in
+- Record candidate plugin-side direction for
+  pluggable model access and pluggable pane
+  history in
   `packaging/plugin-reuse-and-providers.md` with open-item acceptance
   rows: core keeps the provider contract/registry/routing while vendor
   auth/billing/discovery and the management UI live in plugins with opaque
   credential handles composed with the Secrets direction, and durable history
   becomes an official plugin with append-only compressed segments, storage
   capabilities instead of direct database access, command/output/replay tiers,
-  and external history tools as providers and sinks. Research-derived design
+  and external history tools as providers and sinks. Candidate design
   input, not an accepted contract; Plugin API v1 defines no `fs.*` Lua entry
   point.
 - Disambiguate the `composer` term in the Plugin API v1 Lua Surface RFC and
-  record the research 002 API stability priority order as a non-normative
-  candidate in the plugin system extension-levels section (CTX-0025, related
+  record a candidate API stability priority order as a non-normative
+  direction in the plugin system extension-levels section (CTX-0025, related
   to Issue #43): the user-facing Command Composer stays a terminal-interaction
   concept owned by `bitty-terminal-docs`, distinct from the internal scene-diff
   step. No normative behavior changes.
-- Bridge the research-recorded ActivityStack direction to the P2 panel-identity
+- Bridge the candidate ActivityStack direction to the P2 panel-identity
   candidate (CTX-0026, related to Issue #43): the UI extensibility P2 section
   now points plugin authors to the Plugin Ecosystem Model section 9.2 for the
   Panel-is-not-Activity and session-survival direction (acceptance path: the
   Panel Runtime RFC provider/ecosystem open questions `RFC-OQ-1` through
   `RFC-OQ-9`), and admits non-tiled presentation modes remain a gated host
   surface with no plugin-facing contract yet.
-- Capture research `origin/053.md` plugin-generic proposals in the existing
+- Record candidate plugin-generic proposals in the existing
   ecosystem, reuse/provider, IPC-boundary, and UI architecture specifications
   (CTX-0027): private modules versus versioned public services, install versus
   provider requirements, candidate typed adapters and async/stream proxies,
   and a small public Lua SDK with optional replaceable framework plugins.
   Accepted VM isolation, marshalling, synchronous bounded calls, and host
   enforcement remain unchanged. The coverage map records distinct AI/Wheel
-  model/tool/agent conclusions as owner-pending. The research archive later
-  marked records 044 through 055 Captured and renamed their originals with a
-  `.completed` suffix on 2026-09-18 under an owner directive; that
-  archive-level rename does not assert owner-verified capture in this corpus.
-  Documentation capture only.
+  model/tool/agent conclusions as owner-pending. Documentation direction only.
 
 ### Changed
 
+- Make the plugin corpus research-free (CTX-0037, Issue #68): add the normative
+  `Docs self-containment` section to
+  `docs/development/documentation-workflow.md`; convert the
+  plugin-conclusion page into the self-contained
+  `specifications/plugin-contract-direction.md`; strip record numbers, archive
+  paths and status, and archive wording from the architecture, packaging,
+  product, extensibility, SDK, and index pages and from the
+  `docs/architecture/glossary.yaml` canonical inventory while preserving every
+  claim, status, and candidate qualifier; rename the affected anchors; and
+  update every cross-reference. Technical claims, draft status, and
+  owner-pending pointers are unchanged.
 - Materialize the approved thematic topic-tree taxonomy (CTX-0035, Issue #65):
   move the plugin-host runtime, Lua runtime, and isolation and resource
   contracts to `runtime/`; the Plugin API v1 Lua surface contract to `sdk/`;
   the package lifecycle, package follow-up, and reuse/provider contracts to
   `packaging/`; and the ecosystem model, IPC boundary, and UI extensibility
   contracts to `architecture/`. `specifications/` keeps the accepted Plugin
-  Platform RFC and the research 053/054 distillation register. Each new tree
+  Platform RFC and the candidate-direction register. Each new tree
   gains a route-only index, the maps and every relative cross-reference are
   updated, and the `Document form` section is aligned with bitty-ai-docs.
   Links only; no document status, claim, or `website_publish` flag changes.

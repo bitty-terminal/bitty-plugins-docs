@@ -390,8 +390,8 @@ plugins receive redacted handles or nothing; the consent ledger records which
 `(PluginId, generation)` or `(AgentId, generation)` requested which key and
 when; a failed or absent resolution is fail-closed, never an empty-string
 fallback; and `.env` files are never read or written by Bitty on behalf of
-Lua. Tracked as OQ-054 and OQ-055. The model-provider direction (research
-032, candidate) composes with this section: credentials reach model plugins
+Lua. Tracked as OQ-054 and OQ-055. The model-provider direction (candidate)
+composes with this section: credentials reach model plugins
 only as opaque handles from the host keystore; see the
 [Model-provider direction](../packaging/plugin-reuse-and-providers.md#model-provider-direction-candidate).
 
@@ -474,7 +474,7 @@ promise:
 
 This list records ecosystem direction only. It does not add a Panel API,
 distribution manifest, runtime, Event Bus, or implementation claim. The
-research-derived [Plugin Ecosystem Model](../architecture/plugin-ecosystem-model.md)
+candidate [Plugin Ecosystem Model](../architecture/plugin-ecosystem-model.md)
 records the plugin taxonomy, extension-point direction, and Panel-as-host
 implications behind this candidate list, and the
 [Plugin IPC Boundary](../architecture/plugin-ipc-boundary.md) records the
@@ -508,7 +508,7 @@ IPC-adjacent candidates above; both are design input, not an accepted contract.
   `bitty debug/trace` redaction policy applies to exported traces.
 
 Durable pane history is a separate candidate from this activity timeline: the
-history-provider direction (research 038, candidate) makes durable history an
+history-provider direction (candidate) makes durable history an
 official plugin with append-only compressed output segments, storage
 capabilities instead of direct database access, and external history tools as
 providers and sinks; see the
@@ -638,14 +638,14 @@ minimal-ui`) should compose a named group of bundled plugins atomically
    on this exact capability profile or a restricted profile of it
    (corpus-kept open; this roadmap does not force user-trusted code into
    the third-party grant flow).
-9. Model-provider shape (research 032, candidate): versioned
+9. Model-provider shape (candidate): versioned
    provider-interface contract for pluggable model access (core keeps the
    provider contract/registry/routing, vendor auth/billing/discovery and
    the management UI live in plugins, opaque credential handles composed
    with the Secrets direction above); recorded in the
    [Model-provider direction](../packaging/plugin-reuse-and-providers.md#model-provider-direction-candidate),
    not accepted.
-10. History-plugin shape (research 038, candidate): versioned
+10. History-plugin shape (candidate): versioned
     history-provider interface plus the storage-capability contract for the
     durable-history official plugin (append-only compressed segments,
     storage capabilities not direct database access, command/output/replay

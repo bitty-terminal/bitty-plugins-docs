@@ -1,6 +1,6 @@
 ---
 title: Plugin Ecosystem Model
-description: Research-derived plugin taxonomy public services and framework layering with explicit owner-pending capture for record 053
+description: Candidate plugin taxonomy public services and framework layering with explicit owner-pending pointers
 category: specifications
 audience: plugin-author
 document_type: specification
@@ -11,36 +11,33 @@ sidebar_order: 32
 
 # Plugin Ecosystem Model
 
-> Status: **draft**, research-derived design input recording the conclusions of
-> workspace `research` records — `origin/040.md` (plugin system,
-> browser/OS and three-layer framing, extension platforms) and `origin/039.md`
-> lines 1-1258 (Panel, Activity, native UI) — into the plugin corpus. Sections
-> 9.6-9.7 add the plugin-generic capture and owner-pending map for `origin/053.md`
-> (public services and framework layering). This is **not** an accepted
-> contract, an RFC, or an implementation claim.
+> Status: **draft**, candidate design input recording plugin taxonomy,
+> platform-versus-extension layering, Panel and Activity implications, and the
+> four-layer framework ecosystem, together with the owner-pending pointers those
+> directions raise. This is **not** an accepted contract, an RFC, or an
+> implementation claim.
 
 Unless a statement cites an accepted document with a relative link, every
-conclusion below is a **proposal or observation from those records**. Where the
-accepted corpus already covers a point, this page links that document.
+conclusion below is a **candidate proposal or observation**. Where the accepted
+corpus already covers a point, this page links that document.
 
 ## 1. Purpose, status, and attribution
 
-- The source records are read-only provenance in the workspace `research`
-  repository; they were not edited for this page and stay unmarked because the
-  terminal-direction work uses them too.
-- `origin/040.md` is the plugin-system record; `origin/039.md` is the
-  Panel/activity/native-UI record.
-- A third record, `origin/041.md`, is recorded in the sibling
-  [Plugin IPC Boundary](plugin-ipc-boundary.md) page because it covers the
-  distinct out-of-process and IPC extension-boundary topic.
-- Section 11 lists the decisions still required before this becomes contract.
+- This page records candidate design direction for the plugin ecosystem,
+  sourced from review of the terminal and plugin design space and reconciled
+  against the accepted contracts linked inline.
+- The plugin-system, Panel/activity/native-UI, and out-of-process IPC
+  directions are distinct topics; the IPC direction is recorded separately in
+  the sibling [Plugin IPC Boundary](plugin-ipc-boundary.md) page.
+- Section 11 lists the decisions still required before any direction here
+  becomes contract.
 
 ## 2. Plugin taxonomy
 
-Observation (039): once plugins grow past scripts, the single word "plugin"
-becomes ambiguous. The record proposes distinguishing five roles:
+Observation: once plugins grow past scripts, the single word "plugin"
+becomes ambiguous. One candidate view distinguishes five roles:
 
-| Type           | Recorded example                  |
+| Type           | Example                           |
 | -------------- | --------------------------------- |
 | Plugin         | git integration                   |
 | Service        | LSP / notification / credential   |
@@ -48,22 +45,23 @@ becomes ambiguous. The record proposes distinguishing five roles:
 | Application    | bitter / Docker / Mail / Telegram |
 | Panel Provider | provides an Application surface   |
 
-The same discussion frames Bitty as an application shell and holds "Bitty Core
-provides primitives, not applications."
+The candidate direction also frames Bitty as an application shell, and a
+related platform/host principle holds that "Bitty Core provides primitives, not
+applications."
 
 ## 3. Platform plugin versus extension plugin
 
-Proposal (040): do not read every plugin as attached directly to Core. The
-record distinguishes a **Platform Plugin** (or Host Plugin) from an **Extension
-Plugin**. Bitter, Bitty AI, Statusline, and Docker are each itself a Bitty
-plugin and also a host — for example, Bitter hosts `bitter-lsp`,
+Candidate proposal: do not read every plugin as attached directly to Core. This
+direction distinguishes a **Platform Plugin** (or Host Plugin) from an
+**Extension Plugin**. Bitter, Bitty AI, Statusline, and Docker are each itself a
+Bitty plugin and also a host — for example, Bitter hosts `bitter-lsp`,
 `bitter-treesitter`, and `bitter-git`; Bitty AI hosts `bitty-ai-openai` and
 `bitty-ai-memory`; Statusline hosts `statusline-git`; Docker hosts
 `docker-compose`.
 
 The layering is semantic, not a nesting of runtimes:
 
-- **NO nested Lua VMs.** The record explicitly rejects
+- **NO nested Lua VMs.** This direction explicitly rejects
   `Bitty -> Bitter Lua VM -> bitter-lsp Lua VM` because lifecycle, error
   propagation, permissions, and hot reload would all become harder.
 - Every plugin is a **peer** managed by one Bitty plugin runtime; peer
@@ -75,10 +73,10 @@ The layering is semantic, not a nesting of runtimes:
 
 ## 4. Extension points as a first-class concept
 
-Proposal (040): beyond today's commands, events, services, UI, and keymaps, the
-corpus should introduce **Extension Point** as a first-class concept. A plugin
+Candidate proposal: beyond today's commands, events, services, UI, and keymaps,
+the corpus could introduce **Extension Point** as a first-class concept. A plugin
 that hosts a platform declares its own domain points; other plugins contribute
-to them. Recorded inventories:
+to them. Candidate inventories:
 
 ```text
 Bitter       bitter.language, bitter.highlighter, bitter.formatter, bitter.completion, bitter.code_action, bitter.status_item, bitter.sidebar
@@ -87,7 +85,7 @@ Statusline   statusline.segment
 Docker App   docker.action, docker.renderer, docker.inspector
 ```
 
-The recorded consequence is that the plugin system stops being "load Lua files"
+The candidate consequence is that the plugin system stops being "load Lua files"
 and becomes "compose different extension graphs". The accepted inventory of
 existing extension mechanisms is in the
 [UI Extensibility Architecture](ui-extensibility-architecture.md) and the
@@ -118,11 +116,11 @@ it, and is not authoritative for them (see the registry boundaries in the
 
 ### Candidate contribution shapes (unaccepted)
 
-040 sketches two unaccepted manifest shapes for extension contributions; the
-accepted corpus defines only what the
-[Plugin Platform RFC](../specifications/plugin-platform-rfc.md) accepted schema states. Neither
-shape below is accepted, and neither matches the accepted owner-qualified
-`[plugin] id` grammar:
+A candidate direction sketches two unaccepted manifest shapes for extension
+contributions; the accepted corpus defines only what the
+[Plugin Platform RFC](../specifications/plugin-platform-rfc.md) accepted schema
+states. Neither shape below is accepted, and neither matches the accepted
+owner-qualified `[plugin] id` grammar:
 
 ```toml
 [plugin]
@@ -146,14 +144,14 @@ point = "bitter.language"
 id = "lsp"
 ```
 
-The recorded intent is that the plugin manager can resolve a dependency tree
+The candidate intent is that the plugin manager can resolve a dependency tree
 like an ordinary package manager.
 
 ## 6. Dependency must not become capability escalation
 
-Principle (040), stated as a rule worth fixing early: **a dependency
+Candidate principle, stated as a rule worth fixing early: **a dependency
 relationship must not become capability escalation.** A host's permissions are
-not inherited by the extension. Recorded contrast:
+not inherited by the extension. Candidate contrast:
 
 - `bitter-theme-catppuccin` needs only `bitter.theme`.
 - An LSP plugin may need `process.spawn` and `filesystem.read`.
@@ -169,8 +167,8 @@ identity and manifest hash, and a dependency edge is not a grant.
 
 ## 7. Extension-platform API versioning
 
-Candidate (040): once a plugin can extend a plugin, the stable API surface is
-no longer only the Bitty API. The record proposes versioning each host's
+Candidate: once a plugin can extend a plugin, the stable API surface is
+no longer only the Bitty API. One direction proposes versioning each host's
 extension API explicitly:
 
 ```text
@@ -185,13 +183,13 @@ Plugin API itself (`compat.plugin-api`, `bitty.api_version` in the
 [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)) and services
 (`[services.provided]` in the
 [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)); per-extension-platform API
-versioning is the additive candidate those records do not yet define.
+versioning is the additive candidate those contracts do not yet define.
 
 ## 8. The plugin graph
 
-Observation (040): the result is a plugin _tree_ by intent, but from the plugin
+Observation: the result is a plugin _tree_ by intent, but from the plugin
 manager's point of view it is a **dependency + service + extension graph**, not
-a physical parent/child process tree. The record proposes two principles:
+a physical parent/child process tree. Two candidate principles:
 
 > **Every plugin may be an application, and every application may expose its
 > own extension platform.**
@@ -205,14 +203,14 @@ and service direction in the
 
 ## 9. Panel and activity implications for plugin authors
 
-These are proposals from 039 that build on the accepted Panel Runtime RFC in the
-sibling `bitty-terminal-docs` repository (Panel is a generic
+These are candidate proposals that build on the accepted Panel Runtime RFC in
+the sibling `bitty-terminal-docs` repository (Panel is a generic
 workspace-managed application container, not an OS window or a PTY, and
 `PanelId != ViewId != TerminalId`). They are not accepted in this repository.
 
 ### 9.1 Panel is a host; Terminal is only one Activity
 
-The recorded principle moves from "Panel is not Terminal" to **"Panel is a
+The candidate principle moves from "Panel is not Terminal" to **"Panel is a
 host; Terminal is only one Activity."** Terminal, native application, rich,
 canvas, and helper content can all live in a panel. Presentation modes
 (`tiled`, `floating`, `overlay`, `fullscreen`, `scratchpad`, `pinned`,
@@ -230,12 +228,12 @@ never dies when it is hidden.
 
 ### 9.3 Document, View, and Panel are distinct
 
-Recorded as `Document != View != Panel`, following the Emacs buffer/window
-model: a document is an editable object that may be shown by zero or more views,
-and a view owns only display state. A native UI bypasses the terminal cell grid
-entirely (`Lua Plugin -> Bitty UI Tree -> Layout -> wgpu`) and is
-**Bitty-native, not OS-native**. The record splits editor responsibilities so
-"bitter" can be a Lua application while heavy mechanisms stay in Rust:
+Candidate framing: `Document != View != Panel`, following the Emacs
+buffer/window model: a document is an editable object that may be shown by zero
+or more views, and a view owns only display state. A native UI bypasses the
+terminal cell grid entirely (`Lua Plugin -> Bitty UI Tree -> Layout -> wgpu`) and
+is **Bitty-native, not OS-native**. The direction splits editor responsibilities
+so "bitter" can be a Lua application while heavy mechanisms stay in Rust:
 
 | Rust core primitive                  | Lua application                           |
 | ------------------------------------ | ----------------------------------------- |
@@ -251,32 +249,32 @@ entirely (`Lua Plugin -> Bitty UI Tree -> Layout -> wgpu`) and is
 v1 stays the accepted declarative slot UI: `bitty.ui.mount` / `bitty.ui.update`
 with a closed slot set and only `Text`, `Row`, `Column`, and `List` nodes, per
 the [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md). The
-record's proposed later stage is a retained/declarative **Widget Tree**
+candidate later stage is a retained/declarative **Widget Tree**
 (including `RichText`, `TextInput`, `Editor`, `Button`, `Toggle`, `Slider`,
 `VirtualList`, `Tree`, `Table`, `Tabs`, `ScrollView`, `Canvas`, `Image`,
 `Terminal`, `Split`, `Stack`, `Overlay`, `Popover`). Retained/declarative is a
-hard recorded preference: Lua exposes state, policy, and application logic
+firm candidate preference: Lua exposes state, policy, and application logic
 while Rust owns the hot path, mechanism, and rendering, and Lua never enters a
 per-frame immediate-mode draw loop.
 
 ### 9.5 Application services, capability sandbox, and visual state
 
-Mail, Telegram, and Docker need more than UI. The record lists the required
+Mail, Telegram, and Docker need more than UI. The direction lists a required
 service surface — `process`, `network`, `fs`, `store`, `secrets`, `tasks`,
 `notifications`, `clipboard`, `commands`, `events`, `services` — each behind
 the same deny-by-default sandbox described by the
 [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) and the
 [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md). Panel state is split
 into distinct axes (lifecycle, focus, visibility, interaction, attention)
-rather than one enum. For v1 the record keeps the accepted animation
+rather than one enum. For v1 this direction keeps the accepted animation
 restrictions: only Core-owned chrome animates, plugin shaders and native
 in-process effects stay forbidden, and advanced `VisualState + Transition +
 Effect` work waits until the widget runtime and isolation are stable.
 
-### 9.6 Four-layer framework ecosystem (053, candidate)
+### 9.6 Four-layer framework ecosystem (candidate)
 
-Status: **research proposal, not accepted or implemented**. Research record
-053 lines 682-1327 extends the earlier semantic layering:
+Status: **candidate proposal, not accepted or implemented**. This direction
+extends the earlier semantic layering:
 
 | Layer                      | Proposed responsibility                                                                             | Boundary                                                                     |
 | -------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -290,67 +288,62 @@ CLI / Plugin Service / Native Helper **reuse** layers in
 [Plugin Reuse and Provider Ecology](../packaging/plugin-reuse-and-providers.md). It does not
 introduce nested VMs: section 3 and the accepted isolation contract still apply.
 A framework implemented as a separate plugin uses the public service boundary;
-a packaged private Lua helper uses rooted `require`. A source sketch importing
+a packaged private Lua helper uses rooted `require`. A sketch importing
 `wheel.tool` or `bitty.ui` does not authorize cross-package module loading.
 
-The source argues for many competing frameworks rather than a mandatory official
-framework, and for their evolution without forcing Core or the public SDK to
+This direction favors many competing frameworks rather than a mandatory official
+framework, and their evolution without forcing Core or the public SDK to
 change. Stability belongs to reviewed public contracts, not exposed renderer,
 windowing, IPC, font-engine, or scheduler internals. Keeping that SDK small is
-the proposal; the source's `ipc`, `panel`, `process`, `filesystem`, `async`, and
+the proposal; a proposed `ipc`, `panel`, `process`, `filesystem`, `async`, and
 other namespace inventory is not an addition to
 [Plugin API v1](../sdk/plugin-api-v1-lua-surface-rfc.md#not-in-plugin-api-v1).
 UI-specific alternatives and their limits are recorded under
-[Framework-level Lua UI](ui-extensibility-architecture.md#framework-level-lua-ui-053-candidate).
+[Framework-level Lua UI](ui-extensibility-architecture.md#framework-level-lua-ui-candidate).
 
 The phrase "Rust mechanisms, Lua composition and policy" is not a transfer of
 security policy. Network authorization, secret resolution, process-spawn
 permission, scheduler ceilings, and resource enforcement remain host authority;
 frameworks can compose controlled requests, never grant themselves those powers.
-Nor does 053's HTTP/TLS sketch move network initiation into the terminal Core:
-the shared [decision register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md)
+Nor does an HTTP/TLS framework sketch move network initiation into the terminal
+Core: the shared [decision register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md)
 (DIR-016/DIR-017) and
 [security invariants](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md#security-invariants)
-remain authoritative. Source suggestions that those mechanisms could be
-independent plugins do not permit ambient network, plaintext secrets, raw
-spawn, or unrestricted scheduling.
+remain authoritative. Suggestions that those mechanisms could be independent
+plugins do not permit ambient network, plaintext secrets, raw spawn, or
+unrestricted scheduling.
 
-### 9.7 Research 053 coverage and owner handoff
+### 9.7 Four-layer coverage and owner handoff
 
-This is documentation capture only: no API acceptance, product implementation,
-or ownership expansion. The immutable source was read in full (lines 1-1328).
-The following map distinguishes plugin-generic capture from domain conclusions
-that this corpus cannot capture on behalf of excluded owners.
+This is documentation direction only: no API acceptance, product implementation,
+or ownership expansion. The following map distinguishes plugin-generic direction
+from domain conclusions that this corpus cannot decide on behalf of excluded
+owners.
 
-| Source lines and theme                                                                                         | Destination in this corpus                                                                                                                                         | Disposition                                                                                                                                                                                  |
-| -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1-209, 564-680: private modules versus public services, typed contracts, public lookup/registration vocabulary | [Cross-package contracts](../packaging/plugin-reuse-and-providers.md#cross-package-contracts-053-candidate), Layer 3                                               | Captured as generic proposal with accepted-boundary reconciliation; source API spellings are not adopted                                                                                     |
-| 211-330: install dependencies versus required services, replaceable providers                                  | Same Layer 3 subsection                                                                                                                                            | Captured as distinction and open declaration/selection contract, not new manifest syntax                                                                                                     |
-| 332-448, 564-680: local/remote proxies and async-first calls                                                   | [Local and remote service proxies](plugin-ipc-boundary.md#13-local-and-remote-service-proxies-053-candidate)                                                       | Captured as candidate; bounded synchronous v1 calls and VM marshalling retained                                                                                                              |
-| 450-499: uniform streaming over different transports                                                           | Same proxy section                                                                                                                                                 | Generic bounded stream proposal captured; model event semantics pending AI/Wheel owner                                                                                                       |
-| 682-921, 1116-1327: four layers, small SDK, replaceable frameworks, stable public boundary                     | Section 9.6 and [Framework-level Lua UI](ui-extensibility-architecture.md#framework-level-lua-ui-053-candidate)                                                    | Captured as proposal, including immediate-mode conflict and independent framework iteration                                                                                                  |
-| 72-209, 268-330, 450-499, 975-1020: model APIs, provider substitution and normalized model streams             | This handoff; existing [Model-provider direction](../packaging/plugin-reuse-and-providers.md#model-provider-direction-candidate) is context, not 053 owner capture | Pending AI/Wheel owner capture: model list/resolve/generate/stream semantics; model selection; vendor transport adaptation; start/text/reasoning/tool-call/usage/finish/error event meanings |
-| 502-560, 922-973, 1024-1065: user/project tool discovery and framework authoring                               | This handoff                                                                                                                                                       | Pending AI/Wheel owner capture: tool registry, discovery/trust of installed versus user/project packages, schema/permission DSL, host execution wrapper and tool-result contract             |
-| 1069-1112, 653-674, 1116-1157: agent/context/workflow framework and dashboard composition                      | This handoff                                                                                                                                                       | Pending AI/Wheel owner capture: spawn/task/context/checkpoint/message/tool abstractions, event semantics, delegation and scheduling authority; no agent API accepted here                    |
+| Theme                                                                                          | Destination in this corpus                                                                                                                       | Disposition                                                                                                                                                                                   |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Private modules versus public services, typed contracts, public lookup/registration vocabulary | [Cross-package contracts](../packaging/plugin-reuse-and-providers.md#cross-package-contracts-candidate), Layer 3                                 | Recorded as generic proposal with accepted-boundary reconciliation; candidate API spellings are not adopted                                                                                   |
+| Install dependencies versus required services, replaceable providers                           | Same Layer 3 subsection                                                                                                                          | Recorded as distinction and open declaration/selection contract, not new manifest syntax                                                                                                      |
+| Local/remote proxies and async-first calls                                                     | [Local and remote service proxies](plugin-ipc-boundary.md#13-local-and-remote-service-proxies-candidate)                                         | Recorded as candidate; bounded synchronous v1 calls and VM marshalling retained                                                                                                               |
+| Uniform streaming over different transports                                                    | Same proxy section                                                                                                                               | Generic bounded stream proposal recorded; model event semantics pending AI/Wheel owner                                                                                                        |
+| Four layers, small SDK, replaceable frameworks, stable public boundary                         | Section 9.6 and [Framework-level Lua UI](ui-extensibility-architecture.md#framework-level-lua-ui-candidate)                                      | Recorded as proposal, including immediate-mode conflict and independent framework iteration                                                                                                   |
+| Model APIs, provider substitution and normalized model streams                                 | This handoff; existing [Model-provider direction](../packaging/plugin-reuse-and-providers.md#model-provider-direction-candidate) is context only | Pending AI/Wheel owner decision: model list/resolve/generate/stream semantics; model selection; vendor transport adaptation; start/text/reasoning/tool-call/usage/finish/error event meanings |
+| User/project tool discovery and framework authoring                                            | This handoff                                                                                                                                     | Pending AI/Wheel owner decision: tool registry, discovery/trust of installed versus user/project packages, schema/permission DSL, host execution wrapper and tool-result contract             |
+| Agent, context, workflow framework and dashboard composition                                   | This handoff                                                                                                                                     | Pending AI/Wheel owner decision: spawn/task/context/checkpoint/message/tool abstractions, event semantics, delegation and scheduling authority; no agent API accepted here                    |
 
 The domain rows are distinct conclusions, not expendable examples. Replacing
 them all with a generic service proposal would lose their intended model, tool,
-and multi-agent contracts. `Wheel` and its package names remain source
+and multi-agent contracts. `Wheel` and its package names remain illustrative
 vocabulary, not an asserted repository roster or accepted ownership decision.
-The commander must request scope expansion or obtain capture from the relevant
-AI/Wheel owner, including an explicit disposition of those proposals. No changes
-to `bitty`, `bitty-ai`, `bitty-devtools`, Wheel, or their docs are authorized by
-this capture; their responsibilities are not reassigned here.
+The owning AI/Wheel contract must decide those directions with an explicit
+disposition. No changes to `bitty`, `bitty-ai`, `bitty-devtools`, Wheel, or their
+docs are authorized by this page; their responsibilities are not reassigned
+here.
 
-**Archive status: Captured as record provenance; owner capture not asserted.**
-The research archive marked records 044 through 055 Captured and renamed the
-originals with a `.completed` suffix on 2026-09-18 under an owner directive
-that makes the `*-docs` corpora the working corpus and keeps the archive as
-discussion provenance. That rename records archive-level status, not
-owner-verified capture in this corpus: the AI/Wheel owner rows above remain
-pending, and this page asserts no capture claim for them. Future contract
-acceptance can remain open after faithful owner capture; missing owner capture
-cannot be hidden by calling the whole record a generic proposal.
+**Owner status: the AI/Wheel rows above remain pending; this page asserts no
+owner decision for them.** Future contract acceptance can remain open after the
+owner records a decision; an unresolved owner decision cannot be hidden by
+treating the whole direction as a generic proposal.
 
 ## 10. Mapping to the existing corpus
 
@@ -366,9 +359,9 @@ cannot be hidden by calling the whole record a generic proposal.
 | Panel as host / Activity stack                    | [UI Extensibility Architecture](ui-extensibility-architecture.md) (P2), [Plugin Roadmap](../product/plugin-roadmap.md)                                                                                       | Unaddressed here; the accepted sibling Panel Runtime RFC leaves provider details as its open questions (`RFC-OQ-1`..`RFC-OQ-9`) |
 | Native UI, widget layer, and application services | [UI Extensibility Architecture](ui-extensibility-architecture.md), [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md), [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) | Extends the ownership boundaries, v1 slot UI, and capability families                                                           |
 
-## 11. Research open items
+## 11. Open items
 
-These are **research open items, not accepted open questions**. Each must be
+These are **candidate open items, not accepted open questions**. Each must be
 decided in the owning contract before any conclusion here becomes contract:
 
 1. Extension-point registration shape: how a host declares a point, how IDs

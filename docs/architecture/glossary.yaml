@@ -2,15 +2,15 @@
 # Plugin-ecosystem node and edge inventory for docs/architecture/*.mmd and final/*.svg
 # Mirrors the terminal-docs glossary.yaml-driven model at small scale.
 # Every node traces to an accepted or draft RFC in this corpus or to the
-# research 053/054 distillation; no invented nodes.
+# candidate plugin-contract direction; no invented nodes.
 # Visual rules: rect=module/store, rounded=capability/state, dashed=boundary/unaccepted, solid=call/depends, dashed-edge=event/async
 # Levels: L0 overview, L1 subsystem, L2 flow
 schema_version: 1
-updated: "2026-09-18"
+updated: "2026-09-19"
 provenance: CTX-0032
 description: Canonical node and edge inventory for plugin-side architecture diagrams
 sources:
-  - specifications/research-053-054-plugin-conclusions.md (draft, CTX-0029)
+  - specifications/plugin-contract-direction.md (draft, candidate direction)
   - specifications/plugin-platform-rfc.md (accepted, OQ-011/OQ-012/OQ-013)
   - packaging/package-lifecycle-rfc.md (accepted, OQ-021)
   - packaging/package-followup-rfc.md (accepted, OQ-022/OQ-026..OQ-029)
@@ -19,7 +19,7 @@ sources:
   - sdk/plugin-api-v1-lua-surface-rfc.md (accepted, ADR 0009)
   - runtime/isolation-resource-rfc.md (accepted, OQ-014)
   - packaging/plugin-reuse-and-providers.md (draft, post-1.0)
-  - architecture/plugin-ecosystem-model.md (draft, research-derived)
+  - architecture/plugin-ecosystem-model.md (draft, candidate direction)
   - architecture/ui-extensibility-architecture.md (draft, candidate review)
   - product/bundled-plugin-split-decision.md (accepted, OQ-053)
   - product/official-plugin-onboarding.md (normative policy)
@@ -354,7 +354,7 @@ nodes:
     description: Tiled, floating, overlay, fullscreen and further modes as runtime properties
     source: architecture/plugin-ecosystem-model.md
 
-  # --- Research 053/054 proposal direction (draft) ---
+  # --- Plugin-contract direction (draft) ---
   - id: service-registry
     label: Service Registry
     kind: capability
@@ -386,7 +386,7 @@ nodes:
     level: L1
     status: draft
     description: Manifest, Lua sources, vendored pure-Lua deps, assets with deps pre-resolved
-    source: specifications/research-053-054-plugin-conclusions.md
+    source: specifications/plugin-contract-direction.md
 
 edges:
   # --- L0 context ---
@@ -576,7 +576,7 @@ edges:
     level: L1
     description: v1 slot content only, no panel lifecycle
 
-  # --- Research direction (draft edges) ---
+  # --- Candidate direction (draft edges) ---
   - from: service-registry
     to: provider-ecology
     kind: extends

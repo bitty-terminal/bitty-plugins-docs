@@ -30,11 +30,11 @@ authorizes no shipped behavior.
 
 ## Source restriction
 
-Built only from
-[research 053/054 plugin conclusions](../../specifications/research-053-054-plugin-conclusions.md)
+Built only from the
+[plugin contract direction](../../specifications/plugin-contract-direction.md)
 (CTX-0029) plus the plugin-platform RFC and the other accepted and draft RFCs
 in this corpus. Every node traces to code or an accepted or draft RFC; no
-invented nodes. Research-derived nodes stay `draft` until an owning contract
+invented nodes. Candidate nodes stay `draft` until an owning contract
 accepts them.
 
 ## Diagram inventory
@@ -88,8 +88,8 @@ accepts them.
 
 Provider-ecology nodes (`Service Registry`, `Provider Ecology`, `Lua Is
 Glue`, `Self-Contained Artifact`) live in the glossary as draft
-research direction from
-[research 053/054](../../specifications/research-053-054-plugin-conclusions.md) and the
+candidate direction from
+[Plugin contract direction](../../specifications/plugin-contract-direction.md) and the
 [draft reuse RFC](../../packaging/plugin-reuse-and-providers.md); no
 diagram renders them until an owning contract accepts them.
 

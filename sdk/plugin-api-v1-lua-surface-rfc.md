@@ -539,8 +539,8 @@ is consistent with the accepted no-hot-path-events rule.
   or removing an event name requires a major version and migration notes.
 - The manifest `compat.plugin-api` range is the compatibility gate; the runtime
   `bitty.api_version` and the manifest range must agree at activation.
-- The research-recorded API stability priority order (Panel first, Plugin
-  last) is a non-normative candidate noted in the
+- The candidate API stability priority order (Panel first, Plugin
+  last) is a non-normative direction noted in the
   [Plugin system](../extensibility/plugin-system.md#extension-levels), not a
   `1.x` guarantee.
 - Unknown future fields in payload tables are ignored, not errors, except on
