@@ -209,7 +209,9 @@ verification plan below are accepted, so an independent git-panel can declare
 `[tools.git]` and spawn only the allowlisted `git` binary with bounded
 output. It gates the git-panel split (CTX-0400). OQ-013 is accepted (Plugin
 Platform RFC); OQ-053 is accepted and closed (Bundled-Plugin Split Decision,
-2026-09-14; git-panel splits later behind this contract). The
+2026-09-14; git-panel already split: catalog entry removed and independent
+package plus registry entry published, with panel presentation still deferred
+pending the panel-provider contract). The
 `process.spawn:CONSTRAINT` grammar is owned by the accepted [Plugin Platform
 RFC](plugin-platform-rfc.md). The CTX-0008 sync only folds already-enforced
 denials into the record; it adds no acceptance beyond what
@@ -227,9 +229,17 @@ version = ">=2.30"
 fails closed with a diagnostic. The entry is static, validated before VM
 creation, included in the manifest hash for grant binding, and raising
 `required` from `false` to `true` is a capability increase whose grant must be
-re-confirmed. Manifest-side evidence is the declared `process.spawn:git`
-capability in `git_panel_manifest`
-([bundled.rs](https://github.com/bitty-terminal/bitty/blob/main/crates/bitty-plugin-host/src/bundled.rs));
+re-confirmed. Manifest-side evidence is historical: the declared
+`process.spawn:git` capability was carried by `git_panel_manifest` in
+`crates/bitty-plugin-host/src/bundled.rs` before the split removed it
+(`bitty` PR #713, `CTX-0400`, 2026-09-15); the current manifest owner is the
+independent `bitty-terminal/git-panel` package, and the current dispatch
+enforcement owner is the `HostToolsAuthorizer` in
+`crates/bitty-runtime/src/plugin_runtime/spawn.rs`, which enforces the
+dispatch-time tool/verb contract only — install-time tools validation,
+executable discovery, and full grant binding stay owned by the install and
+activation path (follow-up work under `CTX-0400`, not part of this
+acceptance);
 a general `[tools.*]` manifest-table validator in `bitty-package` is future
 work under CTX-0400, not part of this acceptance.
 
@@ -237,20 +247,28 @@ work under CTX-0400, not part of this acceptance.
 
 - Capability string is exactly `process.spawn:git`: closed `process.spawn`
   family plus the `:git` parameter. Any other executable is denied; the
-  canonical spawn check is `is_tool_spawn_allowed` (`is_accepted_tool`
-  git-only plus `is_valid_tool_name`) in
+  canonical dispatch-time spawn check is `is_tool_spawn_allowed`
+  (`is_accepted_tool` git-only plus `is_valid_tool_name`) in
   [tools.rs](https://github.com/bitty-terminal/bitty/blob/main/crates/bitty-plugin-host/src/tools.rs)
-  with no I/O. The panel capability check
-  `GitIntegration::is_process_spawn_git_allowed` mirrors the same exact
-  string.
+  with no I/O, enforced at dispatch by the `HostToolsAuthorizer` in
+  `crates/bitty-runtime/src/plugin_runtime/spawn.rs`. The removed bundled
+  panel capability check `GitIntegration::is_process_spawn_git_allowed`
+  (formerly in the deleted
+  [git_panel.rs](https://github.com/bitty-terminal/bitty/blob/main/crates/bitty-runtime/src/git_panel.rs),
+  removed `bitty` PR #713, `CTX-0400`) is historical implementation evidence
+  only; dispatch enforcement does not prove install-time tools validation,
+  executable discovery, or full grant binding. Use the independent
+  `bitty-terminal/git-panel` package for current manifest ownership.
 - Spawn goes through the host-provided surface only, never through
   `os.execute`, `io.popen`, or a Lua-loaded native module (denied by the Lua
   Runtime restricted library). Outputs are piped to panel UI, never raw PTY
   injection.
 - Read-only verbs only: `status`, `diff`, `log`, `branch`, `show`,
-  `rev-parse`, `ls-files` (`GIT_ALLOWED_SUBCOMMANDS` in `tools.rs`,
-  identical list in
-  [git_panel.rs](https://github.com/bitty-terminal/bitty/blob/main/crates/bitty-runtime/src/git_panel.rs)).
+  `rev-parse`, `ls-files` (`GIT_ALLOWED_SUBCOMMANDS` in `tools.rs`; the
+  identical list formerly mirrored in the removed bundled
+  [git_panel.rs](https://github.com/bitty-terminal/bitty/blob/main/crates/bitty-runtime/src/git_panel.rs)
+  is historical implementation evidence, recorded before `bitty` PR #713,
+  `CTX-0400`).
   Write verbs (`commit`, `push`, `reset`, mutating `checkout`, etc.) are
   absent; staging or commit UX needs explicit user action plus a broader grant.
 - `is_allowed_git_args` in `tools.rs` (canonical, `64e1709`) fails closed on:
@@ -299,12 +317,15 @@ Allowlist values above are enforced by
 [tools.rs](https://github.com/bitty-terminal/bitty/blob/main/crates/bitty-plugin-host/src/tools.rs)
 (`GIT_ALLOWED_SUBCOMMANDS`, `MAX_GIT_ARGS`, `MAX_GIT_ARG_BYTES`,
 `MAX_GIT_TOTAL_BYTES`, `is_allowed_git_args`, `is_tool_spawn_allowed`);
-panel bounds below are copied from
+panel bounds below were copied from the removed bundled
 [git_panel.rs](https://github.com/bitty-terminal/bitty/blob/main/crates/bitty-runtime/src/git_panel.rs)
-(`GIT_PANEL_MAX_*`, `GIT_PANEL_PROCESS_SPAWN_GIT`); those modules are
-implementation evidence, not the contract.
+(`GIT_PANEL_MAX_*`, `GIT_PANEL_PROCESS_SPAWN_GIT`, before `bitty` PR #713,
+`CTX-0400`); those modules are historical implementation evidence, not the contract.
 
 #### Verification plan
+
+Historical implementation evidence (recorded before the split removed the
+bundled owners in `bitty` PR #713, `CTX-0400`):
 
 - `crates/bitty-runtime/tests/git_panel.rs`:
   `git_panel_via_public_plugin_host_path` (granted set carries
@@ -322,6 +343,7 @@ implementation evidence, not the contract.
   `git_panel_command_registry_bounded_and_overlay_focus_mru`,
   `git_panel_reactive_via_eventbus_no_hot_path`,
   `git_panel_tiled_reuses_layout_hv_deterministically`.
+
 - `crates/bitty-runtime/tests/bundled_dogfood_runtime.rs` and
   `crates/bitty-plugin-host/tests/bundled_dogfood.rs` (git-panel dogfoods the
   public plugin API surface with manifest, capability, and lifecycle checks).
