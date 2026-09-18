@@ -22,6 +22,8 @@ sidebar_order: 20
 > signature verification, registry service, and key-directory contracts remain
 > draft under OQ-022 and OQ-026 through OQ-029.
 
+## Purpose and scope
+
 Bitty should treat plugin installation as package management, not as an
 incidental side effect of loading Lua. Users should be able to declare,
 reproduce, inspect, update, disable, and remove official or third-party plugins
@@ -387,7 +389,7 @@ audit, dependency health, and abandoned packages remain staged design work.
 Local-path development packages need visibly different trust and reproducibility
 semantics from immutable registry or Git revisions.
 
-## Open questions
+## Open points
 
 - What are the final managed manifest and lockfile names and formats?
 - Is one version of a plugin ID allowed in an environment, and can service

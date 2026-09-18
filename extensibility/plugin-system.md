@@ -17,6 +17,8 @@ sidebar_order: 10
 > schema review, and implementation. **Open questions** are intentionally
 > unresolved.
 
+## Purpose and scope
+
 Bitty's extension system should be broad enough to build tabs, search,
 Markdown rendering, diagnostics, AI tools, and custom workflows without making
 the terminal emulator's compatibility depend on plugin load order or plugin
@@ -558,7 +560,7 @@ claims, stale resources after reload, Plugin API breakage, and cross-shell or
 cross-platform assumptions. These remain open until their candidate contracts
 receive ADRs and acceptance evidence.
 
-## Open questions
+## Open points
 
 - Which extension levels and scene primitives are stable enough for Plugin API
   version 1?

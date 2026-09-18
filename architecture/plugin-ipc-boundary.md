@@ -24,10 +24,10 @@ only the plugin-facing consequences and cites the accepted document instead of
 restating its wire contract. Where a statement aligns with an accepted
 document, this page links it — relative for documents in this corpus, absolute
 for sibling repositories; every other conclusion below is a **candidate
-proposal or observation**. Section 13 adds the candidate service-proxy
-direction; it does not change any accepted local IPC or plugin-runtime contract.
+proposal or observation**. The local/remote service proxies section adds the candidate
+service-proxy direction; it does not change any accepted local IPC or plugin-runtime contract.
 
-## 1. Purpose, status, and attribution
+## Purpose and scope
 
 - This page records candidate design direction for an out-of-process plugin
   boundary, reconciled against the accepted contracts linked inline.
@@ -35,10 +35,10 @@ direction; it does not change any accepted local IPC or plugin-runtime contract.
   concerns; this page records the conclusions in English.
 - The framing is that the Lua plugin API and an IPC boundary **solve
   different problems and do not replace each other**.
-- Section 12 lists the decisions still required before any conclusion here
+- The open points list the decisions still required before any conclusion here
   could become contract.
 
-## 2. The second extension boundary: out-of-process plugins
+## The second extension boundary: out-of-process plugins
 
 Candidate proposal: plugins need not run inside the Bitty process.
 Over a local socket boundary they could be written in any language (Rust,
@@ -67,7 +67,7 @@ it makes arbitrary external processes plugin participants rather than
 manifest-declared helpers. Accepting that needs a process lifecycle and
 supervision contract first, which no current document defines (candidate).
 
-## 3. Core minimization: heavy plugins as separate processes
+## Core minimization: heavy plugins as separate processes
 
 Candidate proposal: heavy surfaces — provider, agent runtime, MCP,
 embedding, memory, SQLite, network, and context management — should not be
@@ -85,7 +85,7 @@ isolation direction in the accepted
 [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md); the daemon split
 itself remains a proposal.
 
-## 4. Panel and Agent as public protocol surfaces
+## Panel and Agent as public protocol surfaces
 
 Candidate proposal: a public Panel protocol (`panel.create`,
 `panel.write`, `panel.focus`, `panel.move`, `panel.resize`, `panel.close`) would
@@ -102,11 +102,11 @@ These Panel method names are **candidate and unaccepted**. Panel semantics are
 owned by the accepted Panel Runtime RFC in the sibling `bitty-terminal-docs`
 repository, whose provider and ecosystem surface remains open (`RFC-OQ-1`
 through `RFC-OQ-9`), and the Panel-as-host direction is already recorded in the
-[Plugin Ecosystem Model](plugin-ecosystem-model.md) section 9.
+[Plugin Ecosystem Model](plugin-ecosystem-model.md) Panel and activity section.
 This page records only the IPC consequence: a public protocol is the mechanism
 that would keep plugin and Agent integrations off internal types.
 
-## 5. Plugin-to-plugin communication and the event bus
+## Plugin-to-plugin communication and the event bus
 
 Candidate proposal: the IPC surface need not be only plugin to
 Core; an event bus could carry plugin-to-plugin events. Candidate examples are
@@ -126,7 +126,7 @@ authorization for the candidate bus are not defined by any accepted document
 and would have to reuse the accepted IPC rate-limit and budget contracts rather
 than relax them (candidate, open item 4).
 
-## 6. One capability model, three frontends
+## One capability model, three frontends
 
 Candidate proposal: the Lua API, an IPC binding, and a
 CLI control surface should be three frontends of one capability model rather
@@ -147,7 +147,7 @@ unaccepted addition is an external-process binding that consumes the same
 capability registry; the method names and domains above are candidate
 vocabulary only.
 
-## 7. Capability tokens and permission display (unaccepted)
+## Capability tokens and permission display (unaccepted)
 
 Candidate proposal: an external plugin would authenticate to the
 IPC server and receive a capability token; Core would evaluate per-capability
@@ -177,7 +177,7 @@ token to the accepted IPC scopes and plugin grants is an open item (open item
 defend than exposing the whole Lua Core API to third parties — is consistent
 with the accepted deny-by-default posture.
 
-## 8. Failure isolation, supervision, and debugging
+## Failure isolation, supervision, and debugging
 
 Candidate proposal: an out-of-process plugin that crashes must not
 take down Bitty; the direction poses restart, disable, and log-surfacing
@@ -197,7 +197,7 @@ normatively defines instance discovery and selection, including the
 surface is marked candidate in that RFC's candidate CLI-dispatch section, so
 the `bitty msg panel list`/`tree`/`events` shapes here are candidate only.
 
-## 9. Controlling a running instance and multi-instance addressing
+## Controlling a running instance and multi-instance addressing
 
 Candidate proposal: a `bittyctl`-style client would be a thin IPC
 client, not a second implementation of Bitty features, mirroring `hyprctl` for
@@ -215,55 +215,17 @@ form. Multi-window and daemon modes remain deferred by
 in the shared governance corpus, and the URI form is a candidate illustration,
 not an accepted grammar (open item 5).
 
-## 10. Candidate three-layer extension model
+## Candidate three-layer extension model
 
 Candidate proposal: Core plus a Lua plugin API and an IPC API, with
 a capability layer above exposing Lua, socket, and CLI frontends. This is
 compatible with the "runtime flat, semantics layered" principle recorded in the
 [Plugin Ecosystem Model](plugin-ecosystem-model.md)
-section 3: the IPC peers are still flat runtime peers managed through one
+the platform-versus-extension section: the IPC peers are still flat runtime peers managed through one
 plugin model, not nested runtimes. The combined three-layer framing is
 **candidate design input**, not an accepted architecture.
 
-## 11. Mapping to the existing corpus
-
-| Theme                                          | Existing document                                                                                                                                                                  | Relationship                                                                                         |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Lua versus out-of-process plugin suitability   | [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md), [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md)                            | Aligns with the accepted helper-process direction; broader IPC plugin participants are candidate     |
-| Core minimization and `bitty-ai` daemon split  | [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md)                                                                                                | Aligns with the draft no-embed rule and Layer 4 staging; the daemon split is candidate               |
-| Panel/Agent protocol surface                   | [Plugin Ecosystem Model](plugin-ecosystem-model.md) section 9, sibling Panel Runtime RFC                                                                                           | Extends; Panel ownership and provider surface stay with the sibling contract                         |
-| Plugin-to-plugin event bus                     | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                                                                                                                    | Extends the accepted event pipeline to cross-process subscribers; candidate                          |
-| Unified capability model and method vocabulary | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)                                          | Aligns on one registry for CLI/palette/IPC/Agent reuse; the external binding and names are candidate |
-| Capability tokens and `[permissions]` sketch   | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md)                                                | Diverges from the accepted capability grammar; must be reconciled, not added in parallel             |
-| Crash isolation and supervision                | [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md), [IPC and Agent RFC](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/ipc-agent-rfc.md) | Aligns on untrusted-client boundaries; supervisor semantics are unaddressed                          |
-| Control CLI and multi-instance addressing      | [IPC and Agent RFC](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/ipc-agent-rfc.md)                                                                     | Aligns with accepted instance selection; `bittyctl` verbs and `bitty://` addressing are candidate    |
-| Three-layer extension framing                  | [Plugin Ecosystem Model](plugin-ecosystem-model.md) section 3                                                                                                                      | Consistent with "runtime flat, semantics layered"; combined framing is candidate                     |
-
-## 12. Open items
-
-These are **candidate open items, not accepted open questions**. Each must be
-decided in the owning contract before any conclusion here becomes contract:
-
-1. Ownership of the capability/method vocabulary: which repository owns a
-   shared method registry across Lua, IPC, and CLI, and how names are versioned.
-2. Plugin-process lifecycle and supervision: launch, restart, disable, log
-   surfacing, reconnection, and crash containment semantics for out-of-process
-   plugins.
-3. Capability-token mapping: how a token maps to the accepted IPC scopes and
-   per-plugin grants without creating a parallel permission system.
-4. Cross-process event bus semantics: subscription authorization, delivery
-   guarantees, backpressure, and interaction with the accepted event pipeline
-   budgets.
-5. Multi-instance addressing grammar: whether any `bitty://`-style address is
-   adopted, and how it relates to accepted instance selection and the deferred
-   daemon mode.
-6. Panel protocol ownership: how candidate Panel verbs interoperate with the
-   sibling Panel Runtime RFC open questions (`RFC-OQ-1` through `RFC-OQ-9`)
-   without splitting ownership.
-7. Whether external processes are a distinct plugin class in the manifest and
-   package model or a transport option of the existing plugin model.
-
-## 13. Local and remote service proxies (candidate)
+## Local and remote service proxies (candidate)
 
 Status: **candidate proposal, not accepted or implemented**. This direction
 proposes location-transparent public services: the consumer uses one interface
@@ -323,4 +285,42 @@ The proposed minimal service/event authoring facade is a usability goal only;
 its registration, required/optional lookup, event emit/on names, and domain
 identifiers do not extend the accepted service or event inventory. The AI/Wheel
 owner-pending direction is tracked in
-[Plugin Ecosystem Model section 9.7](plugin-ecosystem-model.md#97-four-layer-coverage-and-owner-handoff).
+[Plugin Ecosystem Model owner handoff section](plugin-ecosystem-model.md#97-four-layer-coverage-and-owner-handoff).
+
+## Affected contracts
+
+| Theme                                          | Existing document                                                                                                                                                                  | Relationship                                                                                         |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Lua versus out-of-process plugin suitability   | [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md), [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md)                            | Aligns with the accepted helper-process direction; broader IPC plugin participants are candidate     |
+| Core minimization and `bitty-ai` daemon split  | [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md)                                                                                                | Aligns with the draft no-embed rule and Layer 4 staging; the daemon split is candidate               |
+| Panel/Agent protocol surface                   | [Plugin Ecosystem Model](plugin-ecosystem-model.md) Panel and activity section, sibling Panel Runtime RFC                                                                          | Extends; Panel ownership and provider surface stay with the sibling contract                         |
+| Plugin-to-plugin event bus                     | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                                                                                                                    | Extends the accepted event pipeline to cross-process subscribers; candidate                          |
+| Unified capability model and method vocabulary | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)                                          | Aligns on one registry for CLI/palette/IPC/Agent reuse; the external binding and names are candidate |
+| Capability tokens and `[permissions]` sketch   | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md)                                                | Diverges from the accepted capability grammar; must be reconciled, not added in parallel             |
+| Crash isolation and supervision                | [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md), [IPC and Agent RFC](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/ipc-agent-rfc.md) | Aligns on untrusted-client boundaries; supervisor semantics are unaddressed                          |
+| Control CLI and multi-instance addressing      | [IPC and Agent RFC](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/ipc-agent-rfc.md)                                                                     | Aligns with accepted instance selection; `bittyctl` verbs and `bitty://` addressing are candidate    |
+| Three-layer extension framing                  | [Plugin Ecosystem Model](plugin-ecosystem-model.md) Platform-versus-extension section                                                                                              | Consistent with "runtime flat, semantics layered"; combined framing is candidate                     |
+
+## Open points
+
+These are **candidate open items, not accepted open questions**. Each must be
+decided in the owning contract before any conclusion here becomes contract:
+
+1. Ownership of the capability/method vocabulary: which repository owns a
+   shared method registry across Lua, IPC, and CLI, and how names are versioned.
+2. Plugin-process lifecycle and supervision: launch, restart, disable, log
+   surfacing, reconnection, and crash containment semantics for out-of-process
+   plugins.
+3. Capability-token mapping: how a token maps to the accepted IPC scopes and
+   per-plugin grants without creating a parallel permission system.
+4. Cross-process event bus semantics: subscription authorization, delivery
+   guarantees, backpressure, and interaction with the accepted event pipeline
+   budgets.
+5. Multi-instance addressing grammar: whether any `bitty://`-style address is
+   adopted, and how it relates to accepted instance selection and the deferred
+   daemon mode.
+6. Panel protocol ownership: how candidate Panel verbs interoperate with the
+   sibling Panel Runtime RFC open questions (`RFC-OQ-1` through `RFC-OQ-9`)
+   without splitting ownership.
+7. Whether external processes are a distinct plugin class in the manifest and
+   package model or a transport option of the existing plugin model.

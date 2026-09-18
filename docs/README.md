@@ -87,7 +87,7 @@ The [Plugin Ecosystem Model sections 9.6-9.7](../architecture/plugin-ecosystem-m
 record the proposed Rust host / small public Lua SDK / optional framework /
 application layering and a four-layer coverage/owner-handoff map. Candidate
 [private-module/public-service contracts](../packaging/plugin-reuse-and-providers.md#cross-package-contracts-candidate),
-[local/remote async proxy questions](../architecture/plugin-ipc-boundary.md#13-local-and-remote-service-proxies-candidate),
+[local/remote async proxy questions](../architecture/plugin-ipc-boundary.md#local-and-remote-service-proxies-candidate),
 and [framework-level UI](../architecture/ui-extensibility-architecture.md#framework-level-lua-ui-candidate)
 are recorded as proposals against unchanged accepted boundaries. The
 distinct AI/Wheel model, tool, and agent directions remain owner-pending. This

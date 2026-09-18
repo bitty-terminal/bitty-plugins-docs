@@ -21,7 +21,7 @@ Unless a statement cites an accepted document with a relative link, every
 conclusion below is a **candidate proposal or observation**. Where the accepted
 corpus already covers a point, this page links that document.
 
-## 1. Purpose, status, and attribution
+## Purpose and scope
 
 - This page records candidate design direction for the plugin ecosystem,
   sourced from review of the terminal and plugin design space and reconciled
@@ -29,10 +29,10 @@ corpus already covers a point, this page links that document.
 - The plugin-system, Panel/activity/native-UI, and out-of-process IPC
   directions are distinct topics; the IPC direction is recorded separately in
   the sibling [Plugin IPC Boundary](plugin-ipc-boundary.md) page.
-- Section 11 lists the decisions still required before any direction here
+- The open points list the decisions still required before any direction here
   becomes contract.
 
-## 2. Plugin taxonomy
+## Plugin taxonomy
 
 Observation: once plugins grow past scripts, the single word "plugin"
 becomes ambiguous. One candidate view distinguishes five roles:
@@ -49,7 +49,7 @@ The candidate direction also frames Bitty as an application shell, and a
 related platform/host principle holds that "Bitty Core provides primitives, not
 applications."
 
-## 3. Platform plugin versus extension plugin
+## Platform plugin versus extension plugin
 
 Candidate proposal: do not read every plugin as attached directly to Core. This
 direction distinguishes a **Platform Plugin** (or Host Plugin) from an
@@ -71,7 +71,7 @@ The layering is semantic, not a nesting of runtimes:
   accepted one-VM-per-plugin-identity-and-generation rule in the
   [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md) (`IR-D2`).
 
-## 4. Extension points as a first-class concept
+## Extension points as a first-class concept
 
 Candidate proposal: beyond today's commands, events, services, UI, and keymaps,
 the corpus could introduce **Extension Point** as a first-class concept. A plugin
@@ -92,7 +92,7 @@ existing extension mechanisms is in the
 [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md); a formal
 extension-point registration model is not addressed there.
 
-## 5. Manifest expression candidates
+## Manifest expression candidates
 
 ### Accepted dependency declaration
 
@@ -147,7 +147,7 @@ id = "lsp"
 The candidate intent is that the plugin manager can resolve a dependency tree
 like an ordinary package manager.
 
-## 6. Dependency must not become capability escalation
+## Dependency must not become capability escalation
 
 Candidate principle, stated as a rule worth fixing early: **a dependency
 relationship must not become capability escalation.** A host's permissions are
@@ -165,7 +165,7 @@ containment rules in the
 [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md): grants stay per plugin
 identity and manifest hash, and a dependency edge is not a grant.
 
-## 7. Extension-platform API versioning
+## Extension-platform API versioning
 
 Candidate: once a plugin can extend a plugin, the stable API surface is
 no longer only the Bitty API. One direction proposes versioning each host's
@@ -185,7 +185,7 @@ Plugin API itself (`compat.plugin-api`, `bitty.api_version` in the
 [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)); per-extension-platform API
 versioning is the additive candidate those contracts do not yet define.
 
-## 8. The plugin graph
+## The plugin graph
 
 Observation: the result is a plugin _tree_ by intent, but from the plugin
 manager's point of view it is a **dependency + service + extension graph**, not
@@ -201,7 +201,7 @@ without Core expanding with every domain. This extends the current dependency
 and service direction in the
 [Plugin system](../extensibility/plugin-system.md) contract.
 
-## 9. Panel and activity implications for plugin authors
+## Panel and activity implications for plugin authors
 
 These are candidate proposals that build on the accepted Panel Runtime RFC in
 the sibling `bitty-terminal-docs` repository (Panel is a generic
@@ -286,7 +286,7 @@ extends the earlier semantic layering:
 This is an **abstraction/stability** model, distinct from the Pure Lua / System
 CLI / Plugin Service / Native Helper **reuse** layers in
 [Plugin Reuse and Provider Ecology](../packaging/plugin-reuse-and-providers.md). It does not
-introduce nested VMs: section 3 and the accepted isolation contract still apply.
+introduce nested VMs: the platform-versus-extension model and the accepted isolation contract still apply.
 A framework implemented as a separate plugin uses the public service boundary;
 a packaged private Lua helper uses rooted `require`. A sketch importing
 `wheel.tool` or `bitty.ui` does not authorize cross-package module loading.
@@ -324,7 +324,7 @@ owners.
 | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Private modules versus public services, typed contracts, public lookup/registration vocabulary | [Cross-package contracts](../packaging/plugin-reuse-and-providers.md#cross-package-contracts-candidate), Layer 3                                 | Recorded as generic proposal with accepted-boundary reconciliation; candidate API spellings are not adopted                                                                                   |
 | Install dependencies versus required services, replaceable providers                           | Same Layer 3 subsection                                                                                                                          | Recorded as distinction and open declaration/selection contract, not new manifest syntax                                                                                                      |
-| Local/remote proxies and async-first calls                                                     | [Local and remote service proxies](plugin-ipc-boundary.md#13-local-and-remote-service-proxies-candidate)                                         | Recorded as candidate; bounded synchronous v1 calls and VM marshalling retained                                                                                                               |
+| Local/remote proxies and async-first calls                                                     | [Local and remote service proxies](plugin-ipc-boundary.md#local-and-remote-service-proxies-candidate)                                            | Recorded as candidate; bounded synchronous v1 calls and VM marshalling retained                                                                                                               |
 | Uniform streaming over different transports                                                    | Same proxy section                                                                                                                               | Generic bounded stream proposal recorded; model event semantics pending AI/Wheel owner                                                                                                        |
 | Four layers, small SDK, replaceable frameworks, stable public boundary                         | Section 9.6 and [Framework-level Lua UI](ui-extensibility-architecture.md#framework-level-lua-ui-candidate)                                      | Recorded as proposal, including immediate-mode conflict and independent framework iteration                                                                                                   |
 | Model APIs, provider substitution and normalized model streams                                 | This handoff; existing [Model-provider direction](../packaging/plugin-reuse-and-providers.md#model-provider-direction-candidate) is context only | Pending AI/Wheel owner decision: model list/resolve/generate/stream semantics; model selection; vendor transport adaptation; start/text/reasoning/tool-call/usage/finish/error event meanings |
@@ -345,7 +345,7 @@ owner decision for them.** Future contract acceptance can remain open after the
 owner records a decision; an unresolved owner decision cannot be hidden by
 treating the whole direction as a generic proposal.
 
-## 10. Mapping to the existing corpus
+## Affected contracts
 
 | Theme                                             | Existing document                                                                                                                                                                                            | Relationship                                                                                                                    |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -359,7 +359,7 @@ treating the whole direction as a generic proposal.
 | Panel as host / Activity stack                    | [UI Extensibility Architecture](ui-extensibility-architecture.md) (P2), [Plugin Roadmap](../product/plugin-roadmap.md)                                                                                       | Unaddressed here; the accepted sibling Panel Runtime RFC leaves provider details as its open questions (`RFC-OQ-1`..`RFC-OQ-9`) |
 | Native UI, widget layer, and application services | [UI Extensibility Architecture](ui-extensibility-architecture.md), [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md), [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) | Extends the ownership boundaries, v1 slot UI, and capability families                                                           |
 
-## 11. Open items
+## Open points
 
 These are **candidate open items, not accepted open questions**. Each must be
 decided in the owning contract before any conclusion here becomes contract:
