@@ -50,7 +50,10 @@ Implemented: package, manifest, allowlist policy, and `[tools.git]`
 declaration, tested headlessly; registry entry published. Deferred: panel
 presentation (pending the panel-provider contract, `bitty-docs` `CTX-0181`,
 OQ-058) and host-side `[tools.*]` table enforcement in the install path
-(follow-up work). Verified/shipped: nothing — the package is not verified,
+(follow-up work under `bitty` `CTX-0400`). Dispatch-time enforcement by the
+`HostToolsAuthorizer` (`bitty` `crates/bitty-runtime/src/plugin_runtime/spawn.rs`)
+proves dispatch only: it does not prove install-time tools validation,
+executable discovery, or full grant binding. Verified/shipped: nothing — the package is not verified,
 compatible, or shipped beyond the manifest `[compat]` ranges, and no product
 release contains it.
 
