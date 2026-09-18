@@ -420,8 +420,8 @@ local branch = git.branch(cwd)
 
 ### Cross-package contracts (053, candidate)
 
-Status: **research-derived proposal**, from workspace `research/origin/053.md`
-lines 1-330 and 564-680; no new manifest keys or Lua methods are accepted here.
+Status: **research-derived proposal**, from research record 053 lines 1-330 and
+564-680; no new manifest keys or Lua methods are accepted here.
 The record separates a repository's publication boundary from a package's
 private modules and its public service/capability contracts. A consumer should
 not need the provider's checkout location, private implementation layout, or

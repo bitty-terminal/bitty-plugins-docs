@@ -58,9 +58,10 @@ stays in the sibling documentation repositories.
 | Path                             | Purpose                                                            |
 | -------------------------------- | ------------------------------------------------------------------ |
 | `docs/README.md`                 | Documentation map and authority rules for this repository.         |
+| `docs/architecture/`             | Plugin-side glossary-driven diagram set and node provenance.       |
 | `docs/development/`              | Contributor workflow and the normative documentation policy.       |
 | `docs/plugins/`                  | Per-plugin index, template, and standard page sets.                |
-| `specifications/`                | Accepted and draft plugin-ecosystem contracts (RFCs).              |
+| `specifications/`                | Register index plus accepted, draft, and research contracts.       |
 | `product/`                       | Plugin roadmap and product planning documents.                     |
 | `extensibility/`                 | Pre-implementation plugin system and package-management contracts. |
 | `TODO.md`                        | Work register for this repository.                                 |

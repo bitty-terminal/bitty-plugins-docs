@@ -274,8 +274,8 @@ decided in the owning contract before any conclusion here becomes contract:
 
 ## 13. Local and remote service proxies (053, candidate)
 
-Status: **research proposal, not accepted or implemented**. Workspace
-`research/origin/053.md` lines 332-499 and 564-680 proposes location-transparent
+Status: **research proposal, not accepted or implemented**. Research record
+053 lines 332-499 and 564-680 proposes location-transparent
 public services: the consumer uses one interface while the host selects a local
 plugin, another process or panel, a daemon, or a Rust-backed provider. This is
 an interface-design goal, not a claim that these routes exist or that a panel is

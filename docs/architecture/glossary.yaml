@@ -10,7 +10,7 @@ updated: "2026-09-18"
 provenance: CTX-0032
 description: Canonical node and edge inventory for plugin-side architecture diagrams
 sources:
-  - docs/research-053-054-plugin-conclusions.md (draft, CTX-0029)
+  - specifications/research-053-054-plugin-conclusions.md (draft, CTX-0029)
   - specifications/plugin-platform-rfc.md (accepted, OQ-011/OQ-012/OQ-013)
   - specifications/package-lifecycle-rfc.md (accepted, OQ-021)
   - specifications/package-followup-rfc.md (accepted, OQ-022/OQ-026..OQ-029)
@@ -386,7 +386,7 @@ nodes:
     level: L1
     status: draft
     description: Manifest, Lua sources, vendored pure-Lua deps, assets with deps pre-resolved
-    source: docs/research-053-054-plugin-conclusions.md
+    source: specifications/research-053-054-plugin-conclusions.md
 
 edges:
   # --- L0 context ---

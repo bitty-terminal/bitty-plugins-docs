@@ -71,8 +71,11 @@ and this project adheres to
   and a small public Lua SDK with optional replaceable framework plugins.
   Accepted VM isolation, marshalling, synchronous bounded calls, and host
   enforcement remain unchanged. The coverage map records distinct AI/Wheel
-  model/tool/agent conclusions as owner-pending; archive recommendation remains
-  Partial, not eligible for `.completed`. Documentation capture only.
+  model/tool/agent conclusions as owner-pending. The research archive later
+  marked records 044 through 055 Captured and renamed their originals with a
+  `.completed` suffix on 2026-09-18 under an owner directive; that
+  archive-level rename does not assert owner-verified capture in this corpus.
+  Documentation capture only.
 
 ### Changed
 

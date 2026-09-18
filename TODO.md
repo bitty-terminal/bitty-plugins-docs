@@ -17,6 +17,12 @@ than accumulating here.
       exists with `sdk`/`template`/`docs` submodules and
       `plugins/activity`+`palette`+`statusline`; this repository is mounted at
       `bitty-plugins/docs` (branch `main`).
+- [x] Structural alignment to the terminal-docs standard (CTX-0033, Issue #61):
+      added the `specifications/` register index, moved the research 053/054
+      page into the specifications tree with self-contained provenance,
+      reconciled the research 053/054 archive-status wording, repointed
+      `docs/README.md` to canonical documents, and verified per-directory
+      index routes.
 
 ## Blocked / open
 
