@@ -80,10 +80,11 @@ and this project adheres to
   plugin-conclusion page into the self-contained
   `specifications/plugin-contract-direction.md`; strip record numbers, archive
   paths and status, and archive wording from the architecture, packaging,
-  product, extensibility, SDK, and index pages while preserving every claim,
-  status, and candidate qualifier; rename the affected anchors; and update
-  every cross-reference. Technical claims, draft status, and owner-pending
-  pointers are unchanged.
+  product, extensibility, SDK, and index pages and from the
+  `docs/architecture/glossary.yaml` canonical inventory while preserving every
+  claim, status, and candidate qualifier; rename the affected anchors; and
+  update every cross-reference. Technical claims, draft status, and
+  owner-pending pointers are unchanged.
 - Materialize the approved thematic topic-tree taxonomy (CTX-0035, Issue #65):
   move the plugin-host runtime, Lua runtime, and isolation and resource
   contracts to `runtime/`; the Plugin API v1 Lua surface contract to `sdk/`;
