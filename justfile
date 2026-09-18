@@ -122,8 +122,8 @@ check:
 # bundle, stamps manifest.redacted, and commits one snapshot to the fixed ref
 # `refs/heads/carryctx-snapshots`; the target pushes that branch only when the
 # local ref advanced. Canonical closeout runs from the primary checkout on
-# branch main (`cd "$BITTY_WORKSPACE/bitty-plugins-docs" && just workflow-publish`); a
-# detached or feature worktree records that branch as the snapshot source. Dry
+# branch main (`just workflow-publish` in the repository root); a detached or
+# feature worktree records that branch as the snapshot source. Dry
 # run validates the export and writes neither the ref nor the remote.
 workflow-publish *args:
     bash scripts/workflow-publish.sh {{args}}

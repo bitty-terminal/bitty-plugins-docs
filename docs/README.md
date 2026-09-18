@@ -46,7 +46,7 @@ map does not upgrade any claim.
 | [Documentation process handoff](HANDOFF.md)                     | Pointer to handoff records for documentation work.                  |
 | [Plugin index](plugins/README.md)                               | Registered official plugins, candidate list, and standard page set. |
 | [Plugin template](plugins/TEMPLATE.md)                          | Reusable per-plugin page template.                                  |
-| [Official plugin onboarding](../product/README.md)              | Index route to onboarding policy, split decision, and roadmap.      |
+| [Specification register](../specifications/README.md)           | Accepted and draft plugin-ecosystem contracts with their OQ scope.  |
 
 ## Migrated corpus
 
@@ -54,25 +54,26 @@ The plugin-ecosystem corpus migrated from `bitty-docs` at `c664214` with
 history preserved (CTX-0001). Root topic trees hold the canonical documents;
 each document's frontmatter owns its status.
 
-| Document                                                                                 | Status   | Purpose                                                                |
-| ---------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------- |
-| [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                          | accepted | API v1 surface, capability and manifest model, event pipeline.         |
-| [Plugin Host Runtime RFC](../specifications/plugin-host-runtime-rfc.md)                  | accepted | Runtime host bridge, per-plugin VM lifecycle, host services.           |
-| [Plugin API v1 Lua Surface RFC](../specifications/plugin-api-v1-lua-surface-rfc.md)      | accepted | Lua module functions, payloads, and L1/L2 split.                       |
-| [Plugin Reuse and Provider Ecology RFC](../specifications/plugin-reuse-and-providers.md) | draft    | Post-1.0 reuse principle and provider ecology.                         |
-| [Lua Runtime RFC](../specifications/lua-runtime-rfc.md)                                  | accepted | Lua runtime, sandbox, standard-library subset, modules.                |
-| [Isolation and Resource RFC](../specifications/isolation-resource-rfc.md)                | accepted | Isolation boundaries, resource ceilings, failure semantics.            |
-| [Package Lifecycle RFC](../specifications/package-lifecycle-rfc.md)                      | accepted | Integrity chain, staged activation, and rollback.                      |
-| [Package Follow-up RFC](../specifications/package-followup-rfc.md)                       | accepted | Resolver, yank, prerelease, registry, key management.                  |
-| [UI Extensibility Architecture](../specifications/ui-extensibility-architecture.md)      | draft    | UI extension points, ownership boundaries, Lua surface.                |
-| [Plugin Ecosystem Model](../specifications/plugin-ecosystem-model.md)                    | draft    | Research-derived plugin taxonomy and Panel-as-host direction.          |
-| [Plugin IPC Boundary](../specifications/plugin-ipc-boundary.md)                          | draft    | Research-derived out-of-process boundary and unified capability model. |
-| [Plugin Roadmap](../product/README.md)                                                   | draft    | Index route to roadmap, onboarding, and split decision.                |
-| [Bundled-Plugin Split Decision (OQ-053)](../product/README.md)                           | accepted | Index route to roadmap, onboarding, and split decision.                |
-| [Plugin system](../extensibility/README.md)                                              | draft    | Index route to plugin system and package management.                   |
-| [Plugin package management](../extensibility/README.md)                                  | draft    | Index route to plugin system and package management.                   |
+| Document                                                                                 | Status    | Purpose                                                                |
+| ---------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------- |
+| [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                          | accepted  | API v1 surface, capability and manifest model, event pipeline.         |
+| [Plugin Host Runtime RFC](../specifications/plugin-host-runtime-rfc.md)                  | accepted  | Runtime host bridge, per-plugin VM lifecycle, host services.           |
+| [Plugin API v1 Lua Surface RFC](../specifications/plugin-api-v1-lua-surface-rfc.md)      | accepted  | Lua module functions, payloads, and L1/L2 split.                       |
+| [Plugin Reuse and Provider Ecology RFC](../specifications/plugin-reuse-and-providers.md) | draft     | Post-1.0 reuse principle and provider ecology.                         |
+| [Lua Runtime RFC](../specifications/lua-runtime-rfc.md)                                  | accepted  | Lua runtime, sandbox, standard-library subset, modules.                |
+| [Isolation and Resource RFC](../specifications/isolation-resource-rfc.md)                | accepted  | Isolation boundaries, resource ceilings, failure semantics.            |
+| [Package Lifecycle RFC](../specifications/package-lifecycle-rfc.md)                      | accepted  | Integrity chain, staged activation, and rollback.                      |
+| [Package Follow-up RFC](../specifications/package-followup-rfc.md)                       | accepted  | Resolver, yank, prerelease, registry, key management.                  |
+| [UI Extensibility Architecture](../specifications/ui-extensibility-architecture.md)      | draft     | UI extension points, ownership boundaries, Lua surface.                |
+| [Plugin Ecosystem Model](../specifications/plugin-ecosystem-model.md)                    | draft     | Research-derived plugin taxonomy and Panel-as-host direction.          |
+| [Plugin IPC Boundary](../specifications/plugin-ipc-boundary.md)                          | draft     | Research-derived out-of-process boundary and unified capability model. |
+| [Official plugin onboarding](../product/official-plugin-onboarding.md)                   | normative | Official-status entry criteria and registration policy.                |
+| [Plugin Roadmap](../product/plugin-roadmap.md)                                           | draft     | First-party and featured plugin sequencing.                            |
+| [Bundled-Plugin Split Decision (OQ-053)](../product/bundled-plugin-split-decision.md)    | accepted  | Per-candidate split/stay-bundled verdicts and their gates.             |
+| [Plugin system](../extensibility/plugin-system.md)                                       | draft     | Plugin boundaries, isolation, composition, capabilities, lifecycle.    |
+| [Plugin package management](../extensibility/package-management.md)                      | draft     | Manifests, sources, updates, rollback, and trust.                      |
 
-### Research 053 capture (partial)
+### Research 053 and 054 capture
 
 The [Plugin Ecosystem Model sections 9.6-9.7](../specifications/plugin-ecosystem-model.md#96-four-layer-framework-ecosystem-053-candidate)
 record the proposed Rust host / small public Lua SDK / optional framework /
@@ -80,12 +81,15 @@ application layering and a full-source coverage/owner-handoff map. Generic
 [private-module/public-service contracts](../specifications/plugin-reuse-and-providers.md#cross-package-contracts-053-candidate),
 [local/remote async proxy questions](../specifications/plugin-ipc-boundary.md#13-local-and-remote-service-proxies-053-candidate),
 and [framework-level UI](../specifications/ui-extensibility-architecture.md#framework-level-lua-ui-053-candidate)
-are captured as proposals against unchanged accepted boundaries. Distinct
-AI/Wheel model, tool, and agent conclusions remain owner-pending; this capture
-does not authorize the research origin's `.completed` rename, accept APIs, or
-claim implementation. A complementary single-entry distillation of the 053 and
-054 research summaries is recorded in
-[Research 053 and 054 plugin-side conclusions](research-053-054-plugin-conclusions.md).
+are captured as proposals against unchanged accepted boundaries. The research
+archive marked records 053 and 054 Captured and renamed their originals with a
+`.completed` suffix on 2026-09-18 under an owner directive that makes the
+`*-docs` corpora the working corpus; that archive-level rename does not assert
+owner-verified capture here, and distinct AI/Wheel model, tool, and agent
+conclusions remain owner-pending. This capture accepts no APIs and claims no
+implementation. A complementary single-entry distillation of the 053 and 054
+plugin-side conclusions is recorded in
+[Research 053 and 054 plugin-side conclusions](../specifications/research-053-054-plugin-conclusions.md).
 
 ## Per-plugin standard page set
 

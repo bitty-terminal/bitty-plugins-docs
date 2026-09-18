@@ -161,8 +161,8 @@ per-View override layer is user configuration, not a plugin hook.
 
 ### Framework-level Lua UI (053, candidate)
 
-Status: **research proposal, not accepted or implemented**. Workspace
-`research/origin/053.md` lines 682-921 and 1164-1327 proposes optional,
+Status: **research proposal, not accepted or implemented**. Research record
+053 lines 682-921 and 1164-1327 proposes optional,
 replaceable Lua UI frameworks above a small public Lua SDK. The
 [four-layer model](plugin-ecosystem-model.md#96-four-layer-framework-ecosystem-053-candidate)
 separates Rust enforcement/mechanisms, stable public wrappers, independently

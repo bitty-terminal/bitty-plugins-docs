@@ -275,8 +275,8 @@ Effect` work waits until the widget runtime and isolation are stable.
 
 ### 9.6 Four-layer framework ecosystem (053, candidate)
 
-Status: **research proposal, not accepted or implemented**. Workspace
-`research/origin/053.md` lines 682-1327 extends the earlier semantic layering:
+Status: **research proposal, not accepted or implemented**. Research record
+053 lines 682-1327 extends the earlier semantic layering:
 
 | Layer                      | Proposed responsibility                                                                             | Boundary                                                                     |
 | -------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -342,11 +342,13 @@ AI/Wheel owner, including an explicit disposition of those proposals. No changes
 to `bitty`, `bitty-ai`, `bitty-devtools`, Wheel, or their docs are authorized by
 this capture; their responsibilities are not reassigned here.
 
-**Archive recommendation: Partial, not eligible for `.completed`.** Even after
-this plugin diff is reviewed and integrated, the AI/Wheel owner rows remain
-pending. Research's separately owned summary/index must reflect that state;
-only after owner capture and canonical integration may the research commander
-synchronize summary/index and consider renaming the source. Future contract
+**Archive status: Captured as record provenance; owner capture not asserted.**
+The research archive marked records 044 through 055 Captured and renamed the
+originals with a `.completed` suffix on 2026-09-18 under an owner directive
+that makes the `*-docs` corpora the working corpus and keeps the archive as
+discussion provenance. That rename records archive-level status, not
+owner-verified capture in this corpus: the AI/Wheel owner rows above remain
+pending, and this page asserts no capture claim for them. Future contract
 acceptance can remain open after faithful owner capture; missing owner capture
 cannot be hidden by calling the whole record a generic proposal.
 

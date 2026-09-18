@@ -12,18 +12,22 @@ sidebar_order: 50
 # Research 053 and 054 plugin-side conclusions
 
 > Status: **draft**, research-derived design input distilling the plugin-side
-> conclusions of two workspace `research` summaries — `053.md` (public plugin
-> contracts, layered Lua frameworks) and `054.md` (Lux-based Lua dependency
-> management, self-contained artifacts). This page is **not** an accepted
-> contract, an RFC, or an implementation claim.
+> conclusions of two research records — record 053 (public plugin contracts,
+> layered Lua frameworks) and record 054 (Lux-based Lua dependency management,
+> self-contained artifacts). This page is **not** an accepted contract, an RFC,
+> or an implementation claim.
 
 ## 1. Purpose, status, and attribution
 
-- This page is built only from the trimmed English summaries `summary/053.md`
-  and `summary/054.md` in the workspace `research` repository. The immutable
-  origins (`origin/053.md`, `origin/054.md`) were not edited or renamed for
-  this page; both records stay Open until owner-verified capture supports a
-  status change.
+- This page is built only from the trimmed English summaries of research
+  records 053 and 054 in the workspace research archive
+  ([bitty-terminal/research](https://github.com/bitty-terminal/research)). The
+  archive marked records 044 through 055 Captured and renamed the originals
+  with a `.completed` suffix on 2026-09-18 under an owner directive; the
+  archive states the `*-docs` corpora are the working corpus and it records
+  discussion provenance. Record 053 has no recorded discussion date; record
+  054's archive receipt is dated 2026-09-18. This page asserts no independent
+  verification of canonical capture for either record.
 - Only the plugin-side conclusions are distilled here. Model, provider, tool,
   agent, context, registry, SDK-packaging, and governance conclusions are
   recorded as owner-pending pointers in section 4, not as decisions of this
@@ -39,7 +43,7 @@ sidebar_order: 50
 
 ## 2. Public plugin contracts and layered frameworks (053, plugin slice)
 
-Proposal direction from `summary/053.md`. Every item below is a candidate
+Proposal direction from research record 053. Every item below is a candidate
 unless it cites an accepted document.
 
 - **Private modules versus public contracts.** Ordinary `require()` is for
@@ -97,7 +101,7 @@ multiplicity, provider selection, and capability grants stay host-controlled.
 
 ## 3. Lua dependency management and self-contained artifacts (054, plugin slice)
 
-Proposal direction from `summary/054.md`. Every item below is a candidate
+Proposal direction from research record 054. Every item below is a candidate
 unless it cites an accepted document.
 
 - **Two graphs behind one CLI.** The Bitty plugin graph (lifecycle,
@@ -178,8 +182,9 @@ Sibling corpora: [bitty-docs](https://github.com/bitty-terminal/bitty-docs)
   substitution, dependency declarations, async, cancellation, and streaming
   semantics, and the framework-versus-SDK boundary where existing
   specifications do not already decide them (053).
-- The AI and Wheel owner-pending rows in section 4. Split-owner capture stays
-  Partial until all owned conclusions are accounted for.
-- `origin/053.md` and `origin/054.md` stay unrenamed and Open until
-  owner-verified canonical capture supports a status change. No destination
-  link or capture claim beyond this page is asserted.
+- The AI and Wheel owner-pending rows in section 4. The archive marked records
+  053 and 054 Captured under the 2026-09-18 owner directive, but this corpus
+  does not assert owner-verified capture of the model, tool, and agent
+  conclusions those rows route elsewhere.
+- This page asserts no capture claim or destination link beyond the plugin-side
+  distillation recorded here.
