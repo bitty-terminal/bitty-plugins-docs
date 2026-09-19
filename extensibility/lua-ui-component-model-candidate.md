@@ -65,9 +65,11 @@ Out of scope and owned elsewhere (pointers, not content):
   accessibility tree, and GPU submission (owner-pending,
   [bitty-terminal-docs specifications tree](https://github.com/bitty-terminal/bitty-terminal-docs/tree/main/specifications);
   the UI runtime candidate is in flight);
-- panel lifecycle, overlay capacity, presentation modes, focus routing, and the
-  Event Bus contract (accepted,
+- panel lifecycle, overlay capacity, focus routing, and the Event Bus contract
+  (accepted,
   [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md));
+  the presentation-mode surface in that RFC stays gated and Open
+  (`RFC-OQ-9`);
 - the compositor, decoration, sizing, and animation limits (accepted,
   [Workspace Compositor Specification](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md)
   and the accepted appearance and animation RFCs in the shared governance
@@ -82,8 +84,11 @@ Out of scope and owned elsewhere (pointers, not content):
   candidate; this page records only the plugin-side request discipline);
 - plugin capability dimensions and the API version that would carry component,
   panel, and theming surfaces (open, governance register entry OQ-056);
-- the panel provider contract question (open, governance register entry OQ-058,
-  and the terminal-side `RFC-OQ-2`/`RFC-OQ-3`/`RFC-OQ-5` open questions);
+- the panel provider contract question (open, the terminal-side
+  `RFC-OQ-1`..`RFC-OQ-9` questions in the
+  [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md#open-questions),
+  especially `RFC-OQ-2` trait spelling, `RFC-OQ-3` placement, and `RFC-OQ-5`
+  capability mapping);
 - shared governance, decision, and security corpora (linked, never copied,
   [bitty-docs](https://github.com/bitty-terminal/bitty-docs)).
 
@@ -119,8 +124,11 @@ animation-tick, or low-level rendering API.
   accepted `SceneNode` and `RichBlock` contracts.
 - [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md):
   accepted panel identity, focus routing, and overlay bounds.
-- [Plugin system](../extensibility/plugin-system.md): extension levels,
-  register-versus-claim, semantic-primitive ceiling, and plugin author rules.
+- [Plugin system](../extensibility/plugin-system.md) (draft): the governing
+  boundary that plugins alter presentation but never Terminal Truth is recorded
+  there as accepted direction, while extension levels, register-versus-claim
+  discipline, and the semantic-primitive ceiling are candidate contract; this
+  page preserves those boundaries and adds no primitive.
 
 This page does not move a requirement between owners, does not add a capability
 identifier, and does not downgrade a P0 gate. If any mechanism here contradicts
@@ -176,8 +184,12 @@ Rules recorded for the direction:
   become an interface.
 - The retained-tree rule is firm: Lua emits a declarative tree only on state
   change, semantic actions, timers, or service events. Lua never runs an
-  immediate-mode per-frame draw loop; that prohibition is the accepted
-  no-hot-path rule expressed at the UI layer.
+  immediate-mode per-frame draw loop; that prohibition carries two sources: the
+  normative no-hot-path rule in the
+  [Security Overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md),
+  and the retained/declarative preference recorded as candidate direction in
+  the [UI Extensibility Architecture](../architecture/ui-extensibility-architecture.md)
+  and the [Plugin Ecosystem Model](../architecture/plugin-ecosystem-model.md).
 
 **Open.** Whether Level 2 is one library or several independently versioned
 libraries, which level owns the component registry, and how a domain component
@@ -232,7 +244,7 @@ Rules recorded for the direction:
 - The set is deliberately minimal. When a component needs behavior no
   primitive provides, the correct response is an upstream mechanism request,
   not a plugin-side workaround that reaches past the ceiling; this restates the
-  accepted semantic-primitive ceiling in the
+  semantic-primitive ceiling recorded as candidate contract in the draft
   [Plugin system](../extensibility/plugin-system.md).
 - `Canvas` accepts bounded display lists at low frequency; Lua does not draw
   per frame. A visualization submits scene commands when its data changes, and
@@ -295,14 +307,16 @@ Rules recorded for the direction:
 - A domain component may depend on `bitty-ui-core` (Level 2) and primitives,
   but never on another domain plugin's private component tree; sharing happens
   through versioned services or a published component package, consistent with
-  the accepted no-cross-plugin-import rule and the candidate
+  the accepted rule that cross-plugin reuse goes through declared host services
+  rather than a direct `require` of another plugin's internals
+  ([Lua Runtime RFC](../runtime/lua-runtime-rfc.md)), and with the candidate
   private-module/public-contract distinction.
 - A domain component receives domain data through its owning plugin's services
   and capabilities; the component itself holds no authority and cannot widen
   the plugin's grants.
 - Applications remain ordinary plugins under the accepted isolation,
   capability, and resource model. "Application" is a role, not a privilege
-  tier, reusing the accepted five-role taxonomy and the
+  tier, reusing the candidate five-role taxonomy and the
   platform-versus-extension distinction in the
   [Plugin Ecosystem Model](../architecture/plugin-ecosystem-model.md).
 
@@ -475,23 +489,24 @@ terminal-side UI runtime contract.
 mapping for panel creation, the activity push/pop semantics and session
 survival rules, the attention-request budget and user-surface shape, and the
 panel chrome slot inventory and rule-request schema are undecided. They are
-owner-pending with the terminal-side panel contract (register entry OQ-058 and
-the terminal-side `RFC-OQ-2`/`RFC-OQ-3`/`RFC-OQ-5` questions) and with register
-entry OQ-056 for capability dimensions.
+owner-pending with the terminal-side panel contract (the
+[Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md#open-questions)
+`RFC-OQ-1`..`RFC-OQ-9` questions) and with register entry OQ-056 for capability
+dimensions.
 
 ## Security review
 
-| Concern                     | Required control                                                                                                                 | Source                                                                                                                                                                        |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| UI on hot paths             | The retained-tree rule keeps Lua out of layout, input, and render paths; Lua emits state, Rust computes frames.                  | Security invariant 4; [Plugin system](../extensibility/plugin-system.md).                                                                                                     |
-| Presentation not truth      | Components alter presentation only; no grid, cursor, mode, scrollback, or layout mutation.                                       | [Plugin system](../extensibility/plugin-system.md); [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md).                                                 |
-| Component library privilege | Levels 1-2 are in-VM Lua libraries; they confer no capability and cannot bypass host admission.                                  | [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md).                                                                                                           |
-| Image and canvas budgets    | Image decode/cache and canvas display lists stay inside accepted host budgets; a component cannot raise its own limits.          | Threat model T-01/T-02; [Security Overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md).                                                |
-| Theming authority           | Themes and rule requests compose below user and Core authority; plugin-supplied appearance stays candidate and capability-gated. | [UI Extensibility Architecture](../architecture/ui-extensibility-architecture.md) P3 (Candidate); register entry OQ-044.                                                      |
-| Panel focus and attention   | Attention requests are bounded and user-resolved; a plugin never forces focus or escalates display priority.                     | This document (Candidate); [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) focus routing (Accepted). |
-| Lifecycle decoupling        | Closing a panel is not plugin unload; generation-owned resources and budgets still govern disposal.                              | [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md).                                                                                                             |
-| Accessibility data          | Accessible names and roles are user-visible metadata; the host bridge, not Lua, owns platform exposure.                          | This document (Candidate).                                                                                                                                                    |
-| Capability dimensions       | No capability identifier is defined here; component, panel, theming, and attention dimensions stay with OQ-056.                  | [Open questions register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).                                                           |
+| Concern                     | Required control                                                                                                                                       | Source                                                                                                                                                                              |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UI on hot paths             | The retained-tree rule keeps Lua out of layout, input, and render paths; Lua emits state, Rust computes frames.                                        | Security invariant 4; [Plugin system](../extensibility/plugin-system.md).                                                                                                           |
+| Presentation not truth      | Components alter presentation only; no grid, cursor, mode, scrollback, or layout mutation.                                                             | [Plugin system](../extensibility/plugin-system.md); [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md).                                                       |
+| Component library privilege | Levels 1-2 are in-VM Lua libraries; they confer no capability and cannot bypass host admission.                                                        | [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md).                                                                                                                 |
+| Image and canvas budgets    | Image decode and cache stay inside the accepted host image budgets; any canvas display-list surface would need a host-admitted budget before adoption. | Threat model T-01/T-02; [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md) image contract (Accepted). |
+| Theming authority           | Themes and rule requests compose below user and Core authority; plugin-supplied appearance stays candidate and capability-gated.                       | [UI Extensibility Architecture](../architecture/ui-extensibility-architecture.md) P3 (Candidate); register entry OQ-044.                                                            |
+| Panel focus and attention   | Attention requests are bounded and user-resolved; a plugin never forces focus or escalates display priority.                                           | This document (Candidate); [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) focus routing (Accepted).       |
+| Lifecycle decoupling        | Closing a panel is not plugin unload; generation-owned resources and budgets still govern disposal.                                                    | [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md).                                                                                                                   |
+| Accessibility data          | Accessible names and roles are user-visible metadata; the host bridge, not Lua, owns platform exposure.                                                | This document (Candidate).                                                                                                                                                          |
+| Capability dimensions       | No capability identifier is defined here; component, panel, theming, and attention dimensions stay with OQ-056.                                        | [Open questions register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).                                                                 |
 
 This section records direction; acceptance requires independent security
 reviewer evidence and a full traceability table against the shared corpus.
@@ -546,12 +561,12 @@ direction only.
 | U-2 Rust mechanisms                     | Owner-pending; terminal-side UI runtime                                                             | [bitty-terminal-docs specifications tree](https://github.com/bitty-terminal/bitty-terminal-docs/tree/main/specifications)                                                                                     |
 | U-3 Lua primitives                      | Candidate; the node inventory is unaccepted and depends on the UI runtime contract                  | [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) (Accepted subset), terminal-side UI runtime (Owner-pending)                                                                          |
 | U-4 `bitty-ui-core` standard components | Candidate; library governance and versioning Open                                                   | This page; [Plugin system](../extensibility/plugin-system.md) extension levels                                                                                                                                |
-| U-5 domain components and applications  | Candidate; reuses accepted plugin roles and isolation                                               | [Plugin Ecosystem Model](../architecture/plugin-ecosystem-model.md) (Candidate taxonomy), [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md) (Accepted)                                       |
+| U-5 domain components and applications  | Candidate; reuses the candidate role taxonomy and accepted isolation                                | [Plugin Ecosystem Model](../architecture/plugin-ecosystem-model.md) (Candidate taxonomy), [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md) (Accepted)                                       |
 | U-6 composition from primitives         | Candidate; conflicts with none, requires the retained-tree contract                                 | [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md) (Accepted scene nodes)                                                       |
 | U-7 complex widgets                     | Candidate; mechanism is Owner-pending, appearance policy is plugin-side                             | [bitty-terminal-docs specifications tree](https://github.com/bitty-terminal/bitty-terminal-docs/tree/main/specifications)                                                                                     |
 | U-8 theming and frameworks              | Candidate; plugin appearance remains under the P3 candidate and register entry OQ-044               | [UI Extensibility Architecture](../architecture/ui-extensibility-architecture.md) P3, [Plugin contract direction](../specifications/plugin-contract-direction.md#owner-pending-pointers) (framework layering) |
 | U-9 accessibility semantics             | Candidate; property schema and bridge are Owner-pending                                             | [bitty-terminal-docs specifications tree](https://github.com/bitty-terminal/bitty-terminal-docs/tree/main/specifications)                                                                                     |
-| U-10 panel service model                | Candidate; `PanelProvider` remains excluded from v1 and blocked on the terminal-side panel contract | [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) (Accepted identity and focus; provider surface open), register entry OQ-058          |
+| U-10 panel service model                | Candidate; `PanelProvider` remains excluded from v1 and blocked on the terminal-side panel contract | [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) (Accepted identity and focus; provider surface and presentation modes open)          |
 
 ## Open points
 
@@ -559,8 +574,8 @@ These are **candidate open items, not accepted open questions**. Each must be
 decided in the owning contract before any direction here becomes contract:
 
 1. Owner review of the five-level hierarchy and its composition principle,
-   including the relationship to the accepted v1 slot UI and the accepted
-   no-immediate-mode rule.
+   including the relationship to the accepted v1 slot UI and the normative
+   no-hot-path rule that the retained-tree direction applies at the UI layer.
 2. Adoption and governance of `bitty-ui-core`: ownership repository, release
    cadence, compatibility policy, and whether it is official-first-party.
 3. The Level 1 primitive inventory, node schemas, and the retained-tree
@@ -572,8 +587,9 @@ decided in the owning contract before any direction here becomes contract:
 6. Accessibility property schema, bridge scope, and the framework conformance
    bar.
 7. The `PanelProvider` registration and mount contract, panel capability
-   mapping, and panel-to-View placement (register entry OQ-058; terminal-side
-   `RFC-OQ-2`/`RFC-OQ-3`/`RFC-OQ-5`).
+   mapping, and panel-to-View placement (terminal-side `RFC-OQ-1`..`RFC-OQ-9`
+   in the [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md#open-questions),
+   especially `RFC-OQ-2`, `RFC-OQ-3`, and `RFC-OQ-5`).
 8. Activity push/pop semantics and session survival across panel presentation
    changes.
 9. The attention-request budget, user-surface shape, and notification
@@ -642,7 +658,7 @@ the terminal-side owner's coordination for mechanisms and panel boundaries.
 - [Plugin contract direction (candidate)](../specifications/plugin-contract-direction.md) —
   candidate framework layering and owner-pending pointer register.
 - [Open questions register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) —
-  OQ-044, OQ-056, and OQ-058 owner-pending decisions.
+  OQ-044 and OQ-056 owner-pending decisions.
 - [Security Overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md)
   and [Threat Model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md) —
   normative posture and abuse cases.

@@ -67,9 +67,10 @@ Out of scope and owned elsewhere (pointers, not content):
   becomes one core target provider, and the terminal-side candidate that
   currently records Beacon as a sub-feature of terminal scope
   ([Semantic Terminal RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/semantic-terminal-rfc.md));
-- panel lifecycle, presentation modes, focus routing, and the Event Bus
-  contract (accepted,
+- panel lifecycle, focus routing, and the Event Bus contract (accepted,
   [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md));
+  presentation-mode transitions beyond the live `tiled` mode stay gated and
+  Open (`RFC-OQ-9`);
 - the Panel/Workspace interaction, identity, and keyboard gesture direction
   (candidate,
   [Panel and Workspace Interaction](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-workspace-interaction-candidate.md));
@@ -103,9 +104,11 @@ owner-pending pointer.
   presentation replacement from v1.
 - [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md): accepted
   per-plugin VM isolation, resource ceilings, and failure semantics.
-- [Plugin system](../extensibility/plugin-system.md): extension levels,
-  register-versus-claim discipline, declarative UI, and the governing boundary
-  that plugins alter presentation but never Terminal Truth.
+- [Plugin system](../extensibility/plugin-system.md) (draft): the governing
+  boundary that plugins alter presentation but never Terminal Truth is recorded
+  there as accepted direction, while extension levels, register-versus-claim
+  discipline, and declarative UI remain candidate contract; this page preserves
+  those boundaries.
 - [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md):
   accepted panel identity, focus routing, overlay bounds, and command-registry
   placement.
@@ -160,8 +163,13 @@ The framework rests on a fundamental duality:
 Both paths converge on one operation: `Action(TargetRef)` dispatched to the
 command registry. There is no second execution path for pointer gestures, and
 no keyboard-only shortcut around command schemas or capability checks. This
-mirrors the accepted command ontological equivalence direction, in which every
-gesture maps to a command rather than to a private mechanism.
+extends the accepted rule that gesture-derived input routes through the command
+registry as validated commands rather than through a private mechanism
+([Workspace Compositor Specification](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md)
+interaction table, [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md)
+command registry); the workspace-wide equivalence of every gesture and label
+under one `Action × Target` entry point is the candidate direction recorded
+here.
 
 **Open.** Whether the mouse path lives entirely in terminal-side Core or also
 routes through Beacon policy, and how pointer capture composes with the
@@ -522,7 +530,7 @@ direction only.
 | B-3 `TargetRef` handles                  | Candidate; the identity hierarchy it relies on is Accepted                                                | [Workspace Compositor Specification](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md), [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) (Accepted) |
 | B-4 discovery and provider tiers         | Candidate; the semantic UI property surface is owner-pending terminal side                                | [bitty-terminal-docs specifications tree](https://github.com/bitty-terminal/bitty-terminal-docs/tree/main/specifications) (owner-pending)                                                                                                                                         |
 | B-5 scopes                               | Candidate                                                                                                 | This page                                                                                                                                                                                                                                                                         |
-| B-6 label allocation                     | Candidate; the allocator is a Core mechanism, the strategy surface is Lua policy                          | This page; [Lua Runtime RFC](../runtime/lua-runtime-rfc.md) for the config boundary (Accepted)                                                                                                                                                                                    |
+| B-6 label allocation                     | Candidate; the allocator is a Core mechanism, the strategy surface is Lua policy                          | This page; [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md) for the configuration boundary (Accepted)                                                                                         |
 | B-7 annotation layer                     | Candidate; composes with accepted bounded overlay rules                                                   | [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) (Accepted)                                                                                                                                               |
 | B-8 Core/plugin split                    | Candidate; the plugin is an ordinary package under accepted manifest, capability, and lifecycle contracts | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md) (Accepted)                                                                                                                                      |
 | B-9 primitives and session state machine | Candidate                                                                                                 | This page                                                                                                                                                                                                                                                                         |
