@@ -52,6 +52,17 @@ than accumulating here.
       the topic-tree indexes and `docs/README.md`, and recorded the
       terminal-side core engine, the terminal-side UI runtime candidate, and
       the OQ-052/OQ-056/OQ-058/OQ-088/OQ-089 decisions as owner-pending.
+- [x] Record the Phodopus plugin-runtime candidate (CTX-0041, Issue #76): added
+      `runtime/phodopus-runtime-candidate.md` for the plugin-side Phodopus
+      successor-runtime direction (searcher-chain module resolution, hard
+      builder quotas and Fuel, authentic Lua patterns, the `HostOp::Pending`
+      async bridge, the generic-runtime versus `bitty-lua` boundary, and the
+      six-phase roadmap); added refinement pointer sentences to the accepted
+      `runtime/lua-runtime-rfc.md` and `runtime/isolation-resource-rfc.md`
+      without changing their status or claims; and registered the page in
+      `runtime/README.md` and `docs/README.md`. The `bitty-lua` implementation
+      is deferred until Phodopus is usable, so the accepted `mlua`/Lua 5.4 and
+      `piccolo 0.3.3` contract is unchanged.
 
 ## Blocked / open
 

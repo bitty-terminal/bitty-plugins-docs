@@ -71,15 +71,15 @@ The plugin-ecosystem corpus migrated from `bitty-docs` at `c664214` with
 history preserved (CTX-0001). Root topic trees hold the canonical documents;
 each document's frontmatter owns its status.
 
-| Tree                                          | Documents (status)                                                                                                                                                                                                                                                                        |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Runtime](../runtime/README.md)               | [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md) (accepted), [Lua Runtime RFC](../runtime/lua-runtime-rfc.md) (accepted), [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md) (accepted).                                                                  |
-| [SDK](../sdk/README.md)                       | [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) (accepted).                                                                                                                                                                                                      |
-| [Packaging](../packaging/README.md)           | [Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md) (accepted), [Package Follow-up RFC](../packaging/package-followup-rfc.md) (accepted), [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md) (draft).                                         |
-| [Architecture](../architecture/README.md)     | [UI Extensibility Architecture](../architecture/ui-extensibility-architecture.md) (draft), [Plugin Ecosystem Model](../architecture/plugin-ecosystem-model.md) (draft), [Plugin IPC Boundary](../architecture/plugin-ipc-boundary.md) (draft).                                            |
-| [Specifications](../specifications/README.md) | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) (accepted), [Plugin contract direction (candidate)](../specifications/plugin-contract-direction.md) (draft), [Beacon Targeting Framework (Candidate)](../specifications/beacon-targeting-framework-candidate.md) (draft). |
-| [Product](../product/README.md)               | [Official plugin onboarding](../product/official-plugin-onboarding.md) (normative), [Plugin Roadmap](../product/plugin-roadmap.md) (draft), [Bundled-Plugin Split Decision (OQ-053)](../product/bundled-plugin-split-decision.md) (accepted).                                             |
-| [Extensibility](../extensibility/README.md)   | [Plugin system](../extensibility/plugin-system.md) (draft), [Plugin package management](../extensibility/package-management.md) (draft), [Lua UI Component Model (Candidate)](../extensibility/lua-ui-component-model-candidate.md) (draft).                                              |
+| Tree                                          | Documents (status)                                                                                                                                                                                                                                                                                                |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Runtime](../runtime/README.md)               | [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md) (accepted), [Lua Runtime RFC](../runtime/lua-runtime-rfc.md) (accepted), [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md) (accepted), [Phodopus Plugin Runtime (Candidate)](../runtime/phodopus-runtime-candidate.md) (draft). |
+| [SDK](../sdk/README.md)                       | [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) (accepted).                                                                                                                                                                                                                              |
+| [Packaging](../packaging/README.md)           | [Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md) (accepted), [Package Follow-up RFC](../packaging/package-followup-rfc.md) (accepted), [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md) (draft).                                                                 |
+| [Architecture](../architecture/README.md)     | [UI Extensibility Architecture](../architecture/ui-extensibility-architecture.md) (draft), [Plugin Ecosystem Model](../architecture/plugin-ecosystem-model.md) (draft), [Plugin IPC Boundary](../architecture/plugin-ipc-boundary.md) (draft).                                                                    |
+| [Specifications](../specifications/README.md) | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) (accepted), [Plugin contract direction (candidate)](../specifications/plugin-contract-direction.md) (draft), [Beacon Targeting Framework (Candidate)](../specifications/beacon-targeting-framework-candidate.md) (draft).                         |
+| [Product](../product/README.md)               | [Official plugin onboarding](../product/official-plugin-onboarding.md) (normative), [Plugin Roadmap](../product/plugin-roadmap.md) (draft), [Bundled-Plugin Split Decision (OQ-053)](../product/bundled-plugin-split-decision.md) (accepted).                                                                     |
+| [Extensibility](../extensibility/README.md)   | [Plugin system](../extensibility/plugin-system.md) (draft), [Plugin package management](../extensibility/package-management.md) (draft), [Lua UI Component Model (Candidate)](../extensibility/lua-ui-component-model-candidate.md) (draft).                                                                      |
 
 ### Plugin contract and framework direction
 
@@ -108,6 +108,16 @@ theming and accessibility directions, and the candidate panel service model
 (`PanelProvider`, `ActivityStack`, decoupled lifecycle, attention requests).
 Both are draft candidate direction with no accepted interface and no
 implementation claim.
+
+A runtime-side candidate is recorded in the
+[Phodopus Plugin Runtime (Candidate)](../runtime/phodopus-runtime-candidate.md):
+it maps the plugin-side consequences of the Phodopus successor-runtime direction
+(searcher-chain module resolution, hard builder quotas, authentic Lua patterns,
+the `HostOp::Pending` async bridge, and the generic-runtime boundary) onto the
+unchanged accepted runtime and isolation contracts. The accepted `mlua`/Lua 5.4
+and `piccolo 0.3.3` contract stays in force, and `bitty-lua` implementation work
+is deferred until Phodopus is usable. Draft candidate direction only; no
+accepted interface and no implementation claim.
 
 ## Per-plugin standard page set
 

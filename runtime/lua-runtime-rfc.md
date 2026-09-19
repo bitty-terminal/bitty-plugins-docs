@@ -33,6 +33,14 @@ library subset, module resolution, diagnostics, limits, and lifecycle contract
 built on that baseline. That authority remains unchanged per the Wave-C closure
 review on 2026-08-27 (CTX-0047) and independent security-auditor review.
 
+A candidate successor direction for the plugin VM is recorded in the
+[Phodopus Plugin Runtime (Candidate)](phodopus-runtime-candidate.md): it
+refines this RFC's module-resolution, sandbox-quota, pattern, and async
+consequences at the design level only. The accepted runtime choice, sandbox,
+restricted standard-library subset, rooted module search, source-only loading,
+and diagnostics contract above are unchanged, and that candidate promotes no
+status or compatibility promise.
+
 It targets OQ-009; it feeds, but does not decide, OQ-010 (configuration model),
 OQ-011/OQ-012 (Plugin API v1 and capabilities), OQ-014 (isolation and resource
 budgets), and the performance budgets PB-1/PB-2/PB-3 in the

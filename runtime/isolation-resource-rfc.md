@@ -52,6 +52,14 @@ sidebar_order: 17
 > `Draft -> experimental review evidence -> Accepted (2026-08-28) -> normative`; all RC
 > budgets now enforced measured and accepted 2026-08-28 (frontmatter `accepted`, closed OQ-014).
 
+A candidate successor direction for the plugin VM is recorded in the
+[Phodopus Plugin Runtime (Candidate)](phodopus-runtime-candidate.md): it maps
+this RFC's RC-1, RC-2, and RC-11 ceilings and the FS-1..FS-9 failure semantics
+onto a sandbox-quota runtime builder at the design level only. The accepted
+isolation domains, resource ceilings, failure semantics, and adversarial test
+specification above are unchanged, and that candidate promotes no status or
+compatibility promise.
+
 ## Purpose and scope
 
 OQ-014 asks: _which per-plugin VM, restricted-library, lazy-load, reload,

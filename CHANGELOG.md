@@ -88,6 +88,22 @@ and this project adheres to
   terminal-side UI runtime candidate, and the OQ-052/OQ-056/OQ-058/OQ-088/OQ-089
   decisions remain owner-pending. Draft candidate direction only; no accepted
   interface and no implementation claim.
+- Record the Phodopus plugin-runtime candidate (CTX-0041, Issue #76): the
+  [Phodopus Plugin Runtime (Candidate)](runtime/phodopus-runtime-candidate.md)
+  captures the plugin-side consequences of adopting Phodopus (a sandbox-first
+  successor fork of Piccolo) — the `require` searcher chain with the
+  `PluginVfsSearcher`/`LuxPackageSearcher` capability bindings, hard builder
+  memory and Fuel quotas, authentic Lua pattern semantics versus Rust `regex`,
+  `utf8.*` code points versus terminal typography, the runtime-agnostic
+  `HostOp::Pending` async bridge with an optional Tokio adapter, the
+  generic-runtime versus `bitty-lua` boundary, and the six-phase roadmap.
+  Refinement pointer sentences are added to the accepted
+  [Lua Runtime RFC](runtime/lua-runtime-rfc.md) and
+  [Isolation and Resource RFC](runtime/isolation-resource-rfc.md) without
+  changing their frontmatter, status, or accepted claims. The `bitty-lua`
+  implementation is deferred until Phodopus is usable; today's accepted
+  `mlua`/Lua 5.4 and `piccolo 0.3.3` contract is unchanged. Draft candidate
+  direction only; no accepted interface and no implementation claim.
 
 ### Changed
 
