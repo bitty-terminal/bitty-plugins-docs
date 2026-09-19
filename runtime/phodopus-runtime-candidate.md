@@ -62,9 +62,12 @@ Out of scope and owned elsewhere (pointers, not content):
   records the successor runtime (owner-pending,
   [bitty-docs](https://github.com/bitty-terminal/bitty-docs)); see
   [Owner-pending pointers](#owner-pending-pointers);
-- plugin manifest, capability grammar, package lifecycle, and the accepted
-  installation-executes-no-code rule (accepted, [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)
-  and [Plugin package management](../extensibility/package-management.md)).
+- plugin manifest, capability grammar, and the accepted package lifecycle,
+  including the release-blocking installation-executes-no-code rule (accepted,
+  [Package integrity, activation, and rollback](../packaging/package-lifecycle-rfc.md)
+  Invariant 8). The pre-implementation
+  [Plugin package management](../extensibility/package-management.md) page is
+  `status: draft` and is not cited as an accepted owner anywhere on this page.
 
 The accepted contract is unchanged by this direction: the configuration VM
 remains `mlua` over vendored Lua 5.4 and the plugin VM remains `piccolo 0.3.3`
@@ -93,9 +96,12 @@ nothing.
 - [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) (accepted):
   the capability model, grants, commands, events, and lifecycle generations that
   any runtime binding must pass through.
-- [Plugin system](../extensibility/plugin-system.md) (draft): per-plugin
-  isolated VMs, no cross-plugin private imports, and versioned host-mediated
-  services as accepted direction.
+- [Plugin system](../extensibility/plugin-system.md) (draft): candidate
+  direction for per-plugin isolated VMs, no cross-plugin private imports, and
+  versioned host-mediated services; the accepted isolation and capability
+  owners are the [Lua Runtime RFC](lua-runtime-rfc.md), the
+  [Isolation and Resource RFC](isolation-resource-rfc.md), and the
+  [Plugin Platform RFC](../specifications/plugin-platform-rfc.md).
 
 This page moves no requirement between owners, adds no capability identifier,
 and downgrades no P0 gate. If any mechanism here contradicts a normative source,
@@ -383,12 +389,13 @@ Accepted, the owning document wins over any wording on this page.
 The following directions belong to other owners and are pointers only, not
 decisions of this corpus.
 
-| Theme                                                                   | Owner and disposition                                                                                                                                                                                                                                                       |
-| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Governance decision superseding the Piccolo watch-list clause           | [bitty-docs](https://github.com/bitty-terminal/bitty-docs); tracked by [bitty-docs issue 359](https://github.com/bitty-terminal/bitty-docs/issues/359) (intended record `docs/decisions/adrs/ADR-0012-phodopus-runtime.md`); not yet merged.                                |
-| Terminal-side `bitty-lua` Host ABI, async trampoline, and width surface | [bitty-terminal-docs](https://github.com/bitty-terminal/bitty-terminal-docs); tracked by [bitty-terminal-docs issue 85](https://github.com/bitty-terminal/bitty-terminal-docs/issues/85) (intended record `specifications/phodopus-host-abi-candidate.md`); not yet merged. |
-| Generic runtime project, crates, and licensing                          | [phodopus](https://github.com/bitty-terminal/phodopus); the runtime project owns its own crate split, CI, release, and security review.                                                                                                                                     |
-| Shared governance, security corpus, and dependency ADRs                 | [bitty-docs](https://github.com/bitty-terminal/bitty-docs); linked, never copied.                                                                                                                                                                                           |
+| Theme                                                                   | Owner and disposition                                                                                                                                                                                                                                                                                                                                                                                |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Canonical Phodopus runtime documentation                                | [phodopus](https://github.com/bitty-terminal/phodopus); the runtime's own architecture and specification corpus lives at <https://github.com/bitty-terminal/phodopus/tree/main/docs> (VM model, sandbox/Fuel, modular stdlib, module resolver, async trampoline, and roadmap). This Bitty-side page records only the dependency relationship and integration boundary, never a copy of that content. |
+| Governance decision superseding the Piccolo watch-list clause           | [bitty-docs](https://github.com/bitty-terminal/bitty-docs); tracked by [bitty-docs issue 359](https://github.com/bitty-terminal/bitty-docs/issues/359) (intended record `docs/decisions/adrs/ADR-0012-phodopus-runtime.md`); not yet merged.                                                                                                                                                         |
+| Terminal-side `bitty-lua` Host ABI, async trampoline, and width surface | [bitty-terminal-docs](https://github.com/bitty-terminal/bitty-terminal-docs); tracked by [bitty-terminal-docs issue 85](https://github.com/bitty-terminal/bitty-terminal-docs/issues/85) (intended record `specifications/phodopus-host-abi-candidate.md`); not yet merged.                                                                                                                          |
+| Generic runtime project, crates, and licensing                          | [phodopus](https://github.com/bitty-terminal/phodopus); the runtime project owns its own crate split, CI, release, and security review.                                                                                                                                                                                                                                                              |
+| Shared governance, security corpus, and dependency ADRs                 | [bitty-docs](https://github.com/bitty-terminal/bitty-docs); linked, never copied.                                                                                                                                                                                                                                                                                                                    |
 
 ## Open points
 
@@ -458,16 +465,24 @@ ABI boundary.
   manifest, capability, command, event, and lifecycle contract.
 - [Plugin contract direction (candidate)](../specifications/plugin-contract-direction.md) —
   candidate framework layering, Lux tooling, and artifact direction.
-- [Plugin system](../extensibility/plugin-system.md) — plugin boundaries,
-  isolation, and composition.
-- [Plugin package management](../extensibility/package-management.md) —
-  packaging, sources, updates, and trust.
+- [Package integrity, activation, and rollback](../packaging/package-lifecycle-rfc.md)
+  — accepted package integrity, staged activation, and rollback contract
+  (Invariant 8: installation runs no package code).
+- [Plugin system](../extensibility/plugin-system.md) — draft plugin boundaries,
+  isolation, and composition (candidate direction only).
+- [Plugin package management](../extensibility/package-management.md) — draft
+  pre-implementation packaging, sources, updates, and trust (not an accepted
+  owner).
 - [bitty-docs](https://github.com/bitty-terminal/bitty-docs) — shared
   governance, ADRs, security corpus, and the open-question register.
 - [bitty-terminal-docs](https://github.com/bitty-terminal/bitty-terminal-docs) —
   terminal-platform host ABI, typography, and text-domain contracts.
 - [Phodopus](https://github.com/bitty-terminal/phodopus) — the successor runtime
-  project.
+  project; its canonical architecture and specification corpus is the
+  [Phodopus documentation tree](https://github.com/bitty-terminal/phodopus/tree/main/docs),
+  the authoritative source for the VM model, sandbox/Fuel, modular stdlib,
+  module resolver, async trampoline, and roadmap. This page records only the
+  Bitty-side dependency relationship and integration boundary.
 - [Security Overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md)
   and [Threat Model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md) —
   normative posture and abuse cases.
