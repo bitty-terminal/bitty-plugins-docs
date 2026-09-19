@@ -1,6 +1,6 @@
 ---
 title: Architecture
-description: Index of the plugin-ecosystem architecture model IPC boundary and UI extensibility contracts
+description: Index of the plugin-ecosystem architecture model IPC boundary UI extensibility contracts and diagram suite
 category: architecture
 audience: plugin-author
 document_type: index
@@ -11,8 +11,9 @@ sidebar_order: 15
 
 # Architecture
 
-Index of the plugin-ecosystem architecture contracts. Normative detail lives in
-the linked pages; this index carries no duplicate normative prose.
+Index of the plugin-ecosystem architecture contracts and their diagram suite.
+Normative detail lives in the linked pages; this index carries no duplicate
+normative prose.
 
 ## Admission criteria
 
@@ -38,3 +39,10 @@ copied.
 | [Plugin Ecosystem Model](plugin-ecosystem-model.md)               | Draft  | Candidate plugin taxonomy and Panel-as-host direction.          |
 | [Plugin IPC Boundary](plugin-ipc-boundary.md)                     | Draft  | Candidate out-of-process boundary and unified capability model. |
 | [UI Extensibility Architecture](ui-extensibility-architecture.md) | Draft  | UI extension points, ownership boundaries, and Lua surface.     |
+
+## Diagrams
+
+The glossary-driven diagram suite lives in
+[diagrams/](diagrams/README.md): the canonical node and edge inventory plus
+Mermaid sources and vector exports. Each diagram node carries its own status;
+diagram content authorizes no shipped behavior.

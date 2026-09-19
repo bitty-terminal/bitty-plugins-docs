@@ -112,6 +112,6 @@ change, regenerate with `mmdc`, then run `just svg` to confirm every
 committed SVG is well-formed XML:
 
 ```text
-mmdc -t neutral -i docs/architecture/00-overview.mmd -o docs/architecture/00-overview.svg
+mmdc -t neutral -i architecture/diagrams/00-overview.mmd -o architecture/diagrams/00-overview.svg
 just svg
 ```

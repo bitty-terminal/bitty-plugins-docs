@@ -58,13 +58,13 @@ stays in the sibling documentation repositories.
 | Path                             | Purpose                                                            |
 | -------------------------------- | ------------------------------------------------------------------ |
 | `docs/README.md`                 | Documentation map and authority rules for this repository.         |
-| `docs/architecture/`             | Plugin-side glossary-driven diagram set and node provenance.       |
 | `docs/development/`              | Contributor workflow and the normative documentation policy.       |
 | `docs/plugins/`                  | Per-plugin index, template, and standard page sets.                |
 | `runtime/`                       | Plugin host runtime, Lua runtime, and isolation and resource.      |
 | `sdk/`                           | Public plugin SDK Lua surface contract.                            |
 | `packaging/`                     | Package lifecycle, resolver, registry, and provider ecology.       |
-| `architecture/`                  | Plugin ecosystem model, IPC boundary, and UI extensibility.        |
+| `architecture/`                  | Plugin ecosystem model, IPC boundary, UI extensibility, diagrams.  |
+| `architecture/diagrams/`         | Glossary-driven diagram suite, Mermaid sources, vector exports.    |
 | `specifications/`                | Platform contract and candidate-direction register index.          |
 | `product/`                       | Plugin roadmap and product planning documents.                     |
 | `extensibility/`                 | Pre-implementation plugin system and package-management contracts. |
@@ -79,8 +79,8 @@ stays in the sibling documentation repositories.
   [documentation workflow](https://github.com/bitty-terminal/bitty-plugins-docs/blob/main/docs/development/documentation-workflow.md)
   is normative for authoring, metadata, status, and review.
 - Every canonical document carries the flat frontmatter schema and declares its
-  own status; `just metadata` enforces the schema for `docs/**`. Design
-  intention must never read as implemented behavior.
+  own status; `just metadata` enforces the schema for `docs/**` and the root
+  topic trees. Design intention must never read as implemented behavior.
 - "Candidate" and "planned" are prose, not implementation claims. A plugin page
   must not imply shipped behavior it cannot support.
 - When statements conflict, the canonical bitty-docs security corpus takes

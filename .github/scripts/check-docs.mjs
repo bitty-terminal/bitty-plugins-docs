@@ -715,9 +715,19 @@ async function checkHygiene() {
 const markdownFiles = await walk(ROOT, (path) =>
   path.toLowerCase().endsWith(".md"),
 );
-const documentFiles = markdownFiles.filter((file) =>
-  repoPath(file).startsWith("docs/"),
-);
+const CONTENT_ROOTS = new Set([
+  "architecture",
+  "extensibility",
+  "packaging",
+  "product",
+  "runtime",
+  "sdk",
+  "specifications",
+]);
+const documentFiles = markdownFiles.filter((file) => {
+  const path = repoPath(file);
+  return path.startsWith("docs/") || CONTENT_ROOTS.has(path.split("/")[0]);
+});
 const selectedModes =
   requestedMode === "all"
     ? ["links", "metadata", "language", "agents", "hygiene"]
