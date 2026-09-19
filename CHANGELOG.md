@@ -71,6 +71,23 @@ and this project adheres to
   Accepted VM isolation, marshalling, synchronous bounded calls, and host
   enforcement remain unchanged. The coverage map records distinct AI/Wheel
   model/tool/agent conclusions as owner-pending. Documentation direction only.
+- Record two candidate specification pages (CTX-0040, Issue #74): the
+  [Beacon Targeting Framework (Candidate)](specifications/beacon-targeting-framework-candidate.md)
+  for a workspace-wide spatial and semantic targeting engine (target
+  references and stale-target validation, the `Action × Target` interaction
+  model, provider tiers and cold-path collection, scopes, label allocation,
+  the batched annotation layer, the six primitives and session state machine,
+  the Core/plugin split, and the mediator security posture), and the
+  [Lua UI Component Model (Candidate)](extensibility/lua-ui-component-model-candidate.md)
+  for the five-level Lua UI hierarchy, composition from minimal primitives,
+  complex widgets as Rust mechanism plus Lua appearance, pluggable theming,
+  accessibility roles, and the candidate panel service model
+  (`PanelProvider`, `ActivityStack`, decoupled lifecycle, attention requests,
+  chrome slots, and rule requests). Every direction is marked
+  Accepted/Candidate/Owner-pending/Open; the terminal-side core engine, the
+  terminal-side UI runtime candidate, and the OQ-052/OQ-056/OQ-058/OQ-088/OQ-089
+  decisions remain owner-pending. Draft candidate direction only; no accepted
+  interface and no implementation claim.
 
 ### Changed
 

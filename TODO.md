@@ -45,6 +45,13 @@ than accumulating here.
       and the repository and documentation maps, updated the glossary header and
       the `mmdc` regeneration command, switched the SVG gate to `git ls-files`,
       and left `docs/` holding only repository process documents.
+- [x] Record the Beacon targeting and Lua UI component candidates (CTX-0040,
+      Issue #74): added
+      `specifications/beacon-targeting-framework-candidate.md` and
+      `extensibility/lua-ui-component-model-candidate.md`, registered both in
+      the topic-tree indexes and `docs/README.md`, and recorded the
+      terminal-side core engine, the terminal-side UI runtime candidate, and
+      the OQ-052/OQ-056/OQ-058/OQ-088/OQ-089 decisions as owner-pending.
 
 ## Blocked / open
 
