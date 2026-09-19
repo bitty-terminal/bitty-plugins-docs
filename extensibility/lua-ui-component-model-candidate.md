@@ -6,7 +6,7 @@ audience: plugin-author
 document_type: specification
 status: draft
 website_publish: false
-sidebar_order: 30
+sidebar_order: 27
 ---
 
 # Lua UI Component Model (Candidate)
