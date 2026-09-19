@@ -1,5 +1,5 @@
 # Architecture glossary — single source for plugin-side diagrams
-# Plugin-ecosystem node and edge inventory for docs/architecture/*.mmd and final/*.svg
+# Plugin-ecosystem node and edge inventory for architecture/diagrams/*.mmd and *.svg
 # Mirrors the terminal-docs glossary.yaml-driven model at small scale.
 # Every node traces to an accepted or draft RFC in this corpus or to the
 # candidate plugin-contract direction; no invented nodes.

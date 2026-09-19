@@ -48,7 +48,7 @@ lands.
 | [Runtime](../runtime/README.md)               | Plugin host bridge, Lua runtime, sandbox, and isolation and resource ceilings.                   |
 | [SDK](../sdk/README.md)                       | Public plugin SDK surface: Lua module functions, payloads, and the L1/L2 split.                  |
 | [Packaging](../packaging/README.md)           | Package integrity, lifecycle, resolver, registry, and provider-ecology contracts.                |
-| [Architecture](../architecture/README.md)     | Plugin ecosystem model, out-of-process IPC boundary, and UI extensibility architecture.          |
+| [Architecture](../architecture/README.md)     | Plugin ecosystem model, out-of-process IPC boundary, UI extensibility, and diagrams.             |
 | [Specifications](../specifications/README.md) | Accepted platform contract and candidate direction register that stay at the specification root. |
 | [Product](../product/README.md)               | Official-status onboarding, split decisions, and plugin roadmap.                                 |
 | [Extensibility](../extensibility/README.md)   | Pre-implementation plugin-system and package-management contracts.                               |

@@ -35,7 +35,7 @@ product build workflow.
 - `just fmt-check` — Prettier formatting for every supported file type.
 - `just markdownlint` — Markdown linting per `.markdownlint-cli2.jsonc`.
 - `just links` — repository-local links and heading fragments, offline.
-- `just metadata` — the exact flat frontmatter schema under `docs/`.
+- `just metadata` — the exact flat frontmatter schema for canonical documents.
 - `just language` — English-only Markdown.
 - `just agents` — AGENTS.md and TODO.md line budgets.
 - `just hygiene` — no generated, database, or editor artifacts.

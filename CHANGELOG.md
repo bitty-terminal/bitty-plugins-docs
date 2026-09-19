@@ -74,6 +74,14 @@ and this project adheres to
 
 ### Changed
 
+- Consolidate the diagram suite under the canonical architecture tree (CTX-0039,
+  Issue #72): move `docs/architecture/` (route index, `glossary.yaml`, the
+  Mermaid sources, and the generated SVG exports) to `architecture/diagrams/`
+  with `git mv`; index the diagram subtree from `architecture/README.md` and the
+  repository and documentation maps; update the glossary header and the `mmdc`
+  regeneration command; and validate every SVG through `git ls-files` instead
+  of a `docs/`-only directory scan. Diagram content, frontmatter, and statuses
+  are unchanged.
 - Make the plugin corpus research-free (CTX-0037, Issue #68): add the normative
   `Docs self-containment` section to
   `docs/development/documentation-workflow.md`; convert the
@@ -81,8 +89,8 @@ and this project adheres to
   `specifications/plugin-contract-direction.md`; strip record numbers, archive
   paths and status, and archive wording from the architecture, packaging,
   product, extensibility, SDK, and index pages and from the
-  `docs/architecture/glossary.yaml` canonical inventory while preserving every
-  claim, status, and candidate qualifier; rename the affected anchors; and
+  `architecture/diagrams/glossary.yaml` canonical inventory while preserving
+  every claim, status, and candidate qualifier; rename the affected anchors; and
   update every cross-reference. Technical claims, draft status, and
   owner-pending pointers are unchanged.
 - Materialize the approved thematic topic-tree taxonomy (CTX-0035, Issue #65):

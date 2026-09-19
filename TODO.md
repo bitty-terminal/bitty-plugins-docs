@@ -39,6 +39,12 @@ than accumulating here.
       archive paths/status, and archive wording from the architecture,
       packaging, product, extensibility, SDK, and index pages; fixed the
       folded-in audit defects; and updated every cross-reference and anchor.
+- [x] Consolidate the diagram suite under the canonical architecture tree
+      (CTX-0039, Issue #72): moved `docs/architecture/` to
+      `architecture/diagrams/`, indexed the subtree from `architecture/README.md`
+      and the repository and documentation maps, updated the glossary header and
+      the `mmdc` regeneration command, switched the SVG gate to `git ls-files`,
+      and left `docs/` holding only repository process documents.
 
 ## Blocked / open
 
