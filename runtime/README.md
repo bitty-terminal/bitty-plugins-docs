@@ -23,16 +23,19 @@ placeholder pages are avoided.
 
 ## Authority and status
 
-The pages are accepted contracts for their declared scope; acceptance records a
-reviewed contract and does not prove implementation. Shared cross-project
-governance stays in
+The table's status column governs each page: the accepted pages are reviewed
+contracts for their declared scope, while the draft candidate page records
+direction only and authorizes no shipped, stable, or compatibility-guaranteed
+behavior. Acceptance records a reviewed contract and does not prove
+implementation. Shared cross-project governance stays in
 [bitty-docs](https://github.com/bitty-terminal/bitty-docs) and is linked, never
 copied.
 
 ## Contracts
 
-| Document                                                | Status   | Purpose                                                                 |
-| ------------------------------------------------------- | -------- | ----------------------------------------------------------------------- |
-| [Plugin Host Runtime RFC](plugin-host-runtime-rfc.md)   | Accepted | Runtime host bridge, per-plugin VM lifecycle, and host services.        |
-| [Lua Runtime RFC](lua-runtime-rfc.md)                   | Accepted | Lua runtime, sandbox, standard-library subset, and module search rules. |
-| [Isolation and Resource RFC](isolation-resource-rfc.md) | Accepted | Isolation boundaries, resource ceilings, and failure semantics.         |
+| Document                                                             | Status   | Purpose                                                                            |
+| -------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------- |
+| [Plugin Host Runtime RFC](plugin-host-runtime-rfc.md)                | Accepted | Runtime host bridge, per-plugin VM lifecycle, and host services.                   |
+| [Lua Runtime RFC](lua-runtime-rfc.md)                                | Accepted | Lua runtime, sandbox, standard-library subset, and module search rules.            |
+| [Isolation and Resource RFC](isolation-resource-rfc.md)              | Accepted | Isolation boundaries, resource ceilings, and failure semantics.                    |
+| [Phodopus Plugin Runtime (Candidate)](phodopus-runtime-candidate.md) | Draft    | Candidate plugin-side Phodopus successor-runtime direction; no accepted interface. |
