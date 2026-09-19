@@ -43,16 +43,16 @@ theme. Each tree has a route-only index; this map links the tree index instead
 of duplicating its route table. New trees are added only when real content
 lands.
 
-| Tree                                          | Scope and entry point                                                                            |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| [Runtime](../runtime/README.md)               | Plugin host bridge, Lua runtime, sandbox, and isolation and resource ceilings.                   |
-| [SDK](../sdk/README.md)                       | Public plugin SDK surface: Lua module functions, payloads, and the L1/L2 split.                  |
-| [Packaging](../packaging/README.md)           | Package integrity, lifecycle, resolver, registry, and provider-ecology contracts.                |
-| [Architecture](../architecture/README.md)     | Plugin ecosystem model, out-of-process IPC boundary, UI extensibility, and diagrams.             |
-| [Specifications](../specifications/README.md) | Accepted platform contract and candidate direction register that stay at the specification root. |
-| [Product](../product/README.md)               | Official-status onboarding, split decisions, and plugin roadmap.                                 |
-| [Extensibility](../extensibility/README.md)   | Pre-implementation plugin-system and package-management contracts.                               |
-| `reference/`                                  | Planned; no page until verified implementation evidence lands.                                   |
+| Tree                                          | Scope and entry point                                                                                         |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| [Runtime](../runtime/README.md)               | Plugin host bridge, Lua runtime, sandbox, and isolation and resource ceilings.                                |
+| [SDK](../sdk/README.md)                       | Public plugin SDK surface: Lua module functions, payloads, and the L1/L2 split.                               |
+| [Packaging](../packaging/README.md)           | Package integrity, lifecycle, resolver, registry, and provider-ecology contracts.                             |
+| [Architecture](../architecture/README.md)     | Plugin ecosystem model, out-of-process IPC boundary, UI extensibility, and diagrams.                          |
+| [Specifications](../specifications/README.md) | Accepted platform contract and candidate direction register that stay at the specification root.              |
+| [Product](../product/README.md)               | Official-status onboarding, split decisions, and plugin roadmap.                                              |
+| [Extensibility](../extensibility/README.md)   | Pre-implementation plugin-system and package-management contracts, plus the candidate Lua UI component model. |
+| `reference/`                                  | Planned; no page until verified implementation evidence lands.                                                |
 
 ## Process documents
 
@@ -71,15 +71,15 @@ The plugin-ecosystem corpus migrated from `bitty-docs` at `c664214` with
 history preserved (CTX-0001). Root topic trees hold the canonical documents;
 each document's frontmatter owns its status.
 
-| Tree                                          | Documents (status)                                                                                                                                                                                                                                |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Runtime](../runtime/README.md)               | [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md) (accepted), [Lua Runtime RFC](../runtime/lua-runtime-rfc.md) (accepted), [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md) (accepted).                          |
-| [SDK](../sdk/README.md)                       | [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) (accepted).                                                                                                                                                              |
-| [Packaging](../packaging/README.md)           | [Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md) (accepted), [Package Follow-up RFC](../packaging/package-followup-rfc.md) (accepted), [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md) (draft). |
-| [Architecture](../architecture/README.md)     | [UI Extensibility Architecture](../architecture/ui-extensibility-architecture.md) (draft), [Plugin Ecosystem Model](../architecture/plugin-ecosystem-model.md) (draft), [Plugin IPC Boundary](../architecture/plugin-ipc-boundary.md) (draft).    |
-| [Specifications](../specifications/README.md) | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) (accepted), [Plugin contract direction (candidate)](../specifications/plugin-contract-direction.md) (draft).                                                                      |
-| [Product](../product/README.md)               | [Official plugin onboarding](../product/official-plugin-onboarding.md) (normative), [Plugin Roadmap](../product/plugin-roadmap.md) (draft), [Bundled-Plugin Split Decision (OQ-053)](../product/bundled-plugin-split-decision.md) (accepted).     |
-| [Extensibility](../extensibility/README.md)   | [Plugin system](../extensibility/plugin-system.md) (draft), [Plugin package management](../extensibility/package-management.md) (draft).                                                                                                          |
+| Tree                                          | Documents (status)                                                                                                                                                                                                                                                                        |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Runtime](../runtime/README.md)               | [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md) (accepted), [Lua Runtime RFC](../runtime/lua-runtime-rfc.md) (accepted), [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md) (accepted).                                                                  |
+| [SDK](../sdk/README.md)                       | [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) (accepted).                                                                                                                                                                                                      |
+| [Packaging](../packaging/README.md)           | [Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md) (accepted), [Package Follow-up RFC](../packaging/package-followup-rfc.md) (accepted), [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md) (draft).                                         |
+| [Architecture](../architecture/README.md)     | [UI Extensibility Architecture](../architecture/ui-extensibility-architecture.md) (draft), [Plugin Ecosystem Model](../architecture/plugin-ecosystem-model.md) (draft), [Plugin IPC Boundary](../architecture/plugin-ipc-boundary.md) (draft).                                            |
+| [Specifications](../specifications/README.md) | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) (accepted), [Plugin contract direction (candidate)](../specifications/plugin-contract-direction.md) (draft), [Beacon Targeting Framework (Candidate)](../specifications/beacon-targeting-framework-candidate.md) (draft). |
+| [Product](../product/README.md)               | [Official plugin onboarding](../product/official-plugin-onboarding.md) (normative), [Plugin Roadmap](../product/plugin-roadmap.md) (draft), [Bundled-Plugin Split Decision (OQ-053)](../product/bundled-plugin-split-decision.md) (accepted).                                             |
+| [Extensibility](../extensibility/README.md)   | [Plugin system](../extensibility/plugin-system.md) (draft), [Plugin package management](../extensibility/package-management.md) (draft), [Lua UI Component Model (Candidate)](../extensibility/lua-ui-component-model-candidate.md) (draft).                                              |
 
 ### Plugin contract and framework direction
 
@@ -95,6 +95,19 @@ direction accepts no APIs and claims no implementation. A complementary
 single-entry register of the plugin-side contract, framework, and artifact
 direction is recorded in
 [Plugin contract direction (candidate)](../specifications/plugin-contract-direction.md).
+
+Two further candidate directions build on that layering. The
+[Beacon Targeting Framework (Candidate)](../specifications/beacon-targeting-framework-candidate.md)
+records the workspace-wide spatial and semantic targeting engine, its
+`Action × Target` model, provider tiers, scopes, label allocation, and security
+posture; the terminal-side core engine and the terminal-side UI runtime remain
+owner-pending. The
+[Lua UI Component Model (Candidate)](../extensibility/lua-ui-component-model-candidate.md)
+records the five-level Lua UI hierarchy, composition from minimal primitives,
+theming and accessibility directions, and the candidate panel service model
+(`PanelProvider`, `ActivityStack`, decoupled lifecycle, attention requests).
+Both are draft candidate direction with no accepted interface and no
+implementation claim.
 
 ## Per-plugin standard page set
 

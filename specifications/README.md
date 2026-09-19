@@ -29,9 +29,10 @@ tables.
 
 ## Draft specifications
 
-| Specification                                                         | Scope                                                                                                     | Status |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------ |
-| [Plugin contract direction (candidate)](plugin-contract-direction.md) | Candidate plugin-side public-contract, framework-layering, and artifact direction; no accepted interface. | Draft  |
+| Specification                                                                     | Scope                                                                                                     | Status |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------ |
+| [Plugin contract direction (candidate)](plugin-contract-direction.md)             | Candidate plugin-side public-contract, framework-layering, and artifact direction; no accepted interface. | Draft  |
+| [Beacon Targeting Framework (Candidate)](beacon-targeting-framework-candidate.md) | Candidate workspace-wide spatial and semantic targeting framework; no accepted provider or dispatch API.  | Draft  |
 
 Research-type pages preserve candidate direction and observations authored in
 this repository; they never become a decision or an implementation claim by
