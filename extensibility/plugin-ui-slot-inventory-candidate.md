@@ -56,9 +56,9 @@ surface); token names (terminal-side theme token contract).
   exclusive `tabline` claim, composing status components, and the rule that
   host layout owns placement and decoration.
 - [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md)
-  (accepted): the `RichBlock` replacement rule and the bounded budgets
-  (2048 nodes per block, depth 32, 256 KiB text, 2 MiB per terminal, 64 blocks
-  per terminal).
+  (accepted): the `RichBlock` replacement rule and the accepted scene limits
+  (SCN-1..SCN-5: 2048 nodes per block, depth 32, 256 KiB text per block, 2 MiB
+  aggregated rich bytes per terminal, 64 blocks per terminal).
 - [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) (accepted):
   manifest capabilities, deny-by-default grants, lazy triggers, and the
   three-level queue budgets.
@@ -85,32 +85,34 @@ surface); token names (terminal-side theme token contract).
 The accepted slot set is closed at eight slots. This inventory adds purpose,
 multiplicity, and bounds; it does not add or rename a slot.
 
-| Slot         | Purpose                                              | Multiplicity                 | Required capability | Bounds                                                                          |
-| ------------ | ---------------------------------------------------- | ---------------------------- | ------------------- | ------------------------------------------------------------------------------- |
-| `terminal`   | Content composed with a terminal leaf's presentation | Composing, bounded           | `ui.rich`           | Composes with the leaf; never replaces grid, cursor, or scrollback presentation |
-| `top`        | A strip along the top edge of the window area        | Composing, bounded           | —                   | One row-band; host layout owns thickness and placement                          |
-| `bottom`     | A strip along the bottom edge of the window area     | Composing, bounded           | —                   | One row-band; the Bar/StatusBar region consumes this slot where configured      |
-| `left`       | A strip along the left edge                          | Composing, bounded           | —                   | One column-band; reserved for the rail direction where configured               |
-| `right`      | A strip along the right edge                         | Composing, bounded           | —                   | One column-band                                                                 |
-| `tabline`    | The tab strip surface                                | **Exclusive**                | —                   | One declarant; a second claim is a conflict                                     |
-| `statusline` | Status components composed in the Bar                | Composing, bounded           | —                   | Status module budget: 8 components x 64 chars, 128 total, per the terminal side |
-| `overlay`    | Presentation-only, non-focusable declarative popups  | Layered, bounded and ordered | `ui.overlay`        | Bounded text; never focusable; never mutates a view or terminal                 |
+| Slot         | Purpose                                              | Multiplicity                 | Required capability      | Bounds                                                                                            |
+| ------------ | ---------------------------------------------------- | ---------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------- |
+| `terminal`   | Content composed with a terminal leaf's presentation | Composing, bounded           | `ui.rich`                | Composes with the leaf; never replaces grid, cursor, or scrollback presentation                   |
+| `top`        | A strip along the top edge of the window area        | Composing, bounded           | `ui.rich`                | One row-band; host layout owns thickness and placement                                            |
+| `bottom`     | A strip along the bottom edge of the window area     | Composing, bounded           | `ui.rich`                | One row-band; the Bar/StatusBar region consumes this slot where configured                        |
+| `left`       | A strip along the left edge                          | Composing, bounded           | `ui.rich`                | One column-band; reserved for the rail direction where configured                                 |
+| `right`      | A strip along the right edge                         | Composing, bounded           | `ui.rich`                | One column-band                                                                                   |
+| `tabline`    | The tab strip surface                                | **Exclusive**                | `ui.rich`                | One declarant; a second claim is a conflict                                                       |
+| `statusline` | Status components composed in the Bar                | Composing, bounded           | `ui.rich`                | Capped total segment count with bounded per-module lengths, per the terminal-side status contract |
+| `overlay`    | Presentation-only, non-focusable declarative popups  | Layered, bounded and ordered | `ui.rich` + `ui.overlay` | Bounded text; never focusable; never mutates a view or terminal                                   |
 
 Rules for the inventory:
 
 1. **The set is closed and the names are accepted.** This inventory adds no
    slot and changes no spelling; a new slot family requires an RFC revision of
    the accepted surface.
-2. **Every contribution consumes one `RichBlock`.** A mounted subtree counts
-   against the accepted per-terminal block budget (64) and per-block bounds
-   (2048 nodes, depth 32, 256 KiB), regardless of slot.
+2. **Every contribution is a bounded scene block.** A mounted subtree is a
+   `RichBlock` and respects the accepted scene limits (SCN-1..SCN-5: 2048 nodes,
+   depth 32, and 256 KiB per block, with the aggregated ceilings where the host
+   surface holds blocks for a terminal); no slot exempts a contribution from the
+   per-block bounds.
 3. **Bounds are per contributor unless stated otherwise.** A composing slot's
    bound is an aggregate; contributions beyond it fail closed rather than
    crowding out an existing contributor.
-4. **Required capability is per slot, not per contributor choice.** The
-   `terminal` slot requires `ui.rich` because it composes rich content; the
-   `overlay` slot requires `ui.overlay`; a plugin without the grant is denied at
-   mount, not at first render.
+4. **The `ui.rich` gate covers every slot.** The accepted L2 UI gate requires
+   `ui.rich` for `bitty.ui.mount`/`bitty.ui.update` contributions regardless of
+   slot, and the `overlay` slot additionally requires `ui.overlay`; a plugin
+   without the required grant is denied at mount, not at first render.
 5. **Placement stays host-owned.** A plugin never learns or sets absolute
    coordinates, thickness, or decoration; the accepted rule that host layout
    owns placement and decoration applies to all eight slots.
@@ -148,7 +150,7 @@ Rules for the inventory:
 - The terminal slot composes with a terminal leaf's presentation and can never
   replace grid presentation, cursor, or scrollback — the accepted invariant that
   presentation never becomes Terminal Truth.
-- The statusline slot's module budget is the terminal-side status contract's
+- The `statusline` slot's module budget is the terminal-side status contract's
   budget; this record does not widen it.
 - The overlay slot consumes the terminal-side overlay tiers through the host
   surface; a plugin never selects a tier or a modal kind, and the single modal
