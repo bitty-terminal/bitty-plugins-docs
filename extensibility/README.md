@@ -23,7 +23,7 @@ lives in the linked pages; this index carries no duplicate normative prose.
 
 ## Authority and status
 
-Both pages are pre-implementation contracts. Shared cross-project
+These pages are pre-implementation contracts. Shared cross-project
 governance stays in
 [bitty-docs](https://github.com/bitty-terminal/bitty-docs) and is linked,
 never copied.

@@ -14,8 +14,9 @@ sidebar_order: 28
 > Status: **draft candidate** — not **Accepted**, not **Verified**, not
 > **Compatible**, and not normative. The accepted
 > [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) fixes
-> the closed slot set, the `SceneNode` subset, the handle model, and which slots
-> require `ui.rich` or `ui.overlay`. What it does not fix is the **per-slot
+> the closed slot set, the `SceneNode` subset, the handle model, and the L2
+> capability gate (`ui.rich`; `ui.overlay` for the overlay slot). What it does
+> not fix is the **per-slot
 > inventory**: what each slot is for, its bounds, how many contributors it
 > admits, and how a conflict resolves. The
 > [Plugin Roadmap](../product/plugin-roadmap.md) records slot inventory and
@@ -125,21 +126,31 @@ Rules for the inventory:
 1. **Exclusive slots reject the second claimant.** A second `tabline` claim
    fails with a typed denial naming the current declarant; the incumbent is
    untouched and the newcomer is not partially mounted.
-2. **Composing slots admit contributors in a defined order.** Contributions
-   compose in declaration order (manifest then mount order), and the aggregate
-   bound is enforced at admission: a claim that would exceed the bound fails
-   closed with a typed error.
+2. **Composing slots admit contributors in a deterministic declared order.**
+   Contributions compose in a declared order — the specific tie-break (manifest
+   order, mount order, or a declared priority) is an open point (see Open
+   points), and whatever tie-break is chosen, composition is a pure function of
+   declaration, never of render timing. The aggregate bound is enforced at
+   admission: a claim that would exceed the bound fails closed with a typed
+   error.
 3. **Layered slots order deterministically.** Overlay contributions carry a
-   declared relative order (or fall back to mount order); paint order is a pure
-   function of the declared order, never of render timing.
+   declared relative order; the tie-break for equal declarations is the same
+   open point as composing slots. Paint order is a pure function of the
+   declared order, never of render timing.
 4. **A denied contribution changes nothing.** A conflict or bound violation
    leaves the slot's existing contributors byte-identical and reports a
    diagnostic naming the slot, the claimant, and the reason.
 5. **Conflicts are never resolved by silent replacement.** A later contribution
-   never displaces an earlier one without the earlier one being explicitly
-   unmounted by its owner or by the user.
-6. **Reclaiming is explicit.** A plugin may unmount its own handle; unmounting
-   another plugin's handle is not authorized by any v1 capability.
+   never displaces an earlier one. An earlier contribution leaves a slot only
+   when its owner releases its handle (the candidate addition in rule 6) or
+   when its generation ends, which is the accepted disposition.
+6. **Reclaiming is explicit.** Accepted v1 exposes `bitty.ui.mount` and
+   `bitty.ui.update` only; a handle is generation-owned and disposed with its
+   generation, so an existing contribution normally leaves a slot when its
+   owner's generation ends. This record proposes one candidate addition: a
+   contributor may release its own handle explicitly. Unmounting another
+   plugin's handle is not authorized by any v1 capability and is not proposed
+   here.
 
 ## Relation to host surfaces
 
@@ -155,9 +166,12 @@ Rules for the inventory:
 - The overlay slot consumes the terminal-side overlay tiers through the host
   surface; a plugin never selects a tier or a modal kind, and the single modal
   authority stays Core-owned.
-- Host layout may relocate or hide a host surface; a plugin's contribution
-  survives as a content source and is not re-mounted, matching the accepted
-  rule that the slot remains a content source when a host surface changes.
+- Host layout may relocate or hide a host surface; this record states that a
+  plugin's contribution survives as a content source and the plugin is not
+  asked to re-mount it. The accepted surface states the corresponding
+  disposition for the overlay slot: if the Panel RFC redefines overlays as
+  focusable surfaces, the slot remains a content source and the panel contract
+  owns focus and routing (the accepted LUA-OQ-11 disposition).
 
 ## Security review
 
@@ -188,13 +202,13 @@ admits a new node kind into a slot.
 
 ## Alternatives considered
 
-| Alternative                                               | Trade-off                                                                  | Disposition                             |
-| --------------------------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------- |
-| Leave composition implicit and discover it in integration | No document; every conflict becomes an incident                            | Rejected — this is the gap OQ-056 names |
-| Let a later contributor replace an earlier one            | Simplifies "last wins" mental model; silently drops user-visible content   | Rejected — explicit unmount is required |
-| Make `tabline` composing like the others                  | Uniform rule; breaks the accepted exclusive claim                          | Rejected — accepted exclusivity stands  |
-| Give slots per-plugin absolute geometry                   | Maximal layout freedom; contradicts host-owned placement and invites leaks | Rejected                                |
-| Add new slots for panel chrome now                        | Convenient; the accepted set is closed until an RFC revision               | Rejected                                |
+| Alternative                                               | Trade-off                                                                  | Disposition                                 |
+| --------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------- |
+| Leave composition implicit and discover it in integration | No document; every conflict becomes an incident                            | Rejected — this is the gap OQ-056 names     |
+| Let a later contributor replace an earlier one            | Simplifies "last wins" mental model; silently drops user-visible content   | Rejected — explicit reclamation is required |
+| Make `tabline` composing like the others                  | Uniform rule; breaks the accepted exclusive claim                          | Rejected — accepted exclusivity stands      |
+| Give slots per-plugin absolute geometry                   | Maximal layout freedom; contradicts host-owned placement and invites leaks | Rejected                                    |
+| Add new slots for panel chrome now                        | Convenient; the accepted set is closed until an RFC revision               | Rejected                                    |
 
 ## Affected contracts
 
