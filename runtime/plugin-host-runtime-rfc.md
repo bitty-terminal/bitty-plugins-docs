@@ -23,6 +23,16 @@ sidebar_order: 30
 > Draft -> experimental review evidence -> Accepted -> normative; only
 > Accepted or normative documents authorize shipped behavior.
 
+Successor direction (2026-09-20): the plugin VM behind the `bitty-lua` seam
+moves from `piccolo` toward **Phodopus**, the sandbox-first successor fork, per
+[ADR 0012](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0012-phodopus-runtime.md),
+which refines the `piccolo` retention in
+[ADR 0005](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0005-lua-pins-and-stdlib.md).
+The host bridge boundary, per-plugin VM lifecycle, host-service wiring, and the
+current `bitty-lua` `piccolo` 0.3.3 pin specified below are unchanged; the seam
+stays accurate until a migration task lands. This refinement adds direction
+only and promotes no status.
+
 ## Purpose and scope
 
 The `bitty` live campaign `CTX-0320` reported defect D4 (P0): the plugin host is
@@ -58,7 +68,10 @@ Out of scope, owned elsewhere and only referenced here:
 - Restricted standard library, rooted module resolution rules, diagnostics
   classes ([Lua Runtime RFC](lua-runtime-rfc.md), accepted), the `mlua` versus
   `piccolo` split and pins
-  ([ADR 0005](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0005-lua-pins-and-stdlib.md)), environment
+  ([ADR 0005](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0005-lua-pins-and-stdlib.md);
+  plugin-VM successor direction is Phodopus per
+  [ADR 0012](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0012-phodopus-runtime.md),
+  current `piccolo` pin accurate until migration), environment
   reads ([ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md)), and the
   Config VM async boundary ([ADR 0007](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0007-async-gc.md)).
 - Resource ceilings and their numbers
@@ -242,7 +255,10 @@ Unloaded -> Loading -> Activating -> Active -> Suspended -> Disposing -> Dispose
 - A `piccolo` VM is not `Send`. A VM is created, executed, suspended, and
   disposed on a single owning executor thread. Host service handles that must
   cross thread boundaries are `Send` and the VM holds only generation-local
-  handles or task ids.
+  handles or task ids. The successor runtime direction is Phodopus per
+  [ADR 0012](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0012-phodopus-runtime.md),
+  which preserves this single-owner-thread boundary; the current `piccolo` VM
+  remains accurate until a migration task lands.
 - Failure is contained: a bridge or callback failure suspends or disposes only
   the owning generation and never crashes the host.
 

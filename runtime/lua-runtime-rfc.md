@@ -27,19 +27,23 @@ beyond the accepted contract.
 
 [ADR 0004](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0004-upstream-dependencies.md) has selected
 `mlua` with Lua 5.4 as the P0 baseline (`vendored` Lua 5.4 sources built with
-the core crate; `piccolo` remains a watch-list candidate per the ADR). This RFC
+the core crate; `piccolo` was the watch-list candidate per the ADR). This RFC
 does not re-decide the runtime choice; it specifies the sandbox, standard
 library subset, module resolution, diagnostics, limits, and lifecycle contract
 built on that baseline. That authority remains unchanged per the Wave-C closure
 review on 2026-08-27 (CTX-0047) and independent security-auditor review.
 
-A candidate successor direction for the plugin VM is recorded in the
-[Phodopus Plugin Runtime (Candidate)](phodopus-runtime-candidate.md): it
+The plugin-VM successor direction is now Phodopus, the sandbox-first fork of
+`piccolo`, per [ADR 0012](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0012-phodopus-runtime.md)
+(accepted 2026-09-20), which refines the `piccolo` watch-list clause without
+rewriting the accepted baseline. The plugin-side consequences are recorded in
+the [Phodopus Plugin Runtime (Candidate)](phodopus-runtime-candidate.md): it
 refines this RFC's module-resolution, sandbox-quota, pattern, and async
 consequences at the design level only. The accepted runtime choice, sandbox,
 restricted standard-library subset, rooted module search, source-only loading,
-and diagnostics contract above are unchanged, and that candidate promotes no
-status or compatibility promise.
+and diagnostics contract above are unchanged, the accepted `mlua`/Lua 5.4
+baseline stands, and the current `bitty-lua` `piccolo` pin remains accurate
+until a migration task lands.
 
 It targets OQ-009; it feeds, but does not decide, OQ-010 (configuration model),
 OQ-011/OQ-012 (Plugin API v1 and capabilities), OQ-014 (isolation and resource
@@ -70,7 +74,7 @@ Normative sources this specification must not weaken:
 - [Core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md): security policy cannot
   be delegated to Lua; plugins never enter the terminal, render, or input hot
   paths.
-- [Technology strategy](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/project/technology-strategy.md) and [ADR 0004](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0004-upstream-dependencies.md): `mlua` with Lua 5.4 is the P0 baseline (`vendored` Lua 5.4 sources built with the core crate; `piccolo` remains a watch-list candidate). Required validation covering Windows/macOS/Linux/BSD builds, sandbox capability, VM cost, and async/Send requirements still applies; Lua 5.4 is preferred over LuaJIT.
+- [Technology strategy](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/project/technology-strategy.md) and [ADR 0004](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0004-upstream-dependencies.md): `mlua` with Lua 5.4 is the P0 baseline (`vendored` Lua 5.4 sources built with the core crate; `piccolo` was the watch-list candidate). The plugin-VM successor direction is Phodopus per [ADR 0012](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0012-phodopus-runtime.md), which refines that watch-list clause. Required validation covering Windows/macOS/Linux/BSD builds, sandbox capability, VM cost, and async/Send requirements still applies; Lua 5.4 is preferred over LuaJIT.
 - [Threat model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md): T-06 (VM escape via unrestricted
   libraries) and T-14 (unsafe/FFI defects), with risks R-006, R-007, and R-018
   in the [risk register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/risk-register.md).
