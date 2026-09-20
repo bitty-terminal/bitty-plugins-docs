@@ -485,10 +485,26 @@ terminal-side UI runtime contract.
    mutation API, and the candidate P3 appearance direction is tracked under
    register entry OQ-044.
 
+**Attention aggregation direction (candidate).** The counting half of the
+part-4 protocol — where a request is registered, deduplicated, ordered, and
+expired — belongs at a host-side point rather than with the requesting
+plugin: no plugin sees the full request set, so a per-requester counter
+cannot enforce the never-escalate rule against other requesters. This
+narrows the direction of the recorded open question in the terminal UI
+corpus ("whether attention is a plugin counter or a host service",
+[UI runtime candidate](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/ui-runtime-candidate.md))
+while the ownership decision stays open. The candidate split: participants
+raise one request primitive; a host-side aggregation point registers,
+deduplicates, orders, and expires requests under a host-admitted budget; the
+terminal-side notification surface renders what the aggregation point
+admits. Which owner provides the aggregation point, the budget shape, and
+expiry semantics stay open.
+
 **Open.** The `PanelProvider` registration and mount contract, the capability
 mapping for panel creation, the activity push/pop semantics and session
-survival rules, the attention-request budget and user-surface shape, and the
-panel chrome slot inventory and rule-request schema are undecided. They are
+survival rules, the attention-request budget and user-surface shape,
+aggregation ownership, and the panel chrome slot inventory and rule-request
+schema are undecided. They are
 owner-pending with the terminal-side panel contract (the
 [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md#open-questions)
 `RFC-OQ-1`..`RFC-OQ-9` questions) and with register entry OQ-056 for capability
@@ -532,8 +548,9 @@ An accepted revision would need at least:
 7. Accessibility tests: default role, name, activation, disabled, and busy
    bindings for every standard component.
 8. Panel tests: panel close does not unload the plugin; activity push/pop
-   preserves the hosted session; attention requests are bounded and never
-   force focus; chrome rule requests resolve deterministically.
+   preserves the hosted session; attention requests are bounded, never force
+   focus, and aggregate through the host-side point rather than
+   per-requester counters; chrome rule requests resolve deterministically.
 9. Negative capability tests: a component attempting an unadmitted host
    operation fails closed; presentation-only violations are rejected.
 
@@ -592,8 +609,9 @@ decided in the owning contract before any direction here becomes contract:
    especially `RFC-OQ-2`, `RFC-OQ-3`, and `RFC-OQ-5`).
 8. Activity push/pop semantics and session survival across panel presentation
    changes.
-9. The attention-request budget, user-surface shape, and notification
-   composition with the accepted `platform.notify` capability.
+9. The attention-request budget, user-surface shape, aggregation ownership,
+   and notification composition with the accepted `platform.notify`
+   capability.
 10. Panel chrome slot inventory, rule-request schema, and the deterministic
     conflict-resolution rule.
 11. Capability dimensions and the API version that would carry any of the
