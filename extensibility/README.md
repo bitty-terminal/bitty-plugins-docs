@@ -14,15 +14,16 @@ sidebar_order: 10
 Index of the plugin-ecosystem extensibility contracts. Normative detail
 lives in the linked pages; this index carries no duplicate normative prose.
 
-| Document                                                                  | Status | Purpose                                                                                      |
-| ------------------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------- |
-| [Plugin system](plugin-system.md)                                         | Draft  | Plugin boundaries, isolation, composition, capabilities, and lifecycle.                      |
-| [Plugin package management](package-management.md)                        | Draft  | Manifests, sources, updates, rollback, and trust.                                            |
-| [Lua UI Component Model (Candidate)](lua-ui-component-model-candidate.md) | Draft  | Candidate five-level Lua UI component ecosystem, theming, accessibility, and panel services. |
+| Document                                                                      | Status | Purpose                                                                                                     |
+| ----------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------- |
+| [Plugin system](plugin-system.md)                                             | Draft  | Plugin boundaries, isolation, composition, capabilities, and lifecycle.                                     |
+| [Plugin package management](package-management.md)                            | Draft  | Manifests, sources, updates, rollback, and trust.                                                           |
+| [Lua UI Component Model (Candidate)](lua-ui-component-model-candidate.md)     | Draft  | Candidate five-level Lua UI component ecosystem, theming, accessibility, and panel services.                |
+| [Plugin UI Slot Inventory (Candidate)](plugin-ui-slot-inventory-candidate.md) | Draft  | Candidate per-slot purpose, multiplicity, bounds, and conflict resolution for the accepted closed slot set. |
 
 ## Authority and status
 
-Both pages are pre-implementation contracts. Shared cross-project
+These pages are pre-implementation contracts. Shared cross-project
 governance stays in
 [bitty-docs](https://github.com/bitty-terminal/bitty-docs) and is linked,
 never copied.
