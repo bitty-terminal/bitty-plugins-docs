@@ -609,8 +609,9 @@ decided in the owning contract before any direction here becomes contract:
    especially `RFC-OQ-2`, `RFC-OQ-3`, and `RFC-OQ-5`).
 8. Activity push/pop semantics and session survival across panel presentation
    changes.
-9. The attention-request budget, user-surface shape, and notification
-   composition with the accepted `platform.notify` capability.
+9. The attention-request budget, user-surface shape, aggregation ownership,
+   and notification composition with the accepted `platform.notify`
+   capability.
 10. Panel chrome slot inventory, rule-request schema, and the deterministic
     conflict-resolution rule.
 11. Capability dimensions and the API version that would carry any of the
