@@ -447,6 +447,41 @@ reading conflicts with the accepted OQ-028 HTTPS-index contract, that reading
 is candidate and needs an RFC amendment; this section adds no new registry
 mechanism.
 
+### Candidate remote capability boundary: host infrastructure, plugin consumption
+
+Status: **candidate direction, non-normative** (remote-infrastructure
+direction; companion to the terminal-platform candidate record
+[Remote Infrastructure and Remote Client](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/remote-infrastructure-candidate.md),
+which records the transport, session, service, and device-grant model behind
+it). This section records only the plugin-side consequence and adds no accepted
+surface.
+
+The boundary is the mechanism-versus-policy split this corpus records
+everywhere: the network implementation belongs to the Rust host side, not to
+Lua. A plugin never builds transport, device identity, NAT traversal, relay, or
+push delivery; it consumes selected host surfaces and stays unaware of QUIC,
+relay, push gateways, NAT traversal, and TLS behind them.
+
+Two surfaces stand in for the boundary; the first is already listed on the
+accepted SDK surface and the second is candidate direction with an illustrative
+spelling:
+
+- **Notification.** Delivery stays the host's problem: the accepted
+  `bitty.notify.show` platform-notification primitive keeps its shape and its `platform.notify` capability gate, while
+  the remote direction only widens where a host may deliver it (an online
+  device over the remote session, an offline device through the platform push
+  gateways). No plugin-visible payload shape changes.
+- **Remote event publish (candidate).** A publish-style call
+  (`bitty.remote.publish` as an illustrative spelling) would let a plugin
+  announce domain state (for example a container status summary) to the host
+  remote event system; payload shapes, scopes, and consent requirements are
+  undecided.
+
+Remote availability never widens plugin authority: publishing a remote event
+is a host-mediated capability under the plugin's own grant, exactly as its
+other host calls are, and a device grant on the remote side adds no plugin
+authority.
+
 ## Performance and observability
 
 Status: **accepted direction.**
@@ -570,6 +605,9 @@ receive ADRs and acceptance evidence.
 - What are the `bitty.http` response, timeout, and allowlist semantics, and
   the strict-form secrets contract (`bitty.secrets.get`,
   `authenticated_request`)?
+- Which host remote surfaces are plugin-visible (notification delivery and a
+  candidate event-publish call), with which payload shapes, scopes, and
+  consent, whether remote device events may be subscribed to, and how remote delivery composes with the accepted notification rate-governance rule (`RC-8`, defined by the Isolation Resource RFC and reused by the plugin host runtime contract)?
 - Which presentation contributions compose, and how are decoration ordering and
   replacement ownership represented?
 - What is the supported service-version model: one provider version, multiple
