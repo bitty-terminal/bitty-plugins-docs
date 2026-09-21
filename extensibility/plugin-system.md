@@ -467,7 +467,7 @@ accepted SDK surface and the second is candidate direction with an illustrative
 spelling:
 
 - **Notification.** Delivery stays the host's problem: the accepted
-  `bitty.notify.show` platform-notification primitive keeps its shape, while
+  `bitty.notify.show` platform-notification primitive keeps its shape and its `platform.notify` capability gate, while
   the remote direction only widens where a host may deliver it (an online
   device over the remote session, an offline device through the platform push
   gateways). No plugin-visible payload shape changes.
@@ -479,13 +479,8 @@ spelling:
 
 Remote availability never widens plugin authority: publishing a remote event
 is a host-mediated capability under the plugin's own grant, exactly as its
-other host calls are, and a device grant on the remote side transfers no
-plugin authority in either direction.
-
-**Open.** Which host remote surfaces are plugin-visible at all; the publish
-call's payload schema and consent; whether a plugin may subscribe to remote
-device events; and how remote delivery composes with the accepted notification
-rate-governance rule (RC-8) of the plugin host runtime contract.
+other host calls are, and a device grant on the remote side adds no plugin
+authority.
 
 ## Performance and observability
 
@@ -612,7 +607,7 @@ receive ADRs and acceptance evidence.
   `authenticated_request`)?
 - Which host remote surfaces are plugin-visible (notification delivery and a
   candidate event-publish call), with which payload shapes, scopes, and
-  consent, and whether remote device events may be subscribed to?
+  consent, whether remote device events may be subscribed to, and how remote delivery composes with the accepted notification rate-governance rule (`RC-8`, defined by the Isolation Resource RFC and reused by the plugin host runtime contract)?
 - Which presentation contributions compose, and how are decoration ordering and
   replacement ownership represented?
 - What is the supported service-version model: one provider version, multiple
