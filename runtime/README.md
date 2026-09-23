@@ -33,9 +33,10 @@ copied.
 
 ## Contracts
 
-| Document                                                             | Status   | Purpose                                                                            |
-| -------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------- |
-| [Plugin Host Runtime RFC](plugin-host-runtime-rfc.md)                | Accepted | Runtime host bridge, per-plugin VM lifecycle, and host services.                   |
-| [Lua Runtime RFC](lua-runtime-rfc.md)                                | Accepted | Lua runtime, sandbox, standard-library subset, and module search rules.            |
-| [Isolation and Resource RFC](isolation-resource-rfc.md)              | Accepted | Isolation boundaries, resource ceilings, and failure semantics.                    |
-| [Phodopus Plugin Runtime (Candidate)](phodopus-runtime-candidate.md) | Draft    | Candidate plugin-side Phodopus successor-runtime direction; no accepted interface. |
+| Document                                                                             | Status   | Purpose                                                                                                              |
+| ------------------------------------------------------------------------------------ | -------- | -------------------------------------------------------------------------------------------------------------------- |
+| [Plugin Host Runtime RFC](plugin-host-runtime-rfc.md)                                | Accepted | Runtime host bridge, per-plugin VM lifecycle, and host services.                                                     |
+| [Lua Runtime RFC](lua-runtime-rfc.md)                                                | Accepted | Lua runtime, sandbox, standard-library subset, and module search rules.                                              |
+| [Isolation and Resource RFC](isolation-resource-rfc.md)                              | Accepted | Isolation boundaries, resource ceilings, and failure semantics.                                                      |
+| [Phodopus Plugin Runtime (Candidate)](phodopus-runtime-candidate.md)                 | Draft    | Candidate plugin-side Phodopus successor-runtime direction; no accepted interface.                                   |
+| [Capability Architecture Doctrine (Candidate)](capability-architecture-candidate.md) | Draft    | Candidate capability doctrine: provider identity, sandbox formula, shared services, quotas, lifecycle, lazy loading. |
