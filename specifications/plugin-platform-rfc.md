@@ -166,6 +166,10 @@ commands = ["xuepoo.markdown:toggle"]
 # commands = [{ id = "xuepoo.markdown:toggle", args_schema = {...}, result_schema = {...} }]
 events = ["terminal.cwd-changed"]
 claims = ["tabline"]
+
+[tools.git]                   # optional; accepted Layer-2 system-CLI slice
+required = true               # boolean; true gates activation on git presence and range
+version = ">=2.30"            # version range; max 128 bytes
 ```
 
 Accepted validation rules:
@@ -208,6 +212,16 @@ Accepted validation rules:
    [Package Follow-up RFC](../packaging/package-followup-rfc.md#prerelease-policy). No other
    table key is accepted. See the open reconciliation item below for the chosen
    shape rationale and implementation status.
+9. The optional `[tools.git]` table declares the accepted Layer-2 system-CLI
+   slice recorded by the
+   [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md#accepted-toolsgit-contract-v1)
+   (CTX-0425): `git` is the only accepted tool and `required`/`version` are
+   the only accepted keys. `required = true` gates activation fail-closed
+   when `git` is absent or outside `version`; `required = false` declares an
+   optional dependency and never gates activation. Raising `required` from
+   `false` to `true` is a capability increase whose grant must be
+   re-confirmed. Any other `[tools.*]` table fails closed until its own slice
+   is accepted.
 
 > **Open reconciliation item — manifest dependency prerelease TOML shape.**
 > The accepted [Package Follow-up RFC](../packaging/package-followup-rfc.md#prerelease-policy)
