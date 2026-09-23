@@ -29,10 +29,11 @@ tables.
 
 ## Draft specifications
 
-| Specification                                                                     | Scope                                                                                                     | Status |
-| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------ |
-| [Plugin contract direction (candidate)](plugin-contract-direction.md)             | Candidate plugin-side public-contract, framework-layering, and artifact direction; no accepted interface. | Draft  |
-| [Beacon Targeting Framework (Candidate)](beacon-targeting-framework-candidate.md) | Candidate workspace-wide spatial and semantic targeting framework; no accepted provider or dispatch API.  | Draft  |
+| Specification                                                                     | Scope                                                                                                                     | Status |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------ |
+| [Plugin contract direction (candidate)](plugin-contract-direction.md)             | Candidate plugin-side public-contract, framework-layering, and artifact direction; no accepted interface.                 | Draft  |
+| [Beacon Targeting Framework (Candidate)](beacon-targeting-framework-candidate.md) | Candidate workspace-wide spatial and semantic targeting framework; no accepted provider or dispatch API.                  | Draft  |
+| [SDK build plan proposal (Phase 0)](sdk-build-plan-proposal.md)                   | Candidate Phase 0 SDK build direction: freezable surface, churning scope, layouts, and sequencing; no accepted interface. | Draft  |
 
 Research-type pages preserve candidate direction and observations authored in
 this repository; they never become a decision or an implementation claim by
