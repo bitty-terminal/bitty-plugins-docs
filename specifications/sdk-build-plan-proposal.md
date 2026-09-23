@@ -112,11 +112,29 @@ test may assert it.
 
 ## S-3 Host-parity condition for four accepted v1 namespaces
 
-Four accepted v1 namespaces (`keymaps`, `services`, `tasks`, `env`) are
-candidate-marked `pending-host` until the host bridge wires them or records
-an explicit deferral with per-namespace diagnostics. The SDK typings may
-declare them; SDK conformance must skip behavior assertions for them so the
-mock-host parity suite never asserts behavior the host cannot perform. The
+Four accepted v1 namespaces (`keymaps`, `services`, `tasks`, `env`) were
+candidate-marked `pending-host` until the host bridge wired them or recorded
+an explicit deferral with per-namespace diagnostics. That condition is now
+partially closed, incrementally, by `bitty` CTX-0707 (PR #1303, in
+`origin/main` at `c01f538`, read-only inspection; parity suite
+`crates/bitty-lua/tests/lua_parity.rs`, 13 tests):
+
+- WIRED as bridge captures: `bitty.keymaps.suggest` (LUA-OQ-5; suggestion
+  capture with `when = "global"` default, 128-suggestion cap, runtime applies
+  after activation) and `bitty.tasks.spawn`/`cancel` (LUA-OQ-9, RC-4;
+  integer handles under the 64-live-task cap with typed `E_BUDGET_TASK`).
+- DEFERRED with typed `E_NOT_IMPLEMENTED`: `bitty.services.get`/`provide`
+  (LUA-OQ-8; consumer resolution and `E_SERVICE_GONE` lifecycle need host
+  backends that do not exist yet) and `bitty.env.get`/`has` (host allowlist
+  backend not landed).
+- Ruled v1-OUT: `bitty.process.spawn` stays a consent-gated extra for
+  first-party needs with no `api_version` stability promise; SDK conformance
+  must not assert it as v1 surface.
+
+The SDK typings may declare all four namespaces; SDK conformance may assert
+behavior only for the wired two (against the host parity tests, never
+invented) and must keep skipping behavior assertions for the deferred two so
+the mock-host parity suite never asserts behavior the host cannot perform. The
 wiring itself is terminal-core work and is out of scope here.
 
 ## S-4 Candidate SDK and template layouts
@@ -205,6 +223,9 @@ separately scoped task in the owning repository.
 
 1. **Close the S-3 parity condition first (terminal-core side).** Wire the
    pending-host namespaces into the bridge or record explicit deferrals.
+   Partly done incrementally by `bitty` CTX-0707/#1303 (`keymaps` + `tasks`
+   wired, `services` + `env` deferred, `process.spawn` ruled v1-OUT); the
+   deferred two still gate v1-completeness claims for their surface.
    Nothing else in the SDK can claim v1-completeness before this. Depends
    on: accepted text already present, no RFC wait.
 2. **Freeze the SDK generation pipeline.** One-way codegen, host-parity
@@ -242,7 +263,8 @@ separately scoped task in the owning repository.
 - The S-4 layouts are checked to add no new Lua spelling beyond the
   accepted v1 set consolidated in S-5.
 - The S-3 pending-host marking is checked to skip behavior assertions for
-  unwired namespaces.
+  the deferred namespaces (`services`, `env`); the wired namespaces
+  (`keymaps`, `tasks`) assert against host parity tests only.
 - `just check` passes locally on the delivery branch.
 
 ## Alternatives considered
@@ -273,6 +295,9 @@ separately scoped task in the owning repository.
 
 - Whether the pending-host namespaces (S-3) land together or incrementally
   decides whether v1 conformance ships whole or gated per namespace.
+  Answered incrementally by `bitty` CTX-0707/#1303: conformance gates per
+  namespace (wired `keymaps`/`tasks` assertable, deferred `services`/`env`
+  skipped).
 - The SDK needs a revision-refresh policy so accepted-text updates reach
   the machine surface and typings without drift.
 
