@@ -23,9 +23,10 @@ tables.
 
 ## Accepted specifications
 
-| Specification                                 | Closes                 | Status   |
-| --------------------------------------------- | ---------------------- | -------- |
-| [Plugin Platform RFC](plugin-platform-rfc.md) | OQ-011, OQ-012, OQ-013 | Accepted |
+| Specification                                                                        | Closes                 | Status   |
+| ------------------------------------------------------------------------------------ | ---------------------- | -------- |
+| [Plugin Platform RFC](plugin-platform-rfc.md)                                        | OQ-011, OQ-012, OQ-013 | Accepted |
+| [Plugin Manifest and Capability Grammar Authority](manifest-capability-authority.md) | #95, #96               | Accepted |
 
 ## Draft specifications
 
