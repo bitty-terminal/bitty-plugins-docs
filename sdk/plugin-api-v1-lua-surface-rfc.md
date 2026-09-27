@@ -143,7 +143,7 @@ pre-empting the panel contract.
    bounded message, file/line/column where available) before any side effect,
    consistent with [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md). The
    one carve-out is `bitty.env`: absent unless the manifest declares an
-   `env:<KEY>` capability, as
+   `env.read:<KEY>` capability, as
    [LUA-OQ-2 in ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-2-absent-versus-denied-namespaces)
    records.
 
@@ -177,7 +177,7 @@ excludes Levels 3 and 4.
 | L1 Control          | Included  | `bitty.settings.get` / `bitty.settings.set`                           | none; plugin-owned namespace                 |
 | L1 Control          | Included  | `bitty.store.get` / `bitty.store.set`                                 | none; quota-bounded                          |
 | L1 Control          | Included  | `bitty.notify.show`                                                   | `platform.notify`                            |
-| L1 Control          | Included  | `bitty.env.get` / `bitty.env.has` (already accepted in ADR 0006)      | `env:<KEY>` for plugins                      |
+| L1 Control          | Included  | `bitty.env.get` / `bitty.env.has` (already accepted in ADR 0006)      | `env.read:<KEY>` per plugin key              |
 | Cross-cutting       | Included  | `bitty.services.get` (consumer side)                                  | none; provider grants stay with the callee   |
 | L2 UI               | Included  | `bitty.ui.mount` / `bitty.ui.update` (declarative slot contributions) | `ui.rich`; `ui.overlay` for the overlay slot |
 | L2 UI / observation | Included  | `bitty.terminal.snapshot` (`scope? = "semantic"`, default)            | `terminal.semantic-read`                     |
@@ -308,11 +308,23 @@ gated by `platform.notify` and subject to host rate policy. The `bitty.env.*`
 contract is accepted in [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md)
 and is referenced, not redefined. Per
 [LUA-OQ-2](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-2-absent-versus-denied-namespaces),
-`bitty.env` is absent from the VM unless the manifest declares an `env:<KEY>`
-capability; when declared but not granted, its functions fail closed with
+`bitty.env` is absent from the VM unless the manifest declares an
+`env.read:<KEY>` capability (`env.read:PREFIX_*` for a prefix wildcard); when
+declared but not granted, its functions fail closed with
 `E_CAPABILITY_DENIED` and never enumerate keys. Key-level minimization is
 unchanged: with a valid grant, `bitty.env.get` for a non-allowlisted key
 returns `nil`, indistinguishable from an unset variable.
+
+The manifest capability spelling and the function names above are two
+different things. The accepted
+[Plugin Manifest and Capability Grammar Authority](../specifications/manifest-capability-authority.md)
+section 1 owns the canonical manifest spelling `env.read:<KEY>`, with
+`env.read:PREFIX_*` for a prefix wildcard and the bare `env.read:*` allow-all
+form rejected; the earlier short form `env:<KEY>` is rejected as well and
+must not appear in a manifest. That decision changes what a manifest
+declares, never the Lua surface: the function names above, `bitty.env.get`
+and `bitty.env.has`, are unchanged. A manifest declares `env.read:<KEY>`;
+Lua still calls `bitty.env.get`.
 
 ### UI contributions (L2)
 
@@ -619,6 +631,10 @@ dispositions are:
   resolutions for LUA-OQ-1 through LUA-OQ-12, ratified 2026-09-11.
 - [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) — accepted manifest,
   capabilities, namespace rules, event pipeline.
+- [Plugin Manifest and Capability Grammar Authority](../specifications/manifest-capability-authority.md)
+  — accepted capability grammar; owns the `env.read:<KEY>` environment
+  capability spelling, the `env.read:PREFIX_*` wildcard, and the rejection
+  of the short `env:<KEY>` form.
 - [Lua Runtime RFC](../runtime/lua-runtime-rfc.md) — accepted `bitty` host bridge, sandbox,
   module resolution, diagnostics.
 - [Core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) — ownership and
