@@ -365,8 +365,11 @@ Accepted baseline that this direction must not weaken:
 
 - `os.getenv` is denied in every Lua VM with a typed denial, not a silent
   `nil`; the only read path is the host-mediated `bitty.env.get` filtered
-  snapshot, and per-plugin reads require a declared `env:<KEY>` (or
-  `env:BITTY_*` patterned) capability plus user consent and audit.
+  snapshot, and per-plugin reads require a declared `env.read:<KEY>` (or
+  `env.read:BITTY_*` patterned) capability plus user consent and audit; the
+  canonical manifest spelling is owned by the
+  [Plugin Manifest and Capability Grammar Authority](../specifications/manifest-capability-authority.md)
+  section 1.
 - The Lua host constructs its standard library without `io`, `debug`, or
   package ambient authority, so plugins cannot read or write `.env` files
   through Lua, and cannot mutate the host environment.
