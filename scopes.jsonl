@@ -61,3 +61,5 @@
 {"created_at":"2026-09-24T15:03:32.572200838+00:00","id":"01M39Z2XYWN4R1ARPJ1X6MX285","kind":"include","pattern":"architecture/diagrams/glossary.yaml","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M39AC552V1YHY8KDECXN6VRS"}
 {"created_at":"2026-09-24T15:03:32.597633162+00:00","id":"01M39Z2XZNJHB1A8S29K8HNQZ2","kind":"include","pattern":"architecture/diagrams/02-registry.mmd","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M39AC552V1YHY8KDECXN6VRS"}
 {"created_at":"2026-09-24T15:03:32.624823948+00:00","id":"01M39Z2Y0GNT7K0Q3V5VVMY94V","kind":"include","pattern":"architecture/diagrams/02-registry.svg","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M39AC552V1YHY8KDECXN6VRS"}
+{"created_at":"2026-09-24T17:55:21.258056121+00:00","id":"01M3A8XH1A9VXHXVT7NA235Y8F","kind":"include","pattern":"CHANGELOG.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M39AC552V1YHY8KDECXN6VRS"}
+{"created_at":"2026-09-24T17:55:21.285178839+00:00","id":"01M3A8XH25SVS7146ACZXA346A","kind":"include","pattern":"TODO.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M39AC552V1YHY8KDECXN6VRS"}
