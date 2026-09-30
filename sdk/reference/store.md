@@ -59,6 +59,31 @@ without committing.
 - `bitty.store.set` returns `true` on success; the bridge surfaces host
   denials as catchable error tables instead of return values.
 
+## RC-1 Wall-Clock Budget and Store-Commit Credit
+
+`bitty.store.set` commits synchronously: the function returns only after the
+host writes, syncs, and renames the updated store to disk. On slow filesystems
+this I/O latency can push a callback past the RC-1 50 ms wall-clock budget.
+
+To prevent false `WallClockExceeded` suspensions when filesystem latency is
+legitimately high, the host credits the callback's wall-clock budget with the
+measured commit I/O time (the `write` + `sync` + `rename` span inside
+`persist_entries`), capped at 200 ms per callback. This credit applies only to
+filesystem-backed stores; in-memory stores receive no credit. The instruction
+budget is never credited.
+
+With this mechanism, the effective maximum wall time for a callback that calls
+`bitty.store.set` becomes 250 ms (50 ms base + 200 ms credit). The callback is
+suspended at the next slice boundary if credited wall time exceeds the budget;
+a callback that completes before reaching a slice boundary is not suspended.
+
+The RC-11 quota ceilings (256 KiB total, 8 KiB per value, 8 depth, 1024 nodes)
+remain unchanged.
+
+See [Isolation and Resource Budgets RFC](../../runtime/isolation-resource-rfc.md)
+RC-1 row and risk R-RC1-STORE-CREDIT for normative policy, mitigation layers,
+and the rationale.
+
 ## Errors
 
 Every host denial arrives as a catchable Lua error table with exactly three
