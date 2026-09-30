@@ -266,6 +266,13 @@ candidates remain split-later per the
 [split decision](bundled-plugin-split-decision.md); `browser-panel` stays
 bundled. This paragraph records provenance, not shipped behavior.
 
+Later change (2026-09-30, `bitty` CTX-0886; issues #1554, #1556, #1557):
+`browser-panel`, `ai-panel`, `mail-panel`, and `project` were removed from
+Core; the bundled catalog is `shell-integration` and `workspace`. AI surfaces
+move to the optional `bitty-ai` extension, mail is not planned, and project and
+browser may return later as independent optional plugins. The first official
+Lua plugin is planned as `devtools` (`bitty-plugins/plugins/devtools`).
+
 ## References
 
 - [Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md)

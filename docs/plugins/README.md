@@ -43,14 +43,14 @@ these candidates has a page set or an accepted contract; the
 source, and names, identifiers, and batches may change before any plugin
 contract is accepted.
 
-| Plugin        | Batch | Documentation status | Planning notes                                               |
-| ------------- | ----- | -------------------- | ------------------------------------------------------------ |
-| scratchpad    | First | Not started          | Ephemeral per-directory notes.                               |
-| peek          | First | Not started          | Hover and preview anchored to semantic zones or rich blocks. |
-| pet           | First | Not started          | Non-blocking companion overlay.                              |
-| browser-panel | Later | Not started          | Browser view and panel (`bitty-terminal.browser-panel`).     |
-| ai-panel      | Later | Not started          | Agent panel surface (`bitty-terminal.ai-panel`).             |
-| mail-panel    | Later | Not started          | Mail triage panel (`bitty-terminal.mail-panel`).             |
+| Plugin        | Batch | Documentation status | Planning notes                                                                                                    |
+| ------------- | ----- | -------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| scratchpad    | First | Not started          | Ephemeral per-directory notes.                                                                                    |
+| peek          | First | Not started          | Hover and preview anchored to semantic zones or rich blocks.                                                      |
+| pet           | First | Not started          | Non-blocking companion overlay.                                                                                   |
+| browser-panel | Later | Not started          | Browser view and panel; removed from Core (`bitty` CTX-0886), may return as an independent optional plugin.       |
+| ai-panel      | Later | Not started          | Agent panel surface; removed from Core (`bitty` CTX-0886), AI surfaces move to the optional `bitty-ai` extension. |
+| mail-panel    | Later | Not started          | Mail triage panel; removed from Core (`bitty` CTX-0886), not planned.                                             |
 
 ## Creating a plugin directory
 

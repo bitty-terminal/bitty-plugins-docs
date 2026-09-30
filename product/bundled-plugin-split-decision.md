@@ -22,6 +22,14 @@ sidebar_order: 23
 > [Default Distribution RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md)
 > bundled catalog is amended from ten to eight. Accepting the Panel Runtime
 > provider contract remains owned by `bitty-docs` `CTX-0181`.
+>
+> Later change (2026-09-30, `bitty` CTX-0886; issues #1554, #1556, #1557):
+> `browser-panel`, `ai-panel`, `mail-panel`, and `project` were removed from
+> Core, leaving `shell-integration` and `workspace` as the only bundled
+> entries. This supersedes the `browser-panel` stay-bundled verdict and the
+> split-later posture for `ai-panel` and `mail-panel`; the verdicts below are
+> kept as the 2026-09-14 record. See
+> [Removed from Core (2026-09-30)](#removed-from-core-2026-09-30).
 
 ## Purpose and scope
 
@@ -330,6 +338,21 @@ the panel-provider contract. The Default Distribution
 RFC bundled-catalog amendment and the OQ-053 register closure are complete under
 `bitty` `CTX-0424`. The palette capability delta and the statusline exit-code
 delta are tracked as `bitty-plugins` `CTX-0005`.
+
+### Removed from Core (2026-09-30)
+
+`bitty` CTX-0886 (issues #1554, #1556, #1557) shrinks the bundled catalog from
+six entries to two (`shell-integration`, `workspace`) to keep Core
+mechanism-only. `ai-panel` and `mail-panel` (the `bitty-panels` `ai_panel` and
+`mail_panel` modules), `project` (the `bitty-runtime` `project` and
+`project_scope` modules), and `browser-panel` (the `bitty-runtime`
+`browser_panel` module) are deleted from Core rather than extracted. AI
+surfaces move to the separate optional `bitty-ai` extension (`ai-panel` is
+therefore owned by `bitty-ai`, not this ecosystem); mail is not planned;
+project and browser may return later as independent optional plugins. The
+extraction tasks `CTX-0401` through `CTX-0403` above no longer describe current
+work. The first official Lua plugin is planned as `devtools` in
+`bitty-plugins/plugins/devtools`.
 
 ## References
 

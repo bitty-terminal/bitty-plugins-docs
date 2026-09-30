@@ -37,9 +37,9 @@ generation lifecycle), and the
 sequencing.
 
 In scope: the bundled-disabled first-party set that dogfoods Plugin API v1
-(shell integration, workspace, project, file manager, git panel, browser panel,
-AI panel, mail panel), the `palette` and `statusline` independent first-party
-packages split from it, future dogfood
+(shell integration and workspace since `bitty` CTX-0886), the `palette`,
+`statusline`, `file-manager`, and `git-panel` independent first-party packages
+split from it, future dogfood
 candidates such as splits and search, the featured second wave (pet, activity,
 contributions to knowledge graph, peek, mirror, lock, scratchpad), their
 mechanism vs policy split, capability sketches, privacy posture
@@ -160,15 +160,18 @@ Bundled presence alone creates zero VM, queue, or handler cost until
 explicitly enabled.
 
 The canonical v1 catalog is `all_bundled_manifests()` in
-`crates/bitty-plugin-host/src/bundled.rs`: eight bundled-disabled manifests
-once [bitty PR #680](https://github.com/bitty-terminal/bitty/pull/680) merges
-(nine today), built from the same public `PluginManifest` types a third-party
+`crates/bitty-plugin-host/src/bundled.rs`: two bundled-disabled manifests
+(`shell-integration`, `workspace`) after `bitty` CTX-0886
+(issues #1554, #1556, and #1557), built from the same public `PluginManifest` types a third-party
 `bitty-plugin.toml` uses, with no private channel. The table below is synced to
 that catalog. It held ten manifests at `bitty` `b761c03`; `palette` and
 `statusline` left for independent first-party packages on 2026-09-14
 ([Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md)).
-The palette removal merged; the statusline removal is open, so the catalog is
-nine today and becomes eight once #680 merges. `bitty-terminal.workspace` is
+`file-manager` and `git-panel` followed on 2026-09-15, leaving six. CTX-0886
+then removed `project`, `browser-panel`, `ai-panel`, and `mail-panel` from
+Core (Unix-style minimal Core, mechanism only): AI surfaces move to the
+separate optional `bitty-ai` extension, mail is not planned, and project and
+browser may return later as independent optional plugins. `bitty-terminal.workspace` is
 canonical and
 `bitty-terminal.tabs` remains a deprecated alias (removal `>= v0.2.0`). The
 first-party runtime implementations that exercise these manifests live in
@@ -183,32 +186,28 @@ RFC's
 [superseded set](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/default-distribution-rfc.md#superseded-bundled-set-2026-08-29).
 A 2026-09-14 amendment (CTX-0424) then revised it to eight once
 [bitty PR #680](https://github.com/bitty-terminal/bitty/pull/680) merges (nine
-today) after the `palette` and `statusline` splits. This roadmap and the RFC
-describe the same target catalog. Point-in-time citations in the pre-studies
+today) after the `palette` and `statusline` splits, and a 2026-09-30
+amendment (`bitty` CTX-0886) reduced it to two. This roadmap and the RFC
+describe the same catalog. Point-in-time citations in the pre-studies
 (for example
 [Browser and Agent Panel Integration Pre-Study](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/browser-agent-pre-study.md))
 stay as committed-snapshot references.
 
-| Plugin ID                          | Policy owned by the plugin                                                                                                                                                                        | Core mechanism relied on                                                                                                                   | Capability sketch (illustrative)                                                                                                                                | Dogfood validation signal                                                                                                           |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `bitty-terminal.shell-integration` | OSC 7/133 semantic zones, cwd and title propagation, prompt and command-region marks, fail-closed fallback when absent                                                                            | VT parser OSC 7/133 derivation, semantic zones, `ImageStore` anchor fallback                                                               | `terminal.semantic-read` read-only                                                                                                                              | Zones consumed by search, statusline, and peek without plugin-side VT parsing; absence degrades gracefully                          |
-| `bitty-terminal.workspace`         | Workspace commands, workspaceline presentation, ordering, key bindings, and closing policy                                                                                                        | `LayoutNode` and split primitives, `tabline` exclusive claim, status composition                                                           | `ui.rich` or status-component slot plus `tabline` claim                                                                                                         | Exclusive claim validated: duplicate claim rejected, not last-wins; close policy observable via `bitty plugin doctor`               |
-| `bitty-terminal.project`           | Project discovery and session presentation                                                                                                                                                        | Constrained project discovery and session metadata                                                                                         | `fs.read:PROJECT_GLOB` constrained                                                                                                                              | Validates project-scoped discovery and session presentation without widening trust or filesystem authority                          |
-| `bitty-terminal.file-manager`      | Observation-only file-manager policy (bounded listing, navigation, and preview) over the observed cwd with a root-parameterized, fail-closed scope; panel presentation and `fs.*` access deferred | Semantic snapshot (`terminal.semantic-read`); Panel Runtime and `ViewContent::Panel(PanelId)` deferred pending the panel-provider contract | `terminal.semantic-read` only (implemented observation-only); `panel.provider`, `panel.create`, and root-scoped `fs.read`/`fs.write` deferred                   | Validates root-parameterized scope and the bounded `8 KiB` listing payload; tiled-panel and `fs.*` dogfood deferred                 |
-| `bitty-terminal.git-panel`         | Tiled Panel git branch/status/diff/log presentation                                                                                                                                               | Panel Runtime plus allowlisted `process.spawn:git` under manifest `[tools.git]`                                                            | `process.spawn:git` allowlisted, `panel.provider`, `panel.create`, `terminal.semantic-read`                                                                     | Validates CLI reuse (Layer 2) against an allowlisted binary with bounded output under `[tools.git]` argv                            |
-| `bitty-terminal.browser-panel`     | View `Browser(BrowserSurfaceId)` plus tiled Panel placement and navigation policy                                                                                                                 | Browser surface contracts plus Panel Runtime                                                                                               | `browser.embed`, `browser.navigation`, `browser.file-url`, `browser.storage`, `network.connect:...:443`                                                         | Validates Browser view plus Panel composition with a default `https` allowlist and bounded BA-1..BA-3 surfaces                      |
-| `bitty-terminal.ai-panel`          | Agent panel surface: chat, tool invocation, memory and consent presentation with an ephemeral workspace                                                                                           | Panel Runtime, MCP tool bus, `AgentId` context budget contract                                                                             | `ai.provider`, `ai.stream`, `ai.model`, `agent.context.terminal`, `agent.context.workspace`, `agent.memory:persist`, `mcp.invoke:read_file`, `mcp.invoke:fetch` | Validates agent surfaces on generic primitives, and the CP-5 per-turn context contract, and bounded memory without core AI coupling |
-| `bitty-terminal.mail-panel`        | Mail triage panel: list, read, search, and send policy through MCP and explicit network endpoints                                                                                                 | Panel Runtime, MCP adapter, `network.connect` host:port allowlist, scoped `fs`                                                             | `mcp.invoke:mail.list/read/search/send`, `network.connect:imap.example.com:993`, `network.connect:smtp.example.com:465`, `fs.read`/`fs.write:~/mail/**`         | Validates a P3 panel that needs explicit endpoint grants and remains disabled on a fresh install without consent                    |
+| Plugin ID                          | Policy owned by the plugin                                                                                             | Core mechanism relied on                                                         | Capability sketch (illustrative)                        | Dogfood validation signal                                                                                             |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `bitty-terminal.shell-integration` | OSC 7/133 semantic zones, cwd and title propagation, prompt and command-region marks, fail-closed fallback when absent | VT parser OSC 7/133 derivation, semantic zones, `ImageStore` anchor fallback     | `terminal.semantic-read` read-only                      | Zones consumed by search, statusline, and peek without plugin-side VT parsing; absence degrades gracefully            |
+| `bitty-terminal.workspace`         | Workspace commands, workspaceline presentation, ordering, key bindings, and closing policy                             | `LayoutNode` and split primitives, `tabline` exclusive claim, status composition | `ui.rich` or status-component slot plus `tabline` claim | Exclusive claim validated: duplicate claim rejected, not last-wins; close policy observable via `bitty plugin doctor` |
 
 `bitty-terminal.palette` and `bitty-terminal.statusline` were in this wave and
 left the bundled catalog on 2026-09-14 to become independent first-party
 packages (repositories `bitty-terminal/palette` and `bitty-terminal/statusline`).
 Their policy and capability ownership is unchanged; the
 [Bundled-Plugin Split Decision (OQ-053)](bundled-plugin-split-decision.md) owns
-the verdicts and the implementation-status record. The eight rows above are the
-remaining bundled set once
-[bitty PR #680](https://github.com/bitty-terminal/bitty/pull/680) merges; the
-code catalog is nine today.
+the verdicts and the implementation-status record. `file-manager` and
+`git-panel` left the same way on 2026-09-15, and `project`, `browser-panel`,
+`ai-panel`, and `mail-panel` were removed from Core under `bitty` CTX-0886;
+the two rows above are the current bundled set. The first official Lua plugin
+is planned as `devtools` (`bitty-plugins/plugins/devtools`).
 
 Accepted rules for this wave:
 
@@ -312,6 +311,10 @@ tracked as [OQ-058](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/
 > Statusline and palette split on distribution and SDK gates only; the panel
 > candidates split later, gated on the panel-provider contract; browser-panel
 > stays bundled as a Core mechanism.
+>
+> Later change (2026-09-30, `bitty` CTX-0886): `browser-panel`, `ai-panel`,
+> `mail-panel`, and `project` were removed from Core instead; the verdicts
+> above are the 2026-09-14 record.
 
 Status: **candidate, non-normative**; extends the migration candidates above
 and is refined by the accepted
