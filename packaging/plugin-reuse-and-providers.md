@@ -385,6 +385,29 @@ below is a candidate design in this draft.
   through the `plugin doctor` diagnostics. The kill ordering, signal grace,
   and orphan-reaping semantics are open items below, not accepted behavior.
 
+### Layer 2 pattern guidelines: search, picker, and theme integrations
+
+Plugins that leverage system tools must follow the "Reuse below, compose above" pipeline rather than embedding custom crates or drawing uncoordinated floating windows:
+
+1. **Search and file enumeration (`rg`, `fd`):**
+   - **Data Producer:** The plugin invokes `rg` or `fd` via `process.spawn:rg(...)` / `process.spawn:fd(...)` as declared in `bitty-plugin.toml`. It streams bounded item records into memory.
+   - **Host Fuzzy Matching:** The plugin delegates fuzzy scoring to Bitty's host-owned fuzzy service (`local fuzzy = bitty.services:get("fuzzy")`) instead of embedding in-process crates such as `nucleo` or `skim`.
+   - **Native UI Overlay:** The command palette, picker input box, and item layout are rendered natively by Bitty Core. This preserves accessibility, theme consistency, and unified keybindings.
+2. **Palette and theme generation (`matugen`):**
+   - **Decoupled Appearance:** Theme generation tools operate strictly above the Theme system and must not interact directly with terminal graphics protocols (Kitty/Sixel).
+   - **Reactive Lifecycle:** A plugin may listen for `BackgroundChanged` events, invoke a declared generator (e.g. `matugen` with `process.spawn:matugen`) to extract OKLCH palettes, and supply semantic colors via `bitty.theme.apply(...)`. Alternatively, external tools can write `theme.lua` and trigger atomic single-frame reloading via `bitty ctl theme reload`.
+
+### Trust boundaries: Bitty CLI versus plugin runtime sandbox
+
+The trust model intentionally distinguishes between the Bitty CLI and the untrusted plugin sandbox:
+
+| Dimension         | Bitty CLI (`bitty plugin add`)                                                                                                                                                                                                                           | Plugin Sandbox (`process.spawn`)                                                                                                                                                                    |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Execution context | Host shell under user execution                                                                                                                                                                                                                          | `phodopus` Lua VM sandbox                                                                                                                                                                           |
+| Trust posture     | Trusted user binary                                                                                                                                                                                                                                      | Untrusted third-party code                                                                                                                                                                          |
+| Rationale         | [DIR-016](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md): Unix philosophy; uses system `git` directly to inherit user SSH keys, GPG signing, credentials, and proxies without embedding bloated `git2`/`reqwest` crates | [CTX-0425](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md): Zero ambient authority; prevents unauthorized shell execution, write operations, or secret exfiltration |
+| Host mediation    | None needed (user runs CLI in shell)                                                                                                                                                                                                                     | Strict `HostToolsAuthorizer`: no shell interpolation, read-only subcommands, argument sanitization, payload cap (8 KiB), timeout, and tree kill                                                     |
+
 ## Layer 3 Plugin Service
 
 Status: **proposed**; reuses peer-plugin capabilities already admitted by the
