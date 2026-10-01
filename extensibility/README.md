@@ -21,6 +21,7 @@ lives in the linked pages; this index carries no duplicate normative prose.
 | [Lua UI Component Model (Candidate)](lua-ui-component-model-candidate.md)        | Draft  | Candidate five-level Lua UI component ecosystem, theming, accessibility, and panel services.                |
 | [Plugin UI Slot Inventory (Candidate)](plugin-ui-slot-inventory-candidate.md)    | Draft  | Candidate per-slot purpose, multiplicity, bounds, and conflict resolution for the accepted closed slot set. |
 | [TUI to Native Migration Path (Candidate)](tui-to-native-migration-candidate.md) | Draft  | Candidate L0-L4 migration ladder, per-application-type guidance, and Backend Service Plugin pattern.        |
+| [Frequently asked questions](faq.md)                                             | Draft  | Sandboxing, Fuel budgeting, Layer 2 external tools, Host Fuzzy Service, and lifecycle management.           |
 
 ## Authority and status
 

@@ -55,23 +55,24 @@ stays in the sibling documentation repositories.
 
 ## Structure
 
-| Path                             | Purpose                                                            |
-| -------------------------------- | ------------------------------------------------------------------ |
-| `docs/README.md`                 | Documentation map and authority rules for this repository.         |
-| `docs/development/`              | Contributor workflow and the normative documentation policy.       |
-| `docs/plugins/`                  | Per-plugin index, template, and standard page sets.                |
-| `runtime/`                       | Plugin host runtime, Lua runtime, and isolation and resource.      |
-| `sdk/`                           | Public plugin SDK Lua surface contract.                            |
-| `packaging/`                     | Package lifecycle, resolver, registry, and provider ecology.       |
-| `architecture/`                  | Plugin ecosystem model, IPC boundary, UI extensibility, diagrams.  |
-| `architecture/diagrams/`         | Glossary-driven diagram suite, Mermaid sources, vector exports.    |
-| `specifications/`                | Platform contract and candidate-direction register index.          |
-| `product/`                       | Plugin roadmap and product planning documents.                     |
-| `extensibility/`                 | Pre-implementation plugin system and package-management contracts. |
-| `TODO.md`                        | Work register for this repository.                                 |
-| `AGENTS.md`                      | Agent scope, CarryCtx workflow, and local gate rules.              |
-| `.github/scripts/check-docs.mjs` | Links, metadata, language, budgets, and hygiene checks.            |
-| `justfile`                       | Pinned docs-quality commands; `just check` is the gate.            |
+| Path                             | Purpose                                                                     |
+| -------------------------------- | --------------------------------------------------------------------------- |
+| `docs/README.md`                 | Documentation map and authority rules for this repository.                  |
+| `docs/development/`              | Contributor workflow and the normative documentation policy.                |
+| `docs/plugins/`                  | Per-plugin index, template, and standard page sets.                         |
+| `runtime/`                       | Plugin host runtime, Lua runtime, and isolation and resource.               |
+| `sdk/`                           | Public plugin SDK Lua surface contract.                                     |
+| `packaging/`                     | Package lifecycle, resolver, registry, and provider ecology.                |
+| `architecture/`                  | Plugin ecosystem model, IPC boundary, UI extensibility, diagrams.           |
+| `architecture/diagrams/`         | Glossary-driven diagram suite, Mermaid sources, vector exports.             |
+| `specifications/`                | Platform contract and candidate-direction register index.                   |
+| `product/`                       | Plugin roadmap and product planning documents.                              |
+| `extensibility/`                 | Pre-implementation plugin system and package-management contracts.          |
+| `FAQ.md`                         | Frequently asked questions on sandboxing, external tools, and capabilities. |
+| `TODO.md`                        | Work register for this repository.                                          |
+| `AGENTS.md`                      | Agent scope, CarryCtx workflow, and local gate rules.                       |
+| `.github/scripts/check-docs.mjs` | Links, metadata, language, budgets, and hygiene checks.                     |
+| `justfile`                       | Pinned docs-quality commands; `just check` is the gate.                     |
 
 ## Authority and status
 
