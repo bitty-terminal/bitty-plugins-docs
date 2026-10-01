@@ -30,6 +30,15 @@ sidebar_order: 23
 > split-later posture for `ai-panel` and `mail-panel`; the verdicts below are
 > kept as the 2026-09-14 record. See
 > [Removed from Core (2026-09-30)](#removed-from-core-2026-09-30).
+>
+> Later change (2026-10-01, [ADR 0014](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0014-workspace-core-presentation-plugins.md),
+> [bitty#1558](https://github.com/bitty-terminal/bitty/issues/1558)): the
+> workspace core is a Core mechanism, not a bundled plugin, and workspace
+> presentation is plugin-only. The "workspace core and `tabline` claim stay
+> bundled" positions below are superseded: the bundled
+> `bitty-terminal.workspace` manifest is retiring, no bundled plugin holds the
+> `tabline` or `workspaceline` claim, and any tab strip or workspace bar is an
+> optional plugin. The verdicts below are kept as the 2026-09-14 record.
 
 ## Purpose and scope
 
@@ -230,7 +239,9 @@ plaintext storage. Verdict: **split target**, blocked on those contracts.
   needs the credential-source contract.
 - **Stay bundled (Core mechanism):** `browser-panel`.
 - **Unchanged:** `shell-integration` and the workspace core (including the
-  `tabline` claim) stay bundled.
+  `tabline` claim) stay bundled. Superseded on 2026-10-01 by ADR 0014: the
+  workspace core is Core, and the `tabline` claim is open to any optional
+  presentation plugin.
 
 ## Cross-references to accepted positions
 
@@ -296,15 +307,15 @@ does not claim behavior beyond the cited merged repositories.
 
 ### Statusline
 
-| Item                             | State    | Evidence                                                                                                                                                                                                                                                                                                                     |
-| -------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `statusline` independent package | Merged   | Repository `bitty-terminal/statusline`; package PR #2 squash `3eab0f44b9bf76fc8c01a029176a9bd885f91d07`.                                                                                                                                                                                                                     |
-| Bundled catalog entry removed    | Merged   | `bitty` PR #680 squash `d4d754e3555200790fdd0843449000a9dfa4b930` removes `bitty-terminal.statusline` from the bundled catalog (nine to eight).                                                                                                                                                                              |
-| Registry registration            | Merged   | `bitty-plugins` PR #9 squash `1d203e67146b02edc8c483a61a7c82b9b6e84753`: `registry/official/statusline.toml`, regenerated `generated/registry.json`, `plugins/statusline` submodule pin.                                                                                                                                     |
-| Workspaceline boundary           | Recorded | The `tabline` claim (ordering, exclusive claim, close policy), workspace lifecycle, and shell integration stay bundled; only the statusline presentation moves.                                                                                                                                                              |
-| Host statusline bridge           | Gap      | The `bitty` Lua bridge does not implement `bitty.ui.mount`/`ui.update`; the package observes snapshots but presents no block until it lands.                                                                                                                                                                                 |
-| Status-component provider        | Gap      | v1 has no `StatusProvider`/`status.component` contract (draft post-1.0 provider ecology); the package composes one host-owned `Row` as the v1 adapter.                                                                                                                                                                       |
-| Exit-code selection difference   | Recorded | The Lua package selects the latest semantic zone carrying any `metadata.exit_code` (scanning newest-first); the bundled Rust realization selected the last `ZoneKind::OutputEnd` zone's code. The observable `exit:` component can differ when a later non-`OutputEnd` zone carries a code. Recorded from the split reviews. |
+| Item                             | State      | Evidence                                                                                                                                                                                                                                                                                                                     |
+| -------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `statusline` independent package | Merged     | Repository `bitty-terminal/statusline`; package PR #2 squash `3eab0f44b9bf76fc8c01a029176a9bd885f91d07`.                                                                                                                                                                                                                     |
+| Bundled catalog entry removed    | Merged     | `bitty` PR #680 squash `d4d754e3555200790fdd0843449000a9dfa4b930` removes `bitty-terminal.statusline` from the bundled catalog (nine to eight).                                                                                                                                                                              |
+| Registry registration            | Merged     | `bitty-plugins` PR #9 squash `1d203e67146b02edc8c483a61a7c82b9b6e84753`: `registry/official/statusline.toml`, regenerated `generated/registry.json`, `plugins/statusline` submodule pin.                                                                                                                                     |
+| Workspaceline boundary           | Superseded | Recorded 2026-09-14 as "`tabline` claim, workspace lifecycle, and shell integration stay bundled". ADR 0014 (2026-10-01) moves workspace lifecycle to Core and makes every tab strip or workspace bar an optional plugin.                                                                                                    |
+| Host statusline bridge           | Gap        | The `bitty` Lua bridge does not implement `bitty.ui.mount`/`ui.update`; the package observes snapshots but presents no block until it lands.                                                                                                                                                                                 |
+| Status-component provider        | Gap        | v1 has no `StatusProvider`/`status.component` contract (draft post-1.0 provider ecology); the package composes one host-owned `Row` as the v1 adapter.                                                                                                                                                                       |
+| Exit-code selection difference   | Recorded   | The Lua package selects the latest semantic zone carrying any `metadata.exit_code` (scanning newest-first); the bundled Rust realization selected the last `ZoneKind::OutputEnd` zone's code. The observable `exit:` component can differ when a later non-`OutputEnd` zone carries a code. Recorded from the split reviews. |
 
 ### File-manager
 

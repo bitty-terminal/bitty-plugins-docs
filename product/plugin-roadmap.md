@@ -173,7 +173,11 @@ Core (Unix-style minimal Core, mechanism only): AI surfaces move to the
 separate optional `bitty-ai` extension, mail is not planned, and project and
 browser may return later as independent optional plugins. `bitty-terminal.workspace` is
 canonical and
-`bitty-terminal.tabs` remains a deprecated alias (removal `>= v0.2.0`). The
+`bitty-terminal.tabs` remains a deprecated alias (removal `>= v0.2.0`). Per
+[ADR 0014](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0014-workspace-core-presentation-plugins.md) (2026-10-01), the workspace mechanism is Core and
+`bitty-terminal.workspace` is retiring: its commands become Core workspace
+commands, and workspace bars, tab strips, and sidebars are optional
+presentation plugins. The
 first-party runtime implementations that exercise these manifests live in
 `crates/bitty-runtime` as review evidence; manifest presence is not shipped
 plugin behavior.
@@ -196,7 +200,7 @@ stay as committed-snapshot references.
 | Plugin ID                          | Policy owned by the plugin                                                                                             | Core mechanism relied on                                                         | Capability sketch (illustrative)                        | Dogfood validation signal                                                                                             |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | `bitty-terminal.shell-integration` | OSC 7/133 semantic zones, cwd and title propagation, prompt and command-region marks, fail-closed fallback when absent | VT parser OSC 7/133 derivation, semantic zones, `ImageStore` anchor fallback     | `terminal.semantic-read` read-only                      | Zones consumed by search, statusline, and peek without plugin-side VT parsing; absence degrades gracefully            |
-| `bitty-terminal.workspace`         | Workspace commands, workspaceline presentation, ordering, key bindings, and closing policy                             | `LayoutNode` and split primitives, `tabline` exclusive claim, status composition | `ui.rich` or status-component slot plus `tabline` claim | Exclusive claim validated: duplicate claim rejected, not last-wins; close policy observable via `bitty plugin doctor` |
+| `bitty-terminal.workspace`         | Retiring per ADR 0014: manifest only; workspace commands, ordering, and closing policy run in Core                     | `LayoutNode` and split primitives, `tabline` exclusive claim, status composition | `ui.rich` or status-component slot plus `tabline` claim | Exclusive claim validated: duplicate claim rejected, not last-wins; close policy observable via `bitty plugin doctor` |
 
 `bitty-terminal.palette` and `bitty-terminal.statusline` were in this wave and
 left the bundled catalog on 2026-09-14 to become independent first-party
@@ -290,9 +294,10 @@ Candidate invariants if this migration is accepted:
 
 - Plugin IDs, capability identifiers, and grant records do not change with the
   move; a migrated plugin keeps its `bitty-terminal.*` identity.
-- Shell integration and the workspace core remain bundled because other
-  plugins and core surfaces consume their observations and claims; whether any
-  other plugin must remain bundled is part of OQ-053.
+- Shell integration remains bundled because other plugins and core surfaces
+  consume its observations; the workspace core is a Core mechanism, not a
+  bundled plugin (ADR 0014). Whether any other plugin must remain bundled is
+  part of OQ-053.
 - The accepted package lifecycle (signature/provenance, lockfile, atomic
   activation, rollback) governs independent distribution; the bundled catalog
   shrinks rather than gaining a second distribution mechanism.
@@ -419,9 +424,11 @@ the first-party wave grows:
    propose projections (fold state, hints, summaries) but never mutate
    Terminal Truth. Candidate contract: a projection API that returns bounded
    presentation data and cannot write state; relates to OQ-050 and OQ-051.
-3. **Workspace policies** — workspace/tab ordering, naming, and close policy
-   are first-party plugin policy today. Candidate contract: which workspace
-   policies are plugin-declarable and which remain Core-owned.
+3. **Workspace policies** — workspace lifecycle, ordering, naming, and close
+   are Core mechanism, and workspace presentation (bars, tabs, sidebars) is
+   plugin-only (ADR 0014). Candidate contract: the workspace read API, events,
+   and capabilities plugins use, and which further workspace policies are
+   plugin-declarable.
 4. **Events and automation** — observation-class events plus lazy command
    triggers are accepted. Candidate contract: whether any bounded
    automation action class (not just observation) is grantable, and how
