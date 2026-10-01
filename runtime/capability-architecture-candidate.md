@@ -57,9 +57,9 @@ Out of scope and owned elsewhere (pointers, not content):
   this page records only the plugin-facing consequences);
 - the L1 install model, the manifest `[requires]` table, install-time
   resolution with consent-gated auto-install, and offline behavior
-  (owner-pending, the terminal-platform companion now in flight toward
-  `specifications/l1-install-requires-candidate.md`; this page assumes a
-  resolver exists and designs what it resolves);
+  (owner-pending, the terminal-platform companion
+  [L1 Install Model and Plugin Capability Declarations (Candidate)](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/l1-install-capabilities-candidate.md);
+  this page assumes a resolver exists and designs what it resolves);
 - the Phodopus successor-runtime mechanics, builder quotas, and async bridge
   (candidate,
   [Phodopus Plugin Runtime (Candidate)](phodopus-runtime-candidate.md); this
@@ -413,8 +413,10 @@ crate names, module paths, or deployment shapes. Consequences, as direction:
 
 - splitting, renaming, or swapping the host-side network crates changes host
   internals only; manifests and Lua keep working byte-for-byte;
-- moving the network backend from embedded to an external sidecar over IPC
-  discovery changes transport only; the capability check, the Lua spelling,
+- running the network backend out of process as the `bitty-net` native
+  component coprocess
+  ([DIR-030](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md))
+  changes host deployment only; the capability check, the Lua spelling,
   and the grant recorded at install are untouched;
 - adding a feature layer (a new transport, a new provider family) adds a
   capability identifier under the CA-1 grammar; it never renames an existing
@@ -469,7 +471,8 @@ An accepted revision would need at least:
 8. Lazy-loading tests: install creates no VM and runs no code; triggers move
    installed to loaded to active and back; headless operation parks
    rendering-bound work and wakes on event or command.
-9. Crate-independence tests: a backend swap (including embedded-to-sidecar)
+9. Crate-independence tests: a backend swap (including the move to the
+   `bitty-net` component coprocess)
    leaves manifests, Lua, grants, and diagnostics byte-identical from the
    plugin side.
 10. Boundary tests: no section of the accepted revision weakens Invariant 8,
@@ -530,7 +533,7 @@ decided in the owning contract before any direction here becomes contract:
 7. The manager surface shape: which view columns and actions live in the
    built-in manager versus the diagnostic command (CA-5).
 8. The plugin-visible no-op conformance suite for backend swaps, including the
-   embedded-to-sidecar move (CA-7).
+   move to the `bitty-net` component coprocess (CA-7).
 9. Registry entries OQ-012 and OQ-014 as the accepted governance context this
    direction refines; any promotion or new open question belongs to the owning
    governance register, not to this page.
@@ -591,6 +594,5 @@ host-ABI boundaries.
 - [bitty-network Shared Network Crates (Candidate)](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/bitty-network-candidate.md)
   — terminal-platform companion owning the crate split, unified runtime and
   policy, and deployment shape (BN-1..BN-8).
-- Terminal-platform L1 install-model and `[requires]` companion (in flight
-  toward `specifications/l1-install-requires-candidate.md`) — owns install
+- [L1 Install Model and Plugin Capability Declarations (Candidate)](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/l1-install-capabilities-candidate.md) — terminal-platform L1 install-model companion; owns install
   resolution, consent-gated fetch, and offline behavior this doctrine assumes.

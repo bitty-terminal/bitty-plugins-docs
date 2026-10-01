@@ -209,11 +209,12 @@ local-path install has shipped (CTX-0406 slice above).
   [Package Follow-up RFC](../packaging/package-followup-rfc.md) (OQ-028)
   specifies an HTTPS index snapshot fetch; reconciling the two mechanisms
   needs an RFC amendment, and this section does not weaken that contract.
-- **Later native HTTP.** When Git cannot serve a need, native HTTP uses
-  `reqwest + rustls` (`default-features = false`), isolated in `bitty-net` /
-  provider crates and feature-gated so `cargo build --no-default-features`
-  stays network-free. (`bitty-plugin-manager` and `bitty-net` are names from
-  the user note; the current workspace has `bitty-package` only.)
+- **Later native HTTP.** When Git cannot serve a need, native HTTP runs in
+  the bitty-network crates, out of process as the `bitty-net` native
+  component (see [Component packages](#component-packages)), so Core stays
+  network-free. (`bitty-plugin-manager` is a name from the user note; the
+  current workspace has `bitty-package` only. `bitty-net` now names the
+  component executable under [DIR-030](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md), not a Core crate.)
 
 ## Command semantics
 
@@ -313,6 +314,65 @@ $XDG_DATA_HOME/bitty/plugins/
 A content-addressed store may improve deduplication and atomic switching later,
 but Nix-like storage is not a first-stage requirement.
 
+## Component packages
+
+Status: **accepted direction ([DIR-030](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md))**; package-manager
+spelling below is candidate. The process, install, and authority model is
+defined in the [Native Component Boundary](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/native-component-boundary.md); this section records only the package-manager
+consequences.
+
+A native component is a second package class beside Lua plugin packages: an
+independently installed, single-purpose executable (for example the `net`
+component, executable `bitty-net`) that Core spawns on demand as a stdio
+coprocess and shares across every plugin that declares it. It is not a plugin:
+it carries no Lua, never loads into a plugin VM, and never receives authority
+of its own; Core issues every grant.
+
+Install layout, separate from the plugin store:
+
+```text
+$XDG_DATA_HOME/bitty/components/
+└── net/
+    ├── current                 # plain text: the active version
+    └── 0.1.0/
+        ├── bitty-component.toml
+        └── bitty-net           # bitty-net.exe on Windows
+```
+
+The component descriptor `bitty-component.toml` records `name`, `version`
+(semver), `protocol` (supported wire protocol range), `executable` (a bare
+file name, no path separators), and `sha256` (lowercase hex digest of the
+executable). The package manager verifies the descriptor and the digest when
+it installs a component, and Core verifies them again before every spawn; any
+mismatch fails closed with a diagnostic. Installation executes no component
+code.
+
+A plugin declares component dependencies in its manifest:
+
+```toml
+[components]
+net = "^0.1"
+```
+
+Rules:
+
+- **No `PATH` discovery.** Components resolve only from the component root
+  (or the developer-only `BITTY_COMPONENTS_DIR` override used by tests); an
+  executable that happens to be on `PATH` is never used.
+- **Missing component.** Installing a plugin whose `[components]` requirement
+  is unmet is refused with a diagnostic naming the component and range; at
+  runtime an unavailable component makes the capability unavailable, never
+  ambient.
+- **Sources.** Local-path install is the first component source. Registry
+  installation of components is a follow-up because registry sources are not
+  available yet.
+- **No automatic cascade uninstall.** Removing the last plugin that depends on
+  a component does not remove the component; the manager reports it as
+  unused and removal stays an explicit user action.
+
+No component install, resolution, or `[components]` validation is
+implemented in the package manager yet.
+
 ## Package manager versus runtime host
 
 Status: **candidate contract.**
@@ -363,10 +423,14 @@ are diagnosed and users can always use the qualified plugin identity. In this
 candidate grammar, that route uses `bitty x`. Built-in commands win and may
 never be shadowed. Help should display extension commands in a separate section.
 
-A second extension class may follow Cargo-style external executables, for
-example discovering `bitty-benchmark` as `bitty benchmark`. Runtime plugins and
-external CLI executables have different trust, distribution, and capability
-models and must not be conflated.
+PATH-discovered executables are not used for native components: components
+resolve only from the component root and are digest-verified before spawn (see
+[Component packages](#component-packages)). Whether a separate CLI-extension
+class may follow Cargo-style external executables (for example discovering
+`bitty-benchmark` on `PATH` as `bitty benchmark`) stays open. If it exists, it
+is a distinct class from both runtime plugins and native components, with its
+own trust, distribution, and capability model, and must not be conflated with
+either.
 
 Static manifest metadata should supply command names, argument schemas, help,
 completion, lazy triggers, and ownership without starting plugin Lua VMs. The
@@ -403,5 +467,8 @@ semantics from immutable registry or Git revisions.
 - How are signatures, publisher identity, revocation, and audit introduced?
 - Are top-level plugin aliases worth the ambiguity, or should `bitty x` be the
   only plugin command namespace?
-- Should external executable extensions be managed by this package manager or
-  discovered exclusively from `PATH`?
+- Should a separate CLI-extension class of external executables exist, and if
+  so, should it be managed by this package manager or discovered from `PATH`?
+  This question does not apply to native components, which never use `PATH`
+  discovery (DIR-030).
+- How are components installed from a registry once registry sources exist?
