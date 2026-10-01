@@ -38,19 +38,20 @@ contains them.
 ## Candidate plugins
 
 The list below records documentation candidates from draft planning. None of
-these candidates has a page set or an accepted contract; the
+these candidates has an accepted contract; the
 [Plugin Roadmap](../../product/plugin-roadmap.md) (draft) is the planning
 source, and names, identifiers, and batches may change before any plugin
 contract is accepted.
 
-| Plugin        | Batch | Documentation status | Planning notes                                                                                                    |
-| ------------- | ----- | -------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| scratchpad    | First | Not started          | Ephemeral per-directory notes.                                                                                    |
-| peek          | First | Not started          | Hover and preview anchored to semantic zones or rich blocks.                                                      |
-| pet           | First | Not started          | Non-blocking companion overlay.                                                                                   |
-| browser-panel | Later | Not started          | Browser view and panel; removed from Core (`bitty` CTX-0886), may return as an independent optional plugin.       |
-| ai-panel      | Later | Not started          | Agent panel surface; removed from Core (`bitty` CTX-0886), AI surfaces move to the optional `bitty-ai` extension. |
-| mail-panel    | Later | Not started          | Mail triage panel; removed from Core (`bitty` CTX-0886), not planned.                                             |
+| Plugin        | Batch | Documentation status                      | Planning notes                                                                                                    |
+| ------------- | ----- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| bar           | First | Candidate page set ([bar](bar/README.md)) | Waybar-style unified 1-row bar consolidating workspace tabs and statusline.                                       |
+| scratchpad    | First | Not started                               | Ephemeral per-directory notes.                                                                                    |
+| peek          | First | Not started                               | Hover and preview anchored to semantic zones or rich blocks.                                                      |
+| pet           | First | Not started                               | Non-blocking companion overlay.                                                                                   |
+| browser-panel | Later | Not started                               | Browser view and panel; removed from Core (`bitty` CTX-0886), may return as an independent optional plugin.       |
+| ai-panel      | Later | Not started                               | Agent panel surface; removed from Core (`bitty` CTX-0886), AI surfaces move to the optional `bitty-ai` extension. |
+| mail-panel    | Later | Not started                               | Mail triage panel; removed from Core (`bitty` CTX-0886), not planned.                                             |
 
 ## Creating a plugin directory
 
