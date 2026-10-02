@@ -18,6 +18,7 @@ lives in the linked pages; this index carries no duplicate normative prose.
 | -------------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------- |
 | [Plugin system](plugin-system.md)                                                | Draft  | Plugin boundaries, isolation, composition, capabilities, and lifecycle.                                     |
 | [Plugin package management](package-management.md)                               | Draft  | Manifests, sources, updates, rollback, and trust.                                                           |
+| [Plugin history and storage policy](history-and-storage-policy.md)               | Draft  | Plugin-facing history and storage ownership, privacy, retention, capabilities, and page sets.               |
 | [Lua UI Component Model (Candidate)](lua-ui-component-model-candidate.md)        | Draft  | Candidate five-level Lua UI component ecosystem, theming, accessibility, and panel services.                |
 | [Plugin UI Slot Inventory (Candidate)](plugin-ui-slot-inventory-candidate.md)    | Draft  | Candidate per-slot purpose, multiplicity, bounds, and conflict resolution for the accepted closed slot set. |
 | [TUI to Native Migration Path (Candidate)](tui-to-native-migration-candidate.md) | Draft  | Candidate L0-L4 migration ladder, per-application-type guidance, and Backend Service Plugin pattern.        |
