@@ -318,7 +318,14 @@ but Nix-like storage is not a first-stage requirement.
 
 Status: **accepted direction ([DIR-030](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md))**,
 including the v1 component commands below (DIR-030 refinement of
-2026-10-02). The process, install, and authority model is
+2026-10-02); the manifest `[components]` grammar is **accepted** per the
+2026-10-02 amendment to the
+[Plugin Manifest and Capability Grammar
+Authority](../specifications/manifest-capability-authority.md#amendment-2026-10-02-accepting-components-and-networkegress)
+(it is also part of the [Plugin Platform
+RFC](../specifications/plugin-platform-rfc.md#accepted-manifest-schema)
+accepted manifest schema); the remaining package-manager install/resolution
+spelling below is candidate. The process, install, and authority model is
 defined in the [Native Component Boundary](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/native-component-boundary.md); this section records only the package-manager
 consequences.
 
@@ -357,6 +364,19 @@ net = "^0.0.1"
 
 Version requirements use semver caret matching with Cargo semantics:
 `^0.0.1` admits exactly `0.0.1`, and `^0.1` admits `>=0.1.0, <0.2.0`.
+
+A plugin that uses the `net` component to reach a specific destination also
+declares the structured egress entry so Core can compute its grant (the
+intersection of granted `network.connect:HOST[:PORT]` capabilities and
+`[[network.egress]]` declarations, per the [Plugin Manifest and Capability
+Grammar
+Authority](../specifications/manifest-capability-authority.md#amendment-2026-10-02-accepting-components-and-networkegress)):
+
+```toml
+[[network.egress]]
+host = "api.example.com"
+ports = [443]
+```
 
 Rules:
 
