@@ -59,7 +59,9 @@ Out of scope and owned elsewhere (pointers, not content):
 - the terminal-side core targeting engine (`TargetEngine`/`AnnotationEngine`,
   `TargetRef` generation validation, the annotation layer inside the workspace
   scene, transient input capture, and the command dispatch bridge)
-  (owner-pending, [bitty-terminal-docs specifications tree](https://github.com/bitty-terminal/bitty-terminal-docs/tree/main/specifications));
+  (mechanism names accepted by bitty-docs
+  [ADR 0018](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0018-beacon-mechanism-policy-split.md);
+  host API owner-pending, [bitty-terminal-docs specifications tree](https://github.com/bitty-terminal/bitty-terminal-docs/tree/main/specifications));
 - the terminal-side UI runtime that owns the retained declarative UI tree,
   hit-testing, focus, layout, and compositor scene submission
   (owner-pending, same tree; the runtime candidate is in flight);
@@ -86,8 +88,10 @@ Out of scope and owned elsewhere (pointers, not content):
   [bitty-docs](https://github.com/bitty-terminal/bitty-docs)).
 
 No terminal-side document is changed, moved, or status-promoted by this page;
-the extraction of Beacon from terminal-side scope is recorded as an
-owner-pending pointer.
+the extraction of Beacon from terminal-side scope (policy to the plugin,
+mechanism retained in Core) is decided by bitty-docs
+[ADR 0018](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0018-beacon-mechanism-policy-split.md),
+and the remaining terminal-side host API work stays owner-pending (`W-29`).
 
 ## Normative sources this specification must not weaken
 
@@ -149,9 +153,10 @@ the entire workspace. It is not a terminal jump plugin and not a sub-feature of
 terminal scope: terminal content is one target domain among panels, workspaces,
 interactive controls, links, and plugin domain objects. The terminal-side
 candidate that currently records Beacon within terminal scope is unchanged by
-this page; its extraction, and the removal of the terminal-scope framing, are
-proposed as owner-pending work for the terminal-side owner rather than decided
-here.
+this page; its extraction scope is now decided by bitty-docs ADR 0018 (see open
+point 1 and the B-8 section): policy moves to the optional plugin, the Core
+mechanism stays in Core for the 0.1.0 scope, and any separate Rust component is
+deferred to `W-29`/`W-30`.
 
 The framework rests on a fundamental duality:
 
@@ -372,16 +377,25 @@ and scene contracts.
 
 ## B-8 Rust core mechanism versus Lua plugin policy (Candidate)
 
-**Candidate.** The framework splits along the mechanism/policy boundary:
+**Candidate (split accepted).** The framework splits along the
+mechanism/policy boundary; the split, the Core mechanism names, and the
+extraction scope are decided by bitty-docs
+[ADR 0018](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0018-beacon-mechanism-policy-split.md),
+while the plugin-side direction recorded below remains candidate:
 
-| Side                 | Owns                                                                                                                                  |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Rust core mechanisms | Target registry, semantic target snapshots, `LabelAllocator`, annotation layer, transient input capture, command dispatch bridge.     |
-| Lua plugin policy    | Key-language bindings, which-key integration, scopes, filters, theme badges, provider composition, and target-first menu composition. |
+| Side                                                 | Owns                                                                                                                                    |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Core mechanism `TargetEngine` (accepted name)        | Target registry, semantic target snapshots, provider registration and composition, and bridging to the command-dispatch host mechanism. |
+| Core mechanism `AnnotationEngine` (accepted name)    | Annotation layer and the `LabelAllocator`.                                                                                              |
+| Existing Core host mechanisms (not Beacon-named)     | Transient input capture and the command-dispatch bridge; reached through the `W-01` and `W-29` host APIs.                               |
+| Lua plugin policy (official `bitty-terminal/beacon`) | Key-language bindings, which-key integration, scopes, filters, theme badges, provider composition, and target-first menu composition.   |
 
-The names `TargetEngine` and `AnnotationEngine` are recorded candidate
-spellings for the Rust side; the naming is explicitly open, and no Rust type is
-claimed to exist. The Lua side is the thin official plugin
+The names are no longer open: `TargetEngine` (target registry, semantic target
+snapshots, provider registration and composition, and the command-dispatch
+bridge) and `AnnotationEngine` (annotation layer and `LabelAllocator`) are the
+accepted Core mechanism names decided by bitty-docs
+[ADR 0018](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0018-beacon-mechanism-policy-split.md).
+No Rust type is claimed to exist. The Lua side is the thin official plugin
 **`bitty-terminal/beacon`**: an ordinary plugin that follows the accepted
 manifest, capability, lifecycle, and service rules and receives no special
 runtime privilege. Being the reference operator surface does not make it part
@@ -397,8 +411,10 @@ governs its entry criteria, and the
 records the surrounding ecosystem state.
 
 **Owner-pending.** The Core mechanism belongs to the terminal platform
-documentation owner; this page records only the plugin-side framework and the
-split, not a Core API.
+documentation owner; its names are decided by bitty-docs
+[ADR 0018](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0018-beacon-mechanism-policy-split.md),
+while the host API remains `W-29`. This page records only the plugin-side
+framework and the split, not a Core API.
 
 ## B-9 Six architectural primitives and the session state machine (Candidate)
 
@@ -523,32 +539,40 @@ direction only.
 
 ## Affected contracts
 
-| Direction                                | Status                                                                                                    | Owning document                                                                                                                                                                                                                                                                   |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| B-1 identity and mouse/keyboard duality  | Candidate; the terminal-side extraction and core engine are owner-pending                                 | This page; [Semantic Terminal RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/semantic-terminal-rfc.md) (candidate terminal-side scope; extraction owner-pending)                                                                             |
-| B-2 `Action × Target` grammar            | Candidate; dispatch rides the accepted command registry                                                   | [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) command registry (Accepted), [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) (Accepted)                                                  |
-| B-3 `TargetRef` handles                  | Candidate; the identity hierarchy it relies on is Accepted                                                | [Workspace Compositor Specification](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md), [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) (Accepted) |
-| B-4 discovery and provider tiers         | Candidate; the semantic UI property surface is owner-pending terminal side                                | [bitty-terminal-docs specifications tree](https://github.com/bitty-terminal/bitty-terminal-docs/tree/main/specifications) (owner-pending)                                                                                                                                         |
-| B-5 scopes                               | Candidate                                                                                                 | This page                                                                                                                                                                                                                                                                         |
-| B-6 label allocation                     | Candidate; the allocator is a Core mechanism, the strategy surface is Lua policy                          | This page; [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md) for the configuration boundary (Accepted)                                                                                         |
-| B-7 annotation layer                     | Candidate; composes with accepted bounded overlay rules                                                   | [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) (Accepted)                                                                                                                                               |
-| B-8 Core/plugin split                    | Candidate; the plugin is an ordinary package under accepted manifest, capability, and lifecycle contracts | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md) (Accepted)                                                                                                                                      |
-| B-9 primitives and session state machine | Candidate                                                                                                 | This page                                                                                                                                                                                                                                                                         |
-| B-10 security posture                    | Candidate; must not weaken any accepted normative control                                                 | [Security Overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md) and [Threat Model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md) (Normative)                                                        |
+| Direction                                | Status                                                                                                                                                                                                                                                                                                   | Owning document                                                                                                                                                                                                                                                                   |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B-1 identity and mouse/keyboard duality  | Candidate; the terminal-side extraction and core engine are owner-pending                                                                                                                                                                                                                                | This page; [Semantic Terminal RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/semantic-terminal-rfc.md) (candidate terminal-side scope; extraction owner-pending)                                                                             |
+| B-2 `Action × Target` grammar            | Candidate; dispatch rides the accepted command registry                                                                                                                                                                                                                                                  | [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) command registry (Accepted), [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) (Accepted)                                                  |
+| B-3 `TargetRef` handles                  | Candidate; the identity hierarchy it relies on is Accepted                                                                                                                                                                                                                                               | [Workspace Compositor Specification](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md), [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) (Accepted) |
+| B-4 discovery and provider tiers         | Candidate; the semantic UI property surface is owner-pending terminal side                                                                                                                                                                                                                               | [bitty-terminal-docs specifications tree](https://github.com/bitty-terminal/bitty-terminal-docs/tree/main/specifications) (owner-pending)                                                                                                                                         |
+| B-5 scopes                               | Candidate                                                                                                                                                                                                                                                                                                | This page                                                                                                                                                                                                                                                                         |
+| B-6 label allocation                     | Candidate; the allocator is a Core mechanism, the strategy surface is Lua policy                                                                                                                                                                                                                         | This page; [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md) for the configuration boundary (Accepted)                                                                                         |
+| B-7 annotation layer                     | Candidate; composes with accepted bounded overlay rules                                                                                                                                                                                                                                                  | [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) (Accepted)                                                                                                                                               |
+| B-8 Core/plugin split                    | Candidate; the split, Core mechanism names, and `OQ-089` extraction scope are decided by bitty-docs [ADR 0018](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0018-beacon-mechanism-policy-split.md), while the plugin-side direction and remaining items stay candidate | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md) (Accepted)                                                                                                                                      |
+| B-9 primitives and session state machine | Candidate                                                                                                                                                                                                                                                                                                | This page                                                                                                                                                                                                                                                                         |
+| B-10 security posture                    | Candidate; must not weaken any accepted normative control                                                                                                                                                                                                                                                | [Security Overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md) and [Threat Model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md) (Normative)                                                        |
 
 ## Open points
 
 These are **candidate open items, not accepted open questions**. Each must be
 decided in the owning contract before any direction here becomes contract:
 
-1. Owner review of the elevation of Beacon from a terminal-scope sub-feature to
-   a workspace-wide targeting framework, including the terminal-side extraction
-   of the scope that this page records (register entry OQ-089).
+1. **Decided** by bitty-docs
+   [ADR 0018](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0018-beacon-mechanism-policy-split.md)
+   (2026-10-03): the elevation of Beacon to a workspace-wide targeting framework
+   and the terminal-side extraction scope are resolved. Policy is extracted to
+   the optional `beacon` plugin; the Core mechanism stays in Core for the 0.1.0
+   scope; any separate Rust Core component is deferred to `W-29`/`W-30`.
+   (Register entry OQ-089.)
 2. Owner approval of the six primitives and the `Action × Target` interaction
    model, including the two grammars and their context menu.
-3. Formal naming of the terminal-side Rust core mechanisms
-   (`TargetEngine`/`AnnotationEngine` versus a Beacon Core name) and the
-   boundary between Core and the Lua plugin.
+3. **Decided** by bitty-docs
+   [ADR 0018](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0018-beacon-mechanism-policy-split.md)
+   (2026-10-03): the accepted Core mechanism names are `TargetEngine` (target
+   registry, semantic target snapshots, provider registration and composition,
+   and the command-dispatch bridge) and `AnnotationEngine` (annotation layer
+   plus `LabelAllocator`); the boundary is Core mechanism versus plugin policy,
+   with no private first-party bypass.
 4. The `TargetRef` wire shape, derived-provider composition, and handle
    validity across panel moves and workspace changes.
 5. The provider registration surface, its capability dimensions, and the API
@@ -595,9 +619,14 @@ extraction.
 
 ## References
 
+- bitty-docs [ADR 0018 - Beacon Mechanism/Policy Split and Core
+  Targeting-Mechanism Naming](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0018-beacon-mechanism-policy-split.md) —
+  accepted owner decision the `B-8` naming and extraction-scope open points
+  point to.
 - [Semantic Terminal RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/semantic-terminal-rfc.md) —
   terminal-side candidate that currently records Beacon within terminal scope;
-  the extraction is owner-pending.
+  the extraction scope is decided by bitty-docs ADR 0018 (policy to the plugin,
+  Core mechanism retained, separate Rust component deferred to `W-29`/`W-30`).
 - [Panel and Workspace Interaction (Candidate)](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-workspace-interaction-candidate.md) —
   candidate interaction, identity, and Bar direction the workspace targeting
   composes with.
