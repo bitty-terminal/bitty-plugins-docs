@@ -623,6 +623,9 @@ extraction.
   Targeting-Mechanism Naming](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0018-beacon-mechanism-policy-split.md) —
   accepted owner decision the `B-8` naming and extraction-scope open points
   point to.
+- [Beacon plugin documentation](../docs/plugins/beacon/README.md) — the
+  plugin-side page set (design, schemas, and evidence) for the policy layer
+  this candidate records; the policy remains candidate.
 - [Semantic Terminal RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/semantic-terminal-rfc.md) —
   terminal-side candidate that currently records Beacon within terminal scope;
   the extraction scope is decided by bitty-docs ADR 0018 (policy to the plugin,
