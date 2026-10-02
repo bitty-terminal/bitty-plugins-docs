@@ -399,18 +399,18 @@ the grammar above; `[limits]` and `[services.required]` remain rejected.
 This table maps every disputed grammar element to its single authoritative
 owner and canonical form:
 
-| Grammar element                | Authority                     | Canonical form                           | Consumers                                        |
-| ------------------------------ | ----------------------------- | ---------------------------------------- | ------------------------------------------------ |
-| Environment capability family  | This specification, section 1 | `env.read:<KEY>`                         | SDK, host, template, docs                        |
-| Environment wildcard semantics | This specification, section 1 | `PREFIX_*` allowed; `*` rejected         | SDK, host grant evaluator                        |
-| `layout.provider` capability   | This specification, section 2 | Deferred (not in v1 closed set)          | SDK (reject), host (remove), docs (do not claim) |
-| Dependency inline table        | This specification, section 3 | `{ version = "...", prerelease = bool }` | SDK, host, template, resolver                    |
-| Compatibility range grammar    | This specification, section 4 | Resolver version-requirement grammar     | SDK, host, registry validator                    |
-| Service schema representation  | This specification, section 5 | TOML inline tables                       | SDK, host parser, template                       |
-| `[limits]` manifest field      | This specification, section 6 | Rejected (not accepted)                  | SDK (reject), docs (do not claim)                |
-| `[[network.egress]]` field     | This specification, section 6 amendment (2026-10-02) | Accepted: `{ host, ports }`, exact host, bounded ports, paired with `network.connect:*` | SDK, host, template, docs |
-| `[services.required]` field    | This specification, section 6 | Rejected (not accepted)                  | SDK (reject), docs (do not claim)                |
-| `[components]` manifest field  | This specification, section 6 amendment (2026-10-02) | Accepted: component name (`[a-z][a-z0-9-]{0,31}`) -> caret semver requirement | SDK, host, template, docs |
+| Grammar element                | Authority                                            | Canonical form                                                                          | Consumers                                        |
+| ------------------------------ | ---------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Environment capability family  | This specification, section 1                        | `env.read:<KEY>`                                                                        | SDK, host, template, docs                        |
+| Environment wildcard semantics | This specification, section 1                        | `PREFIX_*` allowed; `*` rejected                                                        | SDK, host grant evaluator                        |
+| `layout.provider` capability   | This specification, section 2                        | Deferred (not in v1 closed set)                                                         | SDK (reject), host (remove), docs (do not claim) |
+| Dependency inline table        | This specification, section 3                        | `{ version = "...", prerelease = bool }`                                                | SDK, host, template, resolver                    |
+| Compatibility range grammar    | This specification, section 4                        | Resolver version-requirement grammar                                                    | SDK, host, registry validator                    |
+| Service schema representation  | This specification, section 5                        | TOML inline tables                                                                      | SDK, host parser, template                       |
+| `[limits]` manifest field      | This specification, section 6                        | Rejected (not accepted)                                                                 | SDK (reject), docs (do not claim)                |
+| `[[network.egress]]` field     | This specification, section 6 amendment (2026-10-02) | Accepted: `{ host, ports }`, exact host, bounded ports, paired with `network.connect:*` | SDK, host, template, docs                        |
+| `[services.required]` field    | This specification, section 6                        | Rejected (not accepted)                                                                 | SDK (reject), docs (do not claim)                |
+| `[components]` manifest field  | This specification, section 6 amendment (2026-10-02) | Accepted: component name (`[a-z][a-z0-9-]{0,31}`) -> caret semver requirement           | SDK, host, template, docs                        |
 
 ## Valid and invalid example corpus
 
