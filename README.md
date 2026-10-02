@@ -11,7 +11,12 @@ carries the accepted and draft plugin contracts in theme topic trees
 (`runtime/`, `sdk/`, `packaging/`, `architecture/`, `specifications/`,
 `product/`, `extensibility/`) and the per-plugin page set under `docs/plugins/`.
 Migrated documents remain design-stage unless they state their own evidence;
-this README describes the repository contract, not shipped behavior.
+this README describes the repository contract, not shipped behavior. Plugin
+network access in particular is design-stage: Core links no network
+implementation, the `net` native component follows the accepted
+[DIR-030 Native Component Boundary](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/native-component-boundary.md),
+and the plugin-facing Lua network surface is deferred (`bitty` commit
+`799f7433`, 2026-10-02).
 
 ## Scope
 
@@ -43,7 +48,8 @@ This repository is mounted at `bitty-plugins/docs` as a Git submodule
 (branch `main`) of the
 [bitty-plugins](https://github.com/bitty-terminal/bitty-plugins) composition
 repository, which holds the plugin registry and the official plugins as pinned
-submodules (`plugins/activity`, `plugins/palette`, `plugins/statusline`) plus
+submodules under `plugins/` (the roster lives in that repository's
+`.gitmodules` and `registry/official/`) plus
 the `sdk`
 ([bitty-plugin-sdk](https://github.com/bitty-terminal/bitty-plugin-sdk)) and
 `template`

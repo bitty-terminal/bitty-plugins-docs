@@ -351,6 +351,19 @@ registry-via-git) stay canonical in the
 PR #20); this section covers runtime plugin network only. No implementation
 claim.
 
+Current state (2026-10-02, `bitty` commit `799f7433`, bitty#1603 and
+bitty#1604): no Lua network surface exists for plugins. Core removed its
+embedded network path (the optional network Cargo feature, the
+`bitty-network-lua` binding, and the Lua `bitty.network` module) and now
+reaches the network only through the `net` native component, the `bitty-net`
+stdio coprocess, under the accepted
+[DIR-030 Native Component Boundary](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/native-component-boundary.md).
+DIR-030 makes the plugin-facing surface a non-blocking request handle plus a
+response event and defers it as follow-up work. The synchronous
+`bitty.http.get` sketch and the `CurlBackend` V1 below predate DIR-030 and
+remain candidate material; reconciling their spelling and backend with the
+component model is an open point of this section, not a shipped contract.
+
 Lua sees one stable surface while the host owns the transport:
 
 ```lua
@@ -605,6 +618,9 @@ receive ADRs and acceptance evidence.
 - What are the `bitty.http` response, timeout, and allowlist semantics, and
   the strict-form secrets contract (`bitty.secrets.get`,
   `authenticated_request`)?
+- How does the candidate `bitty.http` spelling map onto the DIR-030
+  non-blocking request handle and response event served by the `net`
+  component, and does the `CurlBackend` V1 survive the component model?
 - Which host remote surfaces are plugin-visible (notification delivery and a
   candidate event-publish call), with which payload shapes, scopes, and
   consent, whether remote device events may be subscribed to, and how remote delivery composes with the accepted notification rate-governance rule (`RC-8`, defined by the Isolation Resource RFC and reused by the plugin host runtime contract)?

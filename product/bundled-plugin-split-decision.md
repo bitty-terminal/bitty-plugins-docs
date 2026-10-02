@@ -39,6 +39,21 @@ sidebar_order: 23
 > `bitty-terminal.workspace` manifest is retiring, no bundled plugin holds the
 > `tabline` or `workspaceline` claim, and any tab strip or workspace bar is an
 > optional plugin. The verdicts below are kept as the 2026-09-14 record.
+>
+> Later change (2026-10-02, `bitty` commit `799f7433`, bitty#1603 and
+> bitty#1604; accepted direction
+> [DIR-030 Native Component Boundary](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/native-component-boundary.md)):
+> Core no longer links any network implementation in-process. The embedded
+> network Cargo feature, the `bitty-network-lua` binding, and the Lua
+> `bitty.network` module are removed from Core; network access is the `net`
+> native component (the `bitty-net` stdio coprocess from the
+> [bitty-network](https://github.com/bitty-terminal/bitty-network)
+> repository), spawned and granted by the Core component broker, and Core
+> links only the `bitty-network-wire` codec. The plugin-facing Lua network
+> surface (a request handle plus a response event) is deferred, not
+> implemented: plugins have no Lua network API today, so the
+> `network.connect` requests and network risk named in the 2026-09-14
+> verdicts below describe the decision-time assessment, not a live surface.
 
 ## Purpose and scope
 
