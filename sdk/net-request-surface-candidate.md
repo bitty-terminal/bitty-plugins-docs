@@ -459,12 +459,15 @@ the surface:
   additive minor version adds the `bitty.net` namespace, the Result event
   class, and the four event names to the closed set.
 - [Plugin Platform RFC](../specifications/plugin-platform-rfc.md): the
-  accepted manifest schema must admit `[components]` and `[[network.egress]]`,
-  and the event pipeline gains the Result class delivery rules above.
-- [Plugin Manifest and Capability Grammar Authority](../specifications/manifest-capability-authority.md):
-  section 6 currently classifies `[[network.egress]]` as rejected, while
-  DIR-030 and the Core grant computation depend on it. That classification
-  must be amended by a reviewed change before this surface can be accepted.
+  accepted manifest schema admits `[components]` and `[[network.egress]]`
+  (open point resolved, see below), and the event pipeline gains the Result
+  class delivery rules above.
+- [Plugin Manifest and Capability Grammar Authority](../specifications/manifest-capability-authority.md#amendment-2026-10-02-accepting-components-and-networkegress):
+  section 6 previously classified `[[network.egress]]` as rejected, while
+  DIR-030 and the Core grant computation depend on it. The 2026-10-02
+  amendment resolves this by accepting `[components]` and
+  `[[network.egress]]`; the manifest schema conflict this page depended on is
+  closed.
 - [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md): the
   per-plugin network bounds above become a new resource-ceiling row.
 - The SDK surface file (`bitty-plugin-api-v1.json` in the bitty-plugin-sdk
@@ -475,9 +478,6 @@ the surface:
 
 ## Open points
 
-- Amend the manifest authority section 6 and the Plugin Platform RFC manifest
-  schema to accept `[components]` and `[[network.egress]]` (owner: plugin
-  platform contract owners).
 - Whether revoking a `network.connect` grant cancels in-flight requests of
   that plugin, or only refuses new ones.
 - Whether the Result class needs a cross-plugin global pending bound in
@@ -489,7 +489,6 @@ the surface:
 
 ## Acceptance criteria
 
-- The manifest schema conflict in [Open points](#open-points) is resolved.
 - The category owner, the docs curator, and a security reviewer approve the
   namespace, events, errors, and bounds.
 - The verification plan items have named owning tasks in the `bitty`

@@ -274,46 +274,143 @@ TOML inline table forms; they are correct and must not regress.
 
 ### 6. Host-only manifest forms classification
 
-**Decision**: `[limits]`, `[[network.egress]]`, and `[services.required]` are
-**rejected** as accepted manifest fields.
+**Decision**: `[limits]` and `[services.required]` are **rejected** as
+accepted manifest fields. `[components]` and `[[network.egress]]` are
+**accepted** manifest fields, admitted by this amendment (dated 2026-10-02,
+commander decision, recorded below).
 
-**Rationale**: The Plugin Platform RFC section 2.2 (lines 169-224) defines the
-accepted manifest schema. These three forms do not appear in that schema:
+**Rationale**: The Plugin Platform RFC section 2.2 (lines 169-224) originally
+defined the accepted manifest schema without these four forms:
 
 - `[limits]`: Not in accepted schema. Resource limits are owned by the
   Isolation Resource RFC and enforced by the runtime, not declared in manifests.
-- `[[network.egress]]`: Not in accepted schema. Network destinations are
-  expressed via `network.connect:DESTINATION` capability grants.
+- `[[network.egress]]`: Was classified as not in the accepted schema at the
+  time this specification was first accepted (2026-09-26). See the amendment
+  below: the accepted [DIR-030 Native Component
+  Boundary](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/native-component-boundary.md)
+  and the `bitty` host parser (`NetworkEgress` in
+  `bitty-plugin-host/src/manifest.rs`) now depend on this field, so the
+  rejection no longer matches the accepted direction and this specification
+  closes the conflict instead of silently diverging from DIR-030.
 - `[services.required]`: Not in accepted schema. Service dependencies are
   declared in `[dependencies]` with version requirements.
+- `[components]`: Was absent from the original accepted schema. DIR-030
+  introduces it as the plugin-side declaration of a required native
+  component (for example `net`), and this amendment admits it for the same
+  reason as `[[network.egress]]`.
 
-**Classification**: These are implementation experiments in the reference host.
-They must not appear in:
+**Classification**: `[limits]` and `[services.required]` remain
+implementation experiments in the reference host. They must not appear in:
 
 - SDK validators (must reject with "unknown field" error)
 - Template scaffolds or examples
 - Canonical documentation as accepted alternatives
 
-**Action required**: Document these as experimental forms that may be removed
-or reworked in a future manifest evolution RFC. They are not part of the stable
-v1 contract.
+**Action required**: Document `[limits]` and `[services.required]` as
+experimental forms that may be removed or reworked in a future manifest
+evolution RFC. They are not part of the stable v1 contract. `[components]`
+and `[[network.egress]]` are now part of the stable v1 contract per the
+amendment below.
+
+#### Amendment (2026-10-02): accepting `[components]` and `[[network.egress]]`
+
+**Status**: accepted amendment, dated 2026-10-02, recorded as a commander
+decision following the DIR-030 dependency conflict raised in
+[`sdk/net-request-surface-candidate.md`](../sdk/net-request-surface-candidate.md#open-points).
+
+**Why the original rejection no longer holds**: the 2026-09-26 acceptance of
+this specification rejected both fields because neither appeared in the
+Plugin Platform RFC's accepted manifest schema at that time. Since then,
+[DIR-030 Native Component
+Boundary](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/native-component-boundary.md)
+was accepted (2026-10-01) and fixed a plugin dependency declaration
+(`[components]`) and the Core grant computation
+(`network.connect:*` intersected with `[[network.egress]]`) as load-bearing
+parts of the native-component authority model. The `bitty` host parser
+already implements `NetworkEgress` validation
+(`bitty-plugin-host/src/manifest.rs`) and the grant intersection
+(`bitty-runtime/src/component/grant.rs`). Continuing to classify these two
+fields as rejected would contradict an already-accepted direction and leave
+the SDK, template, and host without one shared grammar. This amendment
+resolves the conflict by accepting both fields rather than by downgrading
+DIR-030.
+
+**`[components]` grammar (new)**:
+
+```toml
+[components]
+net = "^0.0.1"
+```
+
+- Each key is a component name matching `[a-z][a-z0-9-]{0,31}` (the same
+  grammar DIR-030 uses for `bitty-component.toml`'s `[component].name`).
+- Each value is a version requirement in the closed resolver constraint
+  grammar (Package Follow-up RFC), interpreted with caret semantics: `^0.0.1`
+  admits exactly `0.0.1`; `^0.1` admits `>=0.1.0, <0.2.0`.
+- At most `MAX_COMPONENTS_PER_PLUGIN` entries (candidate bound: 8, matching
+  `MAX_DEPENDENCIES` and `MAX_TOOLS`'s order of magnitude; the host parser
+  does not yet enforce a dedicated ceiling, so this bound is a candidate
+  pending host implementation, not yet an enforced limit).
+- A missing or incompatible component fails the install with a diagnostic, or
+  makes the capability unavailable at runtime, per DIR-030's plugin
+  dependency declaration section.
+
+**`[[network.egress]]` grammar (reinstated)**:
+
+```toml
+[[network.egress]]
+host = "api.example.com"  # exact DNS name, no wildcard, no port, no path
+ports = [443]              # 1..=65535, at least one, at most MAX_NETWORK_PORTS_PER_HOST (16)
+```
+
+- `host` is validated as a bare DNS name: 1..=253 bytes total, dot-separated
+  labels of 1..=63 bytes each, lowercase ASCII alphanumerics and hyphens, no
+  leading/trailing hyphen per label, no wildcard (`*`), no port, no path, no
+  control characters (host parser:
+  `bitty-plugin-host/src/manifest.rs::validate_egress_host`).
+- `ports` lists at least one and at most `MAX_NETWORK_PORTS_PER_HOST` (16)
+  ports; each port is in `1..=65535` (port `0` is rejected as not a
+  connectable destination).
+- At most `MAX_NETWORK_EGRESS` (16) `[[network.egress]]` entries per
+  manifest (host parser constant).
+- **Pairing is fail-closed in both directions**: every `network.connect:*`
+  capability needs a covering `[[network.egress]]` entry and every entry
+  needs a covering capability, mirroring the `process.spawn:<tool>` /
+  `[tools.<tool>]` rule in section 9 of the Plugin Platform RFC's accepted
+  manifest schema. A `network.connect:HOST` capability with no egress entry
+  for `HOST`, or an egress entry for a host with no covering
+  `network.connect` capability, is a validation error.
+- **Grant computation**: the effective grant for a plugin is the
+  intersection of its granted `network.connect:HOST[:PORT]` capabilities and
+  its `[[network.egress]]` declarations. A bare `network.connect:HOST`
+  capability admits every port the matching egress entry declares for
+  `HOST`; a `network.connect:HOST:PORT` capability admits only `PORT`, and
+  only when the matching egress entry declares that port. A host without a
+  matching egress entry contributes nothing to the grant (host parser:
+  `bitty-runtime/src/component/grant.rs::PluginGrant::compute`).
+
+**Classification update**: `[components]` and `[[network.egress]]` move from
+"rejected" to "accepted" in the authority table below. SDK validators,
+template scaffolds, and canonical documentation must accept both forms using
+the grammar above; `[limits]` and `[services.required]` remain rejected.
 
 ## Authority table
 
 This table maps every disputed grammar element to its single authoritative
 owner and canonical form:
 
-| Grammar element                | Authority                     | Canonical form                           | Consumers                                        |
-| ------------------------------ | ----------------------------- | ---------------------------------------- | ------------------------------------------------ |
-| Environment capability family  | This specification, section 1 | `env.read:<KEY>`                         | SDK, host, template, docs                        |
-| Environment wildcard semantics | This specification, section 1 | `PREFIX_*` allowed; `*` rejected         | SDK, host grant evaluator                        |
-| `layout.provider` capability   | This specification, section 2 | Deferred (not in v1 closed set)          | SDK (reject), host (remove), docs (do not claim) |
-| Dependency inline table        | This specification, section 3 | `{ version = "...", prerelease = bool }` | SDK, host, template, resolver                    |
-| Compatibility range grammar    | This specification, section 4 | Resolver version-requirement grammar     | SDK, host, registry validator                    |
-| Service schema representation  | This specification, section 5 | TOML inline tables                       | SDK, host parser, template                       |
-| `[limits]` manifest field      | This specification, section 6 | Rejected (not accepted)                  | SDK (reject), docs (do not claim)                |
-| `[[network.egress]]` field     | This specification, section 6 | Rejected (not accepted)                  | SDK (reject), docs (do not claim)                |
-| `[services.required]` field    | This specification, section 6 | Rejected (not accepted)                  | SDK (reject), docs (do not claim)                |
+| Grammar element                | Authority                                            | Canonical form                                                                          | Consumers                                        |
+| ------------------------------ | ---------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Environment capability family  | This specification, section 1                        | `env.read:<KEY>`                                                                        | SDK, host, template, docs                        |
+| Environment wildcard semantics | This specification, section 1                        | `PREFIX_*` allowed; `*` rejected                                                        | SDK, host grant evaluator                        |
+| `layout.provider` capability   | This specification, section 2                        | Deferred (not in v1 closed set)                                                         | SDK (reject), host (remove), docs (do not claim) |
+| Dependency inline table        | This specification, section 3                        | `{ version = "...", prerelease = bool }`                                                | SDK, host, template, resolver                    |
+| Compatibility range grammar    | This specification, section 4                        | Resolver version-requirement grammar                                                    | SDK, host, registry validator                    |
+| Service schema representation  | This specification, section 5                        | TOML inline tables                                                                      | SDK, host parser, template                       |
+| `[limits]` manifest field      | This specification, section 6                        | Rejected (not accepted)                                                                 | SDK (reject), docs (do not claim)                |
+| `[[network.egress]]` field     | This specification, section 6 amendment (2026-10-02) | Accepted: `{ host, ports }`, exact host, bounded ports, paired with `network.connect:*` | SDK, host, template, docs                        |
+| `[services.required]` field    | This specification, section 6                        | Rejected (not accepted)                                                                 | SDK (reject), docs (do not claim)                |
+| `[components]` manifest field  | This specification, section 6 amendment (2026-10-02) | Accepted: component name (`[a-z][a-z0-9-]{0,31}`) -> caret semver requirement           | SDK, host, template, docs                        |
 
 ## Valid and invalid example corpus
 
@@ -336,6 +433,13 @@ required = [
   "fs.read:/home/*/projects/**",
   "network.connect:api.example.com:443"
 ]
+
+[components]
+net = "^0.0.1"
+
+[[network.egress]]
+host = "api.example.com"
+ports = [443]
 
 [dependencies]
 "xuepoo.gitcore" = ">=2.0.0"
@@ -382,11 +486,16 @@ bitty = "==0.1.0"  # Use = not ==
 [limits]
 memory_mb = 128  # Not an accepted manifest field
 
-[[network.egress]]
-host = "example.com"  # Not an accepted manifest field
-
 [services.required]
 "xuepoo.bar" = "1.0"  # Not an accepted manifest field
+
+# INVALID EXAMPLE 8: Invalid [components] / [[network.egress]] shapes
+[components]
+Net = "^0.0.1"  # Name must be lowercase: [a-z][a-z0-9-]{0,31}
+
+[[network.egress]]
+host = "*.example.com"  # No wildcards (no allow-all)
+ports = []                # At least one port is required
 ```
 
 ## SDK and host implementation requirements
@@ -400,8 +509,8 @@ host = "example.com"  # Not an accepted manifest field
    `{ version = "...", prerelease = <bool> }`.
 4. Apply resolver version-requirement validation to `compat.bitty` and
    `compat.plugin-api`.
-5. Reject `[limits]`, `[[network.egress]]`, and `[services.required]` as
-   unknown fields.
+5. Reject `[limits]` and `[services.required]` as unknown fields; accept
+   `[components]` and `[[network.egress]]` per the amendment grammar above.
 6. Ensure service schemas are TOML inline tables, never JSON strings.
 
 ### Host parser changes
@@ -412,8 +521,10 @@ host = "example.com"  # Not an accepted manifest field
 4. Apply resolver constraint validation to compatibility ranges.
 5. Update manifest parser to handle nested TOML inline tables for service
    schemas; remove JSON string shortcut.
-6. Classify `[limits]`, `[[network.egress]]`, and `[services.required]` as
-   experimental (warn or reject).
+6. Classify `[limits]` and `[services.required]` as experimental (warn or
+   reject); `[components]` and `[[network.egress]]` are already implemented
+   (`bitty-plugin-host/src/manifest.rs`, `bitty-runtime/src/component/grant.rs`)
+   and must stay accepted.
 
 ### Template generator changes
 
@@ -421,7 +532,9 @@ host = "example.com"  # Not an accepted manifest field
 2. Remove any `layout.provider` capability from examples.
 3. Show both string and inline table dependency forms in comments.
 4. Use TOML inline tables for service schemas in examples.
-5. Do not generate `[limits]`, `[[network.egress]]`, or `[services.required]`.
+5. Do not generate `[limits]` or `[services.required]`. Scaffold
+   `[components]` / `[[network.egress]]` only when the plugin requests a
+   native component.
 
 ### Documentation changes
 
@@ -430,8 +543,10 @@ host = "example.com"  # Not an accepted manifest field
 3. Document dependency inline table as accepted (remove "not yet enforced").
 4. Clarify that compatibility ranges use resolver grammar.
 5. Show only TOML inline table service schemas.
-6. Do not mention `[limits]`, `[[network.egress]]`, or `[services.required]` as
-   accepted fields.
+6. Do not mention `[limits]` or `[services.required]` as accepted fields.
+7. Document `[components]` and `[[network.egress]]` as accepted per the
+   amendment grammar above, including the fail-closed pairing rule and the
+   grant-intersection computation.
 
 ## Verification plan
 
@@ -440,7 +555,9 @@ host = "example.com"  # Not an accepted manifest field
 - Run `just check` in `bitty-plugins-docs`: markdownlint, link checker, and
   metadata validator must pass.
 - Verify no document claims `env:<KEY>`, `layout.provider`, JSON string
-  schemas, or rejected manifest fields as accepted forms.
+  schemas, or the still-rejected `[limits]`/`[services.required]` fields as
+  accepted forms; verify `[components]` and `[[network.egress]]` examples
+  match the amendment grammar.
 
 ### Cross-repository synchronization
 
@@ -461,10 +578,17 @@ grammar fork.
 This specification clarifies but does not change the contracts in:
 
 - [Plugin Platform RFC](plugin-platform-rfc.md): manifest schema and capability
-  model remain normative; this document resolves specific spelling ambiguities.
+  model remain normative; this document resolves specific spelling ambiguities
+  and, per the 2026-10-02 amendment, admits `[components]` and
+  `[[network.egress]]` into the accepted manifest schema (the Plugin Platform
+  RFC's own schema fragment is updated in the same change).
 - [Package Follow-up RFC](../packaging/package-followup-rfc.md): resolver
   constraint grammar remains normative; this document applies it to
-  compatibility ranges.
+  compatibility ranges and to `[components]` version requirements.
+- [DIR-030 Native Component
+  Boundary](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/native-component-boundary.md):
+  the amendment admits the manifest fields DIR-030 already depends on; this
+  document does not change DIR-030's process, install, or authority model.
 
 ## Security review
 
@@ -501,6 +625,10 @@ following criteria are satisfied:
   capability model.
 - [Package Follow-up RFC](../packaging/package-followup-rfc.md): resolver
   constraint grammar and prerelease policy.
+- [DIR-030 Native Component
+  Boundary](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/native-component-boundary.md):
+  accepted direction that depends on `[components]` and
+  `[[network.egress]]`, admitted by the 2026-10-02 amendment in section 6.
 - Cross-contract review campaign:
   `research/review/2026-09-24/11-final-cross-contracts.md`, cluster CC-01.
 - Issues: bitty-plugins-docs #95 (parent contract decision), #96 (grammar
