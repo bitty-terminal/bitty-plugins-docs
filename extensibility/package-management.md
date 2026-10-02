@@ -316,8 +316,9 @@ but Nix-like storage is not a first-stage requirement.
 
 ## Component packages
 
-Status: **accepted direction ([DIR-030](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md))**; package-manager
-spelling below is candidate. The process, install, and authority model is
+Status: **accepted direction ([DIR-030](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md))**,
+including the v1 component commands below (DIR-030 refinement of
+2026-10-02). The process, install, and authority model is
 defined in the [Native Component Boundary](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/native-component-boundary.md); this section records only the package-manager
 consequences.
 
@@ -334,7 +335,7 @@ Install layout, separate from the plugin store:
 $XDG_DATA_HOME/bitty/components/
 └── net/
     ├── current                 # plain text: the active version
-    └── 0.1.0/
+    └── 0.0.1/
         ├── bitty-component.toml
         └── bitty-net           # bitty-net.exe on Windows
 ```
@@ -351,27 +352,36 @@ A plugin declares component dependencies in its manifest:
 
 ```toml
 [components]
-net = "^0.1"
+net = "^0.0.1"
 ```
+
+Version requirements use semver caret matching with Cargo semantics:
+`^0.0.1` admits exactly `0.0.1`, and `^0.1` admits `>=0.1.0, <0.2.0`.
 
 Rules:
 
 - **No `PATH` discovery.** Components resolve only from the component root
   (or the developer-only `BITTY_COMPONENTS_DIR` override used by tests); an
   executable that happens to be on `PATH` is never used.
-- **Missing component.** Installing a plugin whose `[components]` requirement
-  is unmet is refused with a diagnostic naming the component and range; at
-  runtime an unavailable component makes the capability unavailable, never
+- **Missing component.** `bitty plugin add` resolves the plugin's
+  `[components]` table; a missing or incompatible component makes the install
+  fail with a diagnostic naming the component, the range, and the
+  `bitty component add` command to run. There is no automatic download in v1.
+  At runtime an unavailable component makes the capability unavailable, never
   ambient.
-- **Sources.** Local-path install is the first component source. Registry
-  installation of components is a follow-up because registry sources are not
-  available yet.
+- **Sources (v1).** Local path only, through the DIR-030 component commands:
+  `bitty component add <dir-or-executable>` (computes the digest and writes
+  `bitty-component.toml` and `current`), `bitty component list`,
+  `bitty component remove <name> [<version>]`, and `bitty component clean`
+  (removes versions not referenced by `current` and components no installed
+  plugin requires). Registry and download sources are a follow-up.
 - **No automatic cascade uninstall.** Removing the last plugin that depends on
   a component does not remove the component; the manager reports it as
-  unused and removal stays an explicit user action.
+  unused and removal stays an explicit user action (`remove` or `clean`).
 
-No component install, resolution, or `[components]` validation is
-implemented in the package manager yet.
+No component command, install, resolution, or `[components]` validation is
+implemented in the package manager yet. The plugin-facing request surface is
+the [bitty.net candidate](../sdk/net-request-surface-candidate.md).
 
 ## Package manager versus runtime host
 
