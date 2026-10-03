@@ -4,7 +4,7 @@ description: Plugin-facing policy for history and storage ownership privacy rete
 category: extensibility
 audience: plugin-author
 document_type: specification
-status: draft
+status: accepted
 website_publish: true
 sidebar_order: 21
 ---
@@ -13,23 +13,25 @@ sidebar_order: 21
 
 ## Document status
 
-Draft. This document is the `W-137` deliverable for the plugin-facing history
+Accepted. This document is the `W-137` deliverable for the plugin-facing history
 and storage policy that sits above the Core storage boundary. That boundary -
 the reconciliation of the four storage objects (segmented transcript, command
 history, session snapshots, and per-plugin key-value state) - is owned by
-`W-131` and remains a draft; this page specializes it for plugin authors and
-must not weaken it. This document does not accept any candidate contract, does
-not authorize implementation, and does not describe implemented behavior.
-Because the upstream reconciliation is not yet authoritative, every ownership,
-privacy, and retention statement here is proposed direction until both the
-boundary and this policy pass independent review. Frontmatter `status` is
-`draft` per the repository metadata schema.
+`W-131` and now accepted; this page specializes it for plugin authors and
+must not weaken it. This document accepts the plugin-facing boundary decision;
+it does not accept downstream SDK/Core/plugin contracts, does not authorize
+implementation, and does not describe implemented behavior. Every ownership,
+privacy, and retention statement here is decided direction for plugins;
+downstream spellings and mechanics remain candidate per Open points.
+Frontmatter `status` is `accepted` per the repository metadata schema.
 
-- Owning task: `W-137` (bitty-plugins-docs), CarryCtx `CTX-0072`, Issue
-  [#131](https://github.com/bitty-terminal/bitty-plugins-docs/issues/131).
+- Owning task: `W-137` promotion (bitty-plugins-docs), CarryCtx `CTX-0075`,
+  Issue
+  [#137](https://github.com/bitty-terminal/bitty-plugins-docs/issues/137).
+  Created by `W-137` (CarryCtx `CTX-0072`, Issue #131); see References.
 - Upstream reconciliation:
   [Storage and History Boundary](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/storage-and-history-boundary.md)
-  (`W-131`, draft), grounded in
+  (`W-131`, accepted), grounded in
   [ADR 0016](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0016-execution-graphics-accessibility-storage-platform-boundaries.md)
   Boundary 4 and binding constraints 8 and 9.
 - Downstream owners named but not decided here: `W-139`
@@ -319,8 +321,9 @@ what the page set must cover and does not decide the plugin's content.
 
 ## Security review
 
-Independent security review is required before this policy merges. The
-reviewers must confirm that no object is persisted by default when it carries
+Independent security review sign-off is recorded for this promotion (boundary-decision scope; verification evidence stays with `W-139`/`W-146`). The
+reviewers confirmed that no object is persisted by default when it carries
+sensitive terminal-derived content, that capture and input recording stay
 sensitive terminal-derived content, that capture and input recording stay
 separate opt-ins, that per-plugin KV is not used as a shim for terminal output
 or secrets, that no plugin-reachable path opens a database, segment file, or
@@ -455,25 +458,26 @@ milestone, and no implementation evidence forces one yet.
   and evidence, not placeholders.
 - The Core storage boundary, the SDK surface, and the history plugin package
   are cross-linked without deciding their content.
-- Candidate status remains candidate, no object or boundary is described as
-  accepted or implemented, and no P0 control is weakened.
+- Policy boundary is accepted; downstream SDK/Core/plugin objects remain candidate, nothing is described as implemented, and no P0 control is weakened.
 - The documentation index routes to this page, and `just check` passes with
   zero issues.
 
 ## P0 Review Sign-off
 
-| Role                | Scope                                                                                   | Requirement                                                               |
-| ------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `category-owner`    | Object ownership, capability rules, and public-API policy correctness                   | Approve; confirms plugin ownership, no-bypass, and delegation to `W-139`. |
-| `security-reviewer` | Privacy default, capture opt-in, redaction, purge, capability, external-argument safety | Independent security review required before merge.                        |
-| `docs-curator`      | Taxonomy, metadata, links, terminology, and index synchronization                       | Approve; confirms discoverability, schema, and page-set guidance.         |
+| Role                | Scope                                                                                   | Requirement                                                                       |
+| ------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `category-owner`    | Object ownership, capability rules, and public-API policy correctness                   | Approve; confirms plugin ownership, no-bypass, and delegation to `W-139`.         |
+| `security-reviewer` | Privacy default, capture opt-in, redaction, purge, capability, external-argument safety | Approve recorded for promotion; verification evidence stays with `W-139`/`W-146`. |
+| `docs-curator`      | Taxonomy, metadata, links, terminology, and index synchronization                       | Approve; confirms discoverability, schema, and page-set guidance.                 |
 
 ## References
 
 - Issue [#131](https://github.com/bitty-terminal/bitty-plugins-docs/issues/131)
-  (CarryCtx `CTX-0072`, plan key `W-137`).
+  (CarryCtx `CTX-0072`, plan key `W-137`) and promotion Issue
+  [#137](https://github.com/bitty-terminal/bitty-plugins-docs/issues/137)
+  (CarryCtx `CTX-0075`).
 - [Storage and History Boundary](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/storage-and-history-boundary.md)
-  (`W-131`, draft) and
+  (`W-131`, accepted) and
   [ADR 0016](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0016-execution-graphics-accessibility-storage-platform-boundaries.md).
 - [Security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md),
   [threat model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md),
