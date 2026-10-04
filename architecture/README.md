@@ -25,8 +25,9 @@ when real content exists; empty placeholder pages are avoided.
 
 All three pages are draft, candidate design input that authorizes no
 shipped behavior. Accepted boundaries they reconcile against live in the
-[runtime](../runtime/README.md), [sdk](../sdk/README.md), and
-[packaging](../packaging/README.md) trees and in the accepted
+[published runtime contract](../runtime/plugin-host-runtime-rfc.md),
+[sdk](../sdk/README.md), and
+[packaging](../packaging/plugin-reuse-and-providers.md) pages and in the accepted
 [Plugin Platform RFC](../specifications/plugin-platform-rfc.md). Shared
 cross-project governance stays in
 [bitty-docs](https://github.com/bitty-terminal/bitty-docs) and is linked, never
@@ -42,7 +43,7 @@ copied.
 
 ## Diagrams
 
-The glossary-driven diagram suite lives in
-[diagrams/](diagrams/README.md): the canonical node and edge inventory plus
+The glossary-driven diagram suite lives in the corpus-only `diagrams/`
+directory (not published on the website): the canonical node and edge inventory plus
 Mermaid sources and vector exports. Each diagram node carries its own status;
 diagram content authorizes no shipped behavior.

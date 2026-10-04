@@ -85,7 +85,7 @@ expected gate is one grant per key: the trait docs require an
 RFC extension-level split lists the surface as gated by `env.read:<KEY>`
 (RFC extension table). The canonical manifest spelling is owned by the
 accepted
-[Plugin Manifest and Capability Grammar Authority](../../specifications/manifest-capability-authority.md)
+Plugin Manifest and Capability Grammar Authority
 section 1: `env.read:<KEY>` for one variable and `env.read:PREFIX_*` for a
 prefix wildcard, with the bare `env.read:*` allow-all form rejected.
 `bitty.env` is absent from the VM unless the manifest declares the grant
@@ -169,7 +169,7 @@ granted-path claim beyond this denial shape is follow-up work.
 - [Plugin API v1 Lua Surface RFC](../plugin-api-v1-lua-surface-rfc.md)
   (Accepted; "Notifications and environment" spellings, `env.read:<KEY>`
   gate, LUA-OQ-2 absent-unless-declared carve-out)
-- [Plugin Manifest and Capability Grammar Authority](../../specifications/manifest-capability-authority.md)
+- Plugin Manifest and Capability Grammar Authority
   (Accepted; section 1 owns the canonical `env.read:<KEY>` spelling, the
   `env.read:PREFIX_*` wildcard, and the rejection of the short `env:<KEY>`
   form and the `env.read:*` allow-all wildcard)
