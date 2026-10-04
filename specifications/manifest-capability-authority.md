@@ -33,8 +33,7 @@ sidebar_order: 19
 
 ## Purpose and scope
 
-The 2026-09-24 cross-contract review campaign
-(`research/review/2026-09-24/11-final-cross-contracts.md`) identified five
+Cross-contract review identified five
 grammar conflicts where SDK, host implementation, template, and canonical
 documentation disagreed:
 
@@ -501,7 +500,5 @@ following criteria are satisfied:
   capability model.
 - [Package Follow-up RFC](../packaging/package-followup-rfc.md): resolver
   constraint grammar and prerelease policy.
-- Cross-contract review campaign:
-  `research/review/2026-09-24/11-final-cross-contracts.md`, cluster CC-01.
 - Issues: bitty-plugins-docs #95 (parent contract decision), #96 (grammar
   publication).

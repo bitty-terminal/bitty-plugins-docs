@@ -28,11 +28,13 @@ candidate spellings recorded in the corpus:
 | Candidate                                                        | Recorded in                                                                                                              |
 | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `bitty.commands.*`, `bitty.events.*`, `bitty.ui.*` namespaces    | [Plugin Platform RFC host namespaces](../specifications/plugin-platform-rfc.md) (explicitly illustrative)                |
-| `bitty.api.register_panel/on_event/get_terminal_state`           | `bitty-docs` finding `FIND-0003` `ECO-SDK-01` (recorded in the shared checkout; not yet on `origin/main`)                |
-| `register_panel/on_event/get_terminal_state` (R-SDK-1 gate list) | `bitty` CarryCtx note `PX-1199` (CTX-0221 first-plugin-batch plan, planning only)                                        |
+| `bitty.api.register_panel/on_event/get_terminal_state`           | Draft-review note only; no accepted contract behind this spelling                                                        |
+| `register_panel/on_event/get_terminal_state` (R-SDK-1 gate list) | First-plugin-batch plan (planning only; no accepted contract)                                                            |
 | `bitty.services:get(...)` colon-style methods                    | [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md) (Draft, post-1.0 provider follow-up) |
 
-Evidence revisions inspected read-only during drafting: `bitty` `1ea2f66`
+Evidence revisions below are drafting-time evidence inspected read-only
+before the 2026-09-11 ratification, not live verification pointers:
+`bitty` `1ea2f66`
 (local checkout; `bitty-plugin-host` and `bitty-lua` sources; the workspace was
 behind `origin/main` at inspection time), `bitty-plugin-sdk` main at `0fbefe7`
 (manifest/lint, mock host, and conformance merged via CTX-0032/#57,
@@ -652,11 +654,9 @@ dispositions are:
   [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md),
   [ADR 0007](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0007-async-gc.md) — accepted runtime,
   environment, and async contracts.
-- `FIND-0003` `ECO-SDK-01` (bitty-docs finding recorded in the shared
-  checkout; not yet committed to `origin/main` at draft time) — candidate
-  spelling and SDK readiness gap.
 - `bitty` `1ea2f66` — `crates/bitty-plugin-host/src/event.rs` (closed
   `EventKind`/`EventPayload`), `registry.rs`, `host.rs`, `capability.rs`,
   `manifest.rs`; `crates/bitty-lua/src/lib.rs` (VM budgets, no host bridge).
-- `bitty-plugin-sdk` `0fbefe7` (main) — manifest/lint, mock host, and
+- `bitty-plugin-sdk` `0fbefe7` (main at draft time; drafting-time evidence,
+  not a live verification pointer) — manifest/lint, mock host, and
   conformance; merged CTX-0032/#57, CTX-0033/#58, CTX-0036/#60, evidence only.
