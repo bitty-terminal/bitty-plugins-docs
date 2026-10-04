@@ -6,8 +6,8 @@
 # Visual rules: rect=module/store, rounded=capability/state, dashed=boundary/unaccepted, solid=call/depends, dashed-edge=event/async
 # Levels: L0 overview, L1 subsystem, L2 flow
 schema_version: 1
-updated: "2026-09-19"
-provenance: CTX-0032
+updated: "2026-10-04"
+provenance: CTX-0076
 description: Canonical node and edge inventory for plugin-side architecture diagrams
 sources:
   - specifications/plugin-contract-direction.md (draft, candidate direction)
@@ -25,6 +25,7 @@ sources:
   - product/official-plugin-onboarding.md (normative policy)
   - extensibility/plugin-system.md (draft, accepted direction where marked)
   - extensibility/package-management.md (draft, candidate contracts)
+  - runtime/phodopus-runtime-candidate.md (candidate, pure-Rust Lua VM)
 
 visual_rules:
   rect: "module / store — Mermaid rectangle"
@@ -41,6 +42,54 @@ levels:
 
 nodes:
   # --- L0 overview (plugin-side context) ---
+  - id: first-party-policy
+    label: First-Party Policy
+    kind: capability
+    shape: rect
+    level: L0
+    status: accepted
+    description: Official first-party policy plugins extracted from Core (bar/tabs, composer, search, copy-mode, devtools)
+    source: specifications/plugin-platform-rfc.md
+  - id: third-party-plugins
+    label: Third-Party Plugins
+    kind: capability
+    shape: rect
+    level: L0
+    status: accepted
+    description: Community and featured plugin instances executed under untrusted-by-default posture
+    source: specifications/plugin-platform-rfc.md
+  - id: phodopus-vm
+    label: Phodopus Lua VM
+    kind: module
+    shape: rect
+    level: L0
+    status: accepted
+    description: Pure-Rust stackless Lua VM with fuel metering, memory bounds, and isolated state per plugin and generation
+    source: runtime/phodopus-runtime-candidate.md
+  - id: plugin-manager
+    label: Plugin Manager CLI
+    kind: module
+    shape: rect
+    level: L0
+    status: accepted
+    description: Out-of-process bitty-plugin-manager CLI resolving, verifying, and staging packages outside Core (DIR-017)
+    source: packaging/package-followup-rfc.md
+  - id: local-store
+    label: Local Staged Store
+    kind: store
+    shape: rect
+    level: L0
+    status: accepted
+    description: Local verified plugin store loaded offline by Extension Host without network initiation
+    source: runtime/plugin-host-runtime-rfc.md
+  - id: ui-presentation
+    label: UI Presentation & Insets
+    kind: domain
+    shape: rounded
+    level: L0
+    status: accepted
+    description: Chrome insets, tab presentations, panels, and modal overlays hosted by plugins over generic slots (ADR-0014)
+    source: architecture/ui-extensibility-architecture.md
   - id: plugin
     label: Plugin
     kind: capability

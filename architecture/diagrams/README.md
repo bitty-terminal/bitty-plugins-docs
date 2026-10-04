@@ -53,38 +53,42 @@ accepts them.
 
 ## Node provenance
 
-| Diagram        | Node                 | Status   | Traces to                                                               |
-| -------------- | -------------------- | -------- | ----------------------------------------------------------------------- |
-| `00-overview`  | Plugin               | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
-| `00-overview`  | Extension Host       | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
-| `00-overview`  | Terminal Truth       | accepted | [Plugin system](../../extensibility/plugin-system.md)                   |
-| `00-overview`  | Registry             | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
-| `00-overview`  | SDK and Template     | accepted | [Split Decision](../../product/bundled-plugin-split-decision.md)        |
-| `00-overview`  | Panel Boundary       | draft    | [UI Extensibility](../../architecture/ui-extensibility-architecture.md) |
-| `01-lifecycle` | bitty-plugin.toml    | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
-| `01-lifecycle` | Capability Grant     | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
-| `01-lifecycle` | Lua VM               | accepted | [Lua Runtime RFC](../../runtime/lua-runtime-rfc.md)                     |
-| `01-lifecycle` | Discovered..Retained | accepted | [Package Lifecycle RFC](../../packaging/package-lifecycle-rfc.md)       |
-| `01-lifecycle` | Integrity Chain      | accepted | [Package Lifecycle RFC](../../packaging/package-lifecycle-rfc.md)       |
-| `01-lifecycle` | Publisher Trust      | accepted | [Package Lifecycle RFC](../../packaging/package-lifecycle-rfc.md)       |
-| `01-lifecycle` | Declared..Disposed   | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
-| `01-lifecycle` | Generation           | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
-| `01-lifecycle` | Event Pipeline       | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
-| `01-lifecycle` | Plugin Store         | accepted | [Host Runtime RFC](../../runtime/plugin-host-runtime-rfc.md)            |
-| `01-lifecycle` | bitty safe           | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
-| `02-registry`  | Official Entry       | accepted | [Onboarding](../../product/official-plugin-onboarding.md)               |
-| `02-registry`  | Community Entry      | accepted | [Onboarding](../../product/official-plugin-onboarding.md)               |
-| `02-registry`  | Index Snapshot       | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
-| `02-registry`  | Client Verify        | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
-| `02-registry`  | Key Directory        | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
-| `02-registry`  | Source Classes       | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
-| `02-registry`  | Resolver             | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
-| `02-registry`  | Lockfile             | accepted | [Package Lifecycle RFC](../../packaging/package-lifecycle-rfc.md)       |
-| `02-registry`  | Template..Mock Host  | accepted | [Split Decision](../../product/bundled-plugin-split-decision.md)        |
-| `02-registry`  | Panel Container      | accepted | [Split Decision](../../product/bundled-plugin-split-decision.md)        |
-| `02-registry`  | Panel Provider       | draft    | [UI Extensibility](../../architecture/ui-extensibility-architecture.md) |
-| `02-registry`  | Presentation Modes   | draft    | [Ecosystem Model](../../architecture/plugin-ecosystem-model.md)         |
-| `02-registry`  | Declarative Slots    | accepted | [API v1 Surface](../../sdk/plugin-api-v1-lua-surface-rfc.md)            |
+| Diagram        | Node                     | Status   | Traces to                                                               |
+| -------------- | ------------------------ | -------- | ----------------------------------------------------------------------- |
+| `00-overview`  | First-Party Policy       | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
+| `00-overview`  | Third-Party Plugins      | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
+| `00-overview`  | Phodopus Lua VM          | accepted | [Phodopus Runtime](../../runtime/phodopus-runtime-candidate.md)         |
+| `00-overview`  | Extension Host           | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
+| `00-overview`  | Plugin Manager CLI       | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
+| `00-overview`  | Registry                 | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
+| `00-overview`  | Local Staged Store       | accepted | [Host Runtime RFC](../../runtime/plugin-host-runtime-rfc.md)            |
+| `00-overview`  | Terminal Truth           | accepted | [Plugin system](../../extensibility/plugin-system.md)                   |
+| `00-overview`  | UI Presentation & Insets | accepted | [UI Extensibility](../../architecture/ui-extensibility-architecture.md) |
+| `00-overview`  | SDK and Template         | accepted | [Split Decision](../../product/bundled-plugin-split-decision.md)        |
+| `01-lifecycle` | bitty-plugin.toml        | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
+| `01-lifecycle` | Capability Grant         | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
+| `01-lifecycle` | Lua VM                   | accepted | [Lua Runtime RFC](../../runtime/lua-runtime-rfc.md)                     |
+| `01-lifecycle` | Discovered..Retained     | accepted | [Package Lifecycle RFC](../../packaging/package-lifecycle-rfc.md)       |
+| `01-lifecycle` | Integrity Chain          | accepted | [Package Lifecycle RFC](../../packaging/package-lifecycle-rfc.md)       |
+| `01-lifecycle` | Publisher Trust          | accepted | [Package Lifecycle RFC](../../packaging/package-lifecycle-rfc.md)       |
+| `01-lifecycle` | Declared..Disposed       | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
+| `01-lifecycle` | Generation               | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
+| `01-lifecycle` | Event Pipeline           | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
+| `01-lifecycle` | Plugin Store             | accepted | [Host Runtime RFC](../../runtime/plugin-host-runtime-rfc.md)            |
+| `01-lifecycle` | bitty safe               | accepted | [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)      |
+| `02-registry`  | Official Entry           | accepted | [Onboarding](../../product/official-plugin-onboarding.md)               |
+| `02-registry`  | Community Entry          | accepted | [Onboarding](../../product/official-plugin-onboarding.md)               |
+| `02-registry`  | Index Snapshot           | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
+| `02-registry`  | Client Verify            | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
+| `02-registry`  | Key Directory            | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
+| `02-registry`  | Source Classes           | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
+| `02-registry`  | Resolver                 | accepted | [Package Follow-up RFC](../../packaging/package-followup-rfc.md)        |
+| `02-registry`  | Lockfile                 | accepted | [Package Lifecycle RFC](../../packaging/package-lifecycle-rfc.md)       |
+| `02-registry`  | Template..Mock Host      | accepted | [Split Decision](../../product/bundled-plugin-split-decision.md)        |
+| `02-registry`  | Panel Container          | accepted | [Split Decision](../../product/bundled-plugin-split-decision.md)        |
+| `02-registry`  | Panel Provider           | draft    | [UI Extensibility](../../architecture/ui-extensibility-architecture.md) |
+| `02-registry`  | Presentation Modes       | draft    | [Ecosystem Model](../../architecture/plugin-ecosystem-model.md)         |
+| `02-registry`  | Declarative Slots        | accepted | [API v1 Surface](../../sdk/plugin-api-v1-lua-surface-rfc.md)            |
 
 Provider-ecology nodes (`Service Registry`, `Provider Ecology`, `Lua Is
 Glue`, `Self-Contained Artifact`) live in the glossary as draft

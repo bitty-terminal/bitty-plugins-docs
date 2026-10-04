@@ -35,6 +35,19 @@ contains them.
 | file-manager | <https://github.com/bitty-terminal/file-manager> | `bitty-terminal.file-manager` | Independent package implemented headlessly, panel presentation deferred pending the panel-provider contract; registry entry published | [file-manager](file-manager/README.md) |
 | git-panel    | <https://github.com/bitty-terminal/git-panel>    | `bitty-terminal.git-panel`    | Independent package implemented headlessly, panel presentation deferred pending the panel-provider contract; registry entry published | [git-panel](git-panel/README.md)       |
 
+## First-party core policy plugins
+
+Extracted from terminal core under Small-Core architectural boundaries (ADR-0014, ADR-0015, W-138):
+
+| Plugin    | Repository                                    | Plugin id                  | Stage                                                | Documentation                                                         |
+| --------- | --------------------------------------------- | -------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------- |
+| bar       | <https://github.com/bitty-terminal/bar>       | `bitty-terminal.bar`       | Implemented, unified tab-bar and workspace insets    | [bar](bar/README.md)                                                  |
+| composer  | <https://github.com/bitty-terminal/composer>  | `bitty-terminal.composer`  | Implemented Lua policy, overlay/submit/editor gate   | [search-copy policy](../../specifications/search-copy-mode-policy.md) |
+| search    | <https://github.com/bitty-terminal/search>    | `bitty-terminal.search`    | Candidate policy, bounded search over Core snapshots | [search-copy policy](../../specifications/search-copy-mode-policy.md) |
+| copy-mode | <https://github.com/bitty-terminal/copy-mode> | `bitty-terminal.copy-mode` | Candidate policy, keyboard selection over Core model | [search-copy policy](../../specifications/search-copy-mode-policy.md) |
+| history   | <https://github.com/bitty-terminal/history>   | `bitty-terminal.history`   | Policy over local storage and shell integration      | [history policy](../../extensibility/history-and-storage-policy.md)   |
+| devtools  | <https://github.com/bitty-terminal/devtools>  | `bitty-featured.devtools`  | Read-only runtime inspection and event tracing       | [diagrams](../../architecture/diagrams/README.md)                     |
+
 ## Candidate plugins
 
 The list below records documentation candidates from draft planning. None of
@@ -45,7 +58,6 @@ contract is accepted.
 
 | Plugin        | Batch | Documentation status                            | Planning notes                                                                                                                         |
 | ------------- | ----- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| bar           | First | Candidate page set ([bar](bar/README.md))       | Waybar-style unified 1-row bar consolidating workspace tabs and statusline.                                                            |
 | beacon        | TBD   | Candidate page set ([beacon](beacon/README.md)) | Official Lua policy plugin for the accepted Core `TargetEngine` and `AnnotationEngine` mechanism; no package or repository exists yet. |
 | scratchpad    | First | Not started                                     | Ephemeral per-directory notes.                                                                                                         |
 | peek          | First | Not started                                     | Hover and preview anchored to semantic zones or rich blocks.                                                                           |

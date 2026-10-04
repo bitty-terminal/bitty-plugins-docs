@@ -1,6 +1,31 @@
 flowchart LR
-  PLUGIN["Plugin<br/>one VM per ID plus generation<br/>accepted: plugin-platform-rfc"] --> HOST["Extension Host<br/>only executor, mediates privilege<br/>accepted: plugin-platform-rfc"]
-  HOST -.->|"observation only<br/>presentation, never truth"| TRUTH["Terminal Truth<br/>core-owned grid and modes<br/>accepted: plugin-system"]
-  REG["Registry<br/>attestation and index only<br/>accepted: package-followup-rfc"] --> HOST
-  SDK["SDK and Template<br/>scaffold, lint, conformance<br/>accepted: split-decision"] --> PLUGIN
-  PANEL(["Panel Boundary<br/>container accepted, provider draft<br/>ui-extensibility-arch"]) -.-> HOST
+  subgraph PLUGINS ["Plugin Ecosystem (Lua)"]
+    FP["First-Party Policy<br/>bar, composer, search, copy-mode, devtools<br/>accepted: ADR-0014, ADR-0015, W-138"]
+    TP["Third-Party Plugins<br/>activity, file-manager, community<br/>accepted: plugin-platform-rfc"]
+  end
+
+  VM["Phodopus Lua VM<br/>pure-Rust stackless VM, fuel & memory bounds<br/>accepted: phodopus-runtime-candidate"]
+
+  HOST["Extension Host<br/>only executor, mediates privilege<br/>accepted: plugin-platform-rfc"]
+
+  MGR["Plugin Manager CLI<br/>bitty-plugin-manager out-of-process<br/>accepted: ADR-0015, DIR-017"]
+  REG["Registry<br/>attestation and index only<br/>accepted: package-followup-rfc"]
+  STORE["Local Staged Store<br/>verified offline artifacts<br/>accepted: host-runtime-rfc"]
+
+  TRUTH["Terminal Truth<br/>core PTY, grid buffers, raw modes<br/>accepted: plugin-system"]
+  SURFACE(["UI Presentation & Insets<br/>chrome insets, tabs, panels, overlays<br/>accepted: ADR-0014, ui-extensibility-arch"])
+
+  SDK["SDK and Template<br/>scaffold, lint, mock host conformance<br/>accepted: split-decision"]
+
+  REG -->|"out-of-process index & fetch<br/>DIR-017: Core network-free"| MGR
+  MGR -->|"stage verified packages"| STORE
+  STORE -->|"offline read"| HOST
+
+  FP --> VM
+  TP --> VM
+  VM --> HOST
+
+  SDK -.->|"scaffold & lint"| PLUGINS
+
+  HOST -.->|"observation only<br/>never mutates truth"| TRUTH
+  HOST -.->|"presentation & modal capture<br/>chrome insets, tabs, overlays"| SURFACE
