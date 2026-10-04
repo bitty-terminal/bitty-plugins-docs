@@ -119,6 +119,6 @@ The host acts as a supervisor for all spawned child processes:
 - [Plugin system](plugin-system.md)
 - [Plugin package management](package-management.md)
 - [Plugin reuse and providers](../packaging/plugin-reuse-and-providers.md)
-- [Lua UI component model](lua-ui-component-model-candidate.md)
+- [UI extensibility architecture](../architecture/ui-extensibility-architecture.md)
 - [Terminal platform documentation](https://github.com/bitty-terminal/bitty-terminal-docs)
 - [AI core documentation](https://github.com/bitty-terminal/bitty-ai-docs)

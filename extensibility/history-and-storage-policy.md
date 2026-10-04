@@ -96,7 +96,7 @@ This policy must be read together with, and must not weaken:
 - The accepted [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md),
   the [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), the
   [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md), and the
-  [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md). The
+  Isolation and Resource RFC. The
   published `bitty.store` ceilings and the atomic-commit rule stay
   authoritative.
 - The Terminal Truth and Panel Runtime invariants in `bitty-terminal-docs`: a
@@ -131,7 +131,7 @@ This policy must be read together with, and must not weaken:
   filter.
 - **Page set**: the standard per-plugin documentation partition (README,
   design, schemas, evidence) defined by the
-  [plugin documentation index](../docs/plugins/README.md).
+  plugin documentation index.
 - **Candidate**: a proposal that is not decided; candidate status is not
   acceptance and is not implementation.
 
@@ -394,9 +394,9 @@ later implementation of the history keeper must prove, at minimum:
   and capability-increase review reused here.
 - [History-provider direction](../packaging/plugin-reuse-and-providers.md):
   the candidate history-provider input this policy specializes for plugins.
-- [Plugin documentation index](../docs/plugins/README.md): where the standard
+- Plugin documentation index: where the standard
   page set is registered, and the
-  [plugin roadmap](../product/plugin-roadmap.md): the candidate history plugin
+  plugin roadmap: the candidate history plugin
   entry.
 - [Panel History (Candidate)](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-history-candidate.md)
   and the [Terminal State RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/terminal-state-rfc.md):

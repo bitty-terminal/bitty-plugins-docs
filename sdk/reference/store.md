@@ -80,7 +80,7 @@ a callback that completes before reaching a slice boundary is not suspended.
 The RC-11 quota ceilings (256 KiB total, 8 KiB per value, 8 depth, 1024 nodes)
 remain unchanged.
 
-See [Isolation and Resource Budgets RFC](../../runtime/isolation-resource-rfc.md)
+See the Isolation and Resource Budgets RFC
 RC-1 row and risk R-RC1-STORE-CREDIT for normative policy, mitigation layers,
 and the rationale.
 

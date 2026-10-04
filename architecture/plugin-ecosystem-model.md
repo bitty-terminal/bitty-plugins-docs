@@ -69,7 +69,7 @@ The layering is semantic, not a nesting of runtimes:
   `contribution`.
 - Summarized as **runtime flat, semantics layered**, consistent with the
   accepted one-VM-per-plugin-identity-and-generation rule in the
-  [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md) (`IR-D2`).
+  Isolation and Resource RFC (`IR-D2`).
 
 ## Extension points as a first-class concept
 
@@ -112,7 +112,7 @@ Registry versus manifest asymmetry: the author-facing manifest is the
 declaration source, while the registry is an attestation and index service that
 only reads and records the dependency edges and compatibility declarations from
 it, and is not authoritative for them (see the registry boundaries in the
-[Package Follow-up RFC](../packaging/package-followup-rfc.md)).
+Package Follow-up RFC).
 
 ### Candidate contribution shapes (unaccepted)
 
@@ -162,7 +162,7 @@ every Bitter capability and the sandbox would lose its meaning. This extends the
 accepted deny-by-default capability model in the
 [Plugin Platform RFC capability model](../specifications/plugin-platform-rfc.md) and the
 containment rules in the
-[Isolation and Resource RFC](../runtime/isolation-resource-rfc.md): grants stay per plugin
+Isolation and Resource RFC: grants stay per plugin
 identity and manifest hash, and a dependency edge is not a grant.
 
 ## Extension-platform API versioning
@@ -264,7 +264,7 @@ service surface — `process`, `network`, `fs`, `store`, `secrets`, `tasks`,
 `notifications`, `clipboard`, `commands`, `events`, `services` — each behind
 the same deny-by-default sandbox described by the
 [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) and the
-[Isolation and Resource RFC](../runtime/isolation-resource-rfc.md). Panel state is split
+Isolation and Resource RFC. Panel state is split
 into distinct axes (lifecycle, focus, visibility, interaction, attention)
 rather than one enum. For v1 this direction keeps the accepted animation
 restrictions: only Core-owned chrome animates, plugin shaders and native
@@ -353,10 +353,10 @@ treating the whole direction as a generic proposal.
 | Platform/host versus extension plugin             | [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md)                                                                                                                          | Extends; provider ecology is close but does not name host plugins                                                               |
 | Extension points and contribution manifest        | [UI Extensibility Architecture](ui-extensibility-architecture.md); none for `[contributes]`                                                                                                                  | Extends; the inventory exists, a formal extension-point model is unaddressed                                                    |
 | Accepted `[dependencies]` manifest                | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                                                                                                                                              | Aligns; accepted schema already defines the dependency shape                                                                    |
-| Capability non-escalation                         | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md)                                                                          | Aligns; the dependency-edge framing is new                                                                                      |
+| Capability non-escalation                         | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), Isolation and Resource RFC                                                                                                                  | Aligns; the dependency-edge framing is new                                                                                      |
 | Extension-platform API versioning                 | [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md), [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                                                                    | Extends; host API versioning is candidate                                                                                       |
 | Plugin graph                                      | [Plugin system](../extensibility/plugin-system.md)                                                                                                                                                           | Extends the dependency and service direction                                                                                    |
-| Panel as host / Activity stack                    | [UI Extensibility Architecture](ui-extensibility-architecture.md) (P2), [Plugin Roadmap](../product/plugin-roadmap.md)                                                                                       | Unaddressed here; the accepted sibling Panel Runtime RFC leaves provider details as its open questions (`RFC-OQ-1`..`RFC-OQ-9`) |
+| Panel as host / Activity stack                    | [UI Extensibility Architecture](ui-extensibility-architecture.md) (P2), Plugin Roadmap                                                                                                                       | Unaddressed here; the accepted sibling Panel Runtime RFC leaves provider details as its open questions (`RFC-OQ-1`..`RFC-OQ-9`) |
 | Native UI, widget layer, and application services | [UI Extensibility Architecture](ui-extensibility-architecture.md), [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md), [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) | Extends the ownership boundaries, v1 slot UI, and capability families                                                           |
 
 ## Open points

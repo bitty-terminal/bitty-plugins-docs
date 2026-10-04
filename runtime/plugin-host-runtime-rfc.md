@@ -66,7 +66,7 @@ Out of scope, owned elsewhere and only referenced here:
   pipeline classes, batching, and budgets
   ([Plugin Platform RFC](../specifications/plugin-platform-rfc.md), accepted).
 - Restricted standard library, rooted module resolution rules, diagnostics
-  classes ([Lua Runtime RFC](lua-runtime-rfc.md), accepted), the `mlua` versus
+  classes (Lua Runtime RFC, accepted), the `mlua` versus
   `piccolo` split and pins
   ([ADR 0005](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0005-lua-pins-and-stdlib.md);
   plugin-VM successor direction is Phodopus per
@@ -75,9 +75,9 @@ Out of scope, owned elsewhere and only referenced here:
   reads ([ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md)), and the
   Config VM async boundary ([ADR 0007](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0007-async-gc.md)).
 - Resource ceilings and their numbers
-  ([Isolation Resource RFC](isolation-resource-rfc.md), accepted; `RC-1`..`RC-11`).
+  (Isolation Resource RFC, accepted; `RC-1`..`RC-11`).
 - Package integrity, signature, lock, and rollback semantics
-  ([Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md), accepted).
+  (Package Lifecycle RFC, accepted).
 
 This RFC selects concrete mechanisms for controls the accepted sources already
 require. It moves no requirement between owners, relaxes no P0 gate, and
@@ -87,7 +87,7 @@ fixes the four proposed defaults, and changing one requires an RFC revision.
 
 ## Provenance and problem statement
 
-The accepted [Lua Runtime RFC](lua-runtime-rfc.md) fixes the single host bridge
+The accepted Lua Runtime RFC fixes the single host bridge
 in every VM as a versioned `bitty` module whose function surface is owned by the
 respective API RFCs, and fixes rooted source-only module resolution. The
 accepted [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)
@@ -105,7 +105,7 @@ semantics but leaves the runtime mechanism to the `bitty` repository. The
 resource-budget thresholds and enforcement" as a pending decision.
 
 For source staging, the accepted
-[Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md) describes a staged
+Package Lifecycle RFC describes a staged
 activation transaction whose `wake` phase loads plugins in fresh VMs, but
 delegates the stored tree location to the draft
 [Package management](../extensibility/package-management.md) candidate layout.
@@ -138,7 +138,7 @@ drafting revision.
 - [Plugin system](../extensibility/plugin-system.md): extension levels 1-4,
   register-versus-claim, and the governing boundary that plugins alter
   presentation but never Terminal Truth.
-- [Isolation Resource RFC](isolation-resource-rfc.md): `IR-D2` one VM per
+- Isolation Resource RFC: `IR-D2` one VM per
   plugin identity and generation, `RC-1` instruction and wall budget, `RC-2`
   memory ceiling, `RC-4` tasks and timers, `RC-5` queue budgets, and `RC-11`
   plugin store quota.
@@ -189,7 +189,7 @@ by exposing Lua's `package`/`package.path`. The resolver caches per VM; the
 reload rule clears the cache on generation disposal. `os`, `io`, `debug`
 (except `debug.traceback`), `package.loadlib`, and bytecode loading remain
 absent or deny-stubbed exactly as the accepted
-[Lua Runtime RFC](lua-runtime-rfc.md) requires. The seam exposes no filesystem
+Lua Runtime RFC requires. The seam exposes no filesystem
 or network function to Lua: reading the plugin's own module tree is a
 host-mediated resolution step, not plugin-visible filesystem authority, and
 `fs.*` remains a separate capability path with no v1 Lua entry point.
@@ -559,11 +559,11 @@ The project initiator (user) ratified the following through
   v1 surface, `init.lua` entry point, store quota, snapshot schema.
 - [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md) -
   accepted Lua surface resolutions and authority split.
-- [Lua Runtime RFC](lua-runtime-rfc.md) - accepted sandbox, module resolution,
+- Lua Runtime RFC - accepted sandbox, module resolution,
   diagnostics, host bridge ownership.
-- [Isolation Resource RFC](isolation-resource-rfc.md) - `IR-D2`, `RC-1`,
+- Isolation Resource RFC - `IR-D2`, `RC-1`,
   `RC-2`, `RC-4`, `RC-5`, `RC-11`.
-- [Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md) - staged activation,
+- Package Lifecycle RFC - staged activation,
   local-path development semantics, rollback.
 - [Package management](../extensibility/package-management.md) - source model
   and candidate store layout.

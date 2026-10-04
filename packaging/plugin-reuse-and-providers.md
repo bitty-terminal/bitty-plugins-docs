@@ -51,12 +51,12 @@ Out of scope (owned elsewhere):
   budgets (OQ-011/OQ-012/OQ-013, accepted in
   [Plugin Platform RFC](../specifications/plugin-platform-rfc.md));
 - per-plugin instruction, memory, task, and queue enforcement (OQ-014, accepted
-  in [Isolation Resource RFC](../runtime/isolation-resource-rfc.md));
+  in Isolation Resource RFC);
 - Lua standard-library subset, rooted `require`, and diagnostics (OQ-009,
-  accepted in [Lua Runtime RFC](../runtime/lua-runtime-rfc.md); pins OQ-030/OQ-031/OQ-032);
+  accepted in Lua Runtime RFC; pins OQ-030/OQ-031/OQ-032);
 - package manifest, lockfile, and activation model (OQ-021/OQ-022,
-  accepted in [Package Lifecycle RFC](package-lifecycle-rfc.md) and
-  [Package Follow-up RFC](package-followup-rfc.md));
+  accepted in Package Lifecycle RFC and
+  Package Follow-up RFC);
 - local IPC wire, auth, and scopes (OQ-018,
   accepted in [IPC and Agent RFC](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/ipc-agent-rfc.md));
 - headless daemon, detach/reattach, and remote UI trust boundary (OQ-020,
@@ -80,13 +80,13 @@ or weaken any accepted contract.
   interception.
 - [Plugin system](../extensibility/plugin-system.md): extension levels 1 to 4,
   register versus claim, qualified naming, service boundary direction.
-- [Lua Runtime RFC](../runtime/lua-runtime-rfc.md): isolated VM per plugin, restricted
+- Lua Runtime RFC: isolated VM per plugin, restricted
   standard library, rooted module resolution, source-only loading, one `bitty`
   host bridge.
 - [Plugin Platform RFC](../specifications/plugin-platform-rfc.md): manifest `bitty-plugin.toml`,
   capability grammar, grant per manifest hash, service `get` with version
   constraint, lazy triggers.
-- [Isolation Resource RFC](../runtime/isolation-resource-rfc.md): RC-1..RC-10 ceilings,
+- Isolation Resource RFC: RC-1..RC-10 ceilings,
   FS-1..FS-9 failure semantics, three-level queue
   PerSubscription 64 / PerPlugin 1024 events/256 KiB / Global 8192 events/2 MiB
   with `DropOldest` default.
@@ -452,7 +452,7 @@ suffices.
 
 The accepted baseline already distinguishes rooted, source-only in-package
 `require` from cross-plugin services: the
-[Lua Runtime RFC](../runtime/lua-runtime-rfc.md) and
+Lua Runtime RFC and
 [Plugin Host Runtime RFC A.2/A.3](../runtime/plugin-host-runtime-rfc.md#a2-proposed-bitty-lua-seam-extensions)
 permit no filesystem imports across packages, path traversal, package-path
 extension, shared module cache, or direct peer-VM access. Packaging a dependency
@@ -524,8 +524,8 @@ crates before the post-1.0 boundary.
   each helper is a single `id` with per-platform `path` and `sha256` under
   `helpers.<target>`. Manifest spelling below is a proposed sketch (draft) and
   remains owned by the package and configuration model
-  ([Package Lifecycle RFC](package-lifecycle-rfc.md),
-  [Package Follow-up RFC](package-followup-rfc.md),
+  (Package Lifecycle RFC,
+  Package Follow-up RFC,
   [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md)); the TOML sketch is
   not an accepted schema:
 
@@ -657,7 +657,7 @@ only what it means for this corpus.
   from the host keystore, invisible in plaintext to both the management UI and
   agents. This subsection does not restate the secret tiers; the candidate
   storage shapes live in the
-  [Secrets and credential handling direction](../product/plugin-roadmap.md#secrets-and-credential-handling-direction-candidate),
+  Secrets and credential handling direction,
   and the accepted environment baseline stays in ADR 0006.
 - Acceptance path: an RFC-level provider-interface contract (versioned
   capability identifiers, grant shape, registry and routing rules) with
@@ -892,8 +892,8 @@ Shipped, unsupported, and candidate claims are labelled per claim.
 
 - [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) (OQ-011/OQ-012/OQ-013, accepted
   2026-08-27)
-- [Lua Runtime RFC](../runtime/lua-runtime-rfc.md) (OQ-009, accepted 2026-08-27)
-- [Isolation Resource RFC](../runtime/isolation-resource-rfc.md) (OQ-014, accepted
+- Lua Runtime RFC (OQ-009, accepted 2026-08-27)
+- Isolation Resource RFC (OQ-014, accepted
   2026-08-28)
 - [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md) (OQ-010, accepted
   2026-08-27)

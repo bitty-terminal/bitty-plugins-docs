@@ -58,7 +58,7 @@ The candidate direction draws the suitability line explicitly:
 | Out-of-process (IPC) plugin | AI, Git daemon, language tooling, indexer, sync, database, network service, large computation, external application integration | independent lifecycle, may crash, complex dependencies, other languages, network/database use, coarse call granularity |
 
 Alignment: the accepted
-[Isolation and Resource RFC](../runtime/isolation-resource-rfc.md) already names "a helper
+Isolation and Resource RFC already names "a helper
 process with scoped IPC" as a high-isolation extension direction, and the draft
 [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md) Layer 4
 defines declared, digest-pinned native helper processes over stdio or a
@@ -82,7 +82,7 @@ The dependency-minimization direction matches the "no embed third-party crate
 bloat" rule and helper-process staging stated in the draft
 [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md), and the
 isolation direction in the accepted
-[Isolation and Resource RFC](../runtime/isolation-resource-rfc.md); the daemon split
+Isolation and Resource RFC; the daemon split
 itself remains a proposal.
 
 ## Panel and Agent as public protocol surfaces
@@ -169,7 +169,7 @@ grammar**: the accepted model uses closed, owner-qualified identifiers with
 parameters (for example `terminal.semantic-read`, `process.spawn:git`),
 deny-by-default grants bound to plugin identity and manifest hash, and no
 wildcards ([Plugin Platform RFC](../specifications/plugin-platform-rfc.md);
-[Isolation and Resource RFC](../runtime/isolation-resource-rfc.md)). The boolean
+Isolation and Resource RFC). The boolean
 `[permissions]` table must not be read as schema, and a future plugin process
 would receive scoped grants, never ambient authority; mapping a capability
 token to the accepted IPC scopes and plugin grants is an open item (open item
@@ -183,7 +183,7 @@ Candidate proposal: an out-of-process plugin that crashes must not
 take down Bitty; the direction poses restart, disable, and log-surfacing
 options rather than defining a policy. Alignment: resource isolation and failure
 semantics for IPC/MCP clients are accepted in the
-[Isolation and Resource RFC](../runtime/isolation-resource-rfc.md), but no accepted
+Isolation and Resource RFC, but no accepted
 document defines a plugin-process supervisor, restart policy, or reconnection
 semantics (candidate, open item 2).
 
@@ -238,7 +238,7 @@ and dependency distinctions live in
 ### Accepted local baseline versus proposed transport
 
 A direct local-function-call shortcut must not be imported literally.
-The accepted [Isolation RFC IR-D2](../runtime/isolation-resource-rfc.md#ir-d2-plugin-runtimes)
+The accepted Isolation RFC `IR-D2`
 keeps one VM per plugin identity/generation with no shared globals or module
 trees; [Host Runtime A.3](../runtime/plugin-host-runtime-rfc.md#a3-bridge-marshalling-contract)
 requires bounded copied arguments/results, non-reentrant bridge calls, and
@@ -289,17 +289,17 @@ owner-pending direction is tracked in
 
 ## Affected contracts
 
-| Theme                                          | Existing document                                                                                                                                                                  | Relationship                                                                                         |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Lua versus out-of-process plugin suitability   | [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md), [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md)                            | Aligns with the accepted helper-process direction; broader IPC plugin participants are candidate     |
-| Core minimization and `bitty-ai` daemon split  | [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md)                                                                                                | Aligns with the draft no-embed rule and Layer 4 staging; the daemon split is candidate               |
-| Panel/Agent protocol surface                   | [Plugin Ecosystem Model](plugin-ecosystem-model.md) Panel and activity section, sibling Panel Runtime RFC                                                                          | Extends; Panel ownership and provider surface stay with the sibling contract                         |
-| Plugin-to-plugin event bus                     | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                                                                                                                    | Extends the accepted event pipeline to cross-process subscribers; candidate                          |
-| Unified capability model and method vocabulary | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)                                          | Aligns on one registry for CLI/palette/IPC/Agent reuse; the external binding and names are candidate |
-| Capability tokens and `[permissions]` sketch   | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md)                                                | Diverges from the accepted capability grammar; must be reconciled, not added in parallel             |
-| Crash isolation and supervision                | [Isolation and Resource RFC](../runtime/isolation-resource-rfc.md), [IPC and Agent RFC](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/ipc-agent-rfc.md) | Aligns on untrusted-client boundaries; supervisor semantics are unaddressed                          |
-| Control CLI and multi-instance addressing      | [IPC and Agent RFC](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/ipc-agent-rfc.md)                                                                     | Aligns with accepted instance selection; `bittyctl` verbs and `bitty://` addressing are candidate    |
-| Three-layer extension framing                  | [Plugin Ecosystem Model](plugin-ecosystem-model.md) Platform-versus-extension section                                                                                              | Consistent with "runtime flat, semantics layered"; combined framing is candidate                     |
+| Theme                                          | Existing document                                                                                                                          | Relationship                                                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| Lua versus out-of-process plugin suitability   | Isolation and Resource RFC, [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md)                            | Aligns with the accepted helper-process direction; broader IPC plugin participants are candidate     |
+| Core minimization and `bitty-ai` daemon split  | [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md)                                                        | Aligns with the draft no-embed rule and Layer 4 staging; the daemon split is candidate               |
+| Panel/Agent protocol surface                   | [Plugin Ecosystem Model](plugin-ecosystem-model.md) Panel and activity section, sibling Panel Runtime RFC                                  | Extends; Panel ownership and provider surface stay with the sibling contract                         |
+| Plugin-to-plugin event bus                     | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                                                                            | Extends the accepted event pipeline to cross-process subscribers; candidate                          |
+| Unified capability model and method vocabulary | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)  | Aligns on one registry for CLI/palette/IPC/Agent reuse; the external binding and names are candidate |
+| Capability tokens and `[permissions]` sketch   | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md), Isolation and Resource RFC                                                | Diverges from the accepted capability grammar; must be reconciled, not added in parallel             |
+| Crash isolation and supervision                | Isolation and Resource RFC, [IPC and Agent RFC](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/ipc-agent-rfc.md) | Aligns on untrusted-client boundaries; supervisor semantics are unaddressed                          |
+| Control CLI and multi-instance addressing      | [IPC and Agent RFC](https://github.com/bitty-terminal/bitty-ai-docs/blob/main/specifications/ipc-agent-rfc.md)                             | Aligns with accepted instance selection; `bittyctl` verbs and `bitty://` addressing are candidate    |
+| Three-layer extension framing                  | [Plugin Ecosystem Model](plugin-ecosystem-model.md) Platform-versus-extension section                                                      | Consistent with "runtime flat, semantics layered"; combined framing is candidate                     |
 
 ## Open points
 

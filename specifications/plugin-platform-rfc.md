@@ -49,7 +49,7 @@ rules.
 Out of scope (each remains owned elsewhere):
 
 - Lua runtime/binding choice and standard-library subset (OQ-009, accepted in
-  [Lua Runtime RFC](../runtime/lua-runtime-rfc.md)) and the
+  Lua Runtime RFC) and the
   configuration model (OQ-010). This RFC assumes the accepted direction of one
   isolated Lua VM per plugin and defines only the host side of the boundary.
 - Per-plugin budget thresholds, instruction/memory/task enforcement mechanisms,
@@ -208,8 +208,7 @@ Accepted validation rules:
    or the inline-table form `{ version = "...", prerelease = <boolean> }`. The
    `version` value is validated by the closed resolver constraint grammar, and
    `prerelease` is optional and defaults to `false`; `prerelease = true` opts
-   that single edge into prerelease selection per the
-   [Package Follow-up RFC](../packaging/package-followup-rfc.md#prerelease-policy). No other
+   that single edge into prerelease selection. No other
    table key is accepted. See the open reconciliation item below for the chosen
    shape rationale and implementation status.
 9. The optional `[tools.git]` table declares the accepted Layer-2 system-CLI
@@ -224,8 +223,7 @@ Accepted validation rules:
    is accepted.
 
 > **Open reconciliation item — manifest dependency prerelease TOML shape.**
-> The accepted [Package Follow-up RFC](../packaging/package-followup-rfc.md#prerelease-policy)
-> defines a per-edge `prerelease` opt-in but no manifest TOML shape for it, and
+> The accepted per-edge `prerelease` opt-in defines no manifest TOML shape for it, and
 > the string-only example above left the dependency table ambiguous. This note
 > fixes the shape and records the reconciliation instead of rewriting the
 > accepted example.
@@ -561,7 +559,7 @@ Accepted rules:
    budgets.
 6. Three-level queue budgets (accepted, OQ-014, aligned with
    `bitty-plugin-host/src/event.rs` and the
-   [Isolation Resource RFC](../runtime/isolation-resource-rfc.md#proposed-resource-ceilings)
+   [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md#a6-timeouts-and-budgets)
    RC-5 family): **PerSubscription 64 events** per `(plugin, event-type)` queue
    (strict FIFO bound in `EventQueue::push`); **PerPlugin 1024 events / 256 KiB**
    aggregate across all queues of one plugin (enforced at
@@ -681,10 +679,10 @@ Acceptance of this RFC on 2026-08-27 applies these same-change updates:
   moved from pointer to closure per the close rule.
 - [Decision register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md): the candidate queue and accepted
   artifacts gain this RFC, and DIR-001 records it as the accepting contract.
-- [Specifications index](README.md): the Plugin Platform RFC row moves from
+- Specifications index: the Plugin Platform RFC row moves from
   Draft to Accepted.
 - [Proposed delivery sequence](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/proposed-delivery-sequence.md) and
-  [Isolation Resource RFC](../runtime/isolation-resource-rfc.md): stale proposed references
+  Isolation Resource RFC: stale proposed references
   are swept to the accepted contract.
 
 No new repository, crate, or workflow is added by this RFC.
@@ -776,8 +774,8 @@ reopen the closed design-level questions.
 - [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) and
   [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md): accepted v1 host
   spellings, signatures, and the authority split.
-- [Package Follow-up RFC](../packaging/package-followup-rfc.md) and
-  [Isolation Resource RFC](../runtime/isolation-resource-rfc.md): dependency
+- Package Follow-up RFC and
+  Isolation Resource RFC: dependency
   prerelease-shape reconciliation and the RC-5 resource-ceiling family.
 - [Open-question register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) and
   [Decision register](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/index.md): acceptance and closure records for
