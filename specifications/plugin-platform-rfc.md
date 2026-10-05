@@ -170,6 +170,13 @@ claims = ["tabline"]
 [tools.git]                   # optional; accepted Layer-2 system-CLI slice
 required = true               # boolean; true gates activation on git presence and range
 version = ">=2.30"            # version range; max 128 bytes
+
+[components]                  # optional; required native components (DIR-030)
+net = "^0.0.1"                 # component name [a-z][a-z0-9-]{0,31} -> caret semver requirement
+
+[[network.egress]]            # optional; structured egress paired with network.connect:* capabilities
+host = "api.example.com"      # exact DNS name; no wildcard, no port, no path
+ports = [443]                  # 1..=65535, at least one, at most MAX_NETWORK_PORTS_PER_HOST (16)
 ```
 
 Accepted validation rules:
@@ -221,6 +228,20 @@ Accepted validation rules:
    `false` to `true` is a capability increase whose grant must be
    re-confirmed. Any other `[tools.*]` table fails closed until its own slice
    is accepted.
+10. The optional `[components]` table and `[[network.egress]]` array,
+    admitted by the
+    [Plugin Manifest and Capability Grammar Authority](manifest-capability-authority.md#amendment-2026-10-02-accepting-components-and-networkegress)
+    2026-10-02 amendment, declare the native components a plugin requires
+    (DIR-030) and the structured network destinations that pair with
+    `network.connect:HOST[:PORT]` capability grants. `[components]` keys
+    follow the `[a-z][a-z0-9-]{0,31}` grammar and map to caret semver
+    requirements; `[[network.egress]]` entries carry an exact `host` (no
+    wildcard) and a bounded `ports` list. Every `network.connect` capability
+    needs a covering egress entry and every entry needs a covering
+    capability (fail-closed in both directions, mirroring rule 9's
+    `[tools.*]` pairing); the effective grant is the intersection of the two,
+    computed by the host (`bitty-runtime::component::grant`) and never
+    constructed by the plugin.
 
 > **Open reconciliation item — manifest dependency prerelease TOML shape.**
 > The accepted per-edge `prerelease` opt-in defines no manifest TOML shape for it, and
