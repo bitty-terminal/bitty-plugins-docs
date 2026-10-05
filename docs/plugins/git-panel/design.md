@@ -45,8 +45,9 @@ filtering, and declarative scene composition.
 
 ## Capability and trust boundaries
 
-- Requests `panel.provider` and `panel.create` (back the tiled Panel Runtime
-  registration), `terminal.semantic-read` (gates `bitty.terminal.snapshot`,
+- Requests `panel.provider` and `panel.create` (deferred candidates pending
+  the panel-provider contract, `bitty-docs` `CTX-0181`, OQ-058, backing the
+  tiled Panel Runtime registration), `terminal.semantic-read` (gates `bitty.terminal.snapshot`,
   the read-only cwd/title observation the panel refreshes from),
   `process.spawn:git` (the closed `process.spawn` family plus the `:git`
   parameter — only the `git` binary spawns), and `fs.read:~/projects/**`

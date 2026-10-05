@@ -23,13 +23,13 @@ sidebar_order: 48
 
 ## Capabilities
 
-| Identifier               | Scope                                                                  |
-| ------------------------ | ---------------------------------------------------------------------- |
-| `panel.provider`         | Tiled Panel Runtime registration                                       |
-| `panel.create`           | Panel creation within the host-owned panel slot                        |
-| `terminal.semantic-read` | Read-only cwd/title observation via `bitty.terminal.snapshot`          |
-| `process.spawn:git`      | Only the `git` binary, only the seven allowlisted read-only verbs      |
-| `fs.read:~/projects/**`  | Working-tree read scope; symlinks and devices rejected per host policy |
+| Identifier               | Scope                                                                                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `panel.provider`         | Tiled Panel Runtime registration — deferred candidate pending the panel-provider contract (`bitty-docs` `CTX-0181`, OQ-058)                |
+| `panel.create`           | Panel creation within the host-owned panel slot — deferred candidate pending the panel-provider contract (`bitty-docs` `CTX-0181`, OQ-058) |
+| `terminal.semantic-read` | Read-only cwd/title observation via `bitty.terminal.snapshot`                                                                              |
+| `process.spawn:git`      | Only the `git` binary, only the seven allowlisted read-only verbs                                                                          |
+| `fs.read:~/projects/**`  | Working-tree read scope; symlinks and devices rejected per host policy                                                                     |
 
 Deny by default; unknown identifiers fail validation and there is no
 allow-all identifier. No ambient spawn, shell interpolation, network,

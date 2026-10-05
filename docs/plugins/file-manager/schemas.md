@@ -35,7 +35,11 @@ process, network, clipboard, or terminal-input authority is requested.
 | Events   | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed` |
 
 Static triggers let the host register the plugin without creating a VM; the
-observation events refresh the cached snapshot-derived state.
+observation events refresh the cached snapshot-derived state. `:rename` is
+policy-only composition (rename preview and selection with no host filesystem
+mutation); any host mutation stays deferred pending the `fs.write:PATTERN`
+grant and the panel-provider contract (`bitty-docs` `CTX-0181`, OQ-058),
+consistent with the file-manager candidate in the Plugin Matrix.
 
 ## Configuration keys
 
