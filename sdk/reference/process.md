@@ -115,6 +115,16 @@ a wired host backend.
   directory, environment inheritance, streaming, signaling, and any
   normative v1 guarantee.
 
+## Compatibility and versioning
+
+Draft reference: this page states the candidate v1 spellings and carries no
+compatibility promise while its status is draft. The target contract is the
+[Compatibility policy](../plugin-api-v1-lua-surface-rfc.md#compatibility-policy)
+in the accepted Plugin API v1 Lua Surface RFC: the surface is stable within
+`1.x`, additions ship as minor versions, and removals or narrowings require a
+major version, gated by the manifest `compat.plugin-api` range against the
+runtime `bitty.api_version`.
+
 ## References
 
 - [Lua Reference Overview](overview.md) (error contract, capability gating,

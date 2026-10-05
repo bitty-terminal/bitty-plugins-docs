@@ -223,6 +223,16 @@ UI slots require a matching claim declaration`
 - Out of scope (no source): focus behavior, panel routing, and any
   composer behavior beyond the internal scene-diff step.
 
+## Compatibility and versioning
+
+Draft reference: this page states the candidate v1 spellings and carries no
+compatibility promise while its status is draft. The target contract is the
+[Compatibility policy](../plugin-api-v1-lua-surface-rfc.md#compatibility-policy)
+in the accepted Plugin API v1 Lua Surface RFC: the surface is stable within
+`1.x`, additions ship as minor versions, and removals or narrowings require a
+major version, gated by the manifest `compat.plugin-api` range against the
+runtime `bitty.api_version`.
+
 ## References
 
 - [Plugin API v1 Lua Surface RFC](../plugin-api-v1-lua-surface-rfc.md)
