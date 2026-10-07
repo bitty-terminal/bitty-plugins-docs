@@ -32,7 +32,7 @@ first-party git-panel package.
 
 Pre-implementation ecosystem: the plugin package, manifest, and policy are
 implemented and tested headlessly, while the Bitty host is still landing the
-Layer 2 spawn bridge and the panel-provider contract. The package is not
+Layer 2 spawn bridge and the panel-provider contract (predecessor: RFC-0006, `bitty-docs#443` OPEN/`#445` merged; presentation stays deferred). The package is not
 verified, compatible, or shipped beyond its manifest `[compat]` ranges.
 
 ## Pages

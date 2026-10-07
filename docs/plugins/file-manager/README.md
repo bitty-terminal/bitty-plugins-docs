@@ -32,7 +32,7 @@ first-party file-manager package.
 Pre-implementation ecosystem: the plugin package, manifest, and policy are
 implemented and tested headlessly, while the Bitty host is still landing the
 host-mediated filesystem bridge. Panel presentation stays deferred pending the
-panel-provider contract (`bitty-docs` `CTX-0181`, OQ-058). `:rename` is
+panel-provider contract (`bitty-docs` `CTX-0181`, OQ-058; accepted contract text in RFC-0006, `bitty-docs#443` OPEN/`#445` merged). `:rename` is
 policy-only composition with no host filesystem mutation; host-side
 rename/move/copy stays deferred pending the `fs.write:PATTERN` grant,
 consistent with the file-manager candidate in the Plugin Matrix. The package

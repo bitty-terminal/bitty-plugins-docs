@@ -267,7 +267,7 @@ without converging the two surfaces.
 > disagree, the decision record is authoritative for the verdict and its gate.
 > OQ-053 is closed by that record (2026-09-14); the residual panel-provider
 > gate it cites stays open as
-> [OQ-058](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).
+> [OQ-058](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md), with accepted contract text in RFC-0006 (`bitty-docs#443` OPEN/`#445` merged).
 
 Status: **candidate, non-normative**. Bundled-disabled and independent are
 distribution states, not privilege tiers: an independent first-party plugin
@@ -306,7 +306,7 @@ Candidate invariants if this migration is accepted:
 
 Closed as [OQ-053](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md)
 by the decision record on 2026-09-14; the residual panel-provider gate is
-tracked as [OQ-058](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).
+tracked as [OQ-058](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) with accepted contract text in RFC-0006 (`bitty-docs#443` OPEN/`#445` merged).
 
 ### Bundled-plugin suitability rules (candidate)
 
