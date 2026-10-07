@@ -15,7 +15,7 @@ sidebar_order: 110
 > [Plugin API v1 Lua Surface RFC](../plugin-api-v1-lua-surface-rfc.md) and
 > [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md);
 > executable behavior lives in the `bitty` repository
-> (`crates/bitty-lua/src/host.rs`, `bitty@7da6d6f`). This page states no
+> (`crates/bitty-lua/src/host.rs`, `bitty@c2aaf218`). This page states no
 > behavior beyond what those sources pin.
 
 ## Purpose and scope
@@ -25,7 +25,7 @@ environment variables without ambient OS authority (the RFC references the
 ADR 0006 contract instead of redefining it). Its current status is
 `not_implemented`: the `bitty` route table marks it `not_implemented`
 ([Lua API Reference](README.md)), and every call fails closed until a host
-backend lands (`crates/bitty-lua/src/host.rs`, `bitty@7da6d6f`). Do not
+backend lands (`crates/bitty-lua/src/host.rs`, `bitty@c2aaf218`). Do not
 treat its functions as usable.
 
 ## Signature
@@ -34,7 +34,7 @@ There are no implemented Lua entry points in this namespace. The accepted
 RFC vocabulary names `bitty.env.get` / `bitty.env.has`
 (RFC "Notifications and environment"), but neither is callable behavior:
 the `HostServices` trait defaults fail closed with `E_NOT_IMPLEMENTED`
-(`crates/bitty-lua/src/host.rs`, `bitty@7da6d6f`) — `env_get` at
+(`crates/bitty-lua/src/host.rs`, `bitty@c2aaf218`) — `env_get` at
 `host.rs:533` (`Err(BridgeError::not_implemented("bitty.env.get"))`) and
 `env_has` at `host.rs:544`
 (`Err(BridgeError::not_implemented("bitty.env.has"))`), both constructed by
@@ -44,11 +44,11 @@ the `HostServices` trait defaults fail closed with `E_NOT_IMPLEMENTED`
 
 The following describes the expected contract shapes only, as derived from
 the Rust side — not callable behavior. The key argument is checked against
-the **host Lua-call key-shape bound**: shape `[A-Za-z_][A-Za-z0-9_]*` of
-`1..128` bytes (`ENV_KEY_MAX_BYTES = 128`, `host.rs:86`;
-`crates/bitty-lua/src/host.rs` `env_get` docs, `bitty@7da6d6f`). An
-over-bound key is rejected fail-closed with `E_DEF_LIMIT` before any grant
-check (`host.rs:81-86`). A shape-invalid key is rejected with `E_DEF_INVALID`
+the **host Lua-call key-shape bound**: shape `^[A-Z_][A-Z0-9_]*$` of
+`1..64` bytes (`ENV_KEY_MAX_BYTES = 64`;
+`crates/bitty-lua/src/host.rs` `validate_env_key` docs, `bitty@c2aaf218`). An
+over-bound or shape-invalid key is rejected fail-closed with `E_ENV_KEY_INVALID` before any grant
+check. Malformed keys are rejected
 (pinned by `env_bridge_rejects_malformed_keys_before_grants` in
 `crates/bitty-lua/tests/lua_parity.rs`). This runtime bound is not the
 manifest grant key bound; the two bounds and the layer each one applies to
@@ -59,7 +59,7 @@ are separated in [Capability](#capability).
 The following describes the expected contract shapes only, as derived from
 the Rust side — not callable behavior. A granted-but-absent key resolves
 to `Ok(None)`, i.e. Lua `nil` (`crates/bitty-lua/src/host.rs` `env_get`
-docs, `bitty@7da6d6f`). With a valid grant, a read for a non-allowlisted
+docs, `bitty@c2aaf218`). With a valid grant, a read for a non-allowlisted
 key returns `nil`, indistinguishable from an unset variable (RFC
 "Notifications and environment").
 
@@ -67,13 +67,13 @@ key returns `nil`, indistinguishable from an unset variable (RFC
 
 Denials arrive as catchable Lua error tables (`class` / `code` / `message`,
 per `BridgeError::to_error` in `crates/bitty-lua/src/host.rs`,
-`bitty@7da6d6f`); match on `code`.
+`bitty@c2aaf218`); match on `code`.
 
 | `code`              | `class`      | When                                                                                                                                                                                                                                                                                            |
 | ------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `E_NOT_IMPLEMENTED` | `runtime`    | Every call on the default host: no env backend is wired (`host.rs:533`, `host.rs:544`). An ungranted key shares this same code, so callers cannot probe which keys exist (`host.rs` `env_get` docs; `env_bridge_denies_ungranted_keys_without_leak` in `crates/bitty-lua/tests/lua_parity.rs`). |
-| `E_DEF_INVALID`     | `validation` | Shape-invalid key at the bridge (caller shape above; `env_bridge_rejects_malformed_keys_before_grants` in `crates/bitty-lua/tests/lua_parity.rs`).                                                                                                                                              |
-| `E_DEF_LIMIT`       | `validation` | Over-bound key (`> 128` bytes) at the bridge, before any grant check (`host.rs:81-86`).                                                                                                                                                                                                         |
+| `E_ENV_KEY_INVALID` | `validation` | Shape-invalid or over-bound key at the bridge (caller shape above; `env_bridge_rejects_malformed_keys_before_grants` in `crates/bitty-lua/tests/lua_parity.rs`).                                                                                                                                |
+| `E_ENV_KEY_INVALID` | `validation` | Over-bound key (`> 64` bytes) at the bridge, before any grant check (`validate_env_key`).                                                                                                                                                                                                       |
 
 ## Capability
 
@@ -81,7 +81,7 @@ per `BridgeError::to_error` in `crates/bitty-lua/src/host.rs`,
 `Env` variant: host-mediated environment reads, `env.read:<KEY>`). The
 expected gate is one grant per key: the trait docs require an
 `env.read:<KEY>` grant for `key`
-(`crates/bitty-lua/src/host.rs` `env_get` docs, `bitty@7da6d6f`), and the
+(`crates/bitty-lua/src/host.rs` `env_get` docs, `bitty@c2aaf218`), and the
 RFC extension-level split lists the surface as gated by `env.read:<KEY>`
 (RFC extension table). The canonical manifest spelling is owned by the
 accepted
@@ -113,24 +113,18 @@ neither one implies the other:
 | Bound                         | Layer it applies to                                     | Value and enforcement                                                                                                                                                                                                                                                                             |
 | ----------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Manifest grant key bound      | the `env.read:<KEY>` parameter a manifest declares      | 64 bytes; uppercase ASCII key (`^[A-Z_][A-Z0-9_]*$`, length 1..64) per [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md), applied by the SDK manifest validator (`bitty-plugin-sdk` `src/capabilities.ts`, `MAX_ENV_KEY_LEN = 64`) |
-| Host Lua-call key-shape bound | the `key` argument of `bitty.env.get` / `bitty.env.has` | 128 bytes; shape `[A-Za-z_][A-Za-z0-9_]*`, length `1..128` (`crates/bitty-lua/src/host.rs`, `ENV_KEY_MAX_BYTES = 128`, `bitty@7da6d6f`), denied fail-closed with `E_DEF_LIMIT` before any grant check                                                                                             |
+| Host Lua-call key-shape bound | the `key` argument of `bitty.env.get` / `bitty.env.has` | 64 bytes; shape `^[A-Z_][A-Z0-9_]*$`, length `1..64` (`crates/bitty-lua/src/host.rs`, `ENV_KEY_MAX_BYTES = 64`, `bitty@c2aaf218`), denied fail-closed with `E_ENV_KEY_INVALID` before any grant check                                                                                             |
 
-A manifest grant is therefore bounded more tightly than a runtime call
-argument: a 64-byte `env.read:<KEY>` declaration is the longest one the SDK
-validator accepts, while the host bridge still accepts a call argument up to
-128 bytes before it consults the allowlist. Passing a longer key at run time
+A manifest grant and a runtime call argument share the same bound: a 64-byte `env.read:<KEY>` declaration is the longest one the SDK
+validator accepts, and the host bridge accepts a call argument up to
+64 bytes before it consults the allowlist. Passing a longer key at run time
 never widens a grant, and a declared grant never raises the runtime shape
 bound.
 
-One point of the two layers disagrees, and this page records the
-disagreement instead of choosing silently: the accepted
+The two layers agree following `bitty#1751` via `#1752` (CTX-1004): the accepted
 [ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md)
-contract text bounds the `bitty.env` `name` argument to the same
-`^[A-Z_][A-Z0-9_]*$` 1..64 key and names its denial `E_ENV_KEY_INVALID`,
-while the pinned host revision accepts the wider `1..128`
-`[A-Za-z_][A-Za-z0-9_]*` shape and denies with `E_DEF_INVALID` /
-`E_DEF_LIMIT`. Reconciling the accepted ADR text with the host implementation
-is an owner decision, not a documentation choice.
+contract bounds the `bitty.env` key to `^[A-Z_][A-Z0-9_]*$` 1..64 with denial `E_ENV_KEY_INVALID`,
+and the host bridge enforces the same bound (`ENV_KEY_MAX_BYTES = 64`, `bitty@c2aaf218`). The prior wider host shape is retired.
 
 ## Example
 
@@ -151,9 +145,9 @@ granted-path claim beyond this denial shape is follow-up work.
 - Not implemented: this namespace has no callable signatures, and every
   statement above about params, returns, and gates describes the expected
   contract only. All of it is subject to change when a host backend lands.
-- Key-shape checks (`E_DEF_INVALID` / `E_DEF_LIMIT`) run before any grant
-  check; oversize input never reaches the allowlist (`host.rs:81-86`). This is
-  the 128-byte runtime bound; the 64-byte manifest grant bound is enforced
+- Key-shape checks (`E_ENV_KEY_INVALID`) run before any grant
+  check; oversize input never reaches the allowlist (`validate_env_key`). This is
+  the 64-byte runtime bound; the 64-byte manifest grant bound is enforced
   earlier, by the SDK manifest validator ([Capability](#capability)).
 - Ungranted keys are deliberately indistinguishable from unimplemented ones
   (same `E_NOT_IMPLEMENTED` code), so key presence cannot be probed
@@ -192,7 +186,7 @@ runtime `bitty.api_version`.
   `not_implemented`)
 - `bitty` `crates/bitty-lua/src/host.rs` (`BridgeError::not_implemented`
   at `host.rs:444`; `env_get` default at `host.rs:533`; `env_has` default
-  at `host.rs:544`; `ENV_KEY_MAX_BYTES = 128` at `host.rs:86`)
+  at `host.rs:544`; `ENV_KEY_MAX_BYTES = 64` (`validate_env_key`))
 - `bitty` `crates/bitty-plugin-host/src/capability.rs`
   (`CapabilityFamily::Env`, `env.read` closed identifier)
 - `bitty` `crates/bitty-lua/tests/lua_parity.rs`
