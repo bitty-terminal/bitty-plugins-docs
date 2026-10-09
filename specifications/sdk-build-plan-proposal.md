@@ -291,6 +291,20 @@ separately scoped task in the owning repository.
 - Future SDK and template implementation tasks in their owning
   repositories: sequenced by S-6; none authorized by this page.
 
+## Provenance
+
+The S-1 and S-2 classification derives from a read-only survey of the
+terminal-core repository (`bitty` CTX-0705; worktree at `50ae226`):
+accepted contracts (Plugin Platform RFC, Lua Surface RFC with ADR 0009,
+Isolation Resource RFC, Host Runtime RFC with ADR 0010) checked against
+the in-tree `bitty-plugin-host`, `bitty-lua`, `bitty-runtime`, and
+`bitty-ui` sources plus the nested SDK and template checkouts. The
+survey's pending-host gap (`keymaps`, `services`, `tasks`, `env` typings
+ahead of the host bridge) is tracked in S-3 and partly closed by `bitty`
+CTX-0707/#1303. The SDK pins the ADR 0009 text at `e94d86e` in the
+surface-file sources; accepted-text updates need the revision-refresh
+policy in Open points.
+
 ## Open points
 
 - Whether the pending-host namespaces (S-3) land together or incrementally
