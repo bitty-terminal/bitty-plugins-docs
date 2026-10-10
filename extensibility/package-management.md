@@ -194,10 +194,20 @@ local-path install has shipped (CTX-0406 slice above).
   revision (`rev`) for reproducibility. (The user note spells the lockfile
   `bitty.lock`; the managed-manifest and lockfile names remain open per the
   open questions below.)
-- **Explicitly not v1.** No curl-tarball fetching (TLS/proxy/retry/checksum/
-  cache/auth matrix), no `git2` / libgit2 (heavier dependencies, and it loses
-  the system gitconfig, SSH-agent, credential-helper, proxy, and CA handling),
-  and no `reqwest` in Core. Rule: do not reimplement Git (Unix philosophy).
+- **Explicitly not v1 (plugin sources).** No curl-tarball fetching for
+  _plugin_ sources (TLS/proxy/retry/checksum/cache/auth matrix), no `git2` /
+  libgit2 (heavier dependencies, and it loses the system gitconfig,
+  SSH-agent, credential-helper, proxy, and CA handling), and no `reqwest`
+  in Core. Rule: do not reimplement Git (Unix philosophy).
+- **Shipped exception (component sources).** The manager-seed slice
+  (bitty#1791, shipped as bitty#1870) added `bitty component install`:
+  fixed-argv system `curl` fetches a hash-pinned release bundle from the
+  pinned CDN host, system `tar` unpacks it, SHA-256 is verified before
+  staging. This curl-tarball path is v1 for _components only_; the
+  consent/egress/digest/fetch-environment policy around it is tracked in
+  bitty#1905 (egress + consent), bitty#1906 (digest arbitration),
+  bitty#1907 (curl floor + CA/proxy) — this document does not pre-decide
+  those levels.
 - **Graceful degradation.** `bitty` runs without git, curl, or network.
   `bitty plugin install` without `git` fails closed with a diagnostic that
   points at manual placement under `$XDG_DATA_HOME/bitty/plugins/`.
@@ -383,15 +393,19 @@ Rules:
 - **No `PATH` discovery.** Components resolve only from the component root
   (or the developer-only `BITTY_COMPONENTS_DIR` override used by tests); an
   executable that happens to be on `PATH` is never used.
-- **Missing component.** `bitty plugin add` resolves the plugin's
+- **Missing component.** `bitty plugin install` resolves the plugin's
   `[components]` table; a missing or incompatible component makes the install
   fail with a diagnostic naming the component, the range, and the
-  `bitty component add` command to run. There is no automatic download in v1.
-  At runtime an unavailable component makes the capability unavailable, never
-  ambient.
-- **Sources (v1).** Local path only, through the DIR-030 component commands:
-  `bitty component add <dir-or-executable>` (computes the digest and writes
-  `bitty-component.toml` and `current`), `bitty component list`,
+  `bitty component add` / `bitty component install` commands to run.
+  Automatic download of the missing component follows the installer-trust
+  policy tracked in bitty#1905 (egress + consent) and bitty#1906 (digest
+  arbitration) — no silent fetching outside that policy. At runtime an
+  unavailable component makes the capability unavailable, never ambient.
+- **Sources (v1).** Local path plus the shipped CDN seed, through the DIR-030
+  component commands: `bitty component add <dir-or-executable>` (computes the
+  digest and writes `bitty-component.toml` and `current`),
+  `bitty component install <name>` (hash-pinned CDN bundle; see the shipped
+  exception above), `bitty component list`,
   `bitty component remove <name> [<version>]`, and `bitty component clean`
   (removes versions not referenced by `current` and components no installed
   plugin requires). Registry and download sources are a follow-up.
