@@ -393,6 +393,77 @@ ports = [443]              # 1..=65535, at least one, at most MAX_NETWORK_PORTS_
 template scaffolds, and canonical documentation must accept both forms using
 the grammar above; `[limits]` and `[services.required]` remain rejected.
 
+### 7. Provided-service backing heads (dynapi gating)
+
+**Decision**: a provided service interface projects only already-existing
+Core capability heads through a grant and never mints authority. The
+manifest declares the heads; activation rejects unbacked provisions and
+heads the provider was never granted; consumers resolve only when their own
+grant covers every head (both fail closed, indistinguishable from absent).
+Brokered calls are recorded in a bounded observe-only ledger
+(`SERVICE_CALL_LEDGER_CAPACITY = 256`).
+
+**Rationale**: the dynapi series (`bitty` #2037 `bbf3113d`, CTX-1175,
+supporting `bitty` #2005 design 2/4) closes the confused-deputy gap where a
+provided interface could project authority its provider never held or serve
+a consumer never granted. Provided interfaces project only granted Core
+capability heads; version negotiation and arbitration stay separate work
+and #2005 stays open.
+
+**Canonical form**:
+
+```toml
+[services.provided]
+"markdown.render" = { version = "1.0.0", heads = ["runtime.inspect"] }
+```
+
+- `heads` is a non-empty list of distinct closed capability ids (for
+  example `network.connect`, `runtime.inspect`), each parsed by
+  `CapabilityId::parse`. Empty means unbacked: the provide is rejected at
+  install, parse, bridge, and capture time with a naming diagnostic
+  (`services.provided.<iface>.heads`).
+- At most `MAX_SERVICE_BACKING_HEADS` (8) heads per interface; unknown,
+  duplicate, or over-limit heads fail closed. A `+` inside a head is
+  escaped (`++`) in the manifest-hash v5 segment
+  (`iface=version:schemas:heads`), so one head containing `+` never hashes
+  like two heads.
+- Only table-form providers are resolvable by schema-validating consumers;
+  only backed providers record at all.
+- **Provide-side grant cover**: the provider must hold a grant for every
+  declared head (exact id match, no implication); head-spoofing fails
+  closed at activation and record time.
+- **Consume-side grant cover**: a consumer resolves and calls a service
+  only when its own grant covers every head; ungranted consumes fail closed,
+  indistinguishable from absent (no oracle for probing grants).
+- **Broker ledger**: after every gate passes and before the provider VM
+  runs, the broker records `{ provider, iface, method, heads }` (plain
+  metadata only: no args, no results) into the runtime-shared
+  `ServiceCallLedger` (capacity 256, overflow drops newest and counts the
+  drop; generations share one handle so the ledger spans plugins and
+  survives reload; suspend and dispose never prune history). The ledger is
+  observe-only: a missing ledger never blocks a call, it only leaves the
+  call unrecorded. The `argv`-first invocation, deadlines, and per-call
+  budgets on the execution path are unchanged.
+
+**Invalid examples**:
+
+```toml
+# INVALID: unbacked provision (no heads)
+"markdown.render" = { version = "1.0.0" }
+
+# INVALID: unknown head (not a Core capability)
+"markdown.render" = { version = "1.0.0", heads = ["telemetry.exfiltrate"] }
+
+# INVALID: duplicate heads
+"markdown.render" = { version = "1.0.0", heads = ["runtime.inspect", "runtime.inspect"] }
+```
+
+**Classification**: accepted host-side gating (`bitty` #2037). The Lua
+`bitty.services.get` / `provide` entry points stay `not_implemented`
+(the [services reference](../sdk/reference/services.md) keeps that status);
+this section owns only the manifest grammar, the grant-cover rule, and the
+broker ledger.
+
 ## Authority table
 
 This table maps every disputed grammar element to its single authoritative
@@ -410,6 +481,9 @@ owner and canonical form:
 | `[[network.egress]]` field     | This specification, section 6 amendment (2026-10-02) | Accepted: `{ host, ports }`, exact host, bounded ports, paired with `network.connect:*` | SDK, host, template, docs                        |
 | `[services.required]` field    | This specification, section 6                        | Rejected (not accepted)                                                                 | SDK (reject), docs (do not claim)                |
 | `[components]` manifest field  | This specification, section 6 amendment (2026-10-02) | Accepted: component name (`[a-z][a-z0-9-]{0,31}`) -> caret semver requirement           | SDK, host, template, docs                        |
+| Provided-service backing heads | This specification, section 7                        | Accepted: non-empty distinct closed capability ids, `MAX_SERVICE_BACKING_HEADS` (8)     | SDK, host, template, docs                        |
+| Grant-cover rule (dynapi)      | This specification, section 7                        | Fail-closed both directions, indistinguishable from absent                              | Host grant evaluator, broker                     |
+| Broker call ledger             | This specification, section 7                        | Accepted: `ServiceCallRecord`, `SERVICE_CALL_LEDGER_CAPACITY` (256), observe-only       | Host broker, observability                       |
 
 ## Valid and invalid example corpus
 
@@ -445,7 +519,7 @@ ports = [443]
 "xuepoo.experimental" = { version = "^1.0", prerelease = true }
 
 [services.provided]
-"xuepoo.example.action" = { version = "1.0.0" }
+"xuepoo.example.action" = { version = "1.0.0", heads = ["runtime.inspect"] }
 
 [[lazy]]
 events = ["terminal.ready"]
@@ -511,6 +585,9 @@ ports = []                # At least one port is required
 5. Reject `[limits]` and `[services.required]` as unknown fields; accept
    `[components]` and `[[network.egress]]` per the amendment grammar above.
 6. Ensure service schemas are TOML inline tables, never JSON strings.
+7. Require non-empty distinct closed capability ids in
+   `[services.provided].*.heads` per section 7; reject unbacked, unknown,
+   duplicate, or over-limit (`MAX_SERVICE_BACKING_HEADS` 8) heads.
 
 ### Host parser changes
 
@@ -524,6 +601,12 @@ ports = []                # At least one port is required
    reject); `[components]` and `[[network.egress]]` are already implemented
    (`bitty-plugin-host/src/manifest.rs`, `bitty-runtime/src/component/grant.rs`)
    and must stay accepted.
+7. Enforce section 7 dynapi gating (`bitty` #2037): reject unbacked
+   provisions with the naming diagnostic, reject heads the provider was
+   never granted, resolve for a consumer only when its grant covers every
+   head (fail closed, indistinguishable from absent), and record brokered
+   calls in the bounded observe-only ledger
+   (`SERVICE_CALL_LEDGER_CAPACITY` 256).
 
 ### Template generator changes
 
@@ -546,6 +629,9 @@ ports = []                # At least one port is required
 7. Document `[components]` and `[[network.egress]]` as accepted per the
    amendment grammar above, including the fail-closed pairing rule and the
    grant-intersection computation.
+8. Document provided-service `heads` per section 7, including the
+   grant-cover fail-closed rule in both directions and the 256-bound
+   observe-only broker ledger.
 
 ## Verification plan
 
@@ -556,7 +642,9 @@ ports = []                # At least one port is required
 - Verify no document claims `env:<KEY>`, `layout.provider`, JSON string
   schemas, or the still-rejected `[limits]`/`[services.required]` fields as
   accepted forms; verify `[components]` and `[[network.egress]]` examples
-  match the amendment grammar.
+  match the amendment grammar; verify provided-service examples carry
+  non-empty `heads` and no document implies grant-free provision or
+  grant-free consumption.
 
 ### Cross-repository synchronization
 

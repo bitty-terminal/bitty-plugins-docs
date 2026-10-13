@@ -431,6 +431,38 @@ rollback, and purge have independent semantics.
 | Service provider absent            | typed resolution error before activation (`E_SERVICE_RESOLUTION`)            |
 | Bridge re-entry or invalid capture | `runtime`/`validation` diagnostic, generation disposed without partial state |
 
+### C.5 Host input pump (implementation note)
+
+Status: **implementation note, not ratified.** This subsection records host
+behavior that merged into `bitty` `origin/main`; it does not revise the
+accepted Gap A/B/C contract above and claims no compatibility promise.
+
+- **Snapshot.** `OverlayCapture::input_available`
+  (`crates/bitty-runtime/src/plugin_runtime/overlay.rs`, `bitty` #2034
+  `cb8b8e37`, CTX-1170) returns the live owner's plugin id plus the queued
+  event count when a session holds capture and its queue is non-empty, and
+  `None` otherwise (no owner, or an owner with nothing to drain). The
+  snapshot never drains: the owner drains through `poll` on its own cold
+  path. A released session clears its queue in `finish_session`, so the
+  snapshot can never report a dead session.
+- **Delivery.** `deliver_overlay_input_available` in
+  `crates/bitty-terminal/src/terminal_app.rs` runs on the application tick
+  right after `deliver_overlay_released`: when the snapshot reports a live
+  owner with undrained input, the host delivers one observation-only
+  `overlay.input.available` event with payload `{ owner, queued }` (text
+  owner id, queued count; no input bytes). Level-triggered and bounded at
+  most one event per tick no matter how deep the queue is, on the cold tick
+  path only, never on the input hot path (`P0-AC-015`). The snapshot borrow
+  is released before delivery so an owner handler that re-enters through
+  `poll` cannot alias it. No-op without a plugin runtime, with no live
+  owner, or with an empty queue. Ordering after `overlay.released` keeps a
+  session end observable before any new-session data nudge.
+- Headless evidence: `crates/bitty-runtime/tests/overlay_capture_api.rs`
+  (`input_available_reports_live_owner_with_queued_input_only`) plus the
+  `EventKind` contract test in
+  `crates/bitty-plugin-host/src/event.rs`
+  (`overlay_input_available_kind_contract`).
+
 ## Candidate - reload/update triggers and queue drain (OQ-072)
 
 Status: **candidate, not ratified** (bitty `CTX-0373`; registered as

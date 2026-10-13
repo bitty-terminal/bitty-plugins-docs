@@ -128,6 +128,7 @@ end)
 | `selection.changed`          | Observation  | `{ view_id, terminal_id? }` (coalescable; no selection text in v1)                |
 | `process.exited`             | Observation  | `{ terminal_id, runtime_id, exit_code }`                                          |
 | `config.reloaded`            | Observation  | `{}`                                                                              |
+| `overlay.input.available`    | Observation  | `{ owner, queued }` (coalescable nudge, `Ungated`)                                |
 | `intercept.command-dispatch` | Interception | `{ action, origin, preview }` (bounded sanitized metadata; veto/approve only)     |
 | `intercept.terminal-spawn`   | Interception | `{ action, origin, preview }`                                                     |
 | `intercept.paste`            | Interception | `{ action, origin, preview }` (never carries paste text without `clipboard.read`) |
@@ -142,6 +143,21 @@ end)
 - Unknown future fields in payload tables are ignored, not errors, except on
   payload-less kinds (whose v1 shape declares no fields), which reject any
   key (RFC compatibility policy).
+
+Host-build note (additive v2 kind, `bitty` #2034 `cb8b8e37`, CTX-1170, host
+half of `bitty` #1972): `overlay.input.available` is registered in the host
+`EventKind` (`parse` / `as_str` round-trip) as `Observation`, coalescable
+(level signal where the newest supersedes older copies), and `Ungated`
+payload policy. While a live capture owner has undrained queued input, the
+host delivers at most one observation-only event per tick on the cold tick
+path with payload `{ owner, queued }` (text owner id, queued event count)
+so the owner drains through `ui.overlay.poll` and repaints; the payload
+carries no input bytes, only the drain nudge. Any subscriber may observe
+it; no phase may intercept or veto it. Unknown spellings nearby
+(`overlay.input`, `overlay.input.available.extra`) fail closed. The frozen
+v1 surface is unchanged: this kind is additive v2 growth owned by the
+focusable-overlay host contract, and this paragraph is `draft` host-build
+evidence, not a compatibility promise.
 
 ## Compatibility and versioning
 
@@ -169,3 +185,11 @@ runtime `bitty.api_version`.
   `REGISTRATION_MAX_EVENT_KIND_BYTES`, `E_DEF_INVALID` / `E_DEF_LIMIT`)
 - `bitty` `crates/bitty-lua/tests/host_bridge.rs`
   (`registrations_are_captured`)
+- `bitty` `crates/bitty-plugin-host/src/event.rs` (`bitty@cb8b8e37`;
+  `OverlayInputAvailable` kind, `overlay.input.available` parse and
+  round-trip, `Observation` class, coalescable, `Ungated` payload,
+  `overlay_input_available_kind_contract` test)
+- `bitty` `crates/bitty-runtime/src/plugin_runtime/overlay.rs`
+  (`OverlayCapture::input_available` snapshot) and
+  `crates/bitty-terminal/src/terminal_app.rs`
+  (`deliver_overlay_input_available`, one-per-tick cold-path pump)

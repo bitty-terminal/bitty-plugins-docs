@@ -82,14 +82,27 @@ per `BridgeError::to_error` in `crates/bitty-lua/src/host.rs`,
 
 ## Capability
 
-None on the consumer side. The RFC extension-level split lists the
+None on the consumer side for the v1 minimal contract. The RFC extension-level split lists the
 consumer side as gated by none, with provider grants staying with the
 callee (RFC extension table), and the callee executes with its own grants
 (RFC "Services"). No single `CapabilityFamily` member
 (`crates/bitty-plugin-host/src/capability.rs`, which defines no services
-family) gates the consumer call; grants, families, and lifecycle belong to
+family) gates the v1 consumer call; grants, families, and lifecycle belong to
 the capability contract and are never redefined here
 ([Lua Reference Overview](overview.md)).
+
+Host dynapi gating (implementation evidence, `bitty` #2037 `bbf3113d`,
+CTX-1175; Lua entry points below stay `not_implemented`): a provided
+interface declares backing Core capability heads in the manifest
+(`[services.provided].*.heads`, non-empty distinct closed ids,
+`MAX_SERVICE_BACKING_HEADS` 8). The provider must hold a grant for every
+head and a consumer resolves and calls only when its own grant covers
+every head; either side fails closed, indistinguishable from absent, so
+ungranted provision or consumption is never observable as a distinct error.
+Brokered calls record `{ provider, iface, method, heads }` into the
+runtime-shared observe-only `ServiceCallLedger` (`SERVICE_CALL_LEDGER_CAPACITY`
+256, overflow drops newest and counts the drop). Full grammar in the
+[manifest and capability authority](../../specifications/manifest-capability-authority.md#7-provided-service-backing-heads-dynapi-gating).
 
 ## Example
 
@@ -118,6 +131,14 @@ test exercises a wired backend.
   pinned behavior.
 - Only table-form `[services.provided]` entries are resolvable by
   schema-validating consumers (RFC "Services").
+- Backed provision only (host evidence, `bitty` #2037): only backed
+  providers (non-empty `heads`) record at all; unbacked, unknown-head,
+  duplicate-head, or over-limit provisions are rejected with a naming
+  diagnostic. Grant cover is fail-closed in both directions,
+  indistinguishable from absent.
+- Broker ledger (host evidence, `bitty` #2037): runtime-shared
+  observe-only `ServiceCallLedger`, capacity 256, drops newest on
+  overflow; a missing ledger never blocks a call.
 - Provider ecology beyond this minimal contract is explicitly deferred
   (RFC "Services").
 - Out of scope (no source): resolution ordering, caching, retry, timeouts,
@@ -149,3 +170,10 @@ runtime `bitty.api_version`.
 - `bitty` `crates/bitty-lua/tests/lua_parity.rs`
   (`services_get_provide_are_not_implemented`,
   `not_implemented_constructor_shape`)
+- [Manifest and capability authority](../../specifications/manifest-capability-authority.md#7-provided-service-backing-heads-dynapi-gating)
+  (accepted backing-head grammar, grant-cover rule, broker ledger)
+- `bitty` `crates/bitty-plugin-host/src/manifest.rs` (`bitty@bbf3113d`;
+  `ProvidedService.heads`, `MAX_SERVICE_BACKING_HEADS`, unbacked naming
+  diagnostic) and `crates/bitty-runtime/src/plugin_runtime/services.rs`
+  (grant-cover checks, `ServiceCallRecord`, `ServiceCallLedger`,
+  `SERVICE_CALL_LEDGER_CAPACITY` 256)
