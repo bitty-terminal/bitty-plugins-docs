@@ -69,6 +69,15 @@ are normative. This specification resolves grammar ambiguities; it does not
 relax capability deny-by-default, grant consent requirements, or resolver
 determinism.
 
+## Terminology
+
+- **Backing head**: an existing Core capability id declared by a provided
+  service; declaring it does not grant it.
+- **Grant cover**: the provider or consumer holds a grant for every declared
+  backing head, as required in section 7.
+- **Implemented-only**: pinned source evidence of a runtime path, without
+  independent Verified or release acceptance.
+
 ## Contract decisions
 
 ### 1. Environment capability spelling
@@ -458,11 +467,29 @@ and #2005 stays open.
 "markdown.render" = { version = "1.0.0", heads = ["runtime.inspect", "runtime.inspect"] }
 ```
 
-**Classification**: accepted host-side gating (`bitty` #2037). The Lua
-`bitty.services.get` / `provide` entry points stay `not_implemented`
-(the [services reference](../sdk/reference/services.md) keeps that status);
-this section owns only the manifest grammar, the grant-cover rule, and the
-broker ledger.
+**Classification**: accepted host-side gating (`bitty` #2037). Current
+runtime evidence is **Implemented-only**, pinned to Core
+`1c68de2545c961790d0a2011340e4a3c04564ab7`: `crates/bitty-lua/src/host.rs`
+installs `bitty.services.get` / `provide` callbacks;
+`crates/bitty-runtime/src/plugin_runtime/services.rs` overrides
+`service_provide_check`, `service_resolve`, and `service_call`; and
+`plugin_runtime/mod.rs` wires the shared service directory and ledger before
+activation. The directory-backed in-process path is callable, subject to
+declaration, grant-cover, lifecycle, and bridge checks. `HostServices` trait
+defaults and runtime seams without a directory still return
+`E_NOT_IMPLEMENTED`; historical route-table `not_implemented` labels do not
+describe the wired runtime. The [services reference](../sdk/reference/services.md)
+records this distinction and the real-VM conformance sources in
+`crates/bitty-runtime/tests/plugin_services.rs`; source inspection is not a
+fresh execution, Verified, compatibility, or release-usability claim.
+
+This section owns only the manifest grammar, grant-cover rule, and broker
+ledger. The host's required `services.required` declaration remains
+experimental and rejected by the accepted stable schema in section 6;
+`[dependencies]` alone does not satisfy that runtime gate. Broader provider
+ecology, async completion, and cross-process broker/execution contracts
+remain candidate or deferred work. The pinned backend does not accept them
+or mint new service authority.
 
 ## Authority table
 
@@ -633,6 +660,21 @@ ports = []                # At least one port is required
    grant-cover fail-closed rule in both directions and the 256-bound
    observe-only broker ledger.
 
+## Security review
+
+This specification was reviewed against the normative security corpus:
+
+- Deny-by-default capability model: preserved. No allow-all wildcard; absence
+  is denial.
+- Grant consent lifecycle: unchanged. Grammar decisions do not relax consent
+  requirements.
+- Resolver determinism: unchanged. Compatibility ranges follow the same
+  deterministic grammar as dependencies.
+- Untrusted manifest parsing: clarified. SDK and host must reject experimental
+  fields rather than silently accepting host-only shortcuts.
+
+No security control is weakened by these grammar decisions.
+
 ## Verification plan
 
 ### Documentation gates
@@ -660,6 +702,14 @@ Verification: SDK validator, host parser, template generator, and docs examples
 all accept the same valid manifest and reject the same invalid forms. No silent
 grammar fork.
 
+## Alternatives considered
+
+The conflicting spellings and representations in Purpose and scope are
+resolved by the decisions above. Retaining host-only forms as implicit
+stable schema would preserve a grammar fork. Treating every Lua service
+entry point as `not_implemented` would instead conflate fail-closed default
+seams with the pinned directory-backed implementation.
+
 ## Affected contracts
 
 This specification clarifies but does not change the contracts in:
@@ -677,20 +727,13 @@ This specification clarifies but does not change the contracts in:
   the amendment admits the manifest fields DIR-030 already depends on; this
   document does not change DIR-030's process, install, or authority model.
 
-## Security review
+## Open points
 
-This specification was reviewed against the normative security corpus:
-
-- Deny-by-default capability model: preserved. No allow-all wildcard; absence
-  is denial.
-- Grant consent lifecycle: unchanged. Grammar decisions do not relax consent
-  requirements.
-- Resolver determinism: unchanged. Compatibility ranges follow the same
-  deterministic grammar as dependencies.
-- Untrusted manifest parsing: clarified. SDK and host must reject experimental
-  fields rather than silently accepting host-only shortcuts.
-
-No security control is weakened by these grammar decisions.
+The host's experimental `services.required` declaration gate still needs
+owner-led manifest/API reconciliation before stable-schema acceptance.
+Broader provider ecology, async completion, and cross-process execution
+remain outside this grammar authority; callable in-process paths do not
+close their acceptance or independent verification gaps.
 
 ## Acceptance criteria
 
@@ -705,6 +748,13 @@ following criteria are satisfied:
 4. Documentation-only `just check` passes with zero issues.
 5. Independent review confirms no second document silently preserves rejected
    spellings.
+
+## P0 Review Sign-off
+
+The accepted grammar status above does not confer a new P0 sign-off on
+runtime behavior. This implementation-status correction records source
+inspection only; independent verification and release acceptance are not
+established here.
 
 ## References
 
