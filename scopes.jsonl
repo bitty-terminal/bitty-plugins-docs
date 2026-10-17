@@ -70,3 +70,5 @@
 {"created_at":"2026-10-17T14:43:24.555252795+00:00","id":"01M5552K8B896RH41CSPBDHX0T","kind":"include","pattern":"runtime/plugin-host-runtime-rfc.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M53TXRHFMZ4TWAHW4B21E33K"}
 {"created_at":"2026-10-17T14:43:24.588015238+00:00","id":"01M5552K9C0CTA13W1SSDGZM8W","kind":"include","pattern":"extensibility/package-management.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M53TXRHFMZ4TWAHW4B21E33K"}
 {"created_at":"2026-10-17T14:43:24.647657388+00:00","id":"01M5552KB7F7V1XVNNDTVSRBTD","kind":"include","pattern":"docs/plugins/**","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M53TXRHFMZ4TWAHW4B21E33K"}
+{"created_at":"2026-10-17T16:00:58.754639802+00:00","id":"01M559GMC28JPPEY6T4MWH1HRB","kind":"include","pattern":"extensibility/cross-plugin-composition-candidate.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M559G3MNHEHVD7YDGVGRMPKK"}
+{"created_at":"2026-10-17T16:00:58.789551806+00:00","id":"01M559GMD5P4DZ2TJ0NDE4CZHT","kind":"include","pattern":"sdk/reference/services.md","project_id":"01M2DX0MBKQR9TV48HHMN1QBJS","task_id":"01M559G3MNHEHVD7YDGVGRMPKK"}
