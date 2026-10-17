@@ -15,8 +15,10 @@ sidebar_order: 26
 > **Verified**, and not normative. This page records candidate direction for
 > how plugins collaborate without sharing a VM. It authorizes no shipped,
 > stable, or compatibility-guaranteed behavior, weakens no accepted source it
-> cites, and makes no implementation claim. Every spelling repeated here is
-> direction quoted from its owning contract, not a second definition.
+> cites. Separately labeled **Implemented-only** observations describe Core
+> `1c68de25`; they do not promote this candidate to accepted or verified
+> contract. Every spelling repeated here comes from its owning contract or
+> the explicitly pinned implementation, not a second definition.
 
 ## Purpose and scope
 
@@ -31,16 +33,16 @@ reaching into another.
 In scope (all **Candidate** unless cited otherwise):
 
 - C-1: the candidate three-layer extension model and its disclaimers.
-- C-2: the services v1 surface with exact spellings and its
-  not-implemented limit on the default host.
+- C-2: the historical services v1 spellings, current callable runtime
+  backend, and fail-closed defaults for hosts without that backend.
 - C-3: the events v1 surface: subscribe-only, the closed name set, and
   init-time capture.
-- C-4: the manifest `[services.provided]` declaration in both accepted
-  forms, and `[dependencies]` as the place where service dependencies
-  live.
+- C-4: backed `[services.provided]` declarations under current accepted
+  authority, historical `[dependencies]` semantics, and the experimental
+  host-side `[services.required]` declaration gate.
 - C-5: the isolation rules for composition.
 - C-6: the local control socket versus a cross-process plugin transport.
-- C-7: the accepted-versus-candidate-versus-unimplemented status map.
+- C-7: the accepted, candidate, and implementation status map.
 
 Out of scope and owned elsewhere (pointers, not content):
 
@@ -113,19 +115,19 @@ framing is candidate design input, not an accepted architecture. This page
 repeats the model on those terms only: a way to talk about where
 composition could run, never a promise that all three layers exist.
 
-What is usable today sits entirely in the first layer: in-process services
-and events between isolated Lua VMs, mediated by the host. The
+The pinned Core implementation supplies host-mediated in-process service
+calls between isolated Lua VMs, alongside the accepted event surface. The
 out-of-process side — an external process participating as a plugin over
 the socket boundary — is candidate direction with open supervision,
 authorization, delivery, and addressing contracts
 ([open items](../architecture/plugin-ipc-boundary.md#open-points)). The
-diagram below keeps that split visible: the in-process path is the
-accepted-shape direction with an unimplemented backend, and everything
+diagram below keeps that split visible: the in-process service path has an
+Implemented-only backend, and everything
 past the socket is labeled candidate and control-only.
 
 ```mermaid
 flowchart LR
-  subgraph inprocess["In-process (accepted shape, backend unimplemented)"]
+  subgraph inprocess["In-process (services backend Implemented-only)"]
     A["Plugin A VM"] -->|"bitty.services.get / provide"| H["Host service registry"]
     B["Plugin B VM"] -->|"bitty.services.get / provide"| H
     A -->|"bitty.events.subscribe"| E["Host event pipeline"]
@@ -140,7 +142,8 @@ flowchart LR
 
 ## Services v1 surface
 
-Status: **spellings accepted; backend unimplemented on the default host.**
+Status: **historical v1 spellings accepted; runtime backend Implemented-only
+at Core `1c68de25`; hosts without a backend retain typed denials.**
 
 The accepted consumer and provider spellings are
 ([Services](../sdk/plugin-api-v1-lua-surface-rfc.md#services)):
@@ -150,6 +153,8 @@ bitty.services.get(iface, opts) -> service | nil
 bitty.services.provide(iface, impl) -> handle
 ```
 
+The following paragraphs describe the historical accepted v1 shape;
+the pinned host's declaration and grant gates are distinguished below.
 Consumer side: `opts = { version = ">=2.0", optional? = boolean }` uses
 the accepted version-requirement grammar. The provider is selected before
 activation, or resolution fails closed with `E_SERVICE_RESOLUTION`
@@ -170,16 +175,25 @@ another plugin's VM. Provider disappearance after activation (revocation,
 suspension, disable) makes in-flight calls fail closed with
 `E_SERVICE_GONE` (`runtime` class); no stale handle remains callable.
 
-The limit is stated plainly in the reference
-([bitty.services Reference](../sdk/reference/services.md)): the default
-host has no service backend wired, so every call fails closed with
-`E_NOT_IMPLEMENTED`, and no passing test exercises a wired backend. Do
-not treat `bitty.services.get` or `bitty.services.provide` as callable
-today. An illustrative consumer shape, direction only, follows the
-accepted options grammar:
+The [bitty.services Reference](../sdk/reference/services.md) distinguishes
+three evidence layers. The accepted v1 RFC fixes the minimal spellings;
+current draft/v2 composition direction does not amend that contract; the
+pinned Core implementation installs Lua get/provide callbacks, overrides
+the `HostServices` provide/resolve/call methods, and wires the shared
+service directory before activation. Its `plugin_services.rs` conformance
+tests exercise real plugin VMs, schema checks, lifecycle failures, backing
+head denials, and broker recording. This is source evidence of an
+Implemented-only backend, not a fresh test run or a Verified, compatible,
+or release-ready claim. The trait defaults and hosts without a directory
+still return `E_NOT_IMPLEMENTED` after bridge shape validation.
+
+The following consumer spelling is conditional on a compatible provider,
+the host's matching `services.required` declaration, and grant cover for
+all backing heads. The declaration gate is experimental host behavior,
+not an accepted v1 manifest alternative:
 
 ```lua
--- Candidate API shape only; the default host answers E_NOT_IMPLEMENTED.
+-- Conditional on the host declaration gate and backing-head grants.
 local git = bitty.services.get("git.repository", { version = ">=2.0" })
 ```
 
@@ -239,22 +253,34 @@ policy belong to the accepted event pipeline and are not restated here.
 
 ## Manifest declarations
 
-Status: **accepted schema; quoted, not redefined.**
+Status: **accepted backing-head authority; historical forms and
+experimental host declaration gate distinguished below.**
 
 The manifest file name is `bitty-plugin.toml`, parsed and validated
 before any plugin code runs. A provider declares what it offers under
-`[services.provided]`, in either accepted form
-([Accepted manifest schema](../specifications/plugin-platform-rfc.md#manifest-and-identity-oq-012-part-1)):
+`[services.provided]`. The original v1 schema recorded string and table
+forms, but the later accepted
+[backing-head rule](../specifications/manifest-capability-authority.md#7-provided-service-backing-heads-dynapi-gating)
+requires a non-empty list of distinct closed Core capability heads. The
+following fragment repeats that authority's existing example:
 
 ```toml
 [services.provided]
-"markdown.render" = "1.0"
-# Table form (ADR 0009); required for schema-validating consumers:
-# "markdown.render" = { version = "1.0", args_schema = {...}, result_schema = {...} }
+"markdown.render" = { version = "1.0.0", heads = ["runtime.inspect"] }
 ```
 
-A service dependency is declared in `[dependencies]` with a version
-requirement, in string or inline-table form:
+This is a declaration fragment, not a complete runnable service or a new
+authority for Markdown rendering. It reuses the accepted closed head
+`runtime.inspect`; the provider and every consumer must separately hold
+its grant. Schema-validating consumers additionally need the table's
+bounded `args_schema` and `result_schema` under the owning schema rules.
+The historical string shorthand and a table without `heads` cannot meet
+the current backing-head requirement and are rejected. This page does not
+invent a new service capability or infer a grant from a manifest entry.
+
+The historical accepted v1 schema places plugin/service dependencies in
+`[dependencies]` with a version requirement, in string or inline-table
+form:
 
 ```toml
 [dependencies]
@@ -262,6 +288,19 @@ requirement, in string or inline-table form:
 # Inline-table form (ADR 0009 convention); opt one edge into prereleases:
 # "xuepoo.gitcore" = { version = ">=2.0", prerelease = true }
 ```
+
+At Core `1c68de25`, `PluginHostServices::service_resolve` additionally
+requires an exact matching interface declaration in the caller manifest's
+`services.required`. `opts.version` may override its requirement text but
+never supplies the declaration; `optional = true` does not waive it.
+An owner-qualified lookup requires the matching qualified declaration.
+`[dependencies]` alone therefore does not authorize a current host lookup.
+The accepted
+[host-only forms classification](../specifications/manifest-capability-authority.md#6-host-only-manifest-forms-classification)
+still rejects `[services.required]` as stable v1 schema and classifies it
+as an implementation experiment. This page records that boundary without
+promoting the field or providing an accepted scaffold for it; reconciliation
+belongs to the owning manifest/API evolution contract.
 
 Every `[lazy].events` entry must be one of the closed v1 event names
 that `bitty.events.subscribe` accepts; an unknown event kind is a
@@ -328,22 +367,24 @@ those are decided in their owning contracts, out-of-process composition
 stays a proposal and authorizes no manifest field, no Lua entry point,
 and no ambient IPC listener.
 
-## Accepted versus candidate versus unimplemented
+## Accepted versus candidate versus implemented
 
-| Statement                                                        | Standing                                                     |
-| ---------------------------------------------------------------- | ------------------------------------------------------------ |
-| Host-mediated composition via services and events                | Accepted direction                                           |
-| `bitty.services.get` / `provide` spellings and options grammar   | Accepted spelling, backend unimplemented on the default host |
-| Service trust boundary (own grants, validated args, values)      | Accepted contract                                            |
-| `[services.provided]` both forms; `[dependencies]` for consumers | Accepted schema                                              |
-| `bitty.events.subscribe` spelling and 17-entry closed set        | Accepted spelling                                            |
-| Subscribe-only model; no `bitty.events.emit` in v1               | Accepted contract                                            |
-| Init-time subscription capture                                   | Accepted contract                                            |
-| No cross-plugin `require`; no private-module loading             | Accepted direction                                           |
-| Three-layer extension model                                      | Candidate, twice disclaimed                                  |
-| Locality-transparent service proxies with async-first semantics  | Candidate proposal; sketches are unaccepted pseudocode       |
-| Cross-process plugin transport over the control socket           | Candidate; needs supervision, token, and bus contracts       |
-| Provider ecology (pickers, side-by-side versions)                | Deferred post-1.0                                            |
+| Statement                                                       | Standing                                                                           |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Host-mediated composition via services and events               | Accepted direction                                                                 |
+| `bitty.services.get` / `provide` spellings and options grammar  | Historical v1 accepted spelling; pinned runtime backend Implemented-only           |
+| `HostServices` defaults or a host without a service directory   | Typed `E_NOT_IMPLEMENTED` denial after bridge shape validation                     |
+| Service trust boundary (own grants, validated args, values)     | Accepted contract                                                                  |
+| Backed table-form `[services.provided]`                         | Accepted backing-head authority; unbacked historical forms rejected                |
+| `[dependencies]` versus `[services.required]`                   | Historical v1 dependency field versus experimental current host declaration gate   |
+| `bitty.events.subscribe` spelling and 17-entry closed set       | Accepted spelling                                                                  |
+| Subscribe-only model; no `bitty.events.emit` in v1              | Accepted contract                                                                  |
+| Init-time subscription capture                                  | Accepted contract                                                                  |
+| No cross-plugin `require`; no private-module loading            | Accepted direction                                                                 |
+| Three-layer extension model                                     | Candidate, twice disclaimed                                                        |
+| Locality-transparent service proxies with async-first semantics | Candidate proposal; sketches are unaccepted pseudocode                             |
+| Cross-process plugin transport over the control socket          | Candidate; needs supervision, token, and bus contracts                             |
+| Provider ecology (pickers and side-by-side version contract)    | Draft/deferred contract; pinned host has version tests, without contract promotion |
 
 ## Security review
 
@@ -381,9 +422,10 @@ Acceptance of this direction as contract later requires, at minimum:
    never exceeded, producers never blocked, coalescing correctness,
    drop accounting accuracy, fail-open interception under injected
    hangs, and veto-wins determinism.
-5. Removal of the not-implemented limit only with implementation
-   evidence in the owning repository plus the manifest-hash grant and
-   fuzz coverage the accepted manifest rules require.
+5. Independent acceptance of the pinned backend evidence, plus the
+   manifest-hash grant and fuzz coverage the accepted manifest rules
+   require. Existing test sources establish the wired test path, not a
+   fresh passing campaign or Verified status for composition.
 
 ## Alternatives considered
 
@@ -397,21 +439,23 @@ Acceptance of this direction as contract later requires, at minimum:
 
 ## Affected contracts
 
-| Theme                               | Existing document                                                                                      | Relationship                                                 |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
-| Service and event spellings         | [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)                               | Quotes; redefines nothing.                                   |
-| Manifest schema and trust boundary  | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                                        | Quotes the accepted schema and service rules.                |
-| Manifest field authority            | [Plugin Manifest and Capability Grammar Authority](../specifications/manifest-capability-authority.md) | Defers; adds no field.                                       |
-| Three-layer framing and proxies     | [Plugin IPC Boundary](../architecture/plugin-ipc-boundary.md)                                          | Repeats the candidate with both disclaimers intact.          |
-| Isolation and composition policy    | [Plugin system](plugin-system.md)                                                                      | Specializes the mechanism/policy split for composition.      |
-| Service backend status              | [bitty.services Reference](../sdk/reference/services.md)                                               | Repeats the not-implemented limit.                           |
-| Subscription capture and closed set | [bitty.events Reference](../sdk/reference/events.md)                                                   | Repeats the subscribe-only and init-time rules.              |
-| Provider ecology beyond v1          | [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md)                    | Defers; this page freezes nothing past the minimal contract. |
+| Theme                               | Existing document                                                                                      | Relationship                                                          |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| Service and event spellings         | [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)                               | Quotes; redefines nothing.                                            |
+| Manifest schema and trust boundary  | [Plugin Platform RFC](../specifications/plugin-platform-rfc.md)                                        | Quotes the accepted schema and service rules.                         |
+| Manifest field authority            | [Plugin Manifest and Capability Grammar Authority](../specifications/manifest-capability-authority.md) | Defers; adds no field.                                                |
+| Three-layer framing and proxies     | [Plugin IPC Boundary](../architecture/plugin-ipc-boundary.md)                                          | Repeats the candidate with both disclaimers intact.                   |
+| Isolation and composition policy    | [Plugin system](plugin-system.md)                                                                      | Specializes the mechanism/policy split for composition.               |
+| Service backend status              | [bitty.services Reference](../sdk/reference/services.md)                                               | Distinguishes implemented runtime wiring from unbacked-host defaults. |
+| Subscription capture and closed set | [bitty.events Reference](../sdk/reference/events.md)                                                   | Repeats the subscribe-only and init-time rules.                       |
+| Provider ecology beyond v1          | [Plugin Reuse and Provider Ecology RFC](../packaging/plugin-reuse-and-providers.md)                    | Defers; this page freezes nothing past the minimal contract.          |
 
 ## Open points
 
-1. When does a service backend land on the default host, and what
-   conformance evidence retires the `E_NOT_IMPLEMENTED` limit?
+1. What independent acceptance and versioned contract reconciliation are
+   still needed for the implemented backend, including the experimental
+   `services.required` gate? Hosts without a backend retain
+   `E_NOT_IMPLEMENTED` regardless of that acceptance.
 2. What is the supported service-version model: one provider version,
    multiple side-by-side versions, or interface-specific policy?
 3. What are the versioned proxy and adapter contracts mapping the public
@@ -439,10 +483,11 @@ Acceptance of this direction as contract later requires, at minimum:
 3. The three-layer model and the proxy direction keep both disclaimers,
    and the diagram labels the out-of-process side candidate and
    control-only.
-4. The services not-implemented limit and the subscribe-only event model
-   are stated without softening.
-5. No rejected manifest field is cited, and no new manifest field,
-   capability, Lua entry point, or wire contract is introduced.
+4. Historical v1 authority, draft/v2 direction, Implemented-only runtime
+   behavior, and unbacked-host `E_NOT_IMPLEMENTED` defaults stay distinct;
+   the subscribe-only event model is unchanged.
+5. No rejected manifest field is presented as accepted, and no new
+   manifest field, capability, Lua entry point, or wire contract is introduced.
 6. `just check` passes with zero issues.
 
 ## P0 Review Sign-off
@@ -453,8 +498,8 @@ Acceptance of this direction as contract later requires, at minimum:
       navigation reviewed.
 - [ ] Security reviewer: trust boundary, isolation rules, and
       confused-deputy constraints reviewed.
-- [ ] Owning implementation repositories supply backend evidence before
-      any unimplemented statement is upgraded.
+- [ ] Owning implementation evidence at Core `1c68de25` is independently
+      reviewed without treating it as Verified composition acceptance.
 
 ## References
 
@@ -471,7 +516,15 @@ Acceptance of this direction as contract later requires, at minimum:
 - [Plugin Manifest and Capability Grammar Authority](../specifications/manifest-capability-authority.md)
   (Accepted; manifest and capability field authority.)
 - [bitty.services Reference](../sdk/reference/services.md) (Draft;
-  not-implemented status and denial shape.)
+  pinned implemented backend, host-default denial, and conformance sources.)
+- Core `1c68de2545c961790d0a2011340e4a3c04564ab7`:
+  `crates/bitty-lua/src/host.rs` (installed callbacks and trait defaults),
+  `crates/bitty-plugin-host/src/manifest.rs` (`ProvidedService::validate`),
+  `crates/bitty-runtime/src/plugin_runtime/services.rs` (provide, resolve,
+  and call gates), `crates/bitty-runtime/src/plugin_runtime/mod.rs`
+  (directory wiring before activation), and
+  `crates/bitty-runtime/tests/plugin_services.rs` (real-VM conformance
+  test sources; no fresh execution claimed here).
 - [bitty.events Reference](../sdk/reference/events.md) (Draft;
   subscribe-only capture model and closed set.)
 - [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md)
