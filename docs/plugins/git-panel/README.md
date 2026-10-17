@@ -11,29 +11,32 @@ sidebar_order: 46
 
 # Git panel plugin documentation
 
-Identity, current stage, owning repository, and page links for the independent
-first-party git-panel package.
+## Admission criteria
+
+Routes for bounded git command policy and unresolved repository/panel integration.
+
+## Authority and status
+
+Registry #92 pins git-panel `862df1f9` for Core `>=0.0.24,<0.1` / Plugin API
+`^1.0`. Core `662212c5` has a real grant-gated git spawn extra, outside stable
+v1, but its Lua bridge ignores the plugin's requested cwd option. Repository
+isolation is unproven. The source returns data and builds scenes without
+mounting a panel; it has no settings reads. Eligibility establishes no safe
+repository-aware panel or release verification.
 
 ## Identity
 
-| Field             | Value                                                                                                    |
-| ----------------- | -------------------------------------------------------------------------------------------------------- |
-| Plugin id         | `bitty-terminal.git-panel`                                                                               |
-| Name              | Git Panel                                                                                                |
-| Package version   | 0.1.0                                                                                                    |
-| Owning repository | <https://github.com/bitty-terminal/git-panel>                                                            |
-| Lua module        | `lua/git-panel/`                                                                                         |
-| Capabilities      | `panel.provider`, `panel.create`, `terminal.semantic-read`, `process.spawn:git`, `fs.read:~/projects/**` |
-| System tool       | `[tools.git]` (`required = true`, `version = ">=2.30"`)                                                  |
-| Lazy commands     | `bitty-terminal.git-panel:open`, `:status`, `:diff`, `:log`, `:branch`                                   |
-| Lazy events       | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed`                                        |
-
-## Stage
-
-Pre-implementation ecosystem: the plugin package, manifest, and policy are
-implemented and tested headlessly, while the Bitty host is still landing the
-Layer 2 spawn bridge and the panel-provider contract (predecessor: RFC-0006, `bitty-docs#443` OPEN/`#445` merged; presentation stays deferred). The package is not
-verified, compatible, or shipped beyond its manifest `[compat]` ranges.
+| Field             | Value                                                                                                          |
+| ----------------- | -------------------------------------------------------------------------------------------------------------- |
+| Plugin id         | `bitty-terminal.git-panel`                                                                                     |
+| Name              | Git Panel                                                                                                      |
+| Package version   | 0.1.0                                                                                                          |
+| Owning repository | <https://github.com/bitty-terminal/git-panel>                                                                  |
+| Lua module        | `lua/git-panel/`                                                                                               |
+| Capabilities      | `panel.provider`, `panel.create`, `terminal.semantic-read`, `process.spawn:git`, and a filesystem read pattern |
+| System tool       | `[tools.git]` (`required = true`, `version = ">=2.30"`)                                                        |
+| Lazy commands     | `bitty-terminal.git-panel:open`, `:status`, `:diff`, `:log`, `:branch`                                         |
+| Lazy events       | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed`                                              |
 
 ## Pages
 

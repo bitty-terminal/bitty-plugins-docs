@@ -11,8 +11,18 @@ sidebar_order: 42
 
 # File manager plugin documentation
 
-Identity, current stage, owning repository, and page links for the independent
-first-party file-manager package.
+## Admission criteria
+
+Routes for observation-only file-manager policy and deferred host integration.
+
+## Authority and status
+
+Registry #92 pins file-manager `bf3a17ea` for Core `>=0.0.24,<0.1` / Plugin
+API `^1.0`. It observes terminal cwd/title and shapes supplied paths; it does
+not enumerate/read/rename host files or mount a panel. Undeclared settings
+use guarded fallback, and table-shaped `entries` remains unaccepted in
+[issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
+Registry eligibility establishes no filesystem, panel, or release usability.
 
 ## Identity
 
@@ -26,17 +36,6 @@ first-party file-manager package.
 | Capabilities      | `terminal.semantic-read`                                          |
 | Lazy commands     | `bitty-terminal.file-manager:open`, `:preview`, `:rename`         |
 | Lazy events       | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed` |
-
-## Stage
-
-Pre-implementation ecosystem: the plugin package, manifest, and policy are
-implemented and tested headlessly, while the Bitty host is still landing the
-host-mediated filesystem bridge. Panel presentation stays deferred pending the
-panel-provider contract (`bitty-docs` `CTX-0181`, OQ-058; accepted contract text in RFC-0006, `bitty-docs#443` OPEN/`#445` merged). `:rename` is
-policy-only composition with no host filesystem mutation; host-side
-rename/move/copy stays deferred pending the `fs.write:PATTERN` grant,
-consistent with the file-manager candidate in the Plugin Matrix. The package
-is not verified, compatible, or shipped beyond its manifest `[compat]` ranges.
 
 ## Pages
 

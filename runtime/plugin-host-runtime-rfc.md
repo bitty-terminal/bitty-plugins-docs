@@ -23,15 +23,16 @@ sidebar_order: 30
 > Draft -> experimental review evidence -> Accepted -> normative; only
 > Accepted or normative documents authorize shipped behavior.
 
-Successor direction (2026-09-20): the plugin VM behind the `bitty-lua` seam
-moves from `piccolo` toward **Phodopus**, the sandbox-first successor fork, per
+Runtime implementation update: the plugin VM behind the `bitty-lua` seam
+uses **Phodopus**, the sandbox-first successor fork, following
 [ADR 0012](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0012-phodopus-runtime.md),
 which refines the `piccolo` retention in
 [ADR 0005](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0005-lua-pins-and-stdlib.md).
-The host bridge boundary, per-plugin VM lifecycle, host-service wiring, and the
-current `bitty-lua` `piccolo` 0.3.3 pin specified below are unchanged; the seam
-stays accurate until a migration task lands. This refinement adds direction
-only and promotes no status.
+The host bridge boundary, per-plugin VM lifecycle, and host-service wiring
+remain the accepted contract. At Core `662212c5`, `bitty-lua/Cargo.toml`
+pins Phodopus `0.2.0-alpha.1` at `f6aa59a`. References below to the original
+Piccolo seam describe the accepted historical design, not the current crate
+dependency. This update makes no release or full-runtime verification claim.
 
 ## Purpose and scope
 
@@ -71,7 +72,7 @@ Out of scope, owned elsewhere and only referenced here:
   ([ADR 0005](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0005-lua-pins-and-stdlib.md);
   plugin-VM successor direction is Phodopus per
   [ADR 0012](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0012-phodopus-runtime.md),
-  current `piccolo` pin accurate until migration), environment
+  with current implementation noted above), environment
   reads ([ADR 0006](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0006-os-env-policy.md)), and the
   Config VM async boundary ([ADR 0007](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0007-async-gc.md)).
 - Resource ceilings and their numbers
@@ -85,7 +86,7 @@ changes no accepted numeric ceiling. Every number introduced below is a named
 constant; [ADR 0010](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md)
 fixes the four proposed defaults, and changing one requires an RFC revision.
 
-## Provenance and problem statement
+## Normative sources this specification must not weaken
 
 The accepted Lua Runtime RFC fixes the single host bridge
 in every VM as a versioned `bitty` module whose function surface is owned by the
@@ -114,14 +115,13 @@ For host services, the accepted surface permits `bitty.terminal.snapshot`,
 document assigns the owning component, the sync/async and `Send` boundary, or
 the persistence path.
 
-Evidence revisions inspected read-only while drafting (recorded as provenance,
-not as implementation claims): `bitty` `bbad681` gap analysis and cited
+Evidence revisions inspected read-only while drafting: `bitty` `bbad681` gap analysis and cited
 `crates/bitty-runtime/src/runtime/plugin.rs`,
 `crates/bitty-app/src/plugin.rs`, `crates/bitty-lua/src/lib.rs`,
 `crates/bitty-plugin-host/Cargo.toml`; `bitty-docs` `origin/main` at the
 drafting revision.
 
-## Normative sources this proposal must not weaken
+### Governing contracts
 
 - [Security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md): untrusted-by-default posture,
   least-privilege capability families, invariants 2 (no ambient authority), 4
@@ -146,6 +146,13 @@ drafting revision.
   [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md): manifest,
   grants, lifecycle, generation disposal, closed event set, and the accepted
   service surface.
+
+## Terminology
+
+A plugin generation owns one activation VM and its resources. The restricted
+per-plugin configuration VM described below is a separate, host-free evaluator
+that produces owned settings data before activation; it is not the main user
+Config VM and does not inherit that VM's authority.
 
 ## Gap A - host bridge and per-plugin VM lifecycle
 
@@ -172,9 +179,11 @@ unchanged.
 
 ### A.2 Proposed `bitty-lua` seam extensions
 
-The current seam exposes `LuaVm::{new, with_budgets, execute, eval_config}` and
-loads only `base`/`coroutine`/`math`/`string`/`table`. The following additions
-are proposed; names are working identifiers, not accepted spellings.
+The seam at original RFC drafting exposed
+`LuaVm::{new, with_budgets, execute, eval_config}` and loaded only
+`base`/`coroutine`/`math`/`string`/`table`. The following table preserves the
+original proposed identifiers, not a current exhaustive API inventory. The
+dedicated configuration evaluator's current restrictions are described in C.3.
 
 | Proposed seam item                      | Purpose                                                                                                     | Bound                                                                                           |
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
@@ -252,13 +261,13 @@ Unloaded -> Loading -> Activating -> Active -> Suspended -> Disposing -> Dispose
 - Reload disposes generation N before activating N+1, so N cannot observe or
   cancel N+1. Persisted `bitty.store` data is plugin-scoped and survives
   disposal until uninstall or explicit user purge, per the accepted surface.
-- A `piccolo` VM is not `Send`. A VM is created, executed, suspended, and
+- The accepted VM seam is not `Send`. A VM is created, executed, suspended, and
   disposed on a single owning executor thread. Host service handles that must
   cross thread boundaries are `Send` and the VM holds only generation-local
   handles or task ids. The successor runtime direction is Phodopus per
   [ADR 0012](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0012-phodopus-runtime.md),
-  which preserves this single-owner-thread boundary; the current `piccolo` VM
-  remains accurate until a migration task lands.
+  which preserves this single-owner-thread boundary; the current Phodopus
+  dependency is identified in the implementation update above.
 - Failure is contained: a bridge or callback failure suspends or disposes only
   the owning generation and never crashes the host.
 
@@ -382,12 +391,12 @@ changing one requires an RFC revision rather than silent drift.
 
 ### C.1 Ownership, mode, and persistence
 
-| Bridge function              | Owning component (proposed)                                                | Mode                                                                        | Persistence                                                 |
-| ---------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `bitty.terminal.snapshot`    | Core terminal state and registry, exposed through a runtime provider trait | Synchronous bounded read of committed state; no live core object escapes    | None; response only                                         |
-| `bitty.notify.show`          | Platform notification primitive (`bitty-platform`) via the runtime         | Asynchronous hand-off; returns whether the notification was accepted        | None; rate-governed by `RC-8`                               |
-| `bitty.store.get` / `set`    | `bitty-plugin-host` plugin store (quota `RC-11`)                           | Synchronous bounded read/write; `set` commits atomically before return      | `$XDG_DATA_HOME/bitty/plugins-state/<plugin-id>/store.json` |
-| `bitty.settings.get` / `set` | `bitty-config` typed settings under `plugins.<owner>.<name>`               | Synchronous bounded read; `set` routes through configuration reconciliation | `$XDG_CONFIG_HOME/bitty/` via the configuration subsystem   |
+| Bridge function           | Owning component (proposed)                                                                       | Mode                                                                     | Persistence                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| `bitty.terminal.snapshot` | Core terminal state and registry, exposed through a runtime provider trait                        | Synchronous bounded read of committed state; no live core object escapes | None; response only                                                       |
+| `bitty.notify.show`       | Platform notification primitive (`bitty-platform`) via the runtime                                | Asynchronous hand-off; returns whether the notification was accepted     | None; rate-governed by `RC-8`                                             |
+| `bitty.store.get` / `set` | `bitty-plugin-host` plugin store (quota `RC-11`)                                                  | Synchronous bounded read/write; `set` commits atomically before return   | `$XDG_DATA_HOME/bitty/plugins-state/<plugin-id>/store.json`               |
+| `bitty.settings.get`      | Per-generation declared settings resolved by `bitty-runtime` using `bitty-config` and `bitty-lua` | Synchronous bounded read; no implemented `settings.set` bridge           | `$XDG_CONFIG_HOME/bitty/plugins/<owner>.<name>.lua`; legacy TOML fallback |
 
 Paths are derived from the platform XDG path provider, never hardcoded, and are
 distinct per concern: package tree, plugin persistent state, configuration, and
@@ -404,8 +413,9 @@ rollback, and purge have independent semantics.
    expose `Send` handles; a service result crossing back into the VM is
    marshalled into a bounded value before use.
 3. No bridge function runs on the parser, render, or input hot path. Snapshot
-   reads committed terminal state on the cold path; notifications and settings
-   writes are queued or reconciled rather than executed inline.
+   reads committed terminal state on the cold path; notifications are handed
+   off asynchronously under `platform.notify` and the `RC-8` rate policy.
+   Settings have no implemented write entry point.
 4. `bitty.terminal.snapshot` is bounded by `SNAPSHOT_MAX_BYTES` (256 KiB) and
    fails with `E_SNAPSHOT_TOO_LARGE` rather than truncating.
 
@@ -414,10 +424,42 @@ rollback, and purge have independent semantics.
 - The plugin store (`bitty.store`) is owned by `bitty-plugin-host`, which
   enforces the `RC-11` quota and atomic-write rule and survives suspension,
   reload, and generation disposal.
-- Typed settings (`bitty.settings`) are owned by `bitty-config`; the accepted
-  Configuration Model RFC owns merge, reload, and namespace semantics.
-- Neither namespace grants filesystem authority. Writes are bounded, atomic,
-  and fail closed; there is no partial write and no eviction.
+- Typed settings (`bitty.settings`) are resolved before activation into a
+  generation-owned map, filtered by manifest `[settings]` declarations. The
+  Configuration Model RFC owns the broader configuration contract.
+- Neither namespace grants filesystem authority. Store writes are bounded,
+  atomic, and fail closed; settings are read-only through the bridge.
+
+#### Current per-plugin configuration implementation
+
+Core `662212c5` includes the restricted Lua settings loader from
+[#2192](https://github.com/bitty-terminal/bitty/pull/2192). The canonical file
+is `<owner>.<name>.lua` under the platform-derived configuration plugin
+directory. A short `<name>.lua` alias is admitted only after complete current
+discovery proves a unique owner, including disabled installed records; an
+incomplete map disables aliases. Only absent Lua files permit the legacy
+`<owner>.<name>.toml` compatibility fallback. Rejected Lua never selects a
+different file.
+
+The host reads a bounded regular file, then uses a fresh `ConfigLuaVm` with
+no host I/O, network, environment, `require`, module root, or plugin services.
+Only owned plain data crosses into the resolver. Manifest kinds remain
+`bool`, `int`, `string`, and `string-array`; generic table extraction does not
+accept table-shaped settings. Per-key precedence is manifest default, valid
+shared host source, then valid selected-file value. The terminal currently
+supplies an empty shared source. Unknown or wrong-typed entries are ignored;
+whole-file rejection uses lower layers without itself aborting activation.
+Configuration never changes grants.
+
+Core [#2198](https://github.com/bitty-terminal/bitty/pull/2198), merged as
+`1c68de2545c961790d0a2011340e4a3c04564ab7`, retains up to four non-sensitive
+host diagnostics per generation and logs startup activation warnings for
+alias ambiguity/shadowing, dropped-entry counts, and file rejection. Safe
+mode skips plugin-specific config reads. The detailed limits, errors, and
+recovery rules live in the [settings reference](../sdk/reference/settings.md).
+This is implementation evidence, not a plugin release claim. Official manifest
+reconciliation remains open in
+[bitty-plugins#90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
 
 ### C.4 Fail-closed error contract
 
@@ -512,7 +554,7 @@ OQ-033/OQ-034/OQ-035:
   plugin-provided watchers or reload authority; automatic hot-update of
   installed third-party plugins without the accepted update/consent flow.
 
-## Threat and fail-closed alignment
+## Security review
 
 | Proposed element                                                | Gate it preserves                                         | Threat/risk IDs |
 | --------------------------------------------------------------- | --------------------------------------------------------- | --------------- |
@@ -525,7 +567,7 @@ OQ-033/OQ-034/OQ-035:
 | `--safe` skips third-party VMs and store reads                  | Recovery and safe startup path                            | R-009           |
 | Manifest-hash-bound grants; staging pointer is not authority    | Updates cannot silently add capability                    | T-12, R-016     |
 
-## Verification and acceptance obligations
+## Verification plan
 
 Acceptance of this RFC does not satisfy any of the following. They are the
 acceptance gates for the implementing repositories:
@@ -555,7 +597,36 @@ acceptance gates for the implementing repositories:
    [Core boundaries](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/architecture/core-boundaries.md) pending-decision
    pointer move together.
 
-## Ratified resolutions
+## Alternatives considered
+
+The adopted runtime seam keeps policy validation outside the VM, rather than
+giving plugins direct OS handles. Per-plugin settings similarly use a separate
+host-free evaluator instead of running configuration inside the activation VM.
+Treating a rejected Lua file as permission to read another file would hide a
+configuration failure; the current loader instead serves lower-layer values.
+
+## Affected contracts
+
+The [settings reference](../sdk/reference/settings.md) and
+[package management](../extensibility/package-management.md) distinguish user
+configuration from package contents and persistent plugin data. The accepted
+manifest kinds and capability controls remain unchanged.
+
+## Open points
+
+- [Official settings schemas](https://github.com/bitty-terminal/bitty-plugins/issues/90)
+  remain incomplete. Table-shaped `entries` and per-module option maps have no
+  accepted settings kind.
+- OQ-072 reload/update triggers remain candidate above. Loading settings for a
+  generation does not establish a new live-reload contract.
+
+## Acceptance criteria
+
+Implementation acceptance requires the lifecycle, source integrity, service,
+resource, safe-mode, and independent review evidence in the verification plan.
+Current configuration evidence alone does not satisfy that full gate.
+
+## P0 Review Sign-off
 
 The project initiator (user) ratified the following through
 [ADR 0010](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0010-plugin-host-runtime-acceptance.md) on
@@ -607,6 +678,8 @@ The project initiator (user) ratified the following through
   [Threat model](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/threat-model.md) - normative gates.
 - [Configuration Model RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/configuration-model-rfc.md) - typed settings
   ownership for `bitty.settings`.
+- [Settings reference](../sdk/reference/settings.md) - current restricted
+  evaluator, declared-key filtering, bounds, precedence, and diagnostics.
 - [TerminalRegistry and View Lifecycle Contract](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/terminal-registry-view-lifecycle-rfc.md) -
   terminal identity tuple used by `bitty.terminal.snapshot`.
 - `bitty` `CTX-0324` (commit `bbad681`) - D4/P0 gap analysis that identified

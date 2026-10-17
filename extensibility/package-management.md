@@ -29,6 +29,47 @@ incidental side effect of loading Lua. Users should be able to declare,
 reproduce, inspect, update, disable, and remove official or third-party plugins
 through one model shared by CLI, future developer tools, and agent interfaces.
 
+## Normative sources this specification must not weaken
+
+- [Security overview](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/security/overview.md): installation executes no package code; grants remain explicit.
+- [Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md): integrity,
+  staged activation, and rollback.
+- [Plugin Platform RFC](../specifications/plugin-platform-rfc.md): manifest
+  validation, capability declarations, and consent bound to manifest hashes.
+
+## Terminology
+
+Package state selects and validates installed code. User configuration supplies
+behavior values. Persistent plugin state is the host-managed store. These have
+different roots and lifetimes; a configuration file is not an installation or
+grant record.
+
+## Current plugin configuration boundary
+
+Core `662212c5` implements per-plugin configuration at
+`$XDG_CONFIG_HOME/bitty/plugins/<owner>.<name>.lua` (platform-derived root when
+XDG is unset). The host evaluates this file in a separate bounded, restricted
+`ConfigLuaVm` with no host services, I/O, network, environment, or `require`.
+Plugins receive only their declared, strictly typed settings through
+`bitty.settings.get`. They do not open configuration files directly.
+
+Canonical Lua takes precedence over an unambiguous short-name Lua alias;
+aliases require complete current plugin discovery. Legacy
+`<owner>.<name>.toml` is read only when no selected Lua file exists, as a
+compatibility fallback. Invalid selected Lua falls back to lower value layers,
+never to another file. Values cannot create or widen capabilities. See the
+[settings reference](../sdk/reference/settings.md) for bounds, precedence,
+typed denials, and the host-internal generation diagnostics merged in Core
+`1c68de25` ([#2198](https://github.com/bitty-terminal/bitty/pull/2198)).
+
+Package code stays in the platform data store, under
+`$XDG_DATA_HOME/bitty/plugins/`; persistent plugin values use the separate
+host-managed store described by the
+[runtime contract](../runtime/plugin-host-runtime-rfc.md#c1-ownership-mode-and-persistence).
+The managed package manifest is machine-owned. Editing runtime settings cannot
+change its manifest hash, consent, selected source, or package verification.
+This configuration slice does not promote candidate installation/update policy.
+
 ## Candidate state model
 
 The plugin environment has three distinct forms of state:
@@ -480,7 +521,7 @@ Static manifest metadata should supply command names, argument schemas, help,
 completion, lazy triggers, and ownership without starting plugin Lua VMs. The
 shared CLI model is described in [CLI](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/interfaces/cli.md).
 
-## Security and trust
+## Security review
 
 Status: **accepted direction.**
 
@@ -496,6 +537,27 @@ audit, dependency health, and abandoned packages remain staged design work.
 
 Local-path development packages need visibly different trust and reproducibility
 semantics from immutable registry or Git revisions.
+
+## Verification plan
+
+Package verification must cover integrity before activation, bounded parsing,
+atomic update/rollback, consent on capability increases, and safe startup.
+Configuration verification is independently covered by Core's
+`plugin_settings_file` integration tests and the loader/VM negative tests;
+those tests do not establish package-manager or plugin product usability.
+
+## Alternatives considered
+
+Rewriting arbitrary user Lua would lose comments, conditional structure, and
+determinism. Separate machine-managed package state and restricted per-plugin
+value files preserve ownership without making copied configuration a source of
+authority.
+
+## Affected contracts
+
+This page routes to the package lifecycle, runtime, and settings contracts. It
+does not add a manifest kind, executable hook, installation bypass, or general
+filesystem API.
 
 ## Open points
 
@@ -516,3 +578,24 @@ semantics from immutable registry or Git revisions.
   This question does not apply to native components, which never use `PATH`
   discovery (DIR-030).
 - How are components installed from a registry once registry sources exist?
+- [Official settings schema reconciliation](https://github.com/bitty-terminal/bitty-plugins/issues/90)
+  is still open. Table-shaped `entries` remains unaccepted and deferred;
+  Wheel's direct project loader remains a separate follow-up in that issue.
+
+## Acceptance criteria
+
+Candidate package policy requires owner acceptance and reproducible integrity,
+transaction, consent, and recovery evidence before it is described as current.
+Existing implementation slices retain only the scope stated above.
+
+## P0 Review Sign-off
+
+No new policy acceptance or security sign-off is claimed by this documentation
+synchronization. The linked accepted contracts remain authoritative.
+
+## References
+
+- [Plugin settings reference](../sdk/reference/settings.md)
+- [Plugin Host Runtime RFC](../runtime/plugin-host-runtime-rfc.md)
+- [Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md)
+- [Official settings follow-up #90](https://github.com/bitty-terminal/bitty-plugins/issues/90)

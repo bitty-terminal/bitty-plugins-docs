@@ -11,8 +11,19 @@ sidebar_order: 34
 
 # Palette plugin documentation
 
-Identity, current stage, owning repository, and page links for the independent
-first-party palette package.
+## Admission criteria
+
+Routes for the inspected focusable-overlay source and its settings gap.
+
+## Authority and status
+
+Registry #92 pins palette `c17dc321` for Core `>=0.0.24,<0.1` / Plugin API
+`^1.0`. The source acquires, updates, and releases a focusable overlay with
+`List`/`Text` content. Undeclared `entries`/`query` use empty defaults, so this
+pin cannot receive a populated list through strict-host settings. Live typing
+is not implemented. Registry eligibility is not product verification;
+[issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90)
+retains the declarations and unaccepted entry-shape question.
 
 ## Identity
 
@@ -20,19 +31,12 @@ first-party palette package.
 | ----------------- | ------------------------------------------- |
 | Plugin id         | `bitty-terminal.palette`                    |
 | Name              | Palette                                     |
-| Package version   | 0.1.0                                       |
+| Package version   | 0.0.1                                       |
 | Owning repository | <https://github.com/bitty-terminal/palette> |
 | Lua module        | `lua/palette/`                              |
-| Capabilities      | `ui.rich`, `ui.overlay`                     |
+| Capabilities      | `ui.overlay.focus`                          |
 | Lazy commands     | `bitty-terminal.palette:toggle`             |
-| Lazy events       | `focus.changed`                             |
-
-## Stage
-
-Pre-implementation ecosystem: the plugin package, manifest, and policy are
-implemented and tested headlessly, while the Bitty host is still landing the
-Plugin API v1 overlay bridge. The package is not verified, compatible, or
-shipped beyond its manifest `[compat]` ranges.
+| Lazy events       | `focus.changed`, `overlay.released`         |
 
 ## Pages
 

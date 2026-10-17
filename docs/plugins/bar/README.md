@@ -11,30 +11,32 @@ sidebar_order: 50
 
 # Bar plugin documentation
 
-Identity, current stage, owning repository, and page links for the candidate
-unified bar presentation package.
+## Admission criteria
+
+Routes for the current bar source and explicitly deferred chrome direction.
+
+## Authority and status
+
+Registry #92 pins bar `f007a03d` for Core `>=0.0.24,<0.1` / Plugin API `^1.0`.
+The source mounts a text row in `top` or `bottom`, with declared chassis and
+module-list settings. Module option maps remain ineffective under the current
+strict kinds and stay with
+[issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
+True alignment and richer widgets remain candidate. Source presence and
+registry eligibility establish no live presentation or release verification.
 
 ## Identity
 
-| Field             | Value                                                                                                                                                 |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Plugin id         | `bitty-terminal.bar`                                                                                                                                  |
-| Name              | Unified Bar                                                                                                                                           |
-| Package version   | 0.0.1                                                                                                                                                 |
-| Owning repository | <https://github.com/bitty-terminal/bar>                                                                                                               |
-| Lua module        | `lua/bar/`                                                                                                                                            |
-| Capabilities      | `ui.chrome-band`, `terminal.semantic-read`                                                                                                            |
-| Lazy commands     | none                                                                                                                                                  |
-| Lazy events       | `workspace.snapshot`, `workspace.created`, `workspace.destroyed`, `focus.changed`, `terminal.cwd-changed`, `terminal.title-changed`, `runtime.status` |
-
-## Stage
-
-Candidate specification: consolidates the separate tab strip and statusline
-surfaces into a single 1-row edge-band presentation plugin, conforming to the
-[ADR 0014](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0014-workspace-core-presentation-plugins.md)
-mechanism and presentation boundary and the candidate
-[Sparse Workspaces and Unified Chrome Bar Contract](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/sparse-workspace-unified-bar-candidate.md).
-The package is not verified, compatible, or shipped.
+| Field             | Value                                                                                                              |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Plugin id         | `bitty-terminal.bar`                                                                                               |
+| Name              | Unified Bar                                                                                                        |
+| Package version   | 0.0.1                                                                                                              |
+| Owning repository | <https://github.com/bitty-terminal/bar>                                                                            |
+| Lua module        | `lua/bar/`                                                                                                         |
+| Capabilities      | `ui.rich`, workspace read/control, notifications, and separately granted provider heads; see [schemas](schemas.md) |
+| Lazy commands     | Focus, detail, and provider controls; see [schemas](schemas.md#events-and-commands)                                |
+| Lazy events       | Workspace changes and `config.reloaded`; see [schemas](schemas.md#events-and-commands)                             |
 
 ## Pages
 

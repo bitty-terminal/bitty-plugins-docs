@@ -11,37 +11,62 @@ sidebar_order: 35
 
 # Palette plugin design
 
-## Problem
+## Document status
+
+Current source at registry-pinned `c17dc321`; settings population and live
+query typing remain incomplete. Registry eligibility is not product verification.
+
+## Purpose and scope
 
 Users need a keyboard-driven command and picker surface without leaving the
 terminal workspace.
 
-## Scope
+## Normative sources this specification must not weaken
+
+The [Plugin Platform RFC](../../../specifications/plugin-platform-rfc.md)
+owns grants and lifetime. The
+[settings reference](../../../sdk/reference/settings.md) describes the current
+strict key/kind boundary.
+
+## Terminology
+
+The focusable overlay session owns transient capture and a host surface. It
+is distinct from a non-focusable `ui.overlay` slot mount.
+
+## Current behavior
 
 In scope: an overlay presenting declarative lists and text primitives driven by
 the plugin's toggle command and focus changes.
 
-Out of scope: terminal truth, input, parser, and render hot paths; the palette
-renders through the accepted rich/overlay presentation surface only and adds
-no authority beyond its declared capabilities.
+The source calls `bitty.ui.overlay.acquire({ title, placeholder })`, updates
+the session-owned scene, and releases capture on close. `overlay.released`
+resets local toggle state. The scene is a `List` of `Text` rows, including
+title and empty placeholder. It requests `ui.overlay.focus` only.
 
-## Capability and trust boundaries
-
-- Requests `ui.rich` (gates `bitty.ui.mount`/`bitty.ui.update`) and
-  `ui.overlay` (the overlay slot).
-- The bundled Rust realization declared only `ui.overlay` because it used the
-  lower-level Panel Runtime overlay path; the accepted Plugin API v1 Lua
-  overlay path requires both. This intentional difference is recorded in the
-  owning repository manifest and the
-  [Plugin API v1 Lua Surface RFC](../../../sdk/plugin-api-v1-lua-surface-rfc.md).
-- Deny by default: no allow-all identifier, and no filesystem, process,
-  network, clipboard, or terminal-input authority is requested.
+Guarded `entries` and `query` reads are undeclared in the manifest and use
+empty defaults on the strict host. A configuration file cannot populate the
+list yet. Live typing, registry enumeration, picker providers, and terminal
+truth modification are outside this source's implemented behavior.
 
 ## Failure behavior
 
-The plugin registers statically through lazy triggers and creates no VM until
-the toggle command or `focus.changed` fires. Overlay availability is host
-owned; absence degrades to no palette rather than a broken panel.
+The plugin registers through lazy triggers. Missing/denied overlay capture
+degrades to command-only counts; a rejected update releases a failed session.
+An external `overlay.released` resets toggle state so the next toggle can open.
+
+## Security review
+
+- Requests `ui.overlay.focus`; capture and surface lifetime remain host-owned.
+- Missing/denied capture, a foreign session, or rejected update fails closed.
+  Cleanup release stays available after grant revocation.
+- Deny by default: no allow-all identifier, and no filesystem, process,
+  network, clipboard, or terminal-input authority is requested.
+
+## Verification plan
+
+Verify acquire/update/release, capture denial, external release, empty
+settings fallback, and generation teardown. Mock scene tests alone do not
+prove an interactive palette or settings-driven entries on the strict host.
 
 ## Alternatives considered
 
@@ -49,7 +74,27 @@ A bundled-only palette was rejected by the
 [bundled plugin split decision](../../../product/bundled-plugin-split-decision.md),
 which moved the palette to an independent first-party package.
 
-## Related
+## Affected contracts
+
+No `entries` schema is accepted here. Generic plain-table extraction by the
+configuration VM is not a manifest settings-kind extension.
+
+## Open points
+
+[Issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90) owns
+declarations and table-shaped entry reconciliation. Live query typing and
+provider enumeration need separately owned integration work.
+
+## Acceptance criteria
+
+Document only the pinned session lifecycle and empty-default behavior until
+settings and interactive input have independent implementation evidence.
+
+## P0 Review Sign-off
+
+No new security acceptance is claimed by this source synchronization.
+
+## References
 
 - [Palette plugin documentation](README.md)
 - [Plugin Roadmap](../../../product/plugin-roadmap.md) (draft)

@@ -11,7 +11,21 @@ sidebar_order: 49
 
 # Git panel plugin evidence and links
 
-## Tasks and provenance
+## Purpose
+
+Record the difference between bounded git command policy, a real Core spawn
+extra, and unproven repository/panel usability.
+
+## Source identity
+
+Registry [#92](https://github.com/bitty-terminal/bitty-plugins/pull/92), merge
+`ba4d9d1268bfd877ab60413f496e95b6cae41168`, pins git-panel
+`862df1f90ad137eb1e92379ac0710c6cd22c7f21`. The manifest, entry point, scope,
+and scene were independently inspected against Core `662212c5`'s
+`crates/bitty-lua/src/host.rs` spawn callback. Package version is `0.1.0`,
+with Core `>=0.0.24,<0.1` and Plugin API `^1.0` declarations.
+
+Historical context:
 
 - [Bundled plugin split decision](../../../product/bundled-plugin-split-decision.md)
   (OQ-053) moved the git-panel out of the bundled catalog into the
@@ -35,7 +49,15 @@ sidebar_order: 49
 - Scaffolded from
   [bitty-plugin-template](https://github.com/bitty-terminal/bitty-plugin-template).
 
-## Validation
+## Disposition
+
+The grant-gated Core git backend exists, but its argv-only Lua bridge ignores
+the plugin's second cwd argument. Intended repository isolation is unproven.
+The plugin returns data and composes scenes without mounting a panel, and
+does not call filesystem APIs. It has no settings reads or declaration gap.
+Registry eligibility does not prove product usability or release delivery.
+
+## Verification backlog
 
 The owning repository
 ([git-panel](https://github.com/bitty-terminal/git-panel)) provides the
@@ -44,20 +66,12 @@ LuaLS conformance, and `bitty-plugin-lint` (including the negative-fixture
 gate with the accepted control). This page set does not restate that evidence
 and does not claim independent verification.
 
-## Status
+Require accepted/validated cwd forwarding and real-backend isolation tests,
+an accepted panel-provider lifecycle, and complete install-time tools/grant
+evidence. Dispatch authorizer tests do not prove those paths. This pass
+independently checks source only and runs no live git or panel campaign.
 
-Implemented: package, manifest, allowlist policy, and `[tools.git]`
-declaration, tested headlessly; registry entry published. Deferred: panel
-presentation (pending the panel-provider contract, `bitty-docs` `CTX-0181`,
-OQ-058) and host-side `[tools.*]` table enforcement in the install path
-(follow-up work under `bitty` `CTX-0400`). Dispatch-time enforcement by the
-`HostToolsAuthorizer` (`bitty` `crates/bitty-runtime/src/plugin_runtime/spawn.rs`)
-proves dispatch only: it does not prove install-time tools validation,
-executable discovery, or full grant binding. Verified/shipped: nothing — the package is not verified,
-compatible, or shipped beyond the manifest `[compat]` ranges, and no product
-release contains it.
-
-## Related
+### References
 
 - [Git panel plugin documentation](README.md)
 - [Plugin Roadmap](../../../product/plugin-roadmap.md) (draft)

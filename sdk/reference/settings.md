@@ -1,6 +1,6 @@
 ---
 title: bitty.settings Reference
-description: L1 plugin-namespaced settings read with typed key denials and no host write method
+description: Declared plugin settings restricted Lua configuration precedence bounds and diagnostics
 category: reference
 audience: plugin-author
 document_type: reference
@@ -11,117 +11,219 @@ sidebar_order: 80
 
 # bitty.settings Reference
 
-> Status: **draft**. Normative surface detail lives in the accepted
-> [Plugin API v1 Lua Surface RFC](../plugin-api-v1-lua-surface-rfc.md);
-> executable behavior lives in the `bitty` repository
-> (`crates/bitty-lua/src/host.rs`). This page states no behavior beyond what
-> those sources pin.
+> Implementation snapshot: Core `662212c5` includes the restricted per-plugin
+> configuration loader from [Core #2192](https://github.com/bitty-terminal/bitty/pull/2192).
+> [Core #2198](https://github.com/bitty-terminal/bitty/pull/2198) subsequently
+> merged as `1c68de2545c961790d0a2011340e4a3c04564ab7`, adding host-internal
+> generation diagnostics. These source facts do not establish release or
+> end-to-end plugin verification.
 
 ## Purpose and scope
 
-`bitty.settings` is the L1 Control read surface for a plugin's own
-namespaced settings. Keys are dot paths relative to
-`plugins.<owner>.<name>`; a plugin cannot read outside its own namespace.
-This page covers `bitty.settings.get`, the only implemented function in
-this namespace. The RFC-declared `bitty.settings.set` has no
-`HostServices` method and no bridge entry (verified by grep over
-`crates/bitty-lua/src/host.rs`, `bitty@7da6d6f`): the write path is RFC
-vocabulary only, not callable behavior.
+`bitty.settings.get` reads the current generation's resolved settings for its
+own plugin identity. The manifest `[settings]` declarations are the allowlist;
+configuration supplies values, never grants. The accepted
+[Lua surface RFC](../plugin-api-v1-lua-surface-rfc.md) names a settings write
+direction, but Core exposes no `settings.set` bridge or `HostServices`
+implementation. Plugins cannot load arbitrary user configuration files directly.
 
-## Signature
+## Signature and declared keys
 
 ```lua
 bitty.settings.get(key) -> value
 ```
 
-The `settings` table in the bridge (`crates/bitty-lua/src/host.rs`,
-`bitty@7da6d6f`) exposes exactly one function, `get`. The call requires a
-string key, delegates on the bounded read path to
-`HostServices::settings_get`, and returns the value — or nil when the key
-is absent.
+Use the exact flat manifest key, such as `show_single`, without a plugin-id
+prefix. Manifest keys match `^[a-z][a-z0-9_]*$` and contain at most 64 bytes.
+The conceptual `plugins.<owner>.<name>` namespace does not make arbitrary dot
+paths callable. Each generation receives its own map and declared-key set;
+an empty declaration set permits no reads.
 
-Host boundary (`HostServices` in `crates/bitty-lua/src/host.rs`):
+| Manifest kind  | Accepted value                                                        |
+| -------------- | --------------------------------------------------------------------- |
+| `bool`         | Lua boolean                                                           |
+| `int`          | Exact Lua integer; `32.0` is not coerced to `32`                      |
+| `string`       | Lua string                                                            |
+| `string-array` | Dense one-based array containing only strings; `{}` is an empty array |
 
-```rust
-fn settings_get(&self, key: &str) -> Result<Option<LuaValue>, BridgeError>;
-```
+Manifest defaults must match their declared kind. The manifest bounds defaults
+to 512 bytes per string, 32 array items, and 128 bytes per non-empty array item.
+Those declaration bounds are distinct from the Lua extraction bounds below;
+this page does not claim every override is revalidated against default-size
+bounds. Arbitrary maps, nested settings tables, and table-shaped `entries`
+have no accepted settings kind. A generic VM's ability to extract plain tables
+does not extend the manifest schema.
 
-There is no `settings_set` method on the trait and no `"set"` entry on the
-bridge `settings` table; only `bitty.store` exposes a `set` entry.
+## Configuration files and selection
 
-## Params
-
-| Param | Type   | Rule                                                                                                                                                                                                             |
-| ----- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `key` | string | Dot path relative to the plugin's own `plugins.<owner>.<name>` namespace (RFC vocabulary). A non-string key is refused at the bridge with `E_SETTINGS_KEY_INVALID`. Namespace confinement is enforced host-side. |
-
-## Returns
-
-- `bitty.settings.get` returns the typed setting value when present.
-- It returns `nil` when the key is absent (`Ok(None)` at the host
-  boundary).
-
-## Errors
-
-Denials arrive as catchable Lua error tables (`class` / `code` / `message`,
-per `BridgeError::to_error`); match on `code`.
-
-| `code`                   | `class`      | When                                                                                                                                            |
-| ------------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `E_SETTINGS_KEY_INVALID` | `validation` | Non-string key at the bridge (`host.rs`; the message is a static string carrying no key content).                                               |
-| `E_TIMEOUT`              | `budget`     | The call exceeded its bridge read deadline (`host.rs`, bounded path; pinned by `host_call_deadline_returns_typed_timeout` in `host_bridge.rs`). |
-
-## Capability
-
-None. The extension-level split of the accepted Lua surface RFC lists
-`bitty.settings.get` / `bitty.settings.set` as L1 Control gated by
-`none; plugin-owned namespace`. Neither `bitty.settings` nor `bitty.store`
-grants filesystem authority.
-
-## Example
-
-Verified against `crates/bitty-lua/tests/host_bridge.rs`
-(`store_and_settings_round_trip`, with `retention_days = 7` in the
-`FakeServices` settings map):
+The canonical user file is
+`$XDG_CONFIG_HOME/bitty/plugins/<owner>.<name>.lua`; when XDG configuration is
+unset, the platform configuration provider supplies the root (on Linux,
+`$HOME/.config`). Package code and persistent plugin store data belong under
+the data root, separately from these configuration files.
 
 ```lua
-local retention = bitty.settings.get("retention_days")
-bitty.store.set("flag", retention)
--- retention == 7; the host observes store["flag"] == 7
+-- bitty-terminal.bar.lua: only declared settings can take effect.
+return {
+  show = true,
+  edge = "bottom",
+  show_single = true,
+  name_max_chars = 24,
+  modules_left = { "workspaces" },
+}
 ```
 
-## Limits
+Selection is deterministic:
 
-- Read-only at the bridge: `bitty.settings.set` is not exposed and has no
-  host backend. Setting namespaced values from Lua is follow-up work, not
-  callable behavior; do not treat the RFC signature as implemented.
-- An absent key returns `nil`; the bridge distinguishes no reason beyond
-  `Ok(None)` versus a value.
-- Typed schema declaration, merge, and reload semantics are owned by the
-  Configuration Model RFC (OQ-010) and are not restated here (RFC).
-- Settings access never leaves the plugin's own namespace; cross-plugin or
-  core settings reads are outside v1 (RFC).
+1. Try the canonical `<owner>.<name>.lua` file first.
+2. Only when it is absent, try `<name>.lua` if the complete current discovery
+   map contains this identity, every identity is valid, and exactly one owner
+   claims that short name. A missing/incomplete discovery map disables aliases;
+   ambiguity never selects an arbitrary plugin. Canonical names remain usable.
+3. Only when no selected Lua file exists, try the legacy
+   `<owner>.<name>.toml` file as a compatibility fallback. There is no TOML
+   short-name alias.
+
+A present but rejected canonical file does not fall through to an alias or
+TOML. A rejected selected alias likewise does not fall through to TOML.
+Missing keys in a selected Lua file do not merge with another file.
+Unsafe identities never construct a configuration path. Reads reject
+symlinks/reparse points, directories, FIFOs and other non-regular files,
+oversize or changing files, and invalid UTF-8. Safe mode skips plugin-specific
+configuration-directory reads.
+
+## Restricted configuration VM and bounds
+
+The host reads the selected file and evaluates it in a fresh `ConfigLuaVm`,
+separate from the plugin activation VM and the main user configuration VM.
+It has no host bridge, plugin services, module root, filesystem or network
+access, `require`, `io`, or `os` environment/process access. It returns owned
+plain data; functions, userdata, threads, metatables, cycles, invalid table
+shapes, and non-finite numbers are rejected. Duplicate literal keys and
+unsupported computed indexed keys are rejected before evaluation.
+
+The loader overrides `PlainConfigLimits::source_bytes` to the plugin-file
+ceiling; other limits use `PlainConfigLimits::default` at the inspected Core
+revision:
+
+| Limit / source constant                           | Current value                        |
+| ------------------------------------------------- | ------------------------------------ |
+| Source bytes / `MAX_PLUGIN_FILE_BYTES`            | 16 KiB                               |
+| Instructions / `RC1_INSTRUCTION_BUDGET`           | 10,000,000                           |
+| Charged wall time / `RC1_WALL_CLOCK_BUDGET_MS`    | 50 ms                                |
+| Accounted VM heap / `RC2_MEMORY_PER_PLUGIN_BYTES` | 32 MiB                               |
+| Extracted nesting / `max_depth`                   | 16                                   |
+| Entries per extracted table / `max_keys`          | 64                                   |
+| Extracted values / `max_values`                   | 256                                  |
+| Bytes per extracted string / `max_string_bytes`   | 2048                                 |
+| Aggregate extracted bytes / `max_aggregate_bytes` | 16 KiB including structural overhead |
+
+These are bounded implementation values, not authority granted by a config
+file. The legacy TOML parser remains a separate flat data-only subset with
+its own line, key, string, and array bounds in `bitty-config::plugin_file`.
+
+## Precedence and failure recovery
+
+For each declared key, resolution proceeds from lowest to highest:
+
+```text
+manifest default < shared host settings source < selected user file
+```
+
+The terminal integration supplies `EmptySettings` as the shared source in this
+snapshot; do not infer a populated main-config plugin table from the resolver
+seam. Wrong-typed or unsupported values drop only that entry, leaving the next
+valid lower layer. Undeclared keys are dropped and cannot create settings or
+capabilities. Structural, syntax, resource, or whole-file extraction failures
+reject the selected file and use lower layers for every declared key. An
+absent file is ordinary default behavior, not an error. Rejection itself does
+not abort activation; a plugin that makes an unguarded undeclared read can
+still fail activation.
+
+## Results and errors
+
+A normally resolved declared key has a shipped default and returns a typed
+value. At the `HostServices::settings_get` seam, `Ok(None)` maps to Lua `nil`
+when a permitted key has no backing value. This does not make an undeclared
+read return `nil`.
+
+Denials are catchable error tables with `class`, `code`, and `message`:
+
+| Code                     | Class        | Condition                                                                 |
+| ------------------------ | ------------ | ------------------------------------------------------------------------- |
+| `E_SETTINGS_KEY_INVALID` | `validation` | Non-string bridge argument, or runtime key empty or longer than 128 bytes |
+| `E_SETTINGS_UNDECLARED`  | `validation` | Key absent from this generation's manifest declarations                   |
+| `E_TIMEOUT`              | `budget`     | Bounded bridge read exceeded its deadline                                 |
+
+No capability is required for an allowed own-namespace read. Settings access
+does not imply filesystem, process, network, notification, or cross-plugin
+authority.
+
+## Generation diagnostics
+
+At merged Core `1c68de25`, the runtime retains at most
+`MAX_PLUGIN_SETTINGS_DIAGNOSTICS = 4` host-internal diagnostics per activation:
+ambiguous alias with claimant count, canonical-over-alias selection, count of
+ignored entries, and selected-file rejection with lower-layer fallback.
+The terminal startup activation path emits these through its warning logger.
+Warnings omit setting names, values, file contents, and raw evaluator errors;
+validated short aliases and counts may appear. Runtime diagnostics are owned
+by the generation and reset before a new activation. This adds no Lua diagnostics API
+and changes neither public `ActivationReport` nor `LoadedPluginSettings`
+layouts.
+
+## Official plugin reconciliation
+
+[Registry #92](https://github.com/bitty-terminal/bitty-plugins/pull/92), merged
+as `ba4d9d1268bfd877ab60413f496e95b6cae41168`, pins activity, bar,
+file-manager, git-panel, and palette at `>=0.0.24,<0.1` / Plugin API `^1.0`.
+Eligibility and manifest hashing do not complete
+[official schema issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90),
+which remains open at this snapshot:
+
+- [Activity](../../docs/plugins/activity/schemas.md): `retention_days` and
+  `store_command_args` reads are undeclared. Guarded reads use local defaults;
+  `store_command_args` does not enable argument storage even if true.
+- [Bar](../../docs/plugins/bar/schemas.md): chassis scalars and module-group
+  string arrays are declared. Per-module option keys are declared as empty
+  string arrays; map-shaped options remain inert under the strict schema.
+- [File manager](../../docs/plugins/file-manager/schemas.md) and
+  [palette](../../docs/plugins/palette/schemas.md): settings reads are
+  undeclared and guarded. Table-shaped `entries` remains explicitly deferred;
+  this reference accepts no replacement schema.
+- Git-panel has no `settings.get` reads. Composer's five chord/role strings,
+  copy-mode/search `row_count` and `max_bytes`, and statusline's six formatting
+  keys still need declarations in the inspected sources. Their compatibility
+  and activation status must not be inferred from the five eligible pins.
+- Devtools has no settings-read gap in the inspected source, but was not one
+  of those five eligible pins. Its other integration work remains pending.
+
+Wheel's project-config loader and AI behavior remain separate follow-ups in
+issue #90; they do not broaden this configuration VM or its allowed settings kinds.
 
 ## Compatibility and versioning
 
-Draft reference: this page states the candidate v1 spellings and carries no
-compatibility promise while its status is draft. The target contract is the
-[Compatibility policy](../plugin-api-v1-lua-surface-rfc.md#compatibility-policy)
-in the accepted Plugin API v1 Lua Surface RFC: the surface is stable within
-`1.x`, additions ship as minor versions, and removals or narrowings require a
-major version, gated by the manifest `compat.plugin-api` range against the
-runtime `bitty.api_version`.
+This draft describes inspected implementation and keeps outstanding schema
+work explicit. Configuration values never change manifest-hash-bound grants.
+The accepted API's compatibility target remains versioned separately from
+the application version; neither the API range nor registry inclusion proves
+that a plugin is usable or shipped.
 
 ## References
 
 - [Plugin API v1 Lua Surface RFC](../plugin-api-v1-lua-surface-rfc.md)
-  (Accepted; `bitty.settings.get` / `bitty.settings.set` spellings,
-  plugin-owned namespace, OQ-010 schema ownership)
-- [Lua Reference Overview](overview.md) (error contract, capability gating,
-  executability rule, L1/L2 split)
-- [Lua API Reference](README.md) (route table; `settings.md` row)
-- `bitty` `crates/bitty-lua/src/host.rs` (`settings` `get` bridge,
-  `HostServices::settings_get`, `E_SETTINGS_KEY_INVALID`; no
-  `settings_set` method, no `"set"` bridge entry)
-- `bitty` `crates/bitty-lua/tests/host_bridge.rs`
-  (`store_and_settings_round_trip`, `host_call_deadline_returns_typed_timeout`)
+- [Plugin Host Runtime RFC](../../runtime/plugin-host-runtime-rfc.md)
+- [Plugin package management](../../extensibility/package-management.md)
+- [Lua reference overview](overview.md)
+- Core `662212c5`: `crates/bitty-plugin-host/src/manifest.rs` (`SettingDecl`,
+  `SettingKind`); `crates/bitty-runtime/src/plugin_runtime/services.rs`
+  (`settings_get`); `plugin_settings.rs` (selection and merge);
+  `crates/bitty-lua/src/plain_config.rs` and `stdlib.rs` (restricted VM).
+- Core `1c68de25`: runtime generation diagnostic retention,
+  `crates/bitty-terminal/src/plugin_runtime.rs` warning integration, and
+  `crates/bitty-runtime/tests/plugin_settings_file.rs` regression tests.
+- [Official schema follow-up #90](https://github.com/bitty-terminal/bitty-plugins/issues/90)
+- [Documentation follow-up #153](https://github.com/bitty-terminal/bitty-plugins-docs/issues/153)
+- Additional inspected sources: statusline `2b9973c7`, devtools `c28b9dab`,
+  composer `eb05a8fc`, copy-mode `edeae30e`, and search `a3631882`. The latter
+  three are registry `ba4d9d1` pins, not updated eligibility claims.
