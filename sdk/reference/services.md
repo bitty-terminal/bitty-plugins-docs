@@ -1,6 +1,6 @@
 ---
 title: bitty.services Reference
-description: Not-implemented cross-cutting service consumer and provider surface with typed denials
+description: Draft service reference separating historical v1 authority from the implemented runtime backend and fail-closed host defaults
 category: reference
 audience: plugin-author
 document_type: reference
@@ -11,94 +11,119 @@ sidebar_order: 120
 
 # bitty.services Reference
 
-> Status: **draft**. Normative surface detail lives in the accepted
-> [Plugin API v1 Lua Surface RFC](../plugin-api-v1-lua-surface-rfc.md);
-> executable behavior lives in the `bitty` repository
-> (`crates/bitty-lua/src/host.rs`, `bitty@7da6d6f`). This page states no
-> behavior beyond what those sources pin.
+> Status: **draft**. The historical accepted v1 surface lives in the
+> [Plugin API v1 Lua Surface RFC](../plugin-api-v1-lua-surface-rfc.md).
+> Current runtime observations below are **Implemented-only**, pinned to
+> Core `1c68de2545c961790d0a2011340e4a3c04564ab7`; they are not Verified,
+> compatible, or release-ready claims and accept no new manifest/API contract.
 
 ## Purpose and scope
 
-`bitty.services` is the accepted cross-cutting surface for resolving a
-provided service (consumer side) and declaring one (provider side),
-freezing only the minimal v1 consumer/provider contract (RFC "Services";
-LUA-OQ-8). Its current status is `not_implemented`: the `bitty` route
-table marks it `not_implemented` ([Lua API Reference](README.md)), and
-every call fails closed until a service backend lands
-(`crates/bitty-lua/src/host.rs`, `bitty@7da6d6f`). Do not treat its
-functions as usable.
+`bitty.services` resolves provided services and registers provider
+functions. This reference separates the accepted minimal v1 spellings
+(LUA-OQ-8), current draft/v2 composition direction, and the pinned Core
+implementation. Implementation evidence does not amend the frozen v1
+contract or accept the host's experimental manifest forms.
+
+At the pinned revision, `crates/bitty-lua/src/host.rs` installs get/provide
+callbacks. `PluginHostServices` in
+`crates/bitty-runtime/src/plugin_runtime/services.rs` overrides
+`service_provide_check`, `service_resolve`, and `service_call`;
+`plugin_runtime/mod.rs` wires the runtime-shared service directory and
+ledger before activation. These are callable in-process backend paths.
+The `HostServices` trait defaults still fail closed with
+`E_NOT_IMPLEMENTED`, as does the runtime seam without a directory. Those
+defaults do not describe the wired product runtime. Older route-table
+`not_implemented` labels describe the earlier reference snapshot and are
+not current backend evidence.
 
 ## Signature
 
-There are no implemented Lua entry points in this namespace. The accepted
-RFC vocabulary names `bitty.services.get` / `bitty.services.provide` (RFC
-"Services"), but neither is callable behavior: the `HostServices` trait
-defaults fail closed with `E_NOT_IMPLEMENTED`
-(`crates/bitty-lua/src/host.rs`, `bitty@7da6d6f`) — `service_provide_check`
-at `host.rs:691`
-(`Err(BridgeError::not_implemented("bitty.services.provide"))`),
-`service_resolve` at `host.rs:710` and `service_call` at `host.rs:732`
-(both `Err(BridgeError::not_implemented("bitty.services.get"))`), all
-constructed by `BridgeError::not_implemented` at `host.rs:444`.
+The accepted v1 spellings are also installed by the pinned Lua bridge:
+
+```lua
+bitty.services.get(iface, opts) -> service | nil
+bitty.services.provide(iface, impl) -> handle
+```
+
+The runtime makes them conditional on manifest declarations, backing-head
+grants, lifecycle state, and bridge validation. Provider registration is
+activation-time capture, not permission to publish new authority.
 
 ## Params
 
-The following describes the expected contract shapes only, as derived from
-the Rust side — not callable behavior. The consumer takes an interface
-name plus an options table carrying a version requirement (`opts.version`
-in the accepted version-requirement grammar) and an optional flag
-(`opts.optional`), mirrored in the trait as `req: Option<&str>` and
-`optional: bool` (`crates/bitty-lua/src/host.rs` `service_resolve` docs,
-`bitty@7da6d6f`; RFC "Services"). The provider side takes an interface
-name and an `impl` table whose members are functions, with the interface
-name, concrete version, and bounded JSON Schema
-(`args_schema`/`result_schema`) declared in the manifest
-`[services.provided]` entry (RFC "Services").
+The consumer takes an interface name and options with `version` and
+`optional`. In the pinned host, `opts` and `opts.version` may be omitted;
+the host then uses the caller manifest's matching `services.required`
+requirement. An explicit version overrides only the requirement text.
+Neither it nor `optional = true` substitutes for that declaration.
+An owner-qualified lookup needs its matching qualified declaration; a
+short declaration does not authorize the qualified lookup.
+
+This is an **experimental host declaration gate**, not accepted v1 schema:
+the accepted
+[host-only forms classification](../../specifications/manifest-capability-authority.md#6-host-only-manifest-forms-classification)
+still rejects `[services.required]` as a stable field. Historical v1 puts
+plugin/service dependencies in `[dependencies]`; that field alone does
+not satisfy current `service_resolve`. Resolving this contract difference
+belongs to the owning manifest/API evolution, not this reference.
+
+The provider takes a short interface name and a plain `impl` table of
+functions. The manifest's `[services.provided]` table supplies a concrete
+version, non-empty distinct closed backing capability `heads`, and bounded
+`args_schema`/`result_schema` for schema-validating consumers. The
+[backing-head authority](../../specifications/manifest-capability-authority.md#7-provided-service-backing-heads-dynapi-gating)
+supersedes historical unbacked examples; string shorthand cannot express
+the required heads. A declaration does not grant any of them.
 
 ## Returns
 
-The following describes the expected contract shapes only, as derived from
-the Rust side — not callable behavior. Resolution hands the consumer a
-snapshot route, not a live reference: the bridge builds one callable
-closure per resolved route
-(`crates/bitty-lua/src/host.rs` `ServiceRoute` docs, `bitty@7da6d6f`).
-With `optional = true`, an unresolvable interface returns `Ok(None)` (Lua
-`nil`) instead of an error (`crates/bitty-lua/src/host.rs`
-`service_resolve` docs; RFC "Services"). Results are values rather than
-cross-VM handles (RFC "Services").
+Resolution builds a Lua table of callable method closures over a snapshot
+`ServiceRoute`, pinning provider, generation, interface, and version. A
+republished replacement cannot hijack that route. Arguments and results
+cross VM boundaries as copied values; they never expose live VM objects.
+Declared argument schemas are checked before provider execution and result
+schemas before returning to the consumer.
+
+For a declared lookup, `optional = true` returns Lua `nil` when no visible
+provider satisfies the requirement, including when backing-head grants
+hide the provider. It does not suppress missing declarations, malformed
+names, or ambiguous short-name resolution. These are pinned host mechanics,
+not a new v1 or cross-process contract.
 
 ## Errors
 
 Denials arrive as catchable Lua error tables (`class` / `code` / `message`,
-per `BridgeError::to_error` in `crates/bitty-lua/src/host.rs`,
-`bitty@7da6d6f`); match on `code`.
+per `BridgeError::to_error` in `crates/bitty-lua/src/host.rs`); match on
+`code`. The following records the pinned implementation's denial paths.
 
-| `code`                 | `class`      | When                                                                                                                                                                                                       |
-| ---------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `E_NOT_IMPLEMENTED`    | `runtime`    | Every call on the default host: no service backend is wired (`host.rs:691`, `host.rs:710`, `host.rs:732`; pinned by `services_get_provide_are_not_implemented` in `crates/bitty-lua/tests/lua_parity.rs`). |
-| `E_SERVICE_RESOLUTION` | `resolution` | Expected host-side vocabulary: the provider is selected before activation or resolution fails closed (RFC "Services"; the runtime overrides the default with manifest-checked directory resolution).       |
-| `E_SERVICE_GONE`       | `runtime`    | Expected host-side vocabulary: provider disappearance after activation makes in-flight calls fail closed; no stale handle stays callable (RFC "Services"; `service_call` docs).                            |
-| `E_SERVICE_INVALID`    | —            | Expected host-side vocabulary: schema violation on generation-checked cross-VM invocation (`service_call` docs).                                                                                           |
+| `code`                 | `class`      | When                                                                                                                                    |
+| ---------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `E_NOT_IMPLEMENTED`    | `runtime`    | Host trait defaults or runtime seam without a service directory, after bridge shape validation; not a universal product-runtime denial. |
+| `E_SERVICE_RESOLUTION` | `resolution` | Missing required declaration, invalid or ambiguous reference, or no visible compatible provider for a non-optional lookup.              |
+| `E_SERVICE_GONE`       | `runtime`    | Provider unavailable, stale generation/version route, unpublished method, or call-time consumer grant cover missing.                    |
+| `E_SERVICE_INVALID`    | `validation` | Declared argument or result schema violated at the cross-VM boundary.                                                                   |
+| `E_SERVICE_UNDECLARED` | `validation` | Undeclared, unbacked, or invalid provide-side interface.                                                                                |
+| `E_CAPABILITY_DENIED`  | `runtime`    | Provider lacks a declared backing head.                                                                                                 |
+| `E_SERVICE_FAILED`     | `runtime`    | Provider VM is busy or its method execution fails.                                                                                      |
 
 ## Capability
 
-None on the consumer side for the v1 minimal contract. The RFC extension-level split lists the
-consumer side as gated by none, with provider grants staying with the
-callee (RFC extension table), and the callee executes with its own grants
-(RFC "Services"). No single `CapabilityFamily` member
-(`crates/bitty-plugin-host/src/capability.rs`, which defines no services
-family) gates the v1 consumer call; grants, families, and lifecycle belong to
-the capability contract and are never redefined here
-([Lua Reference Overview](overview.md)).
+The historical minimal v1 extension table lists no single consumer-side
+service capability and keeps provider execution under the callee's grants.
+It must not be read as permission for grant-free consumption in the current
+host. The later accepted backing-head authority and pinned implementation
+require **both** provider and consumer grant cover. There is no new
+`services` capability family.
 
-Host dynapi gating (implementation evidence, `bitty` #2037 `bbf3113d`,
-CTX-1175; Lua entry points below stay `not_implemented`): a provided
-interface declares backing Core capability heads in the manifest
+A provided interface declares existing Core capability heads in the manifest
 (`[services.provided].*.heads`, non-empty distinct closed ids,
 `MAX_SERVICE_BACKING_HEADS` 8). The provider must hold a grant for every
-head and a consumer resolves and calls only when its own grant covers
-every head; either side fails closed, indistinguishable from absent, so
-ungranted provision or consumption is never observable as a distinct error.
+head. Provision with an ungranted head fails closed with a capability
+denial; an unbacked declaration has a naming diagnostic. The consumer
+resolves and calls only when its own grant covers every head: uncovered
+records are hidden as absent at resolution, and calls fail as gone. This
+consume-side denial does not expose ungranted provider availability.
 Brokered calls record `{ provider, iface, method, heads }` into the
 runtime-shared observe-only `ServiceCallLedger` (`SERVICE_CALL_LEDGER_CAPACITY`
 256, overflow drops newest and counts the drop). Full grammar in the
@@ -106,48 +131,70 @@ runtime-shared observe-only `ServiceCallLedger` (`SERVICE_CALL_LEDGER_CAPACITY`
 
 ## Example
 
-Denial shape, verified against `crates/bitty-lua/tests/lua_parity.rs`
-(`services_get_provide_are_not_implemented`, default seam with no service
-backend):
+Default-seam denial shape from `crates/bitty-lua/tests/lua_parity.rs`
+(`services_get_provide_are_not_implemented`). This example assumes a host
+using the trait defaults without a service backend:
 
 ```lua
 local ok, err = pcall(bitty.services.get, "iface", {})
 -- ok == false; err.code == "E_NOT_IMPLEMENTED"; err.class == "runtime"
--- (the default HostServices::service_resolve fails closed; host.rs:710)
+-- The wired PluginRuntime instead runs declaration and resolution gates.
 ```
 
-The manifest-checked directory resolution and cross-VM invocation paths
-exist only as trait-doc vocabulary for the runtime override; no passing
-test exercises a wired backend.
+Real-runtime evidence is separate. At the pinned revision,
+`crates/bitty-runtime/tests/plugin_services.rs` activates provider and
+consumer plugin VMs against the shared directory. Its sources include:
+
+- `provide_resolve_call_round_trip_with_schemas`: callable methods,
+  copied values, and argument/result schema refusals.
+- `suspend_resume_dispose_fail_closed_with_gone` and
+  `optional_missing_resolves_nil_while_provider_suspended`: lifecycle and
+  optional-absence behavior.
+- `unbacked_provide_rejected_at_install_with_naming_diagnostic` and
+  `head_spoofing_provide_naming_ungranted_head_rejected_at_record`:
+  unbacked and ungranted provision refusal.
+- `confused_deputy_consume_without_grant_fails_closed_indistinguishable_from_absent`
+  and `granted_calls_record_provider_owner_and_backing_heads`: consumer
+  grant-cover denial versus a granted call and observe-only broker metadata.
+
+These test sources exercise a wired backend, rather than only documenting
+trait vocabulary. This reference update inspects them read-only; it does
+not report a fresh execution or independent Verified acceptance.
 
 ## Limits
 
-- Not implemented: this namespace has no callable signatures, and every
-  statement above about params, returns, and errors describes the expected
-  contract only. All of it is subject to change when a service backend
-  lands.
-- A republished replacement never hijacks a live handle, and a stale
-  generation fails closed (`service_call` docs) — expected vocabulary, not
-  pinned behavior.
+- The pinned runtime backend is Implemented-only; hosts retaining the
+  trait defaults or lacking directory wiring still deny calls. Neither
+  test source presence nor callable callbacks establish release acceptance.
+- A republished replacement never hijacks a pinned route, and a stale
+  generation fails closed (`service_call` implementation).
 - Only table-form `[services.provided]` entries are resolvable by
   schema-validating consumers (RFC "Services").
-- Backed provision only (host evidence, `bitty` #2037): only backed
+- Backed provision only (accepted authority and pinned host): only backed
   providers (non-empty `heads`) record at all; unbacked, unknown-head,
   duplicate-head, or over-limit provisions are rejected with a naming
-  diagnostic. Grant cover is fail-closed in both directions,
-  indistinguishable from absent.
+  diagnostic. Grant cover is fail-closed in both directions; ungranted
+  consumption is indistinguishable from absent at resolution or gone at
+  call time.
 - Broker ledger (host evidence, `bitty` #2037): runtime-shared
   observe-only `ServiceCallLedger`, capacity 256, drops newest on
   overflow; a missing ledger never blocks a call.
 - Provider ecology beyond this minimal contract is explicitly deferred
   (RFC "Services").
-- Out of scope (no source): resolution ordering, caching, retry, timeouts,
-  and any concrete interface names or schemas.
+- Current draft/v2 provider ecology, async completion, and cross-process
+  transport remain candidates. The pinned host's version/arbitration
+  mechanics do not accept those contracts. No retry, caching, transport,
+  or concrete service schema is defined by this page.
 
 ## Compatibility and versioning
 
-Draft reference: this page states the candidate v1 spellings and carries no
-compatibility promise while its status is draft. The target contract is the
+Draft reference: historical v1 spellings, current draft/v2 direction, and
+Implemented-only host mechanics have separate standing. In particular,
+`services.required` remains experimental despite being enforced by this
+host; neither it nor service multiplicity becomes accepted v1 schema here.
+The host's `API_VERSION` still reports `1.0.0` at the pinned revision; this
+is not evidence that a v2 contract shipped or that the experimental forms
+are compatible. The target v1 contract is the
 [Compatibility policy](../plugin-api-v1-lua-surface-rfc.md#compatibility-policy)
 in the accepted Plugin API v1 Lua Surface RFC: the surface is stable within
 `1.x`, additions ship as minor versions, and removals or narrowings require a
@@ -161,19 +208,25 @@ runtime `bitty.api_version`.
   `E_SERVICE_GONE` vocabulary, LUA-OQ-8, deferred provider ecology)
 - [Lua Reference Overview](overview.md) (error contract, capability gating,
   executability rule, L1/L2 split)
-- [Lua API Reference](README.md) (route table; `services.md` row,
-  `not_implemented`)
-- `bitty` `crates/bitty-lua/src/host.rs` (`BridgeError::not_implemented`
-  at `host.rs:444`; `service_provide_check` default at `host.rs:691`;
-  `service_resolve` default at `host.rs:710`; `service_call` default at
-  `host.rs:732`; `ServiceRoute` snapshot docs)
+- [Lua API Reference](README.md) (historical route-table snapshot; the
+  earlier `not_implemented` row is not current runtime wiring evidence)
+- Core `1c68de2545c961790d0a2011340e4a3c04564ab7` supplies all executable
+  source observations on this page:
+  `crates/bitty-lua/src/host.rs` (`HostServices` defaults, installed
+  callbacks, `ServiceRoute`, `API_VERSION`)
 - `bitty` `crates/bitty-lua/tests/lua_parity.rs`
   (`services_get_provide_are_not_implemented`,
   `not_implemented_constructor_shape`)
 - [Manifest and capability authority](../../specifications/manifest-capability-authority.md#7-provided-service-backing-heads-dynapi-gating)
   (accepted backing-head grammar, grant-cover rule, broker ledger)
-- `bitty` `crates/bitty-plugin-host/src/manifest.rs` (`bitty@bbf3113d`;
+- `bitty` `crates/bitty-plugin-host/src/manifest.rs` (same Core pin;
   `ProvidedService.heads`, `MAX_SERVICE_BACKING_HEADS`, unbacked naming
   diagnostic) and `crates/bitty-runtime/src/plugin_runtime/services.rs`
   (grant-cover checks, `ServiceCallRecord`, `ServiceCallLedger`,
   `SERVICE_CALL_LEDGER_CAPACITY` 256)
+- `bitty` `crates/bitty-runtime/src/plugin_runtime/mod.rs` (same Core pin;
+  shared directory and ledger wiring before activation)
+- `bitty` `crates/bitty-runtime/tests/plugin_services.rs` (same Core pin;
+  real-VM conformance sources named above)
+- [Cross-Plugin Composition (Candidate)](../../extensibility/cross-plugin-composition-candidate.md)
+  (draft composition direction, async/cross-process exclusions)
