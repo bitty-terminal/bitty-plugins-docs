@@ -1,6 +1,6 @@
 ---
 title: Bar plugin design
-description: Scope presentation policy and capability design for the unified bar plugin
+description: Current text-row bar policy and deferred unified-chrome design
 category: project
 audience: plugin-author
 document_type: specification
@@ -11,86 +11,88 @@ sidebar_order: 51
 
 # Bar plugin design
 
-## Problem
+## Document status
 
-Rendering separate tabline and statusline plugins wastes two vertical rows of
-terminal grid space, which constitutes a significant loss on compact displays
-(such as standard 24-row or 30-row terminal windows). Furthermore, users
-accustomed to modern tiling window managers (such as Hyprland, Sway, or i3)
-expect sparse, on-demand workspace tags (`1, 2, 4, 7, 9`) and system context
-displayed together in a single non-occluding edge band similar to Waybar.
+Implementation snapshot at `f007a03dfa6036ff67458095dc71169c0c6ee7e3`, pinned
+by registry #92. Current text-row behavior is distinct from the broader
+candidate unified-chrome design; no release verification is claimed.
 
-## Scope
+## Purpose and scope
 
-In scope:
+Present workspace state and optional system context in one edge row while
+Core owns workspace identity, lifecycle, geometry, and terminal truth.
 
-- Composition of a single 1-row edge-band presentation mounted in the
-  `ui.chrome-band` slot (`STATUS_BAR_ROWS = 1`, configurable at top or bottom).
-- Modular 3-zone layout:
-  - Left: sparse workspace pills (active, inactive, urgent states), optional
-    add-workspace pill (`+`).
-  - Center: active pane metadata (process name, window title, truncated working
-    directory).
-  - Right: background agent indicators (active headless panels), system
-    metrics, and clock.
-- Pointer interaction:
-  - Left-clicking a workspace pill dispatches `workspace_focus:N`.
-  - Left-clicking `+` dispatches `workspace_new`.
-  - Middle-clicking a workspace pill dispatches `workspace_close_request:N`.
-  - Mouse wheel scrolling over the workspace section cycles through active
-    sparse workspaces in numerical order.
+## Normative sources this specification must not weaken
 
-Out of scope:
+- [ADR 0014](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0014-workspace-core-presentation-plugins.md)
+- [Plugin Platform RFC](../../../specifications/plugin-platform-rfc.md)
+- [Settings reference](../../../sdk/reference/settings.md)
 
-- Terminal truth, input handling, and VT parser hot paths.
-- Shell prompt replacement: the bar is terminal-owned chrome and does not
-  absorb shell prompt responsibilities (it is not a starship replacement).
-- Core workspace lifecycle and storage: Core owns workspace allocation,
-  on-demand creation, process tree attachment, and prune-on-empty cleanup per
-  [ADR 0014](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0014-workspace-core-presentation-plugins.md).
+## Terminology
 
-## Capability and trust boundaries
+A module produces bounded text atoms. A module group orders atoms; it does
+not imply a separate alignment container. A workspace label is decorated
+text, not a new scene-node kind.
 
-- Requests `ui.chrome-band` (gates mounting and updating the reserved 1-row
-  chrome band) and `terminal.semantic-read` (gates read-only observation of
-  committed workspace and terminal metadata).
-- Deny by default: no filesystem write, no process spawn, no network, no
-  clipboard authority, and no terminal input injection authority is requested.
-- Presentation only: plugins alter presentation, never terminal truth. The bar
-  consumes state snapshots and events asynchronously and never blocks the input,
-  parser, or render hot paths.
+## Current presentation and interaction
 
-## Mechanism and policy split
+The plugin mounts `top` or `bottom` through `bitty.ui.mount` under `ui.rich`.
+It composes a `Row` of `Text`, orders left/center/right groups sequentially,
+and hides a lone workspace unless configured otherwise or a scratchpad is
+occupied. Inactive workspace labels request focus through a registered
+command and `workspace.control`. Detail text may use a grant-gated,
+rate-limited notification fallback. Optional sensor, device, and audio
+providers hide when absent or ungranted; read and control are separate.
 
-Under ADR-0014, Bitty strictly separates mechanism from presentation:
+The [schema page](schemas.md) enumerates real settings and triggers. Chassis
+scalars and group string arrays are effective. Per-module maps remain inert
+because their declarations are empty string arrays, not accepted table kinds.
 
-1. **Core mechanism**: Core provides sparse workspace addressing
-   (`WorkspaceId(u64)`), switch-or-create semantics, prune-on-empty lifecycle,
-   headless agent panel tracking, and zero-occlusion layout partitioning via
-   `ChromeInsets`.
-2. **Plugin policy**: The Bar plugin defines the visual arrangement, module
-   configuration, theme token mapping, pill formatting, and pointer event
-   translation to Core workspace commands.
+True center/right layout, richer widgets, and broader workspace add/close or
+wheel interactions remain candidate. Core's existing `Text`, `Row`, `Column`,
+and `List` vocabulary is not extended by calling text labels capsules.
 
-## Failure behavior
+## Security review
 
-Missing semantic zones or unavailable system statistics degrade gracefully to
-fallback text rather than aborting presentation. Lua runtime errors inside the
-bar plugin are caught and isolated by the plugin host VM, leaving terminal grid
-rendering and PTY sessions intact.
+UI handles belong to one generation. Settings supply values only; the host
+checks capability, slot, provider, and resource limits. The bar never alters
+terminal truth or executes on parser/render/input hot paths.
+
+## Verification plan
+
+Validate the pinned manifest and source, settings strict-type fallback,
+workspace focus grants, optional-provider denial, and UI teardown. A live
+presentation campaign is required before claiming end-to-end usability.
 
 ## Alternatives considered
 
-- Retaining separate `tabs` and `statusline` plugins: rejected due to vertical
-  grid cost (2 rows consumed out of available terminal height).
-- Embedding a hardcoded Waybar-style widget directly in Core: rejected by
-  ADR-0014; presentation widgets must remain extensible plugins outside Core.
+Bundling presentation in Core conflicts with ADR 0014. Inventing a new widget
+or map-valued settings kind would require a separately accepted contract;
+current code keeps text composition and module defaults.
 
-## Related
+## Affected contracts
 
-- [Bar plugin documentation](README.md)
+The manifest/settings and generation-owned declarative UI contracts remain
+unchanged. The [unified-chrome candidate](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/sparse-workspace-unified-bar-candidate.md)
+is direction, not an implementation inventory for this pin.
+
+## Open points
+
+[Official schema issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90)
+still owns the per-module option shape. Alignment and richer presentation
+need their own accepted surface and verification.
+
+## Acceptance criteria
+
+Claims of current behavior must match the pinned source and host integration.
+Registry compatibility alone does not prove product or security verification.
+
+## P0 Review Sign-off
+
+No new security or contract acceptance is claimed by this synchronization.
+
+## References
+
 - [Schemas and contracts](schemas.md)
-- [Evidence and links](evidence.md)
-- [Statusline plugin design](../statusline/design.md)
-- [ADR 0014: Workspace as Core Mechanism with Plugin-Only Presentation](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0014-workspace-core-presentation-plugins.md)
-- [Sparse Workspaces and Unified Chrome Bar Contract](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/sparse-workspace-unified-bar-candidate.md)
+- [Evidence register](evidence.md)
+- [Bar documentation](README.md)

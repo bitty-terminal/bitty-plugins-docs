@@ -11,8 +11,18 @@ sidebar_order: 38
 
 # Statusline plugin documentation
 
-Identity, current stage, owning repository, and page links for the independent
-first-party statusline package.
+## Admission criteria
+
+Routes for statusline source and pending settings/eligibility work.
+
+## Authority and status
+
+Source `2b9973c7` is not one of registry #92's five eligible pins. Its manifest
+range remains `>=0.1,<1.0`; do not infer Core 0.0.24 eligibility. Six guarded
+formatting-setting reads lack declarations and use local defaults on the strict
+host. [Issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90)
+retains that work. Current `Row`/`Text` composition is not end-to-end or release
+verification.
 
 ## Identity
 
@@ -26,13 +36,6 @@ first-party statusline package.
 | Capabilities      | `terminal.semantic-read`, `ui.rich`                                                  |
 | Lazy commands     | none                                                                                 |
 | Lazy events       | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed`, `terminal.opened` |
-
-## Stage
-
-Pre-implementation ecosystem: the plugin package, manifest, and presentation
-policy are implemented and tested headlessly, while the Bitty host is still
-landing the Plugin API v1 statusline bridge. The package is not verified,
-compatible, or shipped beyond its manifest `[compat]` ranges.
 
 ## Pages
 

@@ -11,7 +11,19 @@ sidebar_order: 53
 
 # Bar plugin evidence and links
 
-## Tasks and provenance
+## Purpose
+
+Record the current bar implementation separately from candidate chrome design.
+
+## Source identity
+
+Registry [#92](https://github.com/bitty-terminal/bitty-plugins/pull/92), merge
+`ba4d9d1268bfd877ab60413f496e95b6cae41168`, pins bar
+`f007a03dfa6036ff67458095dc71169c0c6ee7e3`. The manifest and
+`lua/bar/init.lua` were independently inspected. Compatibility declarations
+are Core `>=0.0.24,<0.1` and Plugin API `^1.0`; package version is `0.0.1`.
+
+Historical design context:
 
 - [ADR 0014: Workspace as Core Mechanism with Plugin-Only Presentation](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0014-workspace-core-presentation-plugins.md)
   (accepted 2026-10-01) established that workspace lifecycle is Core mechanism
@@ -27,24 +39,32 @@ sidebar_order: 53
   and validated against
   [bitty-plugin-sdk](https://github.com/bitty-terminal/bitty-plugin-sdk).
 
-## Validation
+## Disposition
+
+Implemented: declared chassis scalars and group string arrays; `top`/`bottom`
+mounts under `ui.rich`; decorated `Text` in a `Row`; workspace focus and
+optional provider policy. Per-module option keys are empty string arrays,
+so map options remain ineffective on the strict host. No new `Capsule` or
+widget kind is implemented by the pin. Registry eligibility does not prove
+live presentation or release delivery.
+
+## Verification backlog
 
 Planned validation for the owning repository (`bitty-terminal/bar`):
 
 - `just check` quality gates including LuaLS type-checking and `bitty-plugin-lint`.
 - Headless mock observation stream tests confirming correct rendering of
   sparse, non-contiguous workspace sequences (`[1, 2, 4, 7, 9]`).
-- Pointer hit-test unit tests verifying that mouse clicks on pills correctly
-  dispatch `workspace_focus:N` and `workspace_close_request:N`.
+- Pointer tests verifying the actual `bitty-terminal.bar:focus` binding and
+  its `workspace.control` denial behavior.
 - Verification that `ChromeInsets` ensures zero occlusion of the terminal grid.
 
-## Status
+Per-module option shape remains
+[issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
+True alignment and broader workspace interactions remain candidate. This docs
+pass reruns no live UI or plugin product tests.
 
-Candidate specification: unifies the separate tab strip and statusline concepts
-into a single 1-row edge-band presentation plugin. Not verified, compatible, or
-shipped.
-
-## Related
+### References
 
 - [Bar plugin documentation](README.md)
 - [Design](design.md)

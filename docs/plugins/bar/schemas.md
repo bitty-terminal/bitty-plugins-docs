@@ -1,6 +1,6 @@
 ---
 title: Bar plugin schemas and contracts
-description: Manifest surface version ranges capabilities and configuration schemas for the bar plugin
+description: Current bar manifest settings scene and deferred option-map contracts
 category: project
 audience: plugin-author
 document_type: contract
@@ -11,66 +11,98 @@ sidebar_order: 52
 
 # Bar plugin schemas and contracts
 
+## Purpose and scope
+
+Describe registry-pinned bar `f007a03dfa6036ff67458095dc71169c0c6ee7e3`.
+The broader unified-chrome candidate does not define this pin's implemented
+widgets or interactions.
+
+## Normative sources
+
+- [Plugin Platform RFC](../../../specifications/plugin-platform-rfc.md):
+  declarations, grants, and lifecycle.
+- [Settings reference](../../../sdk/reference/settings.md): restricted
+  configuration VM, strict kinds, precedence, and typed denials.
+- [ADR 0014](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0014-workspace-core-presentation-plugins.md):
+  Core owns workspace mechanism; plugins own presentation.
+
 ## Manifest
 
 | Field                 | Value                |
 | --------------------- | -------------------- |
 | `[plugin].id`         | `bitty-terminal.bar` |
 | `[plugin].name`       | Unified Bar          |
-| `[plugin].version`    | 0.0.1                |
-| `[compat].bitty`      | `>=0.1,<1.0`         |
+| `[plugin].version`    | `0.0.1`              |
+| `[compat].bitty`      | `>=0.0.24,<0.1`      |
 | `[compat].plugin-api` | `^1.0`               |
 
-## Capabilities
+## Capabilities and providers
 
-`ui.chrome-band`, `terminal.semantic-read`. Deny by default; no allow-all
-identifier exists. Requested capabilities are checked by the plugin host before
-loading.
+The pinned manifest requests `ui.rich`, `workspace.read`, `workspace.control`,
+and `platform.notify`. Separate provider heads request
+`platform.cpu-read`, `platform.memory-read`, `platform.battery-read`,
+`platform.network.read`, `platform.essid.read`,
+`platform.bluetooth.read`/`.control`, `platform.backlight.read`/`.control`,
+`platform.idle.read`/`.control`, `audio.state.read`/`.control`, and
+`audio.spectrum`. These declarations are requests, not automatic grants.
+Read access never implies control. Missing or ungranted optional providers
+hide their modules.
 
-## Configuration schema
+## Declared settings
 
-Configuration keys declared in `bitty.toml` under `[plugins."bitty-terminal.bar"]`:
+Use the per-plugin restricted Lua file described in the settings reference,
+not an invented `[plugins]` table in `bitty.toml`.
 
-| Key                          | Type            | Default                  | Description                                                |
-| ---------------------------- | --------------- | ------------------------ | ---------------------------------------------------------- |
-| `edge`                       | `string`        | `"bottom"`               | Band placement: `"top"` or `"bottom"`.                     |
-| `modules_left`               | `array[string]` | `["workspaces", "mode"]` | Modules positioned at the start edge.                      |
-| `modules_center`             | `array[string]` | `["window_title"]`       | Modules positioned centered in available space.            |
-| `modules_right`              | `array[string]` | `["agents", "clock"]`    | Modules positioned at the end edge.                        |
-| `workspaces.format`          | `string`        | `"{id}"`                 | Format string for sparse workspace pills.                  |
-| `workspaces.show_empty`      | `boolean`       | `false`                  | Whether to render empty non-pinned workspace slots.        |
-| `workspaces.show_add_button` | `boolean`       | `true`                   | Whether to display the `+` pill to allocate new workspace. |
+| Key              | Kind           | Shipped default  | Implemented behavior                                                  |
+| ---------------- | -------------- | ---------------- | --------------------------------------------------------------------- |
+| `show`           | `bool`         | `true`           | Enable presentation                                                   |
+| `edge`           | `string`       | `"bottom"`       | `"top"` or `"bottom"` semantic slot; other strings use local default  |
+| `show_single`    | `bool`         | `false`          | Show a lone workspace; occupied scratchpad also keeps the bar visible |
+| `name_max_chars` | `int`          | `32`             | Local validation permits 1 through `NAME_MAX_CHARS` (32)              |
+| `modules_left`   | `string-array` | `["workspaces"]` | First ordered module group                                            |
+| `modules_center` | `string-array` | `[]`             | Second ordered group, without true centering                          |
+| `modules_right`  | `string-array` | `[]`             | Third ordered group, without right alignment                          |
 
-## Observation events
+`workspaces`, `clock`, `network`, `bluetooth`, `backlight`, `idle`,
+`pulseaudio`, `spectrum`, `cpu`, `memory`, and `battery` are also declared,
+each as `string-array` with empty default. Lua reads them as per-module
+option collections, but strict settings kinds reject map-shaped values.
+The empty arrays leave module defaults in effect. These declarations do not
+accept maps or dot-path keys such as `workspaces.format`. That mismatch stays
+explicit in [issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
 
-Static triggers drive recomposition without polling:
+## Events and commands
 
-| Event                    | Payload                                   | Purpose                                            |
-| ------------------------ | ----------------------------------------- | -------------------------------------------------- |
-| `workspace.snapshot`     | `{ active: u64, workspaces: array[u64] }` | Complete list of active sparse workspace IDs.      |
-| `workspace.created`      | `{ id: u64 }`                             | Emitted when a new workspace is allocated.         |
-| `workspace.destroyed`    | `{ id: u64 }`                             | Emitted when an empty dynamic workspace is pruned. |
-| `focus.changed`          | `{ workspace_id: u64, panel_id: u64 }`    | Focus shifted between panels or workspaces.        |
-| `terminal.cwd-changed`   | `{ panel_id: u64, cwd: string }`          | Working directory change in focused pane.          |
-| `terminal.title-changed` | `{ panel_id: u64, title: string }`        | Title update from VT sequence or child process.    |
-| `runtime.status`         | `{ headless_agents_active: u32 }`         | Count of background headless agent panels running. |
+Lazy events are `workspace.created`, `workspace.closed`, `workspace.renamed`,
+`workspace.focused`, `workspace.changed`, and `config.reloaded`.
+The plugin reads `bitty.workspace.list()` and re-reads its settings on the
+configured event path; this does not establish automatic config-file watching.
 
-## Dispatched commands
+Lazy commands, each under `bitty-terminal.bar:`, are `focus`, `detail`,
+`bluetooth-toggle`, `backlight-step`, `idle-toggle`, `audio-toggle`, and
+`audio-step`. Inactive workspace text binds the focus command, which requests
+`bitty.workspace.focus`; provider controls use their separate grants.
+Detail text can fall back to best-effort `bitty.notify.show`, subject to
+`platform.notify` and host rate limits.
 
-Pointer interactions on the bar translate into standard Core workspace commands:
+## Scene contract
 
-| Interaction           | Target Module  | Dispatched Command          | Effect                                     |
-| --------------------- | -------------- | --------------------------- | ------------------------------------------ |
-| Left-click            | Workspace `N`  | `workspace_focus:N`         | Switch focus to workspace `N` (or create). |
-| Left-click            | Add button `+` | `workspace_new`             | Allocate and focus new sparse workspace.   |
-| Middle-click          | Workspace `N`  | `workspace_close_request:N` | Request close of all sessions in `N`.      |
-| Mouse wheel up / down | Workspaces     | `workspace_cycle:1` / `-1`  | Cycle through active sparse workspaces.    |
+The implementation mounts semantic `top` or `bottom` with `bitty.ui.mount`
+under `ui.rich`, updates the generation-owned handle, and emits a `Row` of
+`Text` nodes. Hidden content is empty `Text`. Bold/color and command bindings
+decorate those text nodes. Bracketed workspace labels are text, not a
+`Capsule` node. True three-zone alignment, new widgets, add/close workspace
+buttons, and workspace wheel cycling are not established by this source.
 
-## Authority
+## Security review
 
-The canonical manifest contract is the
-[Plugin Platform RFC](../../../specifications/plugin-platform-rfc.md) (OQ-012)
-and the candidate
-[Sparse Workspaces and Unified Chrome Bar Contract](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/sparse-workspace-unified-bar-candidate.md).
-Manifest validity is checked by `bitty-plugin-lint` from
-[bitty-plugin-sdk](https://github.com/bitty-terminal/bitty-plugin-sdk).
+The plugin alters presentation only. Provider data and observations remain
+untrusted, controls require separate consent, and notification acceptance is
+an asynchronous hand-off rather than delivery confirmation. Settings cannot
+create capabilities or bypass host UI budgets and generation ownership.
+
+## Verification
+
+The [evidence register](evidence.md) identifies the immutable registry and
+source pins. This pass independently inspected manifest and Lua structure; it
+does not claim a live UI campaign, new security acceptance, or release delivery.

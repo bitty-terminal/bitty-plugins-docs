@@ -11,6 +11,20 @@ sidebar_order: 40
 
 # Statusline plugin schemas and contracts
 
+## Purpose and scope
+
+Describe statusline at inspected source
+`2b9973c7569398437ba632b41cce1fa37577563c`. It is absent from registry #92's
+five eligible pins and remains pending; this is not Core 0.0.24 eligibility
+or end-to-end verification evidence.
+
+## Normative sources
+
+The [Plugin Platform RFC](../../../specifications/plugin-platform-rfc.md)
+owns grants and declarations. The
+[settings reference](../../../sdk/reference/settings.md) describes the
+strict declared-key gate.
+
 ## Manifest
 
 | Field                 | Value                       |
@@ -36,7 +50,23 @@ validation and there is no allow-all identifier.
 Static triggers let the host register the plugin without creating a VM; the
 observation events activate and drive recomposition.
 
-## Authority
+## Settings gap
+
+The inspected manifest has no `[settings]`. The source attempts guarded reads
+for `separator` (string), `show_cwd`, `show_title`, `show_exit` (booleans),
+and `max_components`, `component_max_chars` (integer candidates). On the
+strict host these reads are undeclared and local formatting defaults serve.
+These types are reconciliation candidates, not declarations made by this page.
+Follow-up remains in
+[issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
+
+## Security review
+
+Formatting remains presentation-only and never alters terminal truth or
+grants. The source composes `Row`/`Text`; this does not create new widgets or
+general panel authority.
+
+## Verification
 
 The canonical manifest contract is the
 [Plugin Platform RFC](../../../specifications/plugin-platform-rfc.md) (OQ-012).

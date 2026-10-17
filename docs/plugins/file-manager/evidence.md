@@ -11,7 +11,20 @@ sidebar_order: 45
 
 # File manager plugin evidence and links
 
-## Tasks and provenance
+## Purpose
+
+Record observation-only implementation evidence without implying filesystem or
+panel usability.
+
+## Source identity
+
+Registry [#92](https://github.com/bitty-terminal/bitty-plugins/pull/92), merge
+`ba4d9d1268bfd877ab60413f496e95b6cae41168`, pins file-manager
+`bf3a17ea6aa1ea0fcc3a45a13ceaa069e83b71d4`. Manifest and Lua were inspected
+independently. Package version is `0.1.0`, with Core `>=0.0.24,<0.1` and
+Plugin API `^1.0` declarations.
+
+Historical context:
 
 - [Bundled plugin split decision](../../../product/bundled-plugin-split-decision.md)
   (OQ-053) moved the file-manager out of the bundled catalog into the
@@ -32,7 +45,16 @@ sidebar_order: 45
 - Scaffolded from
   [bitty-plugin-template](https://github.com/bitty-terminal/bitty-plugin-template).
 
-## Validation
+## Disposition
+
+Implemented: bounded path/listing/preview/rename-pair composition with terminal
+observation only. The pin has no filesystem or panel calls and requests only
+`terminal.semantic-read`. Guarded undeclared `root`/`entries` reads fall back
+to explicit arguments, cached cwd, or an empty listing. It cannot enumerate,
+read, or rename real files or present a panel. Registry eligibility is not a
+product usability or release claim.
+
+## Verification backlog
 
 The owning repository
 ([file-manager](https://github.com/bitty-terminal/file-manager)) provides the
@@ -41,16 +63,13 @@ LuaLS conformance, and `bitty-plugin-lint` (including the negative-fixture
 gate with the byte-identical accepted control). This page set does not restate
 that evidence and does not claim independent verification.
 
-## Status
+Remaining work includes
+[settings issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90),
+an accepted entry shape, production filesystem authority/backend, and panel
+lifecycle. Source inspection and pure path tests cannot establish host
+real-path isolation. This docs pass runs no live filesystem campaign.
 
-Implemented: package, manifest, and observation-only policy, tested
-headlessly; registry entry published. Deferred: panel presentation (pending
-the panel-provider contract, `bitty-docs` `CTX-0181`, OQ-058) and `fs.*`
-access (no Plugin API v1 `bitty.fs` surface). Verified/shipped: nothing —
-the package is not verified, compatible, or shipped beyond the manifest
-`[compat]` ranges, and no product release contains it.
-
-## Related
+### References
 
 - [File manager plugin documentation](README.md)
 - [Plugin Roadmap](../../../product/plugin-roadmap.md) (draft)

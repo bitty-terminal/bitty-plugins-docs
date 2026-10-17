@@ -11,8 +11,17 @@ sidebar_order: 30
 
 # Activity plugin documentation
 
-Identity, current stage, owning repository, and page links for the first
-featured-wave official plugin.
+## Admission criteria
+
+Routes for the independently inspected activity manifest and implementation.
+
+## Authority and status
+
+Registry #92 pins activity `e1566380` for Core `>=0.0.24,<0.1` / Plugin API
+`^1.0`. Implementation is present; settings declarations remain pending in
+[issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
+Guarded undeclared reads use defaults, and command arguments are never stored.
+This source snapshot establishes no end-to-end or release verification.
 
 ## Identity
 
@@ -20,19 +29,11 @@ featured-wave official plugin.
 | ----------------- | ------------------------------------------------------------------ |
 | Plugin id         | `bitty-featured.activity`                                          |
 | Name              | Bitty Activity                                                     |
-| Package version   | 0.1.0                                                              |
+| Package version   | 0.0.1                                                              |
 | Owning repository | <https://github.com/bitty-terminal/activity>                       |
 | Lua module        | `lua/activity/`                                                    |
 | Capabilities      | `terminal.semantic-read`, `platform.notify`                        |
 | Lazy commands     | `bitty-featured.activity:summary`, `bitty-featured.activity:clear` |
-
-## Stage
-
-Implementation present, host integration still landing. The owning repository
-implements the v1 privacy-first timeline against the accepted Plugin API v1
-surface and validates it with its own gates, behaviour tests, LuaLS
-conformance, and `bitty-plugin-lint`. It is not verified, compatible, or
-shipped, and no product release contains it.
 
 ## Pages
 
