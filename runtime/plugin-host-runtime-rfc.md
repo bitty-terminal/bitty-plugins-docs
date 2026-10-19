@@ -449,7 +449,9 @@ accept table-shaped settings. Per-key precedence is manifest default, valid
 shared host source, then valid selected-file value. The terminal currently
 supplies an empty shared source. Unknown or wrong-typed entries are ignored;
 whole-file rejection uses lower layers without itself aborting activation.
-Configuration never changes grants.
+Configuration never changes grants. Settings are read at activation and pinned
+to that generation; no configuration watcher or hot-reload path exists, so a
+file edit takes effect on the next activation.
 
 Core [#2198](https://github.com/bitty-terminal/bitty/pull/2198), merged as
 `1c68de2545c961790d0a2011340e4a3c04564ab7`, retains up to four non-sensitive

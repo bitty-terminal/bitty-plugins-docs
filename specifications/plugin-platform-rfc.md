@@ -449,6 +449,19 @@ Accepted v1 rules per namespace:
    ([Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)).
    Filesystem access beyond this requires explicit `fs.*` grants.
 
+> **Later configuration decision (Lua-canonical, 2026-10-19).** Rule 6 fixes the
+> `plugins.<owner>.<name>` ownership boundary; it does not fix a user file
+> format or a hot-reload contract. The later configuration decision makes Lua
+> canonical: Core `662212c5` reads
+> `<config-dir>/plugins/<owner>.<name>.lua` through a restricted plain-config
+> VM, admits an unambiguous `<name>.lua` alias, and keeps
+> `<owner>.<name>.toml` only as an absent-Lua legacy fallback. Per-key
+> precedence is the manifest `[settings]` default, the valid shared host
+> source, then the valid selected-file value. Settings are read at activation
+> and pinned to the generation; no `settings.set` bridge, watcher, or hot
+> reload is implemented. This note records the superseding Lua-canonical
+> decision without rewriting the accepted ownership rule.
+
 ### Terminal access in v1
 
 Read-only semantic snapshots (`terminal.semantic-read`) return bounded,
@@ -515,6 +528,10 @@ Declared -> Resolved -> Registered -> Activated -> (Suspended) -> Disposed
 | Lifecycle    | `plugin.activated`, `plugin.suspended`, `plugin.disposed`, `handler.violation`                                                                                                     | Host-internal, delivered to the owning plugin only | No                 |
 | Observation  | `terminal.opened`, `terminal.closed`, `terminal.title-changed`, `terminal.cwd-changed`, `terminal.bell`, `focus.changed`, `selection.changed`, `process.exited`, `config.reloaded` | After terminal/configuration state is updated      | No                 |
 | Interception | `intercept.command-dispatch`, `intercept.terminal-spawn`, `intercept.paste`, `intercept.open-url`                                                                                  | Before the host performs the user action           | Veto only          |
+
+`config.reloaded` reports that host configuration state changed; it does not
+re-resolve plugin settings, which are read at activation and pinned to the
+generation.
 
 Accepted rules:
 

@@ -155,6 +155,12 @@ Beacon policy are:
 | `bitty.services.get(iface, opts)` / `bitty.services.provide(...)` | Resolves a versioned plain-value service; no cross-VM handle.              |
 | `bitty.tasks.spawn/cancel`, `bitty.timers.create/cancel`          | Runs bounded host-owned asynchronous work.                                 |
 
+At this snapshot, policy configuration is read-only: `bitty.settings.get`
+returns flat declared manifest keys resolved from the canonical per-plugin Lua
+file, and Core exposes no `bitty.settings.set` bridge. See the
+[settings reference](../sdk/reference/settings.md) for the file path,
+restricted VM, precedence, and generation pinning.
+
 The accepted capability families that Beacon policy may use without a new
 contract are also closed: `ui.rich`, `ui.overlay`, `terminal.semantic-read`,
 `platform.notify`, and `env.read:<KEY>`. The accepted v1 surface contains
@@ -327,10 +333,12 @@ five points. None is resolved here; each is parked to its owner.
 
 Two assumptions are **consistent** with the accepted surface and introduce no
 conflict: chord declaration through `bitty.keymaps.suggest` matches the accepted
-spelling and precedence, and policy configuration under
-`plugins."bitty-terminal.beacon"` matches the accepted `plugins.<owner>.<name>`
-settings namespace. The exact key surface still belongs to the plugin contract
-and `W-120`.
+spelling and precedence, and policy configuration supplied as flat declared keys
+in the canonical `bitty-terminal.beacon.lua` file matches the accepted
+`plugins.<owner>.<name>` settings ownership namespace. This replaces the earlier
+`[plugins."bitty-terminal.beacon"]` TOML-table spelling as a superseding
+configuration detail; the accepted namespace itself is unchanged. The exact key
+surface still belongs to the plugin contract and `W-120`.
 
 ## No hidden privilege
 
