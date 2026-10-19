@@ -50,8 +50,11 @@ hide their modules.
 
 ## Declared settings
 
-Use the per-plugin restricted Lua file described in the settings reference,
-not an invented `[plugins]` table in `bitty.toml`.
+Use `$XDG_CONFIG_HOME/bitty/plugins/bitty-terminal.bar.lua`, or the
+unambiguous `bar.lua` alias, as described in the settings reference, not an
+invented `[plugins]` table in `bitty.toml`. The legacy
+`bitty-terminal.bar.toml` file remains a compatibility fallback only when no
+selected Lua file exists.
 
 | Key              | Kind           | Shipped default  | Implemented behavior                                                  |
 | ---------------- | -------------- | ---------------- | --------------------------------------------------------------------- |
@@ -90,8 +93,10 @@ explicit in [issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/9
 
 Lazy events are `workspace.created`, `workspace.closed`, `workspace.renamed`,
 `workspace.focused`, `workspace.changed`, and `config.reloaded`.
-The plugin reads `bitty.workspace.list()` and re-reads its settings on the
-configured event path; this does not establish automatic config-file watching.
+The plugin reads `bitty.workspace.list()` on the configured event path.
+Settings are resolved at activation and pinned to the generation, so
+`config.reloaded` does not refresh them and no hot-reload path exists; a later
+activation reads the configured file again.
 
 Lazy commands, each under `bitty-terminal.bar:`, are `focus`, `detail`,
 `bluetooth-toggle`, `backlight-step`, `idle-toggle`, `audio-toggle`, and

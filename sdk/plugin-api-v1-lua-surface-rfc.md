@@ -297,6 +297,19 @@ bitty.store.set(key, value) -> boolean
 - Neither namespace grants filesystem authority; `fs.*` grants remain a
   separate capability path that v1 does not define a Lua entry point for.
 
+> **Current implementation note (Core `662212c5`).** The accepted ownership
+> boundary remains `plugins.<owner>.<name>`, but the implemented read surface
+> takes flat declared manifest keys, not dot paths, and exposes no
+> `bitty.settings.set` bridge. Configuration comes from
+> `<config-dir>/plugins/<owner>.<name>.lua`, evaluated by a restricted
+> plain-config VM; an unambiguous `<name>.lua` alias is admitted, and
+> `<owner>.<name>.toml` is only an absent-Lua legacy fallback. Per-key
+> precedence is the manifest `[settings]` default, the valid shared host
+> source, then the valid selected-file value. Settings are resolved at
+> activation and pinned to the generation; no watcher or hot reload is
+> implemented. This note records the later Lua-canonical decision without
+> rewriting the accepted surface.
+
 ### Notifications and environment
 
 ```lua

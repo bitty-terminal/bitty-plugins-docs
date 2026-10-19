@@ -87,6 +87,12 @@ Selection is deterministic:
 A present but rejected canonical file does not fall through to an alias or
 TOML. A rejected selected alias likewise does not fall through to TOML.
 Missing keys in a selected Lua file do not merge with another file.
+
+Selection and evaluation happen during activation. The resolved values are
+pinned to that generation: no configuration watcher or hot-reload path is
+implemented, and a `config.reloaded` event does not re-resolve plugin settings.
+Editing a file takes effect only on the next activation.
+
 Unsafe identities never construct a configuration path. Reads reject
 symlinks/reparse points, directories, FIFOs and other non-regular files,
 oversize or changing files, and invalid UTF-8. Safe mode skips plugin-specific

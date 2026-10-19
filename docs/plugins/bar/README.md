@@ -24,8 +24,10 @@ clock in the center group, with an empty right group; the `label` setting
 selects index, name, or both. Module option maps remain ineffective under the
 current strict kinds and stay with
 [issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
-True alignment and richer widgets remain candidate. Source presence and
-registry eligibility establish no live presentation or release verification.
+True alignment and richer widgets remain candidate. Settings are read at
+activation and pinned to the generation; `config.reloaded` does not hot-reload
+them. Source presence and registry eligibility establish no live presentation
+or release verification.
 
 ## Identity
 

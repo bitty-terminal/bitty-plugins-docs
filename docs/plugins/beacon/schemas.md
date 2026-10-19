@@ -35,9 +35,20 @@ allow-all identifier, and an unknown identifier fails validation.
 
 ## Policy configuration
 
-Candidate shape in `bitty.toml` under `[plugins."bitty-terminal.beacon"]`. Keys
-and value shapes are **illustrative-only**; the accepted key surface belongs to
+Candidate shape in the canonical per-plugin file
+`$XDG_CONFIG_HOME/bitty/plugins/bitty-terminal.beacon.lua`, supplied as the flat
+table returned by the bounded plain-config VM described in the
+[settings reference](../../../sdk/reference/settings.md). The unambiguous short
+alias `beacon.lua` selects the same file, and `bitty-terminal.beacon.toml`
+remains only a legacy fallback for the documented flat-key subset when no
+selected Lua file exists. Keys and value shapes are **illustrative-only**; the
+accepted key surface and matching manifest `[settings]` declarations belong to
 the plugin contract and `W-120`.
+
+Only declared flat keys of accepted kinds (`bool`, `int`, `string`,
+`string-array`) can take effect through `bitty.settings.get`. The table-valued
+keys below are candidate shapes with no accepted settings kind; they are not a
+license to read arbitrary nested maps from the configuration VM.
 
 | Key          | Type            | Purpose (candidate)                                   |
 | ------------ | --------------- | ----------------------------------------------------- |
