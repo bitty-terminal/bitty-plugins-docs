@@ -162,14 +162,17 @@ A missing capability or an unclaimed `tabline` therefore reports
 | `E_CAPABILITY_DENIED`    | `runtime`    | The `ui.rich` grant is absent, or `ui.overlay` is absent for the `overlay` slot (`services.rs` `ui_mount`; pinned by `mount_denied_without_ui_rich_is_typed` and `overlay_slot_requires_ui_overlay_grant` in `crates/bitty-runtime/tests/plugin_ui.rs`, and at the seam by `capability_denial_propagates_typed` in `crates/bitty-lua/tests/ui_bridge.rs`).                                                                                                                                                                                                                                                                                                                                  |
 | `E_UI_CLAIM_REQUIRED`    | `validation` | `tabline` is mounted without a matching exclusive claim in the manifest's `[lazy].claims` (`services.rs` `ui_mount`; pinned by `tabline_slot_requires_exclusive_claim` in `crates/bitty-runtime/tests/plugin_ui.rs` and the `services.rs` unit test of the same name).                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `E_UI_UNAVAILABLE`       | `runtime`    | (a) An accepted slot this build does not present — `left`, `right`, `tabline`, or `terminal` — after the capability and claim gates pass; the message names the slot and the reason (`band_slots.rs:87`, `band_slots.rs:112`; pinned by `vertical_band_slots_fail_closed_at_mount` and `unsupported_error_is_typed` in `crates/bitty-runtime/tests/plugin_ui.rs`). (b) A bare host with no mount path at all, through the `HostServices` defaults (`host.rs:1085`, `host.rs:1117`; pinned by `host_without_ui_surface_fails_closed` in `crates/bitty-lua/tests/ui_bridge.rs`). `overlay` is **not** in this group: a granted overlay mount is hosted (`overlay_slot_with_grant_is_hosted`). |
-| `E_UI_BLOCK_BUDGET`      | `budget`     | A host block registry cap is exceeded; a host diagnostic pending an accepted stable plugin-visible code, not part of the stable v1 vocabulary (`services.rs` `UiBlocks` docs; pinned by `mount_loop_hits_block_budget_fail_closed` in `crates/bitty-runtime/tests/plugin_ui.rs`).                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `E_UI_BLOCK_BUDGET`      | `budget`     | A host block registry cap is exceeded (`services.rs` `UiBlocks`; pinned by `mount_loop_hits_block_budget_fail_closed` in `crates/bitty-runtime/tests/plugin_ui.rs`). The host emits it as the same catchable `class`/`code`/`message` table as every other denial at `bitty@75ec169f`, and the SDK declares it as a stable v1 code in `ui.mount.errors` and `ui.update.errors` (bitty-plugin-sdk#154). The `services.rs` comment still calls it pending an accepted plugin-visible code; the SDK surface is the plugin-facing commitment.                                                                                                                                                   |
 
-The SDK machine-readable surface lists the `ui.mount` errors as
-`E_CAPABILITY_DENIED`, `E_UI_CLAIM_REQUIRED`, `E_UI_UNAVAILABLE`, and
-`E_UI_COMPONENT_INVALID` (`surface/bitty-plugin-api-v1.json`,
-`bitty-plugin-sdk@5592ff6`). No new code was added to the v1 error vocabulary
-for the band host: `E_UI_UNAVAILABLE` already existed for the bare-host case
-(`band_slots.rs` module docs). The `statusline` removal reuses the existing
+The SDK machine-readable surface declares both `ui.mount` and `ui.update`
+errors as `E_CAPABILITY_DENIED`, `E_UI_COMPONENT_INVALID`,
+`E_UI_BLOCK_BUDGET`, and `E_TIMEOUT`, with `E_UI_CLAIM_REQUIRED` and
+`E_UI_UNAVAILABLE` additionally on `ui.mount`
+(`surface/bitty-plugin-api-v1.json`, bitty-plugin-sdk#154). The budget code is
+therefore part of the stable plugin-facing v1 vocabulary, not a pending
+diagnostic; `E_TIMEOUT` remains the generic bounded-call deadline code and is
+already listed for other bounded surfaces. No code was renamed and no other v1
+semantics changed. The `statusline` removal reuses the existing
 `E_UI_COMPONENT_INVALID` unknown-slot path rather than adding a code.
 
 ## Capability
@@ -345,3 +348,6 @@ revised; the divergence is recorded in
   `probe_bitty_ui_namespace_is_present`,
   `mount_and_update_round_trip_validated_scene`,
   `capability_denial_propagates_typed`)
+- `bitty-plugin-sdk` (issue #154, PR #155; `surface/bitty-plugin-api-v1.json`
+  `ui.mount.errors` / `ui.update.errors`; `tests/mock-host.test.ts` timeout
+  and block-budget coverage; `conformance/cases/36-ui-error-vocabulary.json`)
