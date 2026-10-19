@@ -14,22 +14,25 @@ sidebar_order: 28
 > Status: **draft candidate** — not **Accepted**, not **Verified**, not
 > **Compatible**, and not normative. The accepted
 > [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) fixes
-> the closed slot set, the `SceneNode` subset, the handle model, and the L2
-> capability gate (`ui.rich`; `ui.overlay` for the overlay slot). What it does
-> not fix is the **per-slot
+> the closed slot vocabulary, the `SceneNode` subset, the handle model, and the
+> L2 capability gate (`ui.rich`; `ui.overlay` for the overlay slot). Current
+> Core accepts seven of the accepted names: `statusline` was removed in
+> CTX-1140 (bitty PR #1962) and is recorded here only as a divergence, not as a
+> slot. What the RFC does not fix is the **per-slot
 > inventory**: what each slot is for, its bounds, how many contributors it
 > admits, and how a conflict resolves. The
 > [Plugin Roadmap](../product/plugin-roadmap.md) records slot inventory and
 > conflict resolution as the first candidate capability dimension of
 > [OQ-056](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).
 > This record answers that dimension. It accepts nothing, changes no accepted
-> slot, and makes no implementation claim.
+> slot, and makes no implementation claim beyond the host status it cites.
 
 ## Purpose and scope
 
-A plugin contributes UI by mounting a declarative subtree into one of eight
-accepted slots. Until now, only one exclusivity rule was stated (`tabline` is an
-exclusive claim; status components compose), and the rest was implicit: how many
+A plugin contributes UI by mounting a declarative subtree into one of the
+accepted slots (seven names in the current Core build). Until now, only one
+exclusivity rule was stated (`tabline` is an exclusive claim; status
+presentation composes on `bottom`), and the rest was implicit: how many
 overlay contributors fit, what bounds each slot carries, what happens when two
 plugins claim one slot, and which surfaces own placement. That ambiguity is a
 real integration risk — composition behavior would be discovered by experiment
@@ -50,12 +53,13 @@ surface); token names (terminal-side theme token contract).
 ## Normative sources this specification must not weaken
 
 - [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)
-  (accepted): the closed slot set
-  (`terminal | top | bottom | left | right | tabline | statusline | overlay`),
-  the v1 `SceneNode` restriction (`Text | Row | Column | List`), the opaque
-  generation-owned `block_id` handle, `ui.rich`/`ui.overlay` requirements, the
-  exclusive `tabline` claim, composing status components, and the rule that
-  host layout owns placement and decoration.
+  (accepted): the closed slot vocabulary
+  (`terminal | top | bottom | left | right | tabline | statusline | overlay`
+  in the accepted text; current Core accepts the seven names without
+  `statusline`), the v1 `SceneNode` restriction (`Text | Row | Column | List`),
+  the opaque generation-owned `block_id` handle, `ui.rich`/`ui.overlay`
+  requirements, the exclusive `tabline` claim, status presentation composed on
+  `bottom`, and the rule that host layout owns placement and decoration.
 - [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md)
   (accepted): the `RichBlock` replacement rule and the accepted scene limits
   (SCN-1..SCN-5: 2048 nodes per block, depth 32, 256 KiB text per block, 2 MiB
@@ -83,25 +87,29 @@ surface); token names (terminal-side theme token contract).
 
 ## Slot inventory
 
-The accepted slot set is closed at eight slots. This inventory adds purpose,
-multiplicity, and bounds; it does not add or rename a slot.
+The accepted slot vocabulary is closed at eight names. Current Core accepts
+seven because `statusline` was removed in CTX-1140 (bitty PR #1962). This
+inventory adds purpose, multiplicity, and bounds; it does not add or rename a
+slot. The `statusline` row is retained only to record the divergence and is not
+a current slot.
 
-| Slot         | Purpose                                              | Multiplicity                 | Required capability      | Bounds                                                                                            |
-| ------------ | ---------------------------------------------------- | ---------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------- |
-| `terminal`   | Content composed with a terminal leaf's presentation | Composing, bounded           | `ui.rich`                | Composes with the leaf; never replaces grid, cursor, or scrollback presentation                   |
-| `top`        | A strip along the top edge of the window area        | Composing, bounded           | `ui.rich`                | One row-band; host layout owns thickness and placement                                            |
-| `bottom`     | A strip along the bottom edge of the window area     | Composing, bounded           | `ui.rich`                | One row-band; the Bar/StatusBar region consumes this slot where configured                        |
-| `left`       | A strip along the left edge                          | Composing, bounded           | `ui.rich`                | One column-band; reserved for the rail direction where configured                                 |
-| `right`      | A strip along the right edge                         | Composing, bounded           | `ui.rich`                | One column-band                                                                                   |
-| `tabline`    | The tab strip surface                                | **Exclusive**                | `ui.rich`                | One declarant; a second claim is a conflict                                                       |
-| `statusline` | Status components composed in the Bar                | Composing, bounded           | `ui.rich`                | Capped total segment count with bounded per-module lengths, per the terminal-side status contract |
-| `overlay`    | Presentation-only, non-focusable declarative popups  | Layered, bounded and ordered | `ui.rich` + `ui.overlay` | Bounded text; never focusable; never mutates a view or terminal                                   |
+| Slot         | Current Core host                                                                                                       | Purpose                                              | Multiplicity                 | Required capability                                      | Bounds                                                                          |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `terminal`   | Unavailable: `E_UI_UNAVAILABLE`                                                                                         | Content composed with a terminal leaf's presentation | Composing, bounded           | `ui.rich`                                                | Composes with the leaf; never replaces grid, cursor, or scrollback presentation |
+| `top`        | Painted top edge band                                                                                                   | A strip along the top edge of the window area        | Composing, bounded           | `ui.rich`                                                | One row-band; host layout owns thickness and placement                          |
+| `bottom`     | Painted bottom edge band; status presentation composes here                                                             | A strip along the bottom edge of the window area     | Composing, bounded           | `ui.rich`                                                | One row-band; the Bar/StatusBar region consumes this slot where configured      |
+| `left`       | Accepted name; no vertical band host; mount fails closed with `E_UI_UNAVAILABLE`; no handle, block, or reserved columns | A strip along the left edge                          | Not hosted                   | `ui.rich`                                                | No column-band exists in this build                                             |
+| `right`      | Accepted name; no vertical band host; mount fails closed with `E_UI_UNAVAILABLE`; no handle, block, or reserved columns | A strip along the right edge                         | Not hosted                   | `ui.rich`                                                | No column-band exists in this build                                             |
+| `tabline`    | Unavailable after the exclusive-claim gate: `E_UI_UNAVAILABLE`                                                          | The tab strip surface                                | **Exclusive**                | `ui.rich`                                                | One declarant; a second claim is a conflict                                     |
+| `statusline` | **Not a slot**: removed in CTX-1140; `ui.mount` fails with `E_UI_COMPONENT_INVALID`                                     | Status presentation composed on `bottom`             | Not applicable               | None                                                     | None; the `bottom`-band budget applies                                          |
+| `overlay`    | Core focusable-overlay host (CTX-0941); retained, not a band; may own transient input capture                           | Focusable declarative overlay content                | Layered, bounded and ordered | `ui.rich` + `ui.overlay`; `ui.overlay.focus` for capture | Bounded text; never mutates a view, grid, cursor, or terminal                   |
 
 Rules for the inventory:
 
-1. **The set is closed and the names are accepted.** This inventory adds no
-   slot and changes no spelling; a new slot family requires an RFC revision of
-   the accepted surface.
+1. **The accepted vocabulary is closed; the current host set is narrower.**
+   This inventory adds no slot and changes no spelling; a new slot family
+   requires an RFC revision of the accepted surface. `statusline` is outside
+   the current seven-name host set because CTX-1140 removed it.
 2. **Every contribution is a bounded scene block.** A mounted subtree is a
    `RichBlock` and respects the accepted scene limits (SCN-1..SCN-5: 2048 nodes,
    depth 32, and 256 KiB per block, with the aggregated ceilings where the host
@@ -110,16 +118,18 @@ Rules for the inventory:
 3. **Bounds are per contributor unless stated otherwise.** A composing slot's
    bound is an aggregate; contributions beyond it fail closed rather than
    crowding out an existing contributor.
-4. **The `ui.rich` gate covers every slot.** The accepted L2 UI gate requires
-   `ui.rich` for `bitty.ui.mount`/`bitty.ui.update` contributions regardless of
-   slot, and the `overlay` slot additionally requires `ui.overlay`; a plugin
-   without the required grant is denied at mount, not at first render.
+4. **The `ui.rich` gate covers every hosted slot.** The accepted L2 UI gate
+   requires `ui.rich` for `bitty.ui.mount`/`bitty.ui.update` contributions
+   regardless of slot, and the `overlay` slot additionally requires
+   `ui.overlay`; transient capture needs `ui.overlay.focus`. A plugin without
+   the required grant is denied at mount, not at first render.
 5. **Placement stays host-owned.** A plugin never learns or sets absolute
    coordinates, thickness, or decoration; the accepted rule that host layout
-   owns placement and decoration applies to all eight slots.
-6. **No slot is a focus target.** Nothing mounted through `bitty.ui.mount`
-   receives keyboard or IME input; the `overlay` slot is explicitly
-   non-focusable and the panel contract owns any future focusable surface.
+   owns placement and decoration applies to every accepted slot name.
+6. **Only the `overlay` slot is a Core focus target.** A mounted band slot
+   receives no keyboard or IME input. An `overlay` block can own the single
+   Core-owned transient capture, gated by `ui.overlay.focus`, and the capture
+   session remains Core-owned and revocable.
 
 ## Conflict resolution
 
@@ -161,29 +171,35 @@ Rules for the inventory:
 - The terminal slot composes with a terminal leaf's presentation and can never
   replace grid presentation, cursor, or scrollback — the accepted invariant that
   presentation never becomes Terminal Truth.
-- The `statusline` slot's module budget is the terminal-side status contract's
-  budget; this record does not widen it.
-- The overlay slot consumes the terminal-side overlay tiers through the host
-  surface; a plugin never selects a tier or a modal kind, and the single modal
-  authority stays Core-owned.
+- Status presentation composes on the `bottom` band; its module budget is the
+  terminal-side status contract's budget, and this record does not widen it.
+  `statusline` is not a slot in the current Core build.
+- The `overlay` slot is served by the Core focusable-overlay host (CTX-0941).
+  The host owns the overlay presentation and the single transient capture
+  session; a plugin never selects a tier or a modal kind, and the single modal
+  authority stays Core-owned. The accepted RFC's LUA-OQ-11 text still describes
+  the overlay as non-focusable presentation content; that accepted wording is
+  not rewritten here, and current Core behavior diverges as recorded in the
+  [bitty.ui reference](../sdk/reference/ui.md#accepted-rfc-divergence).
 - Host layout may relocate or hide a host surface; this record states that a
   plugin's contribution survives as a content source and the plugin is not
   asked to re-mount it. The accepted surface states the corresponding
-  disposition for the overlay slot: if the Panel RFC redefines overlays as
-  focusable surfaces, the slot remains a content source and the panel contract
-  owns focus and routing (the accepted LUA-OQ-11 disposition).
+  disposition for the overlay slot: the slot remains a content source, while
+  the panel and focus contracts own panel routing and focus.
 
 ## Security review
 
 Slot contributions are untrusted declarative content admitted by the host. The
 properties that matter: every contribution is bounded (block budget, per-block
 bounds, slot aggregate), admission is deny-by-default through manifest grants,
-a contribution cannot widen a resource ceiling, no slot can mutate Terminal
-Truth or receive input, and conflict handling never silently replaces an
-existing contributor. A plugin gains no renderer handle, GPU object, native
-window, or global coordinate through any slot. No `P0` criterion is affected; a
-security reviewer is required if a future revision makes a slot focusable or
-admits a new node kind into a slot.
+a contribution cannot widen a resource ceiling, no band slot can mutate
+Terminal Truth or receive input, and conflict handling never silently replaces
+an existing contributor. Overlay capture is the one input-bearing surface; it
+is explicit, capability-gated, single-owner, and revocable. A plugin gains no
+renderer handle, GPU object, native window, or global coordinate through any
+slot. No `P0` criterion is affected by this inventory; a security reviewer is
+required for the focusable-overlay capture contract and if a future revision
+admits a new node kind or a new input-bearing slot.
 
 ## Verification plan
 
@@ -195,10 +211,12 @@ admits a new node kind into a slot.
    order across two mount sequences.
 4. A test asserting every mounted contribution consumes exactly one block and
    that an over-budget mount fails closed.
-5. A test asserting a contribution in any slot mutates no grid, cursor, mode, or
-   scrollback, and receives no keyboard or IME input.
+5. A test asserting a contribution in any band slot mutates no grid, cursor,
+   mode, or scrollback, and receives no keyboard or IME input; an `overlay`
+   capture session is single-owner and revocable.
 6. A test asserting a mount without the required capability is denied at mount
-   time, not deferred to render.
+   time, not deferred to render, and an unhosted slot (`left`, `right`,
+   `tabline`, `terminal`) fails closed with `E_UI_UNAVAILABLE`.
 
 ## Alternatives considered
 
