@@ -13,7 +13,7 @@ sidebar_order: 52
 
 ## Purpose and scope
 
-Describe registry-pinned bar `f007a03dfa6036ff67458095dc71169c0c6ee7e3`.
+Describe registry-pinned bar `18d1a5b6dc86af4a42546f20f1610e69af58071d`.
 The broader unified-chrome candidate does not define this pin's implemented
 widgets or interactions.
 
@@ -59,9 +59,24 @@ not an invented `[plugins]` table in `bitty.toml`.
 | `edge`           | `string`       | `"bottom"`       | `"top"` or `"bottom"` semantic slot; other strings use local default  |
 | `show_single`    | `bool`         | `false`          | Show a lone workspace; occupied scratchpad also keeps the bar visible |
 | `name_max_chars` | `int`          | `32`             | Local validation permits 1 through `NAME_MAX_CHARS` (32)              |
+| `label`          | `string`       | `"index"`        | Capsule label mode: `"index"`, `"name"`, or `"both"`                  |
 | `modules_left`   | `string-array` | `["workspaces"]` | First ordered module group                                            |
-| `modules_center` | `string-array` | `[]`             | Second ordered group, without true centering                          |
+| `modules_center` | `string-array` | `["clock"]`      | Second ordered group, without true centering                          |
 | `modules_right`  | `string-array` | `[]`             | Third ordered group, without right alignment                          |
+
+The shipped default plan is workspaces on the left, the clock in the center
+group, and an empty right group. A fresh install therefore paints the workspace
+capsules followed by the clock; setting a group to `[]` removes that group as
+long as another group still resolves to a known module. When the configured plan
+contains no group, or no entry resolves to a known module, the plugin falls back
+to the shipped default plan, so a bad or empty specification never hides the
+bar.
+
+`label` is a bounded closed set with no v1 enum kind: the shipped default is
+`index`, an unknown or non-string value falls back to `index` (the bar still
+paints) and reports one bounded notification through the already-requested
+`platform.notify` grant. `name_max_chars` only applies in `name` and `both`
+modes, where an oversized name is truncated to that many characters.
 
 `workspaces`, `clock`, `network`, `bluetooth`, `backlight`, `idle`,
 `pulseaudio`, `spectrum`, `cpu`, `memory`, and `battery` are also declared,

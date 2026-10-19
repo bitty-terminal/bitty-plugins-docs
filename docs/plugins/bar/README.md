@@ -17,10 +17,12 @@ Routes for the current bar source and explicitly deferred chrome direction.
 
 ## Authority and status
 
-Registry #92 pins bar `f007a03d` for Core `>=0.0.24,<0.1` / Plugin API `^1.0`.
+Registry #102 pins bar `18d1a5b6` for Core `>=0.0.24,<0.1` / Plugin API `^1.0`.
 The source mounts a text row in `top` or `bottom`, with declared chassis and
-module-list settings. Module option maps remain ineffective under the current
-strict kinds and stay with
+module-list settings. A fresh install paints workspaces on the left and the
+clock in the center group, with an empty right group; the `label` setting
+selects index, name, or both. Module option maps remain ineffective under the
+current strict kinds and stay with
 [issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
 True alignment and richer widgets remain candidate. Source presence and
 registry eligibility establish no live presentation or release verification.

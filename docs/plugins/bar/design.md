@@ -13,8 +13,8 @@ sidebar_order: 51
 
 ## Document status
 
-Implementation snapshot at `f007a03dfa6036ff67458095dc71169c0c6ee7e3`, pinned
-by registry #92. Current text-row behavior is distinct from the broader
+Implementation snapshot at `18d1a5b6dc86af4a42546f20f1610e69af58071d`, pinned
+by registry #102. Current text-row behavior is distinct from the broader
 candidate unified-chrome design; no release verification is claimed.
 
 ## Purpose and scope
@@ -39,10 +39,13 @@ text, not a new scene-node kind.
 The plugin mounts `top` or `bottom` through `bitty.ui.mount` under `ui.rich`.
 It composes a `Row` of `Text`, orders left/center/right groups sequentially,
 and hides a lone workspace unless configured otherwise or a scratchpad is
-occupied. Inactive workspace labels request focus through a registered
-command and `workspace.control`. Detail text may use a grant-gated,
-rate-limited notification fallback. Optional sensor, device, and audio
-providers hide when absent or ungranted; read and control are separate.
+occupied. The shipped default plan puts workspaces in the left group and the
+clock in the center group, with an empty right group, and a plan that resolves
+to nothing falls back to that default plan. Inactive workspace labels request
+focus through a registered command and `workspace.control`; the `label` setting
+selects index, name, or both. Detail text may use a grant-gated, rate-limited
+notification fallback. Optional sensor, device, and audio providers hide when
+absent or ungranted; read and control are separate.
 
 The [schema page](schemas.md) enumerates real settings and triggers. Chassis
 scalars and group string arrays are effective. Per-module maps remain inert
