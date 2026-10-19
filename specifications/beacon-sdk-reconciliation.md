@@ -160,8 +160,11 @@ contract are also closed: `ui.rich`, `ui.overlay`, `terminal.semantic-read`,
 `platform.notify`, and `env.read:<KEY>`. The accepted v1 surface contains
 **no** target, annotation, provider-registration, label, session,
 focusable-overlay, or transient input-capture function or capability.
-`ui.overlay` is presentation-only and non-focusable, and the `overlay` slot
-fails closed with `E_UI_UNAVAILABLE` in the current host build.
+`ui.overlay` gates overlay presentation. The Core focusable-overlay host
+(CTX-0941) now retains `overlay` blocks and can own the transient input capture
+under the separate `ui.overlay.focus` grant. The accepted v1 surface still
+defines no target, annotation, provider-registration, label, or session
+function of its own.
 
 The generated parity surface additionally carries `bitty.workspace.*`
 functions and workspace observation events, wired in `bitty` under ADR 0014,
@@ -178,34 +181,35 @@ accepted contract; **Provisional** cites the owner-pending proposal and states
 that no implementation may cite it; **Blocked** names the task that must supply
 the surface.
 
-| Beacon policy operation                                                            | Concrete surface (exact spelling or owner)                                                                                                   | Status                                               | Source or blocking task                                  |
-| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------------- |
-| Declare a chord-to-operator suggestion                                             | `bitty.keymaps.suggest(def)`, precedence user > workspace > first-party/default > plugin suggestion                                          | Accepted                                             | Lua Surface RFC; Plugin Platform RFC                     |
-| Register the typed command each operator or menu entry executes                    | `bitty.commands.register(def)`                                                                                                               | Accepted                                             | Lua Surface RFC; Plugin Platform RFC                     |
-| Persist operator families, default scopes, filters, badges, and menu order         | `bitty.settings.get/set`, `bitty.store.get/set`                                                                                              | Accepted                                             | Lua Surface RFC; Isolation and Resource RFC              |
-| Observe focus, selection, terminal, and process state that policy reads            | `bitty.events.subscribe` over accepted v1 names (`focus.changed`, `selection.changed`, `process.exited`, `config.reloaded`, `terminal.*`)    | Accepted                                             | Lua Surface RFC; Plugin Platform RFC                     |
-| Observe workspace lifecycle or state for a workspace scope                         | `workspace.*` observation events                                                                                                             | Provisional (host candidate, `OQ-056`)               | Generated parity surface; `OQ-056`                       |
-| Focus or move to a workspace as a policy action                                    | `bitty.workspace.focus` / `bitty.workspace.move_panel`                                                                                       | Provisional (host candidate, `OQ-056`)               | Generated parity surface; `OQ-056`                       |
-| Emit a bounded policy notification                                                 | `bitty.notify.show(payload)`                                                                                                                 | Accepted                                             | Lua Surface RFC; Plugin Platform RFC                     |
-| Present bounded static which-key hint or menu text                                 | `bitty.ui.mount(slot, component)` into an accepted band slot (`top`, `bottom`, `statusline` painted; `left`/`right` stored, not yet painted) | Accepted (function and slots); payload shape `W-120` | Lua Surface RFC; payload shape `W-120`                   |
-| Present an interactive which-key continuation or focusable menu                    | Focusable interactive menu surface (no accepted spelling)                                                                                    | Blocked                                              | `W-28` host implementation; `W-120` SDK                  |
-| Start a Beacon session that captures keys                                          | Focusable overlay plus transient input capture (`bitty.overlay.acquire/poll/release`, `ui.overlay.focus`)                                    | Blocked                                              | `W-01` contract; `W-28` host implementation; `W-120` SDK |
-| Enter a target-first or operator-pending interaction and label targets             | Beacon Lua host API over `TargetEngine`/`AnnotationEngine` (no accepted spelling)                                                            | Blocked                                              | `W-29` host API; `W-120`/`W-43` SDK                      |
-| Collect, scope, and filter the candidate target set                                | Target snapshot, provider collection, and scope resolution (no accepted spelling)                                                            | Blocked                                              | `W-29` host API; `W-120`/`W-43` SDK                      |
-| Compose which registered providers and target kinds an operator or scope considers | Provider registration and tier composition (no accepted spelling or capability)                                                              | Blocked                                              | `W-29` host API; `W-120`/`W-43` SDK; `OQ-056`            |
-| Contribute badge metadata mapped to a theme token                                  | Annotation-layer contribution (no accepted spelling; `bitty.annotations` is excluded from v1)                                                | Blocked                                              | `W-29` host API; `W-120`/`W-43` SDK                      |
-| Build and drive a target-first context menu from a target's declared actions       | Target metadata plus a focusable interactive menu (no accepted spelling)                                                                     | Blocked                                              | `W-29` host API; `W-28` host implementation; `W-120` SDK |
-| Resolve a selected target or menu entry to a typed command id and dispatch it      | Command registry execution is accepted; the target-to-command dispatch bridge is not (`W-29`)                                                | Blocked (bridge) / Accepted (execution)              | `W-29` host API; `W-120`/`W-43` SDK                      |
-| Observe target or annotation events within a session                               | No target event exists; the closed v1 event set excludes them                                                                                | Blocked                                              | `W-29` host API; `W-120`/`W-43` SDK                      |
+| Beacon policy operation                                                            | Concrete surface (exact spelling or owner)                                                                                                                                                                         | Status                                                             | Source or blocking task                                                           |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| Declare a chord-to-operator suggestion                                             | `bitty.keymaps.suggest(def)`, precedence user > workspace > first-party/default > plugin suggestion                                                                                                                | Accepted                                                           | Lua Surface RFC; Plugin Platform RFC                                              |
+| Register the typed command each operator or menu entry executes                    | `bitty.commands.register(def)`                                                                                                                                                                                     | Accepted                                                           | Lua Surface RFC; Plugin Platform RFC                                              |
+| Persist operator families, default scopes, filters, badges, and menu order         | `bitty.settings.get/set`, `bitty.store.get/set`                                                                                                                                                                    | Accepted                                                           | Lua Surface RFC; Isolation and Resource RFC                                       |
+| Observe focus, selection, terminal, and process state that policy reads            | `bitty.events.subscribe` over accepted v1 names (`focus.changed`, `selection.changed`, `process.exited`, `config.reloaded`, `terminal.*`)                                                                          | Accepted                                                           | Lua Surface RFC; Plugin Platform RFC                                              |
+| Observe workspace lifecycle or state for a workspace scope                         | `workspace.*` observation events                                                                                                                                                                                   | Provisional (host candidate, `OQ-056`)                             | Generated parity surface; `OQ-056`                                                |
+| Focus or move to a workspace as a policy action                                    | `bitty.workspace.focus` / `bitty.workspace.move_panel`                                                                                                                                                             | Provisional (host candidate, `OQ-056`)                             | Generated parity surface; `OQ-056`                                                |
+| Emit a bounded policy notification                                                 | `bitty.notify.show(payload)`                                                                                                                                                                                       | Accepted                                                           | Lua Surface RFC; Plugin Platform RFC                                              |
+| Present bounded static which-key hint or menu text                                 | `bitty.ui.mount(slot, component)` into `top` or `bottom` (painted), or the Core focusable `overlay` host; `left`/`right` fail closed with `E_UI_UNAVAILABLE`, and `statusline` is not a slot (compose on `bottom`) | Accepted (function and accepted slot names); payload shape `W-120` | Lua Surface RFC; payload shape `W-120`; Core hosts (CTX-0941, CTX-1140, CTX-1341) |
+| Present an interactive which-key continuation or focusable menu                    | Focusable interactive menu surface (no accepted spelling)                                                                                                                                                          | Blocked                                                            | `W-28` host implementation; `W-120` SDK                                           |
+| Start a Beacon session that captures keys                                          | Focusable overlay plus transient input capture (`bitty.ui.overlay.acquire/poll/release`, `ui.overlay.focus`)                                                                                                       | Blocked                                                            | `W-29` target surface; `W-120` SDK                                                |
+| Enter a target-first or operator-pending interaction and label targets             | Beacon Lua host API over `TargetEngine`/`AnnotationEngine` (no accepted spelling)                                                                                                                                  | Blocked                                                            | `W-29` host API; `W-120`/`W-43` SDK                                               |
+| Collect, scope, and filter the candidate target set                                | Target snapshot, provider collection, and scope resolution (no accepted spelling)                                                                                                                                  | Blocked                                                            | `W-29` host API; `W-120`/`W-43` SDK                                               |
+| Compose which registered providers and target kinds an operator or scope considers | Provider registration and tier composition (no accepted spelling or capability)                                                                                                                                    | Blocked                                                            | `W-29` host API; `W-120`/`W-43` SDK; `OQ-056`                                     |
+| Contribute badge metadata mapped to a theme token                                  | Annotation-layer contribution (no accepted spelling; `bitty.annotations` is excluded from v1)                                                                                                                      | Blocked                                                            | `W-29` host API; `W-120`/`W-43` SDK                                               |
+| Build and drive a target-first context menu from a target's declared actions       | Target metadata plus a focusable interactive menu (no accepted spelling)                                                                                                                                           | Blocked                                                            | `W-29` host API; `W-28` host implementation; `W-120` SDK                          |
+| Resolve a selected target or menu entry to a typed command id and dispatch it      | Command registry execution is accepted; the target-to-command dispatch bridge is not (`W-29`)                                                                                                                      | Blocked (bridge) / Accepted (execution)                            | `W-29` host API; `W-120`/`W-43` SDK                                               |
+| Observe target or annotation events within a session                               | No target event exists; the closed v1 event set excludes them                                                                                                                                                      | Blocked                                                            | `W-29` host API; `W-120`/`W-43` SDK                                               |
 
 Reading of the map:
 
 - **Accepted today:** chord suggestions, command registration, policy
   configuration and persistence, observation of the accepted event set,
-  notifications, and bounded static content in the accepted band slots
-  (`top`, `bottom`, `statusline`). These are enough to declare policy and to
+  notifications, and bounded static content in `top` or `bottom` bands or the
+  Core focusable `overlay` host. These are enough to declare policy and to
   present non-interactive hint text; they are not enough to run a targeting
-  session.
+  session. `statusline` is not a slot; status presentation composes on
+  `bottom`.
 - **Provisional:** the `bitty.workspace.*` functions and workspace events whose
   Lua spellings are wired host candidates pending `OQ-056`. The target-first
   menu and the interactive which-key continuation surface remain blocked until
@@ -233,9 +237,10 @@ contracts. No spelling is invented here.
 - command-dispatch bridge binding a target handle to a typed command id;
 - target or session lifecycle events.
 
-The accepted-slot presentation path (`bitty.ui.mount`/`update`) exists, but the
-`overlay` slot is presentation-only, non-focusable, and currently unhosted
-(`E_UI_UNAVAILABLE`); it cannot stand in for an interactive session.
+The accepted-slot presentation path (`bitty.ui.mount`/`update`) exists, and
+the `overlay` slot is hosted by Core as a focusable surface (CTX-0941), but the
+Beacon target/session surface is absent; the slot alone cannot stand in for an
+interactive session.
 
 ### Missing capability declarations
 
@@ -292,10 +297,11 @@ five points. None is resolved here; each is parked to its owner.
 
 1. **Fail-open transient capture.** The [design](../docs/plugins/beacon/design.md)
    assumes a session takes transient, bounded, Core-owned input capture whose
-   non-label keys fail open to normal input. v1 has no capture surface, no
-   input events, and only a presentation-only `overlay` slot that is currently
-   unhosted. The assumption is unimplementable on v1 and needs `W-01`
-   (contract), `W-28` (host implementation), and `W-120` (SDK binding).
+   non-label keys fail open to normal input. The Core focusable-overlay host
+   (CTX-0941) now provides capture under `ui.overlay.focus`, but v1 has no
+   target mechanism, selection event, or label allocation for Beacon. The
+   assumption still needs `W-29` (target mechanism) and `W-120` (SDK binding)
+   and cannot be built from `bitty.ui.mount` alone.
 2. **Plugin-contributed annotation.** The design assumes Beacon supplies public
    badge metadata and Core renders it through the `AnnotationEngine`. v1
    explicitly excludes Level 3 presentation (`bitty.annotations`,
@@ -309,9 +315,9 @@ five points. None is resolved here; each is parked to its owner.
    `OQ-056` and `W-29`.
 4. **Interactive target-first menu.** The design assumes a menu built from a
    target's declared actions whose selection resolves to a typed command id.
-   The accepted `overlay` slot is non-focusable and unhosted, offers no
-   selection event, and gives no target metadata, so the interactive menu is
-   blocked pending `W-28` and `W-120`.
+   The `overlay` slot is hosted and can hold transient capture, but it still
+   offers no selection event and no target metadata, so the interactive menu
+   is blocked pending `W-29` and `W-120`.
 5. **Dispatch-bridge reachability.** The design correctly assumes the selected
    target becomes a typed command that executes through the command registry.
    v1 accepts the registry execution half but exposes no target-to-command

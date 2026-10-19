@@ -18,9 +18,10 @@ task state) presented compactly without a plugin-side shell prompt takeover.
 
 ## Scope
 
-In scope: composition of declarative fragments into the statusline/workspaceline
-slot from read-only terminal state, recomposed when the declared observation
-events fire.
+In scope: composition of declarative fragments into the `bottom` band slot from
+read-only terminal state, recomposed when the declared observation events fire.
+Status presentation composes on `bottom` (bar replacement); `statusline` is not
+a slot in the current Core build after its removal in CTX-1140.
 
 Out of scope: terminal truth, input, parser, and render hot paths; prompt
 replacement. The statusline is terminal-owned chrome and does not absorb
@@ -32,8 +33,10 @@ by the roadmap, not accepted here.
 
 - Requests `terminal.semantic-read` (gates `bitty.terminal.snapshot`, the
   read-only committed-state observation the statusline composes from) and
-  `ui.rich` (gates `bitty.ui.mount`/`bitty.ui.update` on the `statusline`
-  slot). Both identifiers are unchanged from the bundled manifest.
+  `ui.rich` (gates `bitty.ui.mount`/`bitty.ui.update` on the `bottom` slot).
+  Both identifiers are unchanged from the bundled manifest. The package keeps
+  its `statusline` plugin id and repository name; only the slot it targets is
+  `bottom`.
 - Deny by default: no filesystem, process, network, clipboard, or
   terminal-input authority is requested.
 
