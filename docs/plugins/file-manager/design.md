@@ -44,8 +44,8 @@ empty listing when no root is available.
 Out of scope: terminal truth, input, parser, and render hot paths; panel
 presentation; and direct filesystem I/O. Plugin API v1 has no panel-mount or
 filesystem surface (`bitty.ui.register_panel` is post-v1.0 and there is no
-`bitty.fs`), so the package cannot register a panel provider until the
-panel-provider contract is accepted. These deferred surfaces are explicit
+`bitty.fs`), so the package cannot register a panel provider until a future
+panel-provider acceptance lands. These deferred surfaces are explicit
 non-goals of the current package, not implied behavior.
 
 ## Mechanism and policy split
