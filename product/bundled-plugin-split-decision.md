@@ -71,10 +71,10 @@ governs each split, and the CarryCtx dependencies that let the candidate queue
 start. Out of scope: the split implementation itself, the package-manager
 mechanics (owned by the accepted [Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md)
 and [Package Follow-up RFC](../packaging/package-followup-rfc.md)), and the
-panel-provider contract (owned by the accepted [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md) in
-`bitty-terminal-docs`, which supersedes the archived Panel Runtime and Event Bus Pre-Study, and OQ-058;
-the generic container and Event Bus contract is accepted while the plugin-facing registration/mount
-contract remains the open gate).
+the plugin-facing panel-provider registration/mount contract, which remains unaccepted and is tracked by
+`RFC-OQ-2`, `RFC-OQ-3`, and `RFC-OQ-5` plus OQ-058 and issue #464. The accepted [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md)
+in `bitty-terminal-docs` supersedes the archived Panel Runtime and Event Bus Pre-Study only for the generic
+Panel Runtime container and Event Bus contract; it does not accept the plugin-facing provider contract).
 
 This record refines the roadmap's _candidate_ material; it does not move a
 requirement between owners and does not relax any capability, security, or
