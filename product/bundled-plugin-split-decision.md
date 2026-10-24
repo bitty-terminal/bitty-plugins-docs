@@ -74,7 +74,7 @@ and [Package Follow-up RFC](../packaging/package-followup-rfc.md)), and the
 the plugin-facing panel-provider registration/mount contract, which remains unaccepted and is tracked by
 `RFC-OQ-2`, `RFC-OQ-3`, and `RFC-OQ-5` plus OQ-058 and issue #464. The accepted [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md)
 in `bitty-terminal-docs` supersedes the archived Panel Runtime and Event Bus Pre-Study only for the generic
-Panel Runtime container and Event Bus contract; it does not accept the plugin-facing provider contract).
+Panel Runtime container and Event Bus contract; it does not accept the plugin-facing provider contract.
 
 This record refines the roadmap's _candidate_ material; it does not move a
 requirement between owners and does not relax any capability, security, or
