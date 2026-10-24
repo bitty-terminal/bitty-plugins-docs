@@ -48,8 +48,8 @@ Out of scope: terminal truth, input, parser, and render hot paths; arbitrary
 process spawn, shell interpolation, network, clipboard, terminal-input, or
 persistent-state authority; and write verbs beyond the allowlisted read-only
 set. Panel presentation stays host-owned: the package composes declarative
-`List`/`Text` panel content, but it cannot present a panel until the
-panel-provider contract is accepted. That deferred mounting is an explicit
+`List`/`Text` panel content, but it cannot present a panel until a future
+panel-provider acceptance lands. That deferred mounting is an explicit
 non-goal of the current package, not implied behavior.
 
 ## Mechanism and policy split
