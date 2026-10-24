@@ -71,7 +71,7 @@ governs each split, and the CarryCtx dependencies that let the candidate queue
 start. Out of scope: the split implementation itself, the package-manager
 mechanics (owned by the accepted [Package Lifecycle RFC](../packaging/package-lifecycle-rfc.md)
 and [Package Follow-up RFC](../packaging/package-followup-rfc.md)), and the
-the plugin-facing panel-provider registration/mount contract, which remains unaccepted and is tracked by
+the unaccepted plugin-facing `PanelProvider` registration/mount contract, which is tracked by
 `RFC-OQ-2`, `RFC-OQ-3`, and `RFC-OQ-5` plus OQ-058 and issue #464. The accepted [Panel Runtime RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/panel-runtime-rfc.md)
 in `bitty-terminal-docs` supersedes the archived Panel Runtime and Event Bus Pre-Study only for the generic
 Panel Runtime container and Event Bus contract; it does not accept the exact plugin-facing provider registration contract.
@@ -282,18 +282,18 @@ plaintext storage. Verdict: **split target**, blocked on those contracts.
 
 ## Follow-up tasks
 
-| Task                    | Owner                                | Purpose                                                                                                                           |
-| ----------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `CTX-0397`              | `bitty`                              | Extract `palette` to an independent first-party package.                                                                          |
-| `CTX-0398`              | `bitty`                              | Extract `statusline` (`tabline` claim stays bundled).                                                                             |
-| `CTX-0399`              | `bitty`                              | Extract `file-manager` (catalog entry removed; independent package and registry entry merged; panel presentation still deferred). |
-| `CTX-0400`              | `bitty`                              | Extract `git-panel` (catalog entry removed; independent package and registry entry merged; panel presentation still deferred).    |
-| `CTX-0401`              | `bitty`                              | Record the stay-bundled verdict for `browser-panel` and the revisit condition.                                                    |
-| `CTX-0402`              | `bitty`                              | Extract `ai-panel` as a hybrid plugin over `bitty-ai` surfaces.                                                                   |
-| `CTX-0403`              | `bitty`                              | Extract `mail-panel`; needs the credential-source contract.                                                                       |
-| `bitty-docs` `CTX-0181` | `bitty-docs`                         | Accept the Panel Runtime contract (OQ-058).                                                                                       |
-| `bitty` `CTX-0424`      | `bitty-docs` / `bitty-terminal-docs` | Close the OQ-053 register row and revise the Default Distribution RFC bundled catalog.                                            |
-| `bitty` `CTX-0425`      | `bitty-plugins-docs`                 | Accept the Layer 2 `[tools.*]` system-CLI reuse declaration (`git-panel` gate).                                                   |
+| Task                    | Owner                                | Purpose                                                                                                                                                                                                   |
+| ----------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CTX-0397`              | `bitty`                              | Extract `palette` to an independent first-party package.                                                                                                                                                  |
+| `CTX-0398`              | `bitty`                              | Extract `statusline` (`tabline` claim stays bundled).                                                                                                                                                     |
+| `CTX-0399`              | `bitty`                              | Extract `file-manager` (catalog entry removed; independent package and registry entry merged; panel presentation still deferred).                                                                         |
+| `CTX-0400`              | `bitty`                              | Extract `git-panel` (catalog entry removed; independent package and registry entry merged; panel presentation still deferred).                                                                            |
+| `CTX-0401`              | `bitty`                              | Record the stay-bundled verdict for `browser-panel` and the revisit condition.                                                                                                                            |
+| `CTX-0402`              | `bitty`                              | Extract `ai-panel` as a hybrid plugin over `bitty-ai` surfaces.                                                                                                                                           |
+| `CTX-0403`              | `bitty`                              | Extract `mail-panel`; needs the credential-source contract.                                                                                                                                               |
+| `bitty-docs` `CTX-0181` | `bitty-docs`                         | Accept the unaccepted plugin-facing `PanelProvider` registration/mount contract (`RFC-OQ-2`/`RFC-OQ-3`/`RFC-OQ-5`, OQ-058); generic Panel Runtime container and Event Bus semantics are already accepted. |
+| `bitty` `CTX-0424`      | `bitty-docs` / `bitty-terminal-docs` | Close the OQ-053 register row and revise the Default Distribution RFC bundled catalog.                                                                                                                    |
+| `bitty` `CTX-0425`      | `bitty-plugins-docs`                 | Accept the Layer 2 `[tools.*]` system-CLI reuse declaration (`git-panel` gate).                                                                                                                           |
 
 `bitty` `CTX-0424` completed 2026-09-14 (OQ-053 register closure and Default
 Distribution RFC catalog revision).

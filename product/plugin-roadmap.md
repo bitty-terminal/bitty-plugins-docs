@@ -61,9 +61,10 @@ Out of scope (owned elsewhere):
 - Rich block, scene, semantic zone, and structured transport contracts
   (OQ-008/OQ-015/OQ-016,
   [Rich Presentation RFC](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md)).
-- Panel container semantics, Panel Runtime, and inter-Panel Event Bus; these
-  remain candidate work described by the draft
-  [Panel Extensibility Vision](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/panel-vision.md)
+- Generic Panel Runtime container semantics and the inter-Panel Event Bus are
+  accepted. The remaining candidate work is limited to the unaccepted
+  plugin-facing `PanelProvider` registration/mount contract and related
+  ecosystem extensions, described by the draft [Panel Extensibility Vision](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/panel-vision.md)
   and the draft [Workspace Compositor](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/workspace-compositor.md).
 
 No new trust boundary is introduced. Every plugin below uses the same
