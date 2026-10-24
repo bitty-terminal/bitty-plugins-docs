@@ -660,6 +660,40 @@ prevails per Normative precedence. Independent security-auditor review was compl
 
 **Acceptance:** Accepted as a controlled relaxation of RC-1 for supervised host I/O, matching the 2026-09-30 store-commit precedent: a bounded spawn wait is host work, not plugin CPU work, and suspending a plugin for time the host spent in a child process was a false positive (bitty#2285 measured two 35 ms waits suspending a callback that used ~140k instructions). The alternative (charging host waits, or raising the 50 ms wall budget) either misattributes host latency or weakens the CPU bound.
 
+## Amendment: tighten-only per-plugin budgets (2026-10-24, bitty#2304)
+
+Status: **candidate implementation evidence**; this amendment does not change
+the accepted RC-1 or RC-2 ceilings and does not re-open OQ-014.
+
+The accepted ceilings remain compiled host constants and the only authority
+over plugin work. An optional manifest `[limits]` table
+(`fuel_instructions`, `wall_ms`, `memory_bytes`, `warning_ms`) and an optional
+local `plugin-budgets.lua` (global `default` plus per-plugin `plugins`
+entries) may only lower them. Every present value validates in
+`1..=ceiling`; the effective value is the minimum across the host ceiling,
+manifest, and both user layers, so a later layer can never widen an earlier
+one. Zero, above-ceiling, negative, wrong-typed, duplicate, and unknown values
+fail closed with a typed field path; no value is clamped or silently ignored.
+
+The security properties are monotone by construction:
+
+- No declaration can raise RC-1 fuel, RC-1 wall, RC-1 warning, or RC-2 memory
+  above the compiled ceiling; changing a ceiling still requires an RFC
+  revision, never a manifest or user file.
+- RC-1 fail-closed suspend and RC-2 memory refusal are unchanged; a tighter
+  budget can only make them fire earlier.
+- `warning_ms` stays advisory, never suspends, and is capped at `wall_ms - 1`
+  when a tighter wall leaves no room for the configured threshold.
+- `--safe` ignores both tightening layers and runs the host defaults, so the
+  recovery path cannot be blocked by a hostile manifest or a malformed local
+  file.
+- A malformed local budget file fails plugin activation closed with a typed
+  budget error rather than silently running on defaults; the error is reported
+  by `bitty plugin config show`.
+
+No accepted control is relaxed: the amendment adds an earlier-stop option
+below an unchanged ceiling.
+
 ## Open items remaining under OQ-014
 
 The following items were open at proposal and are now dispositioned upon acceptance on 2026-08-28. Acceptance of this RFC closes [OQ-014](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md) at the design level; residual items below are tracked as follow-up work with no remaining OQ-014 closure blocker:
