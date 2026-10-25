@@ -19,9 +19,10 @@ Record the current bar implementation separately from candidate chrome design.
 
 Registry [#102](https://github.com/bitty-terminal/bitty-plugins/pull/102), merge
 `b1eade711049e8c852a076fbc9db3700dd70fce9`, pins bar
-`18d1a5b6dc86af4a42546f20f1610e69af58071d` (bar main). The manifest and
-`lua/bar/init.lua` were independently inspected. Compatibility declarations
-are Core `>=0.0.24,<0.1` and Plugin API `^1.0`; package version is `0.0.1`.
+`0fa151395fe9d9d8b3b9dc4ba047eb13fa7b45c4` (`0fa15139`, bar main). The
+manifest and `lua/bar/init.lua` were independently inspected. Compatibility
+declarations are Core `>=0.0.24` and Plugin API `^1.0`; package version is
+`0.0.1`.
 Registry [#92](https://github.com/bitty-terminal/bitty-plugins/pull/92),
 merge `ba4d9d1268bfd877ab60413f496e95b6cae41168`, supplied the earlier
 pin `f007a03d`.
@@ -45,9 +46,13 @@ Historical design context:
 ## Disposition
 
 Implemented: declared chassis scalars, the `label` capsule-label mode, and
-group string arrays; shipped default plan of workspaces left, clock center, and
-empty right; `top`/`bottom` mounts under `ui.rich`; decorated `Text` in a `Row`;
-workspace focus and optional provider policy. Per-module option keys are empty
+group string arrays; shipped default plan of workspaces left, clock centered
+across the full band, and provider-backed `network`, `cpu`, `memory`, and
+`battery` modules at the right inset; unavailable or ungranted provider modules
+are omitted individually; `top`/`bottom` mounts under `ui.rich`; decorated
+`Text` in a `Row`; workspace focus and optional provider policy. Settings are
+resolved at activation and re-read on `config.reloaded`; only the `edge`
+selection remains pinned to the generation. Per-module option keys are empty
 string arrays, so map options remain ineffective on the strict host. No new
 `Capsule` or widget kind is implemented by the pin. Registry eligibility does
 not prove live presentation or release delivery.
@@ -65,8 +70,11 @@ Planned validation for the owning repository (`bitty-terminal/bar`):
 
 Per-module option shape remains
 [issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
-True alignment and broader workspace interactions remain candidate. This docs
-pass reruns no live UI or plugin product tests.
+The current source implements left-inset, full-band-center, and right-inset
+alignment; richer presentation and broader workspace interactions remain
+candidate. The broader unified-chrome candidate is not an implementation
+inventory for this pin. This docs pass reruns no live UI or plugin product
+tests.
 
 ### References
 

@@ -13,9 +13,10 @@ sidebar_order: 51
 
 ## Document status
 
-Implementation snapshot at `18d1a5b6dc86af4a42546f20f1610e69af58071d`, pinned
-by registry #102. Current text-row behavior is distinct from the broader
-candidate unified-chrome design; no release verification is claimed.
+Implementation snapshot at `0fa151395fe9d9d8b3b9dc4ba047eb13fa7b45c4`
+(`0fa15139`), pinned by registry #102. Current text-row behavior is distinct
+from the broader candidate unified-chrome design; no release verification is
+claimed.
 
 ## Purpose and scope
 
@@ -37,22 +38,27 @@ text, not a new scene-node kind.
 ## Current presentation and interaction
 
 The plugin mounts `top` or `bottom` through `bitty.ui.mount` under `ui.rich`.
-It composes a `Row` of `Text`, orders left/center/right groups sequentially,
-and hides a lone workspace unless configured otherwise or a scratchpad is
-occupied. The shipped default plan puts workspaces in the left group and the
-clock in the center group, with an empty right group, and a plan that resolves
-to nothing falls back to that default plan. Inactive workspace labels request
-focus through a registered command and `workspace.control`; the `label` setting
+It composes a `Row` of `Text`, placing workspaces in the left group, the clock
+centered across the full band, and provider-backed `network`, `cpu`, `memory`,
+and `battery` modules at the right inset. Unavailable or ungranted provider
+modules are omitted individually. A lone workspace is hidden unless configured
+otherwise or a scratchpad is occupied, and a plan that resolves to nothing
+falls back to the shipped default plan. Inactive workspace labels request focus
+through a registered command and `workspace.control`; the `label` setting
 selects index, name, or both. Detail text may use a grant-gated, rate-limited
 notification fallback. Optional sensor, device, and audio providers hide when
-absent or ungranted; read and control are separate.
+absent or ungranted; read and control are separate. Settings are read at
+activation and re-read on `config.reloaded`; only the `edge` selection remains
+pinned to the generation.
 
 The [schema page](schemas.md) enumerates real settings and triggers. Chassis
 scalars and group string arrays are effective. Per-module maps remain inert
 because their declarations are empty string arrays, not accepted table kinds.
 
-True center/right layout, richer widgets, and broader workspace add/close or
-wheel interactions remain candidate. Core's existing `Text`, `Row`, `Column`,
+The current source's left/center/right alignment is implemented, but richer
+widgets and broader workspace add/close or wheel interactions remain candidate.
+The broader unified-chrome candidate is a separate design direction, not an
+implementation inventory for this pin. Core's existing `Text`, `Row`, `Column`,
 and `List` vocabulary is not extended by calling text labels capsules.
 
 ## Security review
