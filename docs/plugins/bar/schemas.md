@@ -115,9 +115,23 @@ containing only non-empty anchored groups. The left group is anchored to the
 left inset, the center group is centered across the full band, and the right
 group is aligned to the right inset; the provider-backed right group may be
 absent. Hidden provider modules emit no atoms and are omitted individually.
-Bold/color and command bindings decorate the `Text` nodes; bracketed workspace
-labels are text, not a `Capsule` node. New widgets and add/close workspace
-buttons are not established by this source.
+
+Each workspace is one styled `Text` atom with one space of padding on each side
+(`" 1 "`). The padding shares the capsule fill and stays inside the same atom,
+so the whole chip, padding included, is one click target and reads as a filled
+capsule rather than bracketed text. Marks append after the label in `*` (active),
+`+` (occupied), and `!` (attention) order in every label mode. The active
+capsule emits `bold` with the `background` foreground on the `accent`
+background; inactive capsules use the `selection` background. On an inactive
+capsule, occupied emphasis is bold and attention emphasis uses the `cursor`
+foreground, with attention winning when both apply. Theme tokens are
+host-resolved names, never literal colors. The v1 band exposes no corner-radius
+primitive, so capsules are square padded fills and the plugin has no
+rounded-corner option. Padding and fill apply to workspace capsules only; other
+modules carry no capsule padding or fill and are joined by a single space.
+A capsule remains a `Text` atom, not a distinct `Capsule` node; command bindings
+decorate it. New widgets and add/close workspace buttons are not established by
+this source.
 
 ## Security review
 
