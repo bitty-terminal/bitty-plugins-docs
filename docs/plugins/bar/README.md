@@ -17,17 +17,21 @@ Routes for the current bar source and explicitly deferred chrome direction.
 
 ## Authority and status
 
-Registry #102 pins bar `18d1a5b6` for Core `>=0.0.24,<0.1` / Plugin API `^1.0`.
-The source mounts a text row in `top` or `bottom`, with declared chassis and
-module-list settings. A fresh install paints workspaces on the left and the
-clock in the center group, with an empty right group; the `label` setting
-selects index, name, or both. Module option maps remain ineffective under the
-current strict kinds and stay with
+The current official registry pin is bar `0fa15139` for Core `>=0.0.24,<0.1` /
+Plugin API `^1.0`. The source mounts a text row in `top` or `bottom`, with
+declared chassis and module-list settings. A fresh install places workspace
+capsules on the left, the clock centered across the full band, and provider-backed
+`network`, `cpu`, `memory`, and `battery` modules at the right inset. Each
+unavailable or ungranted provider hides its own module; if all are absent, only
+the workspace capsules and clock may remain visible. The `label` setting selects
+index, name, or both. Module option maps remain ineffective under the current
+strict kinds and stay with
 [issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
-True alignment and richer widgets remain candidate. Settings are read at
-activation and pinned to the generation; `config.reloaded` does not hot-reload
-them. Source presence and registry eligibility establish no live presentation
-or release verification.
+The left, center, and right module groups use true left-inset, full-band-center,
+and right-inset alignment respectively. Richer widgets remain candidate.
+Settings are read at activation and pinned to the generation;
+`config.reloaded` does not hot-reload them. Source presence and registry
+eligibility establish no live presentation or release verification.
 
 ## Identity
 

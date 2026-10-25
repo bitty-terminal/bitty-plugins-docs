@@ -13,9 +13,9 @@ sidebar_order: 52
 
 ## Purpose and scope
 
-Describe registry-pinned bar `18d1a5b6dc86af4a42546f20f1610e69af58071d`.
-The broader unified-chrome candidate does not define this pin's implemented
-widgets or interactions.
+Describe the current registry-pinned bar `0fa151395fe9d9d8b3b9dc4ba047eb13fa7b45c4`
+(`0fa15139`). The broader unified-chrome candidate does not define this pin's
+implemented widgets or interactions.
 
 ## Normative sources
 
@@ -56,24 +56,27 @@ invented `[plugins]` table in `bitty.toml`. The legacy
 `bitty-terminal.bar.toml` file remains a compatibility fallback only when no
 selected Lua file exists.
 
-| Key              | Kind           | Shipped default  | Implemented behavior                                                  |
-| ---------------- | -------------- | ---------------- | --------------------------------------------------------------------- |
-| `show`           | `bool`         | `true`           | Enable presentation                                                   |
-| `edge`           | `string`       | `"bottom"`       | `"top"` or `"bottom"` semantic slot; other strings use local default  |
-| `show_single`    | `bool`         | `false`          | Show a lone workspace; occupied scratchpad also keeps the bar visible |
-| `name_max_chars` | `int`          | `32`             | Local validation permits 1 through `NAME_MAX_CHARS` (32)              |
-| `label`          | `string`       | `"index"`        | Capsule label mode: `"index"`, `"name"`, or `"both"`                  |
-| `modules_left`   | `string-array` | `["workspaces"]` | First ordered module group                                            |
-| `modules_center` | `string-array` | `["clock"]`      | Second ordered group, without true centering                          |
-| `modules_right`  | `string-array` | `[]`             | Third ordered group, without right alignment                          |
+| Key              | Kind           | Shipped default                           | Implemented behavior                                                  |
+| ---------------- | -------------- | ----------------------------------------- | --------------------------------------------------------------------- |
+| `show`           | `bool`         | `true`                                    | Enable presentation                                                   |
+| `edge`           | `string`       | `"bottom"`                                | `"top"` or `"bottom"` semantic slot; other strings use local default  |
+| `show_single`    | `bool`         | `false`                                   | Show a lone workspace; occupied scratchpad also keeps the bar visible |
+| `name_max_chars` | `int`          | `32`                                      | Local validation permits 1 through `NAME_MAX_CHARS` (32)              |
+| `label`          | `string`       | `"index"`                                 | Capsule label mode: `"index"`, `"name"`, or `"both"`                  |
+| `modules_left`   | `string-array` | `["workspaces"]`                          | First ordered module group                                            |
+| `modules_center` | `string-array` | `["clock"]`                               | Center group, centered across the full band                           |
+| `modules_right`  | `string-array` | `["network", "cpu", "memory", "battery"]` | Right group, aligned to the right inset edge                          |
 
-The shipped default plan is workspaces on the left, the clock in the center
-group, and an empty right group. A fresh install therefore paints the workspace
-capsules followed by the clock; setting a group to `[]` removes that group as
-long as another group still resolves to a known module. When the configured plan
-contains no group, or no entry resolves to a known module, the plugin falls back
-to the shipped default plan, so a bad or empty specification never hides the
-bar.
+The shipped fresh-install plan places workspace capsules on the left, the clock
+in the center, and provider-backed `network`, `cpu`, `memory`, and `battery`
+modules on the right. Each unavailable or ungranted provider hides only its own
+module. Consequently, a host without any of those providers may show only the
+workspace capsules and clock; an individual provider can disappear while the
+other right-side modules remain visible. Setting a group to `[]` removes that
+group as long as another group still resolves to a known module. When the
+configured plan contains no group, or no entry resolves to a known module, the
+plugin falls back to the shipped default plan, so a bad or empty specification
+never hides the bar.
 
 `label` is a bounded closed set with no v1 enum kind: the shipped default is
 `index`, an unknown or non-string value falls back to `index` (the bar still
@@ -108,11 +111,13 @@ Detail text can fall back to best-effort `bitty.notify.show`, subject to
 ## Scene contract
 
 The implementation mounts semantic `top` or `bottom` with `bitty.ui.mount`
-under `ui.rich`, updates the generation-owned handle, and emits a `Row` of
-`Text` nodes. Hidden content is empty `Text`. Bold/color and command bindings
-decorate those text nodes. Bracketed workspace labels are text, not a
-`Capsule` node. True three-zone alignment, new widgets, add/close workspace
-buttons, and workspace wheel cycling are not established by this source.
+under `ui.rich`, updates the generation-owned handle, and emits a root `Row`
+with non-empty left, center, and right group rows. The left group is anchored to
+the left inset, the center group is centered across the full band, and the right
+group is aligned to the right inset. Hidden provider modules emit no atoms and
+are omitted individually. Bold/color and command bindings decorate the `Text`
+nodes; bracketed workspace labels are text, not a `Capsule` node. New widgets
+and add/close workspace buttons are not established by this source.
 
 ## Security review
 
