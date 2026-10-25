@@ -33,7 +33,7 @@ implemented widgets or interactions.
 | `[plugin].id`         | `bitty-terminal.bar` |
 | `[plugin].name`       | Unified Bar          |
 | `[plugin].version`    | `0.0.1`              |
-| `[compat].bitty`      | `>=0.0.24,<0.1`      |
+| `[compat].bitty`      | `>=0.0.24`           |
 | `[compat].plugin-api` | `^1.0`               |
 
 ## Capabilities and providers
@@ -97,9 +97,8 @@ explicit in [issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/9
 Lazy events are `workspace.created`, `workspace.closed`, `workspace.renamed`,
 `workspace.focused`, `workspace.changed`, and `config.reloaded`.
 The plugin reads `bitty.workspace.list()` on the configured event path.
-Settings are resolved at activation and pinned to the generation, so
-`config.reloaded` does not refresh them and no hot-reload path exists; a later
-activation reads the configured file again.
+Settings are resolved at activation and re-read on `config.reloaded`; only the
+`edge` selection remains pinned to the generation.
 
 Lazy commands, each under `bitty-terminal.bar:`, are `focus`, `detail`,
 `bluetooth-toggle`, `backlight-step`, `idle-toggle`, `audio-toggle`, and
@@ -112,12 +111,13 @@ Detail text can fall back to best-effort `bitty.notify.show`, subject to
 
 The implementation mounts semantic `top` or `bottom` with `bitty.ui.mount`
 under `ui.rich`, updates the generation-owned handle, and emits a root `Row`
-with non-empty left, center, and right group rows. The left group is anchored to
-the left inset, the center group is centered across the full band, and the right
-group is aligned to the right inset. Hidden provider modules emit no atoms and
-are omitted individually. Bold/color and command bindings decorate the `Text`
-nodes; bracketed workspace labels are text, not a `Capsule` node. New widgets
-and add/close workspace buttons are not established by this source.
+containing only non-empty anchored groups. The left group is anchored to the
+left inset, the center group is centered across the full band, and the right
+group is aligned to the right inset; the provider-backed right group may be
+absent. Hidden provider modules emit no atoms and are omitted individually.
+Bold/color and command bindings decorate the `Text` nodes; bracketed workspace
+labels are text, not a `Capsule` node. New widgets and add/close workspace
+buttons are not established by this source.
 
 ## Security review
 
