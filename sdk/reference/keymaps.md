@@ -184,8 +184,10 @@ end
 The tests also prove that the source is read live: replacing the published
 table is visible on the next call. They cover grant denial, canonical row
 fields, offset/limit paging, malformed options, the addressable-row cap, and
-the per-generation call budget. The bridge tests cover the over-64 KiB payload
-failure and the default `E_NOT_IMPLEMENTED` host seam.
+the per-generation call budget. The bridge implementation bounds the serialized
+payload by dropping whole rows from the tail to stay within `64 KiB`, and the
+host `fits_budget()` guard checks the payload budget. The bridge tests cover the
+default `E_NOT_IMPLEMENTED` host seam.
 
 Suggestion capture is separately covered by the Lua parity tests
 `keymaps_suggest_captures_with_global_default`,
