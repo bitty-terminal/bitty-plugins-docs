@@ -152,9 +152,13 @@ all validated in the bridge before any host call
 - `on_click` / `on_scroll`: declarative command bindings
   (`{ command, args }`) with an optional per-item
   `region = { id, kind = "item" | "module" }` identity. Command ids are at
-  most 64 bytes, argument tables are at most 16 entries with 256-byte string
-  values, and region ids are at most 64 bytes; declaring different regions on
-  the two bindings rejects the mount.
+  most 64 bytes, string argument values at most 256 bytes, and region ids at
+  most 64 bytes. The dispatched argument table is capped at 16 entries, with
+  host-injected args reserved out of that cap: an ordinary `on_click` binding
+  may declare up to 16 arguments, an `on_scroll` binding reserves `delta` and
+  declares at most 15, and a region-aware binding reserves `region` and
+  `button` (click) or `delta` (scroll), declaring at most 14. Declaring
+  different regions on the two bindings rejects the mount.
 
 Validation is typed and fail-closed: an unknown or excluded kind, a malformed
 text, children, style, or binding shape, and out-of-bounds values fail before
