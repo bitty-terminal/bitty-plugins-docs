@@ -14,7 +14,7 @@ sidebar_order: 51
 ## Document status
 
 Implementation snapshot at `0fa151395fe9d9d8b3b9dc4ba047eb13fa7b45c4`
-(`0fa15139`), pinned by registry #102. Current text-row behavior is distinct
+(`0fa15139`), pinned by registry #115. Current text-row behavior is distinct
 from the broader candidate unified-chrome design; no release verification is
 claimed.
 
@@ -45,9 +45,12 @@ modules are omitted individually. A lone workspace is hidden unless configured
 otherwise or a scratchpad is occupied, and a plan that resolves to nothing
 falls back to the shipped default plan. Inactive workspace labels request focus
 through a registered command and `workspace.control`; the `label` setting
-selects index, name, or both. Detail text may use a grant-gated, rate-limited
-notification fallback. Optional sensor, device, and audio providers hide when
-absent or ungranted; read and control are separate. Settings are read at
+selects index, name, or both. Workspace labels render as padded, filled capsules
+rather than bracketed text; the exact marks, theme tokens, and square-corner
+limit are specified in the [scene contract](schemas.md#scene-contract). Detail
+text may use a grant-gated, rate-limited notification fallback. Optional
+sensor, device, and audio providers hide when absent or ungranted; read and
+control are separate. Settings are read at
 activation and re-read on `config.reloaded`; only the `edge` selection remains
 pinned to the generation.
 
@@ -58,8 +61,9 @@ because their declarations are empty string arrays, not accepted table kinds.
 The current source's left/center/right alignment is implemented, but richer
 widgets and broader workspace add/close or wheel interactions remain candidate.
 The broader unified-chrome candidate is a separate design direction, not an
-implementation inventory for this pin. Core's existing `Text`, `Row`, `Column`,
-and `List` vocabulary is not extended by calling text labels capsules.
+implementation inventory for this pin. A workspace capsule remains a styled
+`Text` atom; Core's existing `Text`, `Row`, `Column`, and `List` vocabulary is
+not extended with a capsule node.
 
 ## Security review
 
