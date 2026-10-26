@@ -21,6 +21,57 @@ does not by itself authorize shipped or compatibility-guaranteed behavior
 beyond the `1.x` stability policy below, and does not weaken any normative
 security control.
 
+**Amended on 2026-10-26 through the owner amendment process (CarryCtx task
+CTX-1546, [bitty issue #2676](https://github.com/bitty-terminal/bitty/issues/2676),
+amendment reference `OQ-UI-CONTRACT-AMENDMENT`), not by a silent documentation
+sync.** The amendment aligns the accepted text with the implementations that
+completed under it and records the authoritative v1 state in place:
+
+- **Slot set.** The closed `bitty.ui.mount` slot set is
+  `terminal | top | bottom | left | right | tabline | overlay` (seven names).
+  `statusline` is not a slot: it was removed from the Core UI slot vocabulary in
+  CTX-1140 ([bitty PR #1962](https://github.com/bitty-terminal/bitty/pull/1962)),
+  the bridge slot check rejects the name exactly as any unknown name with
+  `E_UI_COMPONENT_INVALID` before any host call, and status presentation
+  composes as ordinary edge-band subtrees on `bottom`. The plugin SDK no longer
+  lists the retired name (CTX-1570).
+- **Overlay.** A plain `bitty.ui.mount` into the `overlay` slot stays declarative,
+  presentation-only content that itself never claims focus and never mutates a
+  view or terminal. The owner has separately accepted the
+  [Overlay Input Capture Contract](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/overlay-input-capture-contract.md)
+  (`W-01`, accepted 2026-10-03 for OQ-056 v2 scope), which adds the Core-owned
+  focusable-overlay and transient input-capture surface: `bitty.ui.overlay.*`
+  (`acquire / update / release / show / hide / poll`) gated by the v2 capability
+  `ui.overlay.focus` (deny-by-default, never implied by `ui.overlay`), with a
+  single capture switch, a bounded Core-side queue, plugin-observed captured
+  input through `poll` only, revocation on cancel, submit, focus switch, plugin
+  unload, plugin crash, and Core-side timeout, and fail-closed
+  `E_UI_UNAVAILABLE` on a host without a capture backend or in safe mode. The
+  presentation-only session `bitty.ui.overlay.show`
+  ([bitty PR #2406](https://github.com/bitty-terminal/bitty/pull/2406)) requires
+  `ui.rich` and `ui.overlay` but neither requires nor implies
+  `ui.overlay.focus`; at most one presentation overlay exists per window.
+- **Deferred (not promoted by this amendment).** Pointer routing between
+  presentation scene nodes and overlay scene nodes stays deferred; candidate
+  token namespaces, the one-surface-per-edge rule, terminal-wide budgets, and
+  headed evidence remain candidate items and gain no v1 contract here.
+- **Authoritative gates and errors.** `ui.rich` gates rich content; `ui.overlay`
+  gates the `overlay` slot; `ui.overlay.focus` gates the capture surface (v2).
+  The stable codes are `E_UI_COMPONENT_INVALID` (`validation`; bridge shape or
+  unknown-slot rejection), `E_UI_UNAVAILABLE` (`runtime`; accepted slot without
+  a host surface in this build, including `terminal`, `left`, `right`, and
+  `tabline` after the claim gate), `E_UI_CLAIM_REQUIRED` (tabline claim gate),
+  and the capture codes `E_UI_ALREADY_CAPTURED` and `E_UI_NOT_OWNER`.
+- **Version and migration impact.** `bitty.api_version` remains `"1.0.0"` as
+  shipped by the host bridge. No stable `1.x` release exists yet: the project
+  line is `0.0.x`, so the `major version` rule of the compatibility policy has
+  not been invoked by consumers; the removal is recorded here and in ADR 0009
+  as an owner amendment with migration notes rather than a `2.0` reset.
+  Migration: plugins that mounted `statusline` mount their status composition on
+  `bottom`; `left`/`right`/`tabline`/`terminal` mounts must tolerate typed
+  `E_UI_UNAVAILABLE` refusals; capture consumers opt in by declaring
+  `ui.overlay.focus`.
+
 The contract resolves the deferred "final spelling" left open by the
 [Plugin Platform RFC](../specifications/plugin-platform-rfc.md) for OQ-011 and the conflicting
 candidate spellings recorded in the corpus:
@@ -349,11 +400,14 @@ bitty.ui.update(handle, component) -> boolean
 ```
 
 - `slot` is the accepted closed set:
-  `terminal | top | bottom | left | right | tabline | statusline | overlay`.
+  `terminal | top | bottom | left | right | tabline | overlay`
+  (amended 2026-10-26: `statusline` left the set — see
+  [Status](#status)). The name is refused by the bridge slot check exactly
+  like any unknown slot, with `E_UI_COMPONENT_INVALID` before any host call.
 - `component` is a declarative node table shaped by the accepted
   [`SceneNode` contract](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/rich-presentation-rfc.md), restricted for v1 to the
-  `Text`, `Row`, `Column`, and `List` nodes. Status components are ordinary
-  subtrees mounted in the `statusline` slot, and popups are overlay-slot
+  `Text`, `Row`, `Column`, and `List` nodes. Status presentation composes as
+  ordinary subtrees mounted on the `bottom` edge band, and popups are overlay-slot
   subtrees, not a new node kind. `Image`, `CodeBlock`, `Table`, `Rule`, and
   bordered `Block` nodes are excluded from v1.
 - The handle is an opaque, generation-owned integer (`block_id`);
@@ -368,15 +422,27 @@ bitty.ui.update(handle, component) -> boolean
   `E_UI_COMPONENT_INVALID` for a component that violates the scene contract
   ([LUA-OQ-7](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-7-ui-update-model)).
 - Rich content requires `ui.rich`; the `overlay` slot requires `ui.overlay`.
-  The `overlay` slot is presentation-only, non-focusable declarative content: it
-  never claims focus, never mutates a view or terminal, and never becomes a
-  `PanelProvider`. If the Panel RFC redefines overlays as focusable surfaces,
-  the slot remains a content source and the panel contract owns focus and
-  routing ([LUA-OQ-11](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-11-panel-and-overlay-boundary)).
-  There are no global coordinates, shaders, pipelines, glyph injection, native
-  windows, or renderer handles.
+  The `overlay` slot carries declarative, presentation-only content: a mount or
+  update into the slot never mutates a view or terminal and never becomes a
+  `PanelProvider`. Focus belongs to the separately owned capture contract, not
+  to the slot: a plain mount never claims focus and never starts capture, while
+  the Core-owned `bitty.ui.overlay.*` surface (accepted
+  [`W-01` contract](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/overlay-input-capture-contract.md),
+  gate `ui.overlay.focus`, never implied by `ui.overlay`) can put a mounted
+  overlay block into transient input capture as a single Core-owned switch.
+  Presentation-only showing of an overlay block is separate again:
+  `bitty.ui.overlay.show` requires `ui.rich` plus `ui.overlay` with
+  `ui.overlay.focus` neither required nor implied, and at most one presentation
+  overlay exists per window (a second presenter fails closed with
+  `E_UI_UNAVAILABLE`). Pointer routing between presentation and overlay scene
+  nodes stays deferred and is not defined by this amendment. There are no
+  global coordinates, shaders, pipelines, glyph injection, native windows, or
+  renderer handles.
 - `tabline` is an exclusive claim; status components compose. Host layout owns
-  placement and decoration.
+  placement and decoration. A `tabline` mount without the exclusive claim fails
+  with `E_UI_CLAIM_REQUIRED`; accepted slots without a host surface in a build
+  (`terminal`, `left`, `right`, and `tabline` after the claim gate) fail closed
+  with `E_UI_UNAVAILABLE` instead of remaining silently unpainted.
 
 ### Terminal snapshot (L2, read-only)
 
@@ -625,20 +691,20 @@ rationale, and rejected alternatives for each row are recorded in
 [ADR 0009](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md); the
 dispositions are:
 
-| OQ        | Disposition                                                                                                                                                     |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| LUA-OQ-1  | Contract authority in `bitty-docs`; `bitty` owns implementation/parity; SDK generated; core-boundaries and plugin-platform authority wording amended.           |
-| LUA-OQ-2  | `bitty` shape always present; ungranted calls fail closed with typed `E_CAPABILITY_DENIED`; `bitty.env` absent unless declared (ADR 0006 carve-out).            |
-| LUA-OQ-3  | Bounded JSON Schema `args_schema`/`result_schema`; runtime-authoritative plus optional static manifest table form for lazy help.                                |
-| LUA-OQ-4  | Semantic snapshot of the visible viewport with registry identity tuple, accepted `Style`/`Color` encoding, semantic zones, and alt-screen flag.                 |
-| LUA-OQ-5  | `bitty.keymaps.suggest` reuses the shipped config chord grammar and `(when, chord)` identity; `when` is `"global"` in v1.                                       |
-| LUA-OQ-6  | JSON-compatible bounded values; 256 KiB/plugin and 8 KiB/value defaults; store persists across generations; Isolation RFC `RC-11`.                              |
-| LUA-OQ-7  | `bitty.ui.mount` + `bitty.ui.update` with stable `block_id` versioning; v1 nodes `Text`/`Row`/`Column`/`List` only.                                             |
-| LUA-OQ-8  | `bitty.services.provide`; provider manifest declares bounded interface schema; missing provider fails before activation (`E_SERVICE_RESOLUTION`, optional nil). |
-| LUA-OQ-9  | `bitty.tasks.spawn`/`bitty.tasks.cancel`, `bitty.timers.create`/`bitty.timers.cancel`; integer handles; RC-4 caps; ADR 0007 reconciliation.                     |
-| LUA-OQ-10 | Bounded `terminal_id`/`runtime_id`/`generation`/`view_id`/`exit_code`/`reason` identity fields derived from the accepted registry contract.                     |
-| LUA-OQ-11 | The `overlay` slot stays non-focusable presentation content; Panel RFC compatibility note recorded.                                                             |
-| LUA-OQ-12 | Fixed `init.lua` at the package root, executed at activation; registration only during that window; lazy replay per accepted semantics.                         |
+| OQ        | Disposition                                                                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LUA-OQ-1  | Contract authority in `bitty-docs`; `bitty` owns implementation/parity; SDK generated; core-boundaries and plugin-platform authority wording amended.                                                                                                                                                                                                    |
+| LUA-OQ-2  | `bitty` shape always present; ungranted calls fail closed with typed `E_CAPABILITY_DENIED`; `bitty.env` absent unless declared (ADR 0006 carve-out).                                                                                                                                                                                                     |
+| LUA-OQ-3  | Bounded JSON Schema `args_schema`/`result_schema`; runtime-authoritative plus optional static manifest table form for lazy help.                                                                                                                                                                                                                         |
+| LUA-OQ-4  | Semantic snapshot of the visible viewport with registry identity tuple, accepted `Style`/`Color` encoding, semantic zones, and alt-screen flag.                                                                                                                                                                                                          |
+| LUA-OQ-5  | `bitty.keymaps.suggest` reuses the shipped config chord grammar and `(when, chord)` identity; `when` is `"global"` in v1.                                                                                                                                                                                                                                |
+| LUA-OQ-6  | JSON-compatible bounded values; 256 KiB/plugin and 8 KiB/value defaults; store persists across generations; Isolation RFC `RC-11`.                                                                                                                                                                                                                       |
+| LUA-OQ-7  | `bitty.ui.mount` + `bitty.ui.update` with stable `block_id` versioning; v1 nodes `Text`/`Row`/`Column`/`List` only.                                                                                                                                                                                                                                      |
+| LUA-OQ-8  | `bitty.services.provide`; provider manifest declares bounded interface schema; missing provider fails before activation (`E_SERVICE_RESOLUTION`, optional nil).                                                                                                                                                                                          |
+| LUA-OQ-9  | `bitty.tasks.spawn`/`bitty.tasks.cancel`, `bitty.timers.create`/`bitty.timers.cancel`; integer handles; RC-4 caps; ADR 0007 reconciliation.                                                                                                                                                                                                              |
+| LUA-OQ-10 | Bounded `terminal_id`/`runtime_id`/`generation`/`view_id`/`exit_code`/`reason` identity fields derived from the accepted registry contract.                                                                                                                                                                                                              |
+| LUA-OQ-11 | The `overlay` slot stays declarative, presentation-only slot content; focus and routing live in the separately accepted `W-01` Core-owned capture contract (`ui.overlay.focus`, `bitty.ui.overlay.*`, v2) and in the panel contract. Pointer routing between presentation and overlay scene nodes stays deferred; Panel RFC compatibility note recorded. |
+| LUA-OQ-12 | Fixed `init.lua` at the package root, executed at activation; registration only during that window; lazy replay per accepted semantics.                                                                                                                                                                                                                  |
 
 ## References
 

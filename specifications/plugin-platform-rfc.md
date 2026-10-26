@@ -429,7 +429,7 @@ Accepted v1 rules per namespace:
    an undeclared type is a registration error. Handlers receive immutable
    event payloads (bounded, redaction-aware) and never live core objects.
 4. **UI.** Contributions mount into semantic slots
-   (`terminal | top | bottom | left | right | tabline | statusline | overlay`)
+   (`terminal | top | bottom | left | right | tabline | overlay`)
    using declarative primitives: text, styled spans, rows/columns, lists,
    popups, and status components in v1. No shaders, pipelines, glyph
    injection, native windows, or global-coordinate drawing. Tabline providers
