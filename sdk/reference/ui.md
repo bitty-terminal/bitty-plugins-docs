@@ -60,32 +60,31 @@ several mounts from one plugin on one edge are all kept instead of enforcing
 the candidate one-surface-per-edge rule, and `chrome.<edge>.order` is not wired
 (`band_slots.rs` module docs).
 
-### Accepted RFC divergence
+### Accepted contract amendment record
 
 The accepted [Plugin API v1 Lua Surface RFC](../plugin-api-v1-lua-surface-rfc.md)
-still lists `statusline` in its frozen closed slot set and describes status
-components as subtrees mounted in that slot (RFC "UI contributions (L2)"). The
-accepted [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)
-restates the same frozen vocabulary. This page does not rewrite either accepted
-source.
-
-Current Core behavior diverges: CTX-1140 removed `statusline` as a breaking
-change, so the name fails as an unknown slot and status presentation is a
-`bottom`-band composition. Until the accepted text is revised, treat the RFC
-vocabulary as the accepted contract record and this page plus the cited Core
-sources as the current host fact. `left` and `right` remain accepted names in
-both the RFC and Core; only their host behavior changed (they now fail closed
-instead of storing an unpainted block).
+was amended on 2026-10-26 through the owner amendment process (CarryCtx task
+CTX-1546, [bitty issue #2676](https://github.com/bitty-terminal/bitty/issues/2676),
+amendment reference `OQ-UI-CONTRACT-AMENDMENT`): the closed slot set is now the
+seven names this page documents (`statusline` left the set), status composition
+is a `bottom`-band fact, and the overlay wording separates the never-focusing
+slot content from the separately accepted `W-01` capture surface
+(`bitty.ui.overlay.*`, gate `ui.overlay.focus`). The removal evidence recorded
+here predates the amendment: CTX-1140 removed `statusline` from the Core slot
+vocabulary as a breaking change (bitty PR #1962), and the plugin SDK dropped the
+retired name under CTX-1570. The [Plugin Platform
+RFC](../../specifications/plugin-platform-rfc.md) was amended in the same change.
+`left` and `right` remain accepted names with changed host behavior (they fail
+closed instead of storing an unpainted block).
 
 The same contract process owns the accepted wording for the parity record:
 CTX-1419 (bitty PRs #2385 and #2392) completed the implementation evidence
 reconciled in this page — band/overlay style parity, typed validation,
 per-generation bounds, presentation-only overlay mounting with the separately
-gated `ui.overlay.focus` capture, and band-only interaction routing — and no
-accepted RFC text was rewritten here. The accepted-status amendment is tracked
-as its own owner task (bitty issue #2676); the bounded composition API design
-track (CTX-1299) and the release-scope reconciliation track (CTX-1305) stay
-open under their own tasks and are neither closed nor amended by this page.
+gated `ui.overlay.focus` capture, and band-only interaction routing. The bounded
+composition API design track (CTX-1299) and the release-scope reconciliation
+track (CTX-1305) stay open under their own tasks and are neither closed nor
+amended by this page.
 
 ## Signature
 
@@ -114,11 +113,11 @@ docs, LUA-OQ-2).
 ## Params
 
 The current Core slot set is the accepted seven names
-(`terminal | top | bottom | left | right | tabline | overlay`). The accepted
-RFC still adds `statusline` to its frozen vocabulary; that eighth name is
-rejected by this build (see
-[Accepted RFC divergence](#accepted-rfc-divergence)). Acceptance into the set
-does not imply a host surface: see the placement table in
+`terminal | top | bottom | left | right | tabline | overlay`. The 2026-10-26
+contract amendment dropped the retired `statusline` name from the accepted
+vocabulary; earlier factual pages recorded it as a divergence — see
+[Accepted contract amendment record](#accepted-contract-amendment-record).
+Acceptance into the set does not imply a host surface: see the placement table in
 [Purpose and scope](#purpose-and-scope).
 
 The component is a declarative node table restricted for v1 to the `Text`,
@@ -416,20 +415,20 @@ runtime `bitty.api_version`.
 
 The `statusline` removal was a breaking change recorded by Core in CTX-1140
 (bitty PR #1962). Plugins that compose status presentation on `bottom` do not
-depend on the removed name. The accepted RFC vocabulary has not yet been
-revised; the divergence is recorded in
-[Accepted RFC divergence](#accepted-rfc-divergence).
+depend on the removed name. The accepted RFC vocabulary was amended on
+2026-10-26 (CTX-1546, bitty issue #2676); the amendment is recorded in
+[Accepted contract amendment record](#accepted-contract-amendment-record).
 
 ## References
 
 - [Plugin API v1 Lua Surface RFC](../plugin-api-v1-lua-surface-rfc.md)
-  (accepted; "UI contributions (L2)" spellings, frozen slot set, v1 node set,
-  `block_id` versioning, `ui.rich` / `ui.overlay` gates, LUA-OQ-7,
-  LUA-OQ-11). Its `statusline` vocabulary and non-focusable overlay wording
-  predate CTX-1140 and CTX-0941; see
-  [Accepted RFC divergence](#accepted-rfc-divergence).
+  (accepted; "UI contributions (L2)" spellings, the amended seven-name slot
+  set, v1 node set, `block_id` versioning, `ui.rich` / `ui.overlay` /
+  `ui.overlay.focus` gates, LUA-OQ-7, LUA-OQ-11). Its pre-2026-10-26
+  `statusline` vocabulary and non-focusable overlay wording were amended; see
+  [Accepted contract amendment record](#accepted-contract-amendment-record).
 - [Plugin Platform RFC](../../specifications/plugin-platform-rfc.md)
-  (accepted; restates the frozen slot vocabulary, including `statusline`).
+  (accepted; restates the amended slot vocabulary).
 - [Lua Reference Overview](overview.md) (error contract, capability gating,
   executability rule, L1/L2 split)
 - [Lua API Reference](README.md) (route table)

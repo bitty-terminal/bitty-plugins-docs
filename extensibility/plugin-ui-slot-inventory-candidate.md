@@ -177,10 +177,12 @@ Rules for the inventory:
 - The `overlay` slot is served by the Core focusable-overlay host (CTX-0941).
   The host owns the overlay presentation and the single transient capture
   session; a plugin never selects a tier or a modal kind, and the single modal
-  authority stays Core-owned. The accepted RFC's LUA-OQ-11 text still describes
-  the overlay as non-focusable presentation content; that accepted wording is
-  not rewritten here, and current Core behavior diverges as recorded in the
-  [bitty.ui reference](../sdk/reference/ui.md#accepted-rfc-divergence).
+  authority stays Core-owned. The accepted RFC's pre-2026-10-26 LUA-OQ-11 text
+  described the overlay as non-focusable presentation content; the contract
+  amendment (2026-10-26, CTX-1546) recorded the separately accepted `W-01`
+  capture contract while keeping slot content itself non-focusable, as recorded
+  in the
+  [bitty.ui reference](../sdk/reference/ui.md#accepted-contract-amendment-record).
 - Host layout may relocate or hide a host surface; this record states that a
   plugin's contribution survives as a content source and the plugin is not
   asked to re-mount it. The accepted surface states the corresponding
