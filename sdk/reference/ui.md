@@ -358,7 +358,7 @@ The accepted [Plugin API v1 Lua Surface RFC](../plugin-api-v1-lua-surface-rfc.md
 does not name `ui.present`: the head was added by Core after ratification
 (bitty#2849, bitty PR #2856) and this page records it as current host fact
 without amending the accepted contract, on the same rule as
-[Accepted RFC divergence](#accepted-rfc-divergence).
+[Accepted contract amendment record](#accepted-contract-amendment-record).
 
 ### `bitty.ui.present.show(handle)` errors
 
