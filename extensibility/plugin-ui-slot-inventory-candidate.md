@@ -93,16 +93,16 @@ inventory adds purpose, multiplicity, and bounds; it does not add or rename a
 slot. The `statusline` row is retained only to record the divergence and is not
 a current slot.
 
-| Slot         | Current Core host                                                                                                       | Purpose                                              | Multiplicity                 | Required capability                                      | Bounds                                                                          |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `terminal`   | Unavailable: `E_UI_UNAVAILABLE`                                                                                         | Content composed with a terminal leaf's presentation | Composing, bounded           | `ui.rich`                                                | Composes with the leaf; never replaces grid, cursor, or scrollback presentation |
-| `top`        | Painted top edge band                                                                                                   | A strip along the top edge of the window area        | Composing, bounded           | `ui.rich`                                                | One row-band; host layout owns thickness and placement                          |
-| `bottom`     | Painted bottom edge band; status presentation composes here                                                             | A strip along the bottom edge of the window area     | Composing, bounded           | `ui.rich`                                                | One row-band; the Bar/StatusBar region consumes this slot where configured      |
-| `left`       | Accepted name; no vertical band host; mount fails closed with `E_UI_UNAVAILABLE`; no handle, block, or reserved columns | A strip along the left edge                          | Not hosted                   | `ui.rich`                                                | No column-band exists in this build                                             |
-| `right`      | Accepted name; no vertical band host; mount fails closed with `E_UI_UNAVAILABLE`; no handle, block, or reserved columns | A strip along the right edge                         | Not hosted                   | `ui.rich`                                                | No column-band exists in this build                                             |
-| `tabline`    | Unavailable after the exclusive-claim gate: `E_UI_UNAVAILABLE`                                                          | The tab strip surface                                | **Exclusive**                | `ui.rich`                                                | One declarant; a second claim is a conflict                                     |
-| `statusline` | **Not a slot**: removed in CTX-1140; `ui.mount` fails with `E_UI_COMPONENT_INVALID`                                     | Status presentation composed on `bottom`             | Not applicable               | None                                                     | None; the `bottom`-band budget applies                                          |
-| `overlay`    | Core focusable-overlay host (CTX-0941); retained, not a band; may own transient input capture                           | Focusable declarative overlay content                | Layered, bounded and ordered | `ui.rich` + `ui.overlay`; `ui.overlay.focus` for capture | Bounded text; never mutates a view, grid, cursor, or terminal                   |
+| Slot         | Current Core host                                                                                                       | Purpose                                                                      | Multiplicity                 | Required capability                                                                               | Bounds                                                                          |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `terminal`   | Unavailable: `E_UI_UNAVAILABLE`                                                                                         | Content composed with a terminal leaf's presentation                         | Composing, bounded           | `ui.rich`                                                                                         | Composes with the leaf; never replaces grid, cursor, or scrollback presentation |
+| `top`        | Painted top edge band                                                                                                   | A strip along the top edge of the window area                                | Composing, bounded           | `ui.rich`                                                                                         | One row-band; host layout owns thickness and placement                          |
+| `bottom`     | Painted bottom edge band; status presentation composes here                                                             | A strip along the bottom edge of the window area                             | Composing, bounded           | `ui.rich`                                                                                         | One row-band; the Bar/StatusBar region consumes this slot where configured      |
+| `left`       | Accepted name; no vertical band host; mount fails closed with `E_UI_UNAVAILABLE`; no handle, block, or reserved columns | A strip along the left edge                                                  | Not hosted                   | `ui.rich`                                                                                         | No column-band exists in this build                                             |
+| `right`      | Accepted name; no vertical band host; mount fails closed with `E_UI_UNAVAILABLE`; no handle, block, or reserved columns | A strip along the right edge                                                 | Not hosted                   | `ui.rich`                                                                                         | No column-band exists in this build                                             |
+| `tabline`    | Unavailable after the exclusive-claim gate: `E_UI_UNAVAILABLE`                                                          | The tab strip surface                                                        | **Exclusive**                | `ui.rich`                                                                                         | One declarant; a second claim is a conflict                                     |
+| `statusline` | **Not a slot**: removed in CTX-1140; `ui.mount` fails with `E_UI_COMPONENT_INVALID`                                     | Status presentation composed on `bottom`                                     | Not applicable               | None                                                                                              | None; the `bottom`-band budget applies                                          |
+| `overlay`    | Core overlay host (CTX-0941); retained, not a band; may be presented without capture or own transient input capture     | Declarative overlay content: focusable capture or non-focusable presentation | Layered, bounded and ordered | `ui.rich` + `ui.overlay`; `ui.present` to present without capture; `ui.overlay.focus` for capture | Bounded text; never mutates a view, grid, cursor, or terminal                   |
 
 Rules for the inventory:
 
@@ -121,15 +121,19 @@ Rules for the inventory:
 4. **The `ui.rich` gate covers every hosted slot.** The accepted L2 UI gate
    requires `ui.rich` for `bitty.ui.mount`/`bitty.ui.update` contributions
    regardless of slot, and the `overlay` slot additionally requires
-   `ui.overlay`; transient capture needs `ui.overlay.focus`. A plugin without
-   the required grant is denied at mount, not at first render.
+   `ui.overlay`; presenting a mounted overlay block without capture requires
+   `ui.present`, and transient capture needs `ui.overlay.focus`. A plugin
+   without the required grant is denied at call time, not at first render.
 5. **Placement stays host-owned.** A plugin never learns or sets absolute
    coordinates, thickness, or decoration; the accepted rule that host layout
    owns placement and decoration applies to every accepted slot name.
 6. **Only the `overlay` slot is a Core focus target.** A mounted band slot
    receives no keyboard or IME input. An `overlay` block can own the single
    Core-owned transient capture, gated by `ui.overlay.focus`, and the capture
-   session remains Core-owned and revocable.
+   session remains Core-owned and revocable. The other `overlay` path takes no
+   input at all: `ui.present` draws one non-focusable panel above the focused
+   view, consumes no input, and never becomes the modal authority, so draw
+   authority and input authority stay separate grants on the same slot.
 
 ## Conflict resolution
 
@@ -177,11 +181,15 @@ Rules for the inventory:
 - The `overlay` slot is served by the Core focusable-overlay host (CTX-0941).
   The host owns the overlay presentation and the single transient capture
   session; a plugin never selects a tier or a modal kind, and the single modal
-  authority stays Core-owned. The accepted RFC's pre-2026-10-26 LUA-OQ-11 text
-  described the overlay as non-focusable presentation content; the contract
-  amendment (2026-10-26, CTX-1546) recorded the separately accepted `W-01`
-  capture contract while keeping slot content itself non-focusable, as recorded
-  in the
+  authority stays Core-owned. Since bitty#2849 the same retained block can also
+  be presented without capture through `ui.present` (`bitty.ui.present.show` /
+  `hide`), a head separate from both `ui.overlay` and `ui.overlay.focus`; the
+  [bitty.ui reference](../sdk/reference/ui.md#presentation-only-overlay-uipresent)
+  records that path, its admission rule, and its `overlay.dismissed`
+  observation. The accepted RFC's pre-2026-10-26 LUA-OQ-11 text described the
+  overlay as non-focusable presentation content; the contract amendment
+  (2026-10-26, CTX-1546) recorded the separately accepted `W-01` capture
+  contract while keeping slot content itself non-focusable, as recorded in the
   [bitty.ui reference](../sdk/reference/ui.md#accepted-contract-amendment-record).
 - Host layout may relocate or hide a host surface; this record states that a
   plugin's contribution survives as a content source and the plugin is not
