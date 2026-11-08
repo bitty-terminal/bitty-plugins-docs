@@ -30,13 +30,14 @@ tables.
 
 ## Draft specifications
 
-| Specification                                                                         | Scope                                                                                                                                         | Status |
-| ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| [Plugin contract direction (candidate)](plugin-contract-direction.md)                 | Candidate plugin-side public-contract, framework-layering, and artifact direction; no accepted interface.                                     | Draft  |
-| [Beacon Targeting Framework (Candidate)](beacon-targeting-framework-candidate.md)     | Candidate workspace-wide spatial and semantic targeting framework; no accepted provider or dispatch API.                                      | Draft  |
-| [Beacon Contract and SDK Reconciliation](beacon-sdk-reconciliation.md)                | Draft mapping of every candidate Beacon policy operation to an accepted Plugin API v1 surface or a named blocking task; no new SDK interface. | Draft  |
-| [SDK build plan proposal (Phase 0)](sdk-build-plan-proposal.md)                       | Candidate Phase 0 SDK build direction: freezable surface, churning scope, layouts, and sequencing; no accepted interface.                     | Draft  |
-| [Search and Copy-Mode Policy and Public API Requirements](search-copy-mode-policy.md) | Draft plugin-side policy and public-API requirements for the search and copy-mode plugins over Core-owned mechanisms; no accepted interface.  | Draft  |
+| Specification                                                                         | Scope                                                                                                                                                                                       | Status |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| [Plugin contract direction (candidate)](plugin-contract-direction.md)                 | Candidate plugin-side public-contract, framework-layering, and artifact direction; no accepted interface.                                                                                   | Draft  |
+| [Beacon Targeting Framework (Candidate)](beacon-targeting-framework-candidate.md)     | Candidate workspace-wide spatial and semantic targeting framework; no accepted provider or dispatch API.                                                                                    | Draft  |
+| [Beacon Contract and SDK Reconciliation](beacon-sdk-reconciliation.md)                | Draft mapping of every candidate Beacon policy operation to an accepted Plugin API v1 surface or a named blocking task; no new SDK interface.                                               | Draft  |
+| [SDK build plan proposal (Phase 0)](sdk-build-plan-proposal.md)                       | Candidate Phase 0 SDK build direction: freezable surface, churning scope, layouts, and sequencing; no accepted interface.                                                                   | Draft  |
+| [Search and Copy-Mode Policy and Public API Requirements](search-copy-mode-policy.md) | Draft plugin-side policy and public-API requirements for the search and copy-mode plugins over Core-owned mechanisms; no accepted interface.                                                | Draft  |
+| [Plugin Drawing Capability (Candidate)](plugin-drawing-rfc-candidate.md)              | Candidate drawing contract separate from the panel and scene contracts: instruction set, coordinate model, clipping, layers, animation, readback, bounds, damage, and the sandbox boundary. | Draft  |
 
 Research-type pages preserve candidate direction and observations authored in
 this repository; they never become a decision or an implementation claim by
