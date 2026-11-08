@@ -129,6 +129,7 @@ end)
 | `process.exited`             | Observation  | `{ terminal_id, runtime_id, exit_code }`                                          |
 | `config.reloaded`            | Observation  | `{}`                                                                              |
 | `overlay.input.available`    | Observation  | `{ owner, queued }` (coalescable nudge, `Ungated`)                                |
+| `overlay.dismissed`          | Observation  | `{ owner, handle, reason }` (`"escape"` \| `"view-closed"`, `Ungated`)            |
 | `intercept.command-dispatch` | Interception | `{ action, origin, preview }` (bounded sanitized metadata; veto/approve only)     |
 | `intercept.terminal-spawn`   | Interception | `{ action, origin, preview }`                                                     |
 | `intercept.paste`            | Interception | `{ action, origin, preview }` (never carries paste text without `clipboard.read`) |
@@ -158,6 +159,18 @@ it; no phase may intercept or veto it. Unknown spellings nearby
 v1 surface is unchanged: this kind is additive v2 growth owned by the
 focusable-overlay host contract, and this paragraph is `draft` host-build
 evidence, not a compatibility promise.
+
+Host-build note (additive observation kind, `bitty` #2406 / #2849 `8108e4f7`,
+CTX-1431 / CTX-1689): `overlay.dismissed` is registered in the host `EventKind`
+(`parse` / `as_str` round-trip) as `Observation` with an `Ungated` payload
+policy. When a non-focusable presentation overlay (`bitty.ui.present.show` /
+`bitty.ui.overlay.show`) is dismissed by `Esc` (without consuming the key press)
+or because the view it was bound to closed, the host queues one bounded
+observation on the cold tick path with payload `{ owner, handle, reason }`
+(`reason = "escape"` or `"view-closed"`). Explicit owner hide
+(`bitty.ui.present.hide` / `bitty.ui.overlay.hide`) and lifecycle teardown
+(suspend, unload, crash, generation change) clear the surface without queuing an
+`overlay.dismissed` event.
 
 ## Compatibility and versioning
 
@@ -193,3 +206,6 @@ runtime `bitty.api_version`.
   (`OverlayCapture::input_available` snapshot) and
   `crates/bitty-terminal/src/terminal_app.rs`
   (`deliver_overlay_input_available`, one-per-tick cold-path pump)
+- `bitty` `crates/bitty-runtime/src/plugin_runtime/presentation_overlay.rs`
+  (`bitty@8108e4f7`; `PresentationOverlay`, `OverlayDismissedEvent`,
+  `overlay.dismissed` emission on `escape` and `view-closed`)

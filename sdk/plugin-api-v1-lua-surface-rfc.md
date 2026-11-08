@@ -222,20 +222,20 @@ Control, Level 2 UI, Level 3 Presentation, and Level 4 Protocol. Plugin API v1
 covers Level 1 fully, a minimal Level 2, and read-only terminal semantics; it
 excludes Levels 3 and 4.
 
-| Level               | v1 status | Surface element                                                       | Capability gate                              |
-| ------------------- | --------- | --------------------------------------------------------------------- | -------------------------------------------- |
-| L1 Control          | Included  | `bitty.commands.register`                                             | none (commands are core-registered behavior) |
-| L1 Control          | Included  | `bitty.events.subscribe` (lifecycle and observation)                  | none; payload access stays bounded           |
-| L1 Control          | Included  | `bitty.keymaps.suggest`                                               | none (suggestion only)                       |
-| L1 Control          | Included  | `bitty.settings.get` / `bitty.settings.set`                           | none; plugin-owned namespace                 |
-| L1 Control          | Included  | `bitty.store.get` / `bitty.store.set`                                 | none; quota-bounded                          |
-| L1 Control          | Included  | `bitty.notify.show`                                                   | `platform.notify`                            |
-| L1 Control          | Included  | `bitty.env.get` / `bitty.env.has` (already accepted in ADR 0006)      | `env.read:<KEY>` per plugin key              |
-| Cross-cutting       | Included  | `bitty.services.get` (consumer side)                                  | none; provider grants stay with the callee   |
-| L2 UI               | Included  | `bitty.ui.mount` / `bitty.ui.update` (declarative slot contributions) | `ui.rich`; `ui.overlay` for the overlay slot |
-| L2 UI / observation | Included  | `bitty.terminal.snapshot` (`scope? = "semantic"`, default)            | `terminal.semantic-read`                     |
-| L3 Presentation     | Excluded  | decorations, annotations, highlighting, replacement                   | —                                            |
-| L4 Protocol         | Excluded  | OSC/APC and structured-output handler registration                    | —                                            |
+| Level               | v1 status | Surface element                                                                 | Capability gate                                                       |
+| ------------------- | --------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| L1 Control          | Included  | `bitty.commands.register` / `bitty.commands.list`                               | none (commands are core-registered behavior)                          |
+| L1 Control          | Included  | `bitty.events.subscribe` (lifecycle and observation)                            | none; payload access stays bounded                                    |
+| L1 Control          | Included  | `bitty.keymaps.suggest` / `bitty.keymaps.list`                                  | none for `suggest`; `runtime.keymaps.read` for `list`                 |
+| L1 Control          | Included  | `bitty.settings.get` / `bitty.settings.set`                                     | none; plugin-owned namespace                                          |
+| L1 Control          | Included  | `bitty.store.get` / `bitty.store.set`                                           | none; quota-bounded                                                   |
+| L1 Control          | Included  | `bitty.notify.show`                                                             | `platform.notify`                                                     |
+| L1 Control          | Included  | `bitty.env.get` / `bitty.env.has` (already accepted in ADR 0006)                | `env.read:<KEY>` per plugin key                                       |
+| Cross-cutting       | Included  | `bitty.services.get` (consumer side)                                            | none; provider grants stay with the callee                            |
+| L2 UI               | Included  | `bitty.ui.mount` / `bitty.ui.update` / `bitty.ui.present.show` / `present.hide` | `ui.rich`; `ui.overlay` for the overlay slot; `ui.present` to present |
+| L2 UI / observation | Included  | `bitty.terminal.snapshot` (`scope? = "semantic"`, default)                      | `terminal.semantic-read`                                              |
+| L3 Presentation     | Excluded  | decorations, annotations, highlighting, replacement                             | —                                                                     |
+| L4 Protocol         | Excluded  | OSC/APC and structured-output handler registration                              | —                                                                     |
 
 Interception handlers are part of L1 event subscription but deliver only the
 bounded metadata below; they are not a separate level.
@@ -293,10 +293,11 @@ bitty.events.subscribe(name, handler) -> handle
   accepted [Plugin Platform RFC pipeline](../specifications/plugin-platform-rfc.md#event-pipeline-oq-013)
   and are not restated here.
 
-### Key-binding suggestions
+### Key-binding suggestions and bounded registry read
 
 ```lua
 bitty.keymaps.suggest(def) -> handle
+bitty.keymaps.list(opts?) -> page
 ```
 
 `def = { chord = string, command = string, when? = string }` where `command`
@@ -312,6 +313,22 @@ user or workspace mappings; the accepted precedence
 (`user > workspace > first-party/default > plugin suggestion`) applies, and
 chord conflicts produce diagnostics for user resolution rather than load order
 ([LUA-OQ-5](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/adrs/ADR-0009-plugin-api-v1-lua-surface.md#lua-oq-5-key-binding-suggestions)).
+
+`bitty.keymaps.list(opts?)` (`bitty#2405`, Core `ef3d8842`) is the additive
+read-only query over the resolved keymap and action catalog required by the
+accepted
+[Help and Which-Key Overlay Ownership Design](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/help-overlay-ownership-design.md).
+The call requires the narrow `runtime.keymaps.read` grant (absent grants fail
+closed with `E_CAPABILITY_DENIED`; `runtime.inspect` never implies it).
+`opts = { offset? = integer, limit? = integer }` accepts `offset` in `0..=1024`
+(default `0`) and `limit` in `1..=256` (default `256`); wrong types fail with
+`E_VALUE_TYPE` and out-of-range integers fail with `E_DEF_LIMIT` before any host
+read. Each call returns `{ entries = { { chord, action, source, context, title?, command? }, ... }, total = integer, offset = integer, truncated = boolean }`,
+capped at 256 rows and 64 KiB per response (`KEYMAP_LIST_MAX_BYTES`) and 16
+calls per plugin generation (`KEYMAP_LIST_MAX_CALLS_PER_GEN`). Companion command
+titles for `command:<owner>:<id>` bindings are read via the ungated
+`bitty.commands.list()` query (`{ { id, owner, command, title, description? }, ... }`,
+capped at 512 entries).
 
 ### Settings and storage
 
@@ -430,14 +447,22 @@ bitty.ui.update(handle, component) -> boolean
   [`W-01` contract](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/development/overlay-input-capture-contract.md),
   gate `ui.overlay.focus`, never implied by `ui.overlay`) can put a mounted
   overlay block into transient input capture as a single Core-owned switch.
-  Presentation-only showing of an overlay block is separate again:
-  `bitty.ui.overlay.show` requires `ui.rich` plus `ui.overlay` with
-  `ui.overlay.focus` neither required nor implied, and at most one presentation
-  overlay exists per window (a second presenter fails closed with
-  `E_UI_UNAVAILABLE`). Pointer routing between presentation and overlay scene
-  nodes stays deferred and is not defined by this amendment. There are no
-  global coordinates, shaders, pipelines, glyph injection, native windows, or
-  renderer handles.
+  Presentation-only showing of an overlay block is separate again
+  (`bitty#2406` / `bitty#2849`, Core `8108e4f7`): `bitty.ui.present.show(handle)`
+  and `bitty.ui.present.hide(handle)` (alongside the shared
+  `bitty.ui.overlay.show(handle)` / `bitty.ui.overlay.hide(handle)` verbs)
+  present a mounted `overlay` block as a non-modal `Popup` surface without
+  acquiring keyboard or pointer capture. Mounting the block requires `ui.rich`
+  plus `ui.overlay`, and presenting it (`show`) requires the dedicated
+  `ui.present` capability (`ui.overlay.focus` is neither required nor implied;
+  `hide` is ungated so teardown never wedges). At most one presentation overlay
+  exists per window (a second presenter fails closed with `E_UI_UNAVAILABLE`).
+  Pressing `Esc` or closing the bound view dismisses the presentation overlay
+  without consuming `Esc` and queues an `overlay.dismissed` observation
+  (`{ owner, handle, reason = "escape" | "view-closed" }`). Pointer routing
+  between presentation and overlay scene nodes stays deferred and is not defined
+  by this amendment. There are no global coordinates, shaders, pipelines, glyph
+  injection, native windows, or renderer handles.
 - `tabline` is an exclusive claim; status components compose. Host layout owns
   placement and decoration. A `tabline` mount without the exclusive claim fails
   with `E_UI_CLAIM_REQUIRED`; accepted slots without a host surface in a build
@@ -565,25 +590,27 @@ The closed v1 name set is exactly the `EventKind` closed set implemented in
 these strings. The envelope is
 `{ kind = string, sequence = integer, payload = table }`.
 
-| Kind                         | Class        | Lua payload                                   | Notes                                                 |
-| ---------------------------- | ------------ | --------------------------------------------- | ----------------------------------------------------- |
-| `plugin.activated`           | Lifecycle    | `{}`                                          | Delivered to the owning plugin only                   |
-| `plugin.suspended`           | Lifecycle    | `{}`                                          | Owning plugin only                                    |
-| `plugin.disposed`            | Lifecycle    | `{}`                                          | Owning plugin only                                    |
-| `handler.violation`          | Lifecycle    | `{}`                                          | Owning plugin only; diagnostic detail stays host-side |
-| `terminal.opened`            | Observation  | `{ terminal_id, runtime_id, generation }`     | Identity tuple from the registry contract             |
-| `terminal.closed`            | Observation  | `{ terminal_id, runtime_id, reason }`         | `reason` from the accepted `TerminalClosed` shape     |
-| `terminal.title-changed`     | Observation  | `{ title = string, terminal_id, runtime_id }` | Bounded (`EVENT_MAX_BYTES`); identity for attribution |
-| `terminal.cwd-changed`       | Observation  | `{ cwd = string, terminal_id, runtime_id }`   | Bounded; treat as sensitive-capable display data      |
-| `terminal.bell`              | Observation  | `{}`                                          | Coalescable events collapse to the latest value       |
-| `focus.changed`              | Observation  | `{ view_id, terminal_id? }`                   | Coalescable; identity added for attribution           |
-| `selection.changed`          | Observation  | `{ view_id, terminal_id? }`                   | Coalescable; no selection text in v1                  |
-| `process.exited`             | Observation  | `{ terminal_id, runtime_id, exit_code }`      | Exit status from the accepted `TerminalExited` shape  |
-| `config.reloaded`            | Observation  | `{}`                                          | —                                                     |
-| `intercept.command-dispatch` | Interception | `{ action, origin, preview }`                 | Bounded sanitized metadata; veto/approve only         |
-| `intercept.terminal-spawn`   | Interception | `{ action, origin, preview }`                 | Bounded sanitized metadata                            |
-| `intercept.paste`            | Interception | `{ action, origin, preview }`                 | Never carries paste text without `clipboard.read`     |
-| `intercept.open-url`         | Interception | `{ action, origin, preview }`                 | Bounded sanitized metadata                            |
+| Kind                         | Class        | Lua payload                                   | Notes                                                          |
+| ---------------------------- | ------------ | --------------------------------------------- | -------------------------------------------------------------- |
+| `plugin.activated`           | Lifecycle    | `{}`                                          | Delivered to the owning plugin only                            |
+| `plugin.suspended`           | Lifecycle    | `{}`                                          | Owning plugin only                                             |
+| `plugin.disposed`            | Lifecycle    | `{}`                                          | Owning plugin only                                             |
+| `handler.violation`          | Lifecycle    | `{}`                                          | Owning plugin only; diagnostic detail stays host-side          |
+| `terminal.opened`            | Observation  | `{ terminal_id, runtime_id, generation }`     | Identity tuple from the registry contract                      |
+| `terminal.closed`            | Observation  | `{ terminal_id, runtime_id, reason }`         | `reason` from the accepted `TerminalClosed` shape              |
+| `terminal.title-changed`     | Observation  | `{ title = string, terminal_id, runtime_id }` | Bounded (`EVENT_MAX_BYTES`); identity for attribution          |
+| `terminal.cwd-changed`       | Observation  | `{ cwd = string, terminal_id, runtime_id }`   | Bounded; treat as sensitive-capable display data               |
+| `terminal.bell`              | Observation  | `{}`                                          | Coalescable events collapse to the latest value                |
+| `focus.changed`              | Observation  | `{ view_id, terminal_id? }`                   | Coalescable; identity added for attribution                    |
+| `selection.changed`          | Observation  | `{ view_id, terminal_id? }`                   | Coalescable; no selection text in v1                           |
+| `process.exited`             | Observation  | `{ terminal_id, runtime_id, exit_code }`      | Exit status from the accepted `TerminalExited` shape           |
+| `config.reloaded`            | Observation  | `{}`                                          | —                                                              |
+| `overlay.input.available`    | Observation  | `{ owner, queued }`                           | Coalescable drain nudge for focusable overlay owner; `Ungated` |
+| `overlay.dismissed`          | Observation  | `{ owner, handle, reason }`                   | Presentation overlay dismissed (`"escape"` \| `"view-closed"`) |
+| `intercept.command-dispatch` | Interception | `{ action, origin, preview }`                 | Bounded sanitized metadata; veto/approve only                  |
+| `intercept.terminal-spawn`   | Interception | `{ action, origin, preview }`                 | Bounded sanitized metadata                                     |
+| `intercept.paste`            | Interception | `{ action, origin, preview }`                 | Never carries paste text without `clipboard.read`              |
+| `intercept.open-url`         | Interception | `{ action, origin, preview }`                 | Bounded sanitized metadata                                     |
 
 Identity fields are Lua integers (u64 within the i64 range); field names carry
 the type distinction, so a single opaque `id` field is not used, matching the
