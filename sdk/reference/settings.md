@@ -224,27 +224,34 @@ layouts.
 
 ## Official plugin reconciliation
 
-The official registry at `bitty-plugins` `2da1c87` carries twelve entries under
-`registry/official/`; every `manifest_hash` equals the sha256 of that plugin's
-pinned submodule `bitty-plugin.toml`, checked at the pin. All declared
-`[compat].bitty` floors are minimum-only except statusline, which has no
-registry entry. Registry inclusion and a matching hash record integrity and
-declared compatibility; they do not prove that a plugin is usable, shipped, or
-verified, and they do not complete
-[official schema issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
+The official registry at `bitty-plugins` `ec38cd2` carries thirteen entries
+under `registry/official/`; every `manifest_hash` equals the sha256 of that
+plugin's pinned checkout `bitty-plugin.toml`, verified by
+`scripts/validate-registry.ts`, and `tests/registry.test.ts` enforces that
+every `bitty.settings.get` key read by each official plugin's Lua sources is
+declared in its `[settings]` schema with an accepted scalar or `string-array`
+type and bounded default (completing
+[official schema issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90)
+via [bitty-plugins#130](https://github.com/bitty-terminal/bitty-plugins/pull/130)).
+All declared `[compat].bitty` floors are minimum-only except statusline, which
+is archived and has no registry entry.
 
-| Plugin (pin)            | `[settings]` declarations                                                          | Read behavior on the strict host                              |
-| ----------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| Activity `0ea39e13`     | `retention_days` (int 7), `store_command_args` (bool false)                        | Guarded; `store_command_args` stays inert either way          |
-| Bar `7b6beb1f`          | 21 keys: six scalars, three module-group arrays, twelve empty module-option arrays | Scalars and groups apply; module option maps stay inert       |
-| Composer `8be240f2`     | `newline`, `submit`, `close`, `external_editor`, `open_chord` (strings)            | All five declared and read                                    |
-| Copy mode `2b78ceb3`    | `row_count` (int 10), `max_bytes` (int 4096)                                       | Declared and read                                             |
-| Search `ee9a8f9c`       | `row_count` (int 10), `max_bytes` (int 4096)                                       | Declared and read                                             |
-| Palette `5169d974`      | `query` (string `""`)                                                              | Declared; `entries` is no longer read                         |
-| File manager `558bf5a2` | `root` (string `""`), `entries` (string-array `[]`), `width` (int 0)               | Declared and read; table-shaped `entries` is still unaccepted |
-| Git panel `4f54634f`    | none                                                                               | No `bitty.settings` read                                      |
-| DevTools `4e8e9680`     | none                                                                               | No `bitty.settings` read                                      |
-| Statusline `2b9973c7`   | none                                                                               | Six guarded reads denied; local defaults serve                |
+| Plugin (pin)            | `[settings]` declarations                                                                                                           | Read behavior on the strict host                              |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Activity `0ea39e13`     | `retention_days` (int 7), `store_command_args` (bool false)                                                                         | Guarded; `store_command_args` stays inert either way          |
+| Bar `9cf8b065`          | 21 keys: six scalars, three module-group arrays, twelve empty module-option arrays                                                  | Scalars and groups apply; module option maps stay inert       |
+| Beacon `88e5998d`       | `open_chord`, `workspace_chord`, `move_chord`, `default_scope`, `label_home`, `label_overflow` (strings), `viewport_width` (int 80) | All seven declared and read at activation                     |
+| Composer `8be240f2`     | `newline`, `submit`, `close`, `external_editor`, `open_chord` (strings)                                                             | All five declared and read                                    |
+| Copy mode `2b78ceb3`    | `row_count` (int 10), `max_bytes` (int 4096)                                                                                        | Declared and read                                             |
+| Dashboard `3b84b7e1`    | none                                                                                                                                | No `bitty.settings` read (uses `bitty.runtime.inspect`)       |
+| DevTools `badde42a`     | none                                                                                                                                | No `bitty.settings` read                                      |
+| File manager `558bf5a2` | `root` (string `""`), `entries` (string-array `[]`), `width` (int 0)                                                                | Declared and read; table-shaped `entries` is still unaccepted |
+| Git panel `4f54634f`    | none                                                                                                                                | No `bitty.settings` read                                      |
+| Help `ae1d8a9a`         | none                                                                                                                                | No `bitty.settings` read                                      |
+| History `67178e22`      | `default_panel` (string `""`), `default_workspace` (string `""`), `row_count` (int 16), `max_bytes` (int 4096)                      | All four declared and read                                    |
+| Palette `62a5dd26`      | `query` (string `""`)                                                                                                               | Declared; `entries` is no longer read                         |
+| Search `ee9a8f9c`       | `row_count` (int 10), `max_bytes` (int 4096)                                                                                        | Declared and read                                             |
+| Statusline `2b9973c7`   | none (archived repository, excluded from `registry/official/`)                                                                      | Six guarded reads denied; local defaults serve                |
 
 Statusline's repository is archived on GitHub (last push 2026-10-02) and has no
 registry entry; its consolidated presentation is carried by the bar manifest's
@@ -317,10 +324,15 @@ that a plugin is usable or shipped.
   validation), `crates/bitty-config/src/plugin_file.rs:140-158` (legacy TOML
   bounds), `crates/bitty-config/src/wheel.rs` (project-directory discovery
   only).
-- `bitty-plugins` `2da1c87`: `registry/official/*.toml` entries and the pinned
-  plugin submodules whose manifests this page reconciles.
-- [Official schema follow-up #90](https://github.com/bitty-terminal/bitty-plugins/issues/90)
+- `bitty-plugins` `ec38cd2`: `registry/official/*.toml` entries (13 official
+  packages), `tests/registry.test.ts` cross-fleet settings-schema alignment
+  check, and the pinned plugin checkouts whose manifests this page reconciles.
+- [Official schema issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90)
+  (closed via
+  [bitty-plugins#130](https://github.com/bitty-terminal/bitty-plugins/pull/130))
 - [Documentation follow-up #153](https://github.com/bitty-terminal/bitty-plugins-docs/issues/153)
-- Additional inspected sources at the same `bitty-plugins` revision:
-  statusline `2b9973c7` (archived repository), devtools `4e8e9680`,
-  composer `8be240f2`, copy-mode `2b78ceb3`, and search `ee9a8f9c`.
+- Additional inspected sources at `bitty-plugins` `ec38cd2`:
+  statusline `2b9973c7` (archived repository), bar `9cf8b065`, beacon
+  `88e5998d`, composer `8be240f2`, copy-mode `2b78ceb3`, dashboard `3b84b7e1`,
+  devtools `badde42a`, help `ae1d8a9a`, history `67178e22`, palette `62a5dd26`,
+  and search `ee9a8f9c`.
