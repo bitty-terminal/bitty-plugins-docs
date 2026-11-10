@@ -14,8 +14,9 @@ sidebar_order: 32
 ## Purpose and scope
 
 Describe the manifest and settings behavior at registry-pinned activity
-`e1566380b9bddb92a5db8b9f1ba96c080995ef8a`. Registry #92 admits the package
-for Core 0.0.24; it does not complete the settings declarations.
+`0ea39e13` (manifest
+`sha256:21ba1eb35b7a867f1bdb33efaa10237005041381cc6f966347cf712021281045`).
+The package declares both settings keys it reads.
 
 ## Normative sources
 
@@ -31,7 +32,7 @@ declared-key gate and restricted configuration loader.
 | `[plugin].id`         | `bitty-featured.activity` |
 | `[plugin].name`       | Bitty Activity            |
 | `[plugin].version`    | 0.0.1                     |
-| `[compat].bitty`      | `>=0.0.24,<0.1`           |
+| `[compat].bitty`      | `>=0.0.24`                |
 | `[compat].plugin-api` | `^1.0`                    |
 
 ## Capabilities
@@ -50,15 +51,19 @@ registry and unknown values fail validation.
 Static triggers let the host register the plugin without creating a VM; the
 lifecycle events flush pending aggregates before suspension or disposal.
 
-## Settings gap
+## Declared settings
 
-The pinned manifest has no `[settings]`. `lua/activity/init.lua` reads
-`retention_days` and `store_command_args` inside `pcall`; the strict host
-returns `E_SETTINGS_UNDECLARED`, so local defaults serve (seven days and
-`false`). A file cannot make these undeclared overrides effective.
-`store_command_args = true` would still not store command arguments in this
-implementation. Declaration work remains in
-[issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
+The manifest declares the two keys the entry point reads:
+
+| Key                  | Declared kind | Default | Behavior                                                                     |
+| -------------------- | ------------- | ------- | ---------------------------------------------------------------------------- |
+| `retention_days`     | `int`         | `7`     | Local aggregation window; a non-integer value falls back to the default.     |
+| `store_command_args` | `bool`        | `false` | Inert in this implementation: command arguments are never stored either way. |
+
+Reads stay inside `pcall`, so a missing bridge or a revoked generation degrades
+to the same local defaults instead of failing activation. Values are
+configuration only: they cannot enable argument capture, widen retention past
+the plugin's own bounds, or add authority.
 
 ## Security review
 

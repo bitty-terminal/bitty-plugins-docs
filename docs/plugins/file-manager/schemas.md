@@ -13,9 +13,10 @@ sidebar_order: 44
 
 ## Purpose and scope
 
-Describe observation-only policy at registry-pinned file-manager
-`bf3a17ea6aa1ea0fcc3a45a13ceaa069e83b71d4`. Registry eligibility is separate
-from filesystem and panel usability.
+Describe the read-only listing package at registry-pinned file-manager
+`558bf5a2` (manifest
+`sha256:b26f36ecbe7ce5b3fb0338c90c594f98a104de021a9b7eab4b6b6af8645fa010`).
+Registry eligibility is separate from filesystem and panel usability.
 
 ## Normative sources
 
@@ -31,14 +32,19 @@ declared-key behavior; it accepts no table-shaped `entries` kind.
 | `[plugin].id`         | `bitty-terminal.file-manager` |
 | `[plugin].name`       | File Manager                  |
 | `[plugin].version`    | 0.1.0                         |
-| `[compat].bitty`      | `>=0.0.24,<0.1`               |
+| `[compat].bitty`      | `>=0.0.24`                    |
 | `[compat].plugin-api` | `^1.0`                        |
 
 ## Capabilities
 
-`terminal.semantic-read` only. Deny by default; unknown identifiers fail
-validation and there is no allow-all identifier. No `panel.*`, `fs.*`,
-process, network, clipboard, or terminal-input authority is requested.
+`terminal.semantic-read`, `ui.rich`, and one read-only filesystem scope. Deny by
+default; unknown identifiers fail validation and there is no allow-all
+identifier. `ui.rich` gates the `bottom` band block that renders the listing
+through `bitty.ui.mount`/`update`; `terminal.semantic-read` gates the read-only
+cwd/title observation. The filesystem declaration is
+`access = "read"` with `paths = ["**"]`, which gates `bitty.fs.list`. No
+`fs.write`, process, network, clipboard, or terminal-input authority is
+requested.
 
 ## Lazy surface
 
@@ -56,22 +62,24 @@ consistent with the file-manager candidate in the Plugin Matrix.
 
 ## Configuration keys
 
-The source attempts two guarded reads through `bitty.settings.get`, but the
-pinned manifest has no `[settings]`. Both are denied with
-`E_SETTINGS_UNDECLARED` on the strict host:
+The manifest declares three keys; values are configuration, never authority:
 
-| Key       | Type                   | Purpose                                                                   |
-| --------- | ---------------------- | ------------------------------------------------------------------------- |
-| `root`    | string candidate       | Undeclared; commands use explicit root or cached snapshot cwd.            |
-| `entries` | table-shaped candidate | Undeclared and unaccepted; explicit command paths or an empty list serve. |
+| Key       | Declared kind  | Default | Purpose                                                               |
+| --------- | -------------- | ------- | --------------------------------------------------------------------- |
+| `root`    | `string`       | `""`    | Scope root; empty falls back to the observed cwd.                     |
+| `entries` | `string-array` | `[]`    | Candidate paths used instead of a host listing when non-empty.        |
+| `width`   | `int`          | `0`     | Band width in cells; `0` derives it from the semantic snapshot width. |
 
-Both are inputs to the root-parameterized, fail-closed scope; neither grants
-authority beyond `terminal.semantic-read`.
+`entries` is declared as a string array only. A table-shaped `entries` list (one
+object per candidate with per-entry fields) remains an unaccepted, deferred
+question in
+[issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90); this page
+does not widen the schema to admit it, and the Lua reads a table only because
+the host delivers a string array as an indexable value.
 
-Declaration and shape decisions remain in
-[issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
-Do not declare `entries` as a scalar or string array merely to bypass the
-gate. Neither candidate settings input enumerates the host filesystem.
+None of the three keys grants authority beyond `terminal.semantic-read` and the
+`fs.read:**` scope: they select a root and a listing width, and cannot enumerate
+anything the host would refuse.
 
 ## Policy bounds
 
@@ -81,10 +89,14 @@ the total listing payload at 8192 bytes (`8 KiB`).
 
 ## Security review
 
-The package does not call filesystem or panel APIs. `open` shapes supplied
-paths, `preview` shapes path-derived data, and `rename` returns a validated
-pair without mutating a file. Pure path tests do not prove real-path,
-symlink, or device isolation of a future host filesystem backend.
+The package calls no panel API and requests no panel capability: it presents a
+`bottom` band block, not a panel slot. Directory enumeration is host-mediated
+through `bitty.fs.list` under the read-only `fs.read:**` scope, so the host's
+scope, sensitive-path, secret, and budget gates apply to every prefix. `open`
+shapes supplied paths, `preview` shapes path-derived data, and `rename` returns a
+validated pair without mutating a file. Pure path tests do not prove real-path,
+symlink, or device isolation of the host filesystem backend, and no live
+filesystem campaign backs this page.
 
 ## Verification
 

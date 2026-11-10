@@ -17,26 +17,26 @@ Routes for bounded git command policy and unresolved repository/panel integratio
 
 ## Authority and status
 
-Registry #92 pins git-panel `862df1f9` for Core `>=0.0.24,<0.1` / Plugin API
-`^1.0`. Core `662212c5` has a real grant-gated git spawn extra, outside stable
-v1, but its Lua bridge ignores the plugin's requested cwd option. Repository
-isolation is unproven. The source returns data and builds scenes without
-mounting a panel; it has no settings reads. Eligibility establishes no safe
+Registry pins git-panel `4f54634f` for Core `>=0.0.24` / Plugin API `^1.0`, with
+a manifest hash matching the pin. The source presents a focusable overlay panel
+under `ui.overlay.focus` and spawns the allowlisted read-only git verbs with the
+host-resolved `cwd = "pane"`; Core validates and audits that directory but does
+not sandbox the child. It has no settings reads. Eligibility establishes no safe
 repository-aware panel or release verification.
 
 ## Identity
 
-| Field             | Value                                                                                                          |
-| ----------------- | -------------------------------------------------------------------------------------------------------------- |
-| Plugin id         | `bitty-terminal.git-panel`                                                                                     |
-| Name              | Git Panel                                                                                                      |
-| Package version   | 0.1.0                                                                                                          |
-| Owning repository | <https://github.com/bitty-terminal/git-panel>                                                                  |
-| Lua module        | `lua/git-panel/`                                                                                               |
-| Capabilities      | `panel.provider`, `panel.create`, `terminal.semantic-read`, `process.spawn:git`, and a filesystem read pattern |
-| System tool       | `[tools.git]` (`required = true`, `version = ">=2.30"`)                                                        |
-| Lazy commands     | `bitty-terminal.git-panel:open`, `:status`, `:diff`, `:log`, `:branch`                                         |
-| Lazy events       | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed`                                              |
+| Field             | Value                                                                                            |
+| ----------------- | ------------------------------------------------------------------------------------------------ |
+| Plugin id         | `bitty-terminal.git-panel`                                                                       |
+| Name              | Git Panel                                                                                        |
+| Package version   | 0.1.0                                                                                            |
+| Owning repository | <https://github.com/bitty-terminal/git-panel>                                                    |
+| Lua module        | `lua/git-panel/`                                                                                 |
+| Capabilities      | `ui.overlay.focus`, `terminal.semantic-read`, `process.spawn:git`, and a filesystem read pattern |
+| System tool       | `[tools.git]` (`required = true`, `version = ">=2.30"`)                                          |
+| Lazy commands     | `bitty-terminal.git-panel:open`, `:status`, `:diff`, `:log`, `:branch`                           |
+| Lazy events       | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed`, `overlay.released`            |
 
 ## Pages
 

@@ -13,8 +13,9 @@ sidebar_order: 31
 
 ## Document status
 
-Current source at registry-pinned `e1566380`, without release verification.
-Manifest settings reconciliation remains open in issue #90.
+Current source at registry-pinned `0ea39e13`, without release verification. Both
+settings keys the entry point reads are declared; no schema reconciliation
+remains open for this package.
 
 ## Purpose and scope
 
@@ -74,14 +75,14 @@ privacy-first position.
 
 ## Affected contracts
 
-`retention_days` and `store_command_args` are undeclared in this pin. Guarded
-reads use seven-day and false local defaults. Argument storage stays absent
+`retention_days` (int, `7`) and `store_command_args` (bool, `false`) are
+declared in this pin and read under `pcall`. Argument storage stays absent
 regardless of the latter value; configuration cannot widen authority.
 
 ## Open points
 
-[Issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90) owns the
-missing declarations. This page does not add them by documentation.
+No settings declaration remains open for this package. This page does not add
+new keys by documentation.
 
 ## Acceptance criteria
 

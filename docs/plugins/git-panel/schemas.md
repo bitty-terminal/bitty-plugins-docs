@@ -13,10 +13,10 @@ sidebar_order: 48
 
 ## Purpose and scope
 
-Describe registry-pinned git-panel
-`862df1f90ad137eb1e92379ac0710c6cd22c7f21`, its existing declarations, and
-the limits of current Core integration. It has no settings reads or
-`[settings]` declarations to reconcile.
+Describe registry-pinned git-panel `4f54634f` (manifest
+`sha256:fb18021aba54da25256d01edf2e6fdc6caef9012e9e1f71f1af74ac745f2ace6`), its
+declarations, and the limits of current Core integration. It has no settings
+reads or `[settings]` declarations to reconcile.
 
 ## Normative sources
 
@@ -31,22 +31,24 @@ owns capability validation and grant binding. Only the linked accepted
 | `[plugin].id`         | `bitty-terminal.git-panel` |
 | `[plugin].name`       | Git Panel                  |
 | `[plugin].version`    | 0.1.0                      |
-| `[compat].bitty`      | `>=0.0.24,<0.1`            |
+| `[compat].bitty`      | `>=0.0.24`                 |
 | `[compat].plugin-api` | `^1.0`                     |
 
 ## Capabilities
 
-| Identifier                  | Scope                                                                                                                                      |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `panel.provider`            | Tiled Panel Runtime registration — deferred candidate pending the panel-provider contract (`bitty-docs` `CTX-0181`, OQ-058)                |
-| `panel.create`              | Panel creation within the host-owned panel slot — deferred candidate pending the panel-provider contract (`bitty-docs` `CTX-0181`, OQ-058) |
-| `terminal.semantic-read`    | Read-only cwd/title observation via `bitty.terminal.snapshot`                                                                              |
-| `process.spawn:git`         | Only the `git` binary, only the seven allowlisted read-only verbs                                                                          |
-| filesystem read declaration | Manifest requests a working-tree pattern; real-path enforcement is not proved by the Lua policy tests                                      |
+| Identifier                  | Scope                                                                                                                                          |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ui.overlay.focus`          | The accepted W-01 coupled grant: acquire the focusable overlay, hold its transient input-capture session, and release it on `overlay.released` |
+| `terminal.semantic-read`    | Read-only cwd/title observation via `bitty.terminal.snapshot`                                                                                  |
+| `process.spawn:git`         | Only the `git` binary, only the seven allowlisted read-only verbs, with `cwd = "pane"`                                                         |
+| filesystem read declaration | `access = "read"`, `paths = ["**"]`; the host anchors the pattern at the directory a call requests                                             |
 
 Deny by default; unknown identifiers fail validation and there is no
-allow-all identifier. No ambient spawn, shell interpolation, network,
-clipboard, terminal-input, or persistent-state authority is requested.
+allow-all identifier. No `panel.provider` or `panel.create` capability is
+requested: the panel surface is the focusable overlay session, and
+`bitty.panel.create` only allocates an inert host-owned record. No ambient
+spawn, shell interpolation, network, clipboard, terminal-input, or
+persistent-state authority is requested.
 
 ## `[tools.git]` declaration
 
@@ -66,13 +68,14 @@ the rest of that RFC stays draft.
 
 ## Lazy surface
 
-| Trigger  | Values                                                                 |
-| -------- | ---------------------------------------------------------------------- |
-| Commands | `bitty-terminal.git-panel:open`, `:status`, `:diff`, `:log`, `:branch` |
-| Events   | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed`      |
+| Trigger  | Values                                                                                |
+| -------- | ------------------------------------------------------------------------------------- |
+| Commands | `bitty-terminal.git-panel:open`, `:status`, `:diff`, `:log`, `:branch`                |
+| Events   | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed`, `overlay.released` |
 
 Static triggers let the host register the plugin without creating a VM; the
 observation events refresh the cached snapshot-derived state and never spawn.
+`overlay.released` clears the local overlay session when Core ends it.
 
 ## Policy bounds
 
@@ -83,22 +86,30 @@ most 256 bytes each.
 
 ## Current integration limits
 
-Core `662212c5` has a real grant-gated `process.spawn:git` backend. Its Lua
-bridge reads argv only; it does not forward the plugin's second
-`{ cwd = cache.cwd }` argument. Repository isolation is therefore unproven,
-and the plugin must not be advertised as a safe repository-aware panel.
-This first-party process extra is outside the stable Plugin API v1 guarantee.
+The pinned source presents through the focusable overlay
+(`bitty.ui.overlay.acquire` / `update`) rather than a host panel slot, and
+releases the session on `overlay.released`. Panel usability is not proven by
+that composition alone: no live panel campaign backs this page.
 
-The plugin returns command data and composes `Text`/`List`/`Column` scenes;
-it never mounts a panel. The requested panel capabilities do not implement a
-Lua provider lifecycle. It does not call `bitty.fs` either.
+Spawn passes the host-resolved semantic `cwd = "pane"`; the plugin never
+supplies a path. Core resolves the globally focused view's PTY-child kernel
+directory at call time, validates it, records it in the audit entry, and fails
+closed as `Denied[SpawnCwdUnavailable]` when no binding or provable kernel cwd
+exists. That cwd is a starting directory, not a sandbox: `process.spawn:git` is
+itself a repository-read capability, so the child reads the pane tree with the
+user's OS authority, and `.git`/`core.worktree` metadata remains a separate
+channel with a tracked follow-up. Repository isolation is therefore a host
+property this page does not independently verify.
+This first-party process extra is outside the stable Plugin API v1 guarantee.
 
 ## Security review
 
-Bounded argv and read-only git verbs do not establish the intended cwd or
-filesystem isolation. A future cwd contract needs host validation and real
-backend tests before this gap can close. No schema or capability is widened
-by this documentation update.
+Bounded argv, the read-only git verbs, and the host-resolved `pane` cwd are
+separate controls. The host validates and audits the resolved directory and
+fails closed without a provable kernel cwd; it does not sandbox the child, which
+still runs with the user's OS authority and can follow repository metadata. A
+future `.git` policy and real-backend isolation tests are required before this
+gap can close. No schema or capability is widened by this documentation update.
 
 ## Verification
 

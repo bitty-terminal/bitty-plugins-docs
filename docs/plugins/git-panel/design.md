@@ -13,9 +13,10 @@ sidebar_order: 47
 
 ## Document status
 
-Current source at registry-pinned `862df1f9`. Core `662212c5` provides the
-grant-gated git spawn extra, but repository isolation and panel usability
-remain unproven.
+Current source at registry-pinned `4f54634f`. Core `b5145675` provides the
+grant-gated git spawn extra with a host-resolved `cwd = "pane"` semantic, but
+repository-metadata policy, isolation evidence, and panel usability remain
+unproven.
 
 ## Purpose and scope
 
@@ -31,8 +32,10 @@ does not create a general stable process API.
 
 ## Terminology
 
-Command data and declarative scenes are not a mounted panel. An argv
-allowlist constrains verbs; it does not prove which repository executes them.
+Command data and declarative scenes presented in a focusable overlay are not a
+host panel slot. An argv allowlist constrains verbs, and the `pane` cwd semantic
+selects a starting directory; neither sandboxes the child nor closes repository
+metadata.
 
 ## Current behavior
 
@@ -47,15 +50,15 @@ scope is requested by a manifest-declared working-tree read pattern.
 Out of scope: terminal truth, input, parser, and render hot paths; arbitrary
 process spawn, shell interpolation, network, clipboard, terminal-input, or
 persistent-state authority; and write verbs beyond the allowlisted read-only
-set. Panel presentation stays host-owned: the package composes declarative
-`List`/`Text` panel content, but it cannot present a panel until a future
-panel-provider acceptance lands. That deferred mounting is an explicit
-non-goal of the current package, not implied behavior.
+set. Panel presentation uses the focusable overlay session
+(`bitty.ui.overlay.acquire`/`update`) rather than a host panel slot, so the
+plugin never registers a panel provider. A host-owned panel-provider lifecycle
+remains an explicit non-goal of the current package.
 
 ## Mechanism and policy split
 
-Core owns terminal truth, semantic snapshots, and grant-gated spawn mediation.
-Panel mounting remains deferred. The Lua
+Core owns terminal truth, semantic snapshots, grant-gated spawn mediation, and
+the focusable overlay session lifetime. The Lua
 package owns the presentation policy: the `[tools.git]` allowlist, the
 working-tree read-scope checks, bounded branch/status/commit listing
 composition (128 status entries, 64 commits, a single branch bound of 32),
@@ -65,18 +68,17 @@ filtering, and declarative scene composition.
 
 The plugin registers statically through lazy triggers and creates no VM until
 a command or observation event fires. Missing/denied spawn returns a typed
-failure; snapshot refresh is guarded and observation handlers never spawn.
-No mounted git-panel surface is implemented by this source.
+failure; snapshot refresh is guarded and observation handlers never spawn. A
+missing overlay surface fails closed with `E_UI_UNAVAILABLE`, and
+`overlay.released` clears the local session so the next open starts clean.
 
 ## Security review
 
-- Requests `panel.provider` and `panel.create` (deferred candidates pending
-  the panel-provider contract, `bitty-docs` `CTX-0181`, OQ-058, backing the
-  tiled Panel Runtime registration), `terminal.semantic-read` (gates `bitty.terminal.snapshot`,
-  the read-only cwd/title observation the panel refreshes from),
-  `process.spawn:git`, and a filesystem read-pattern declaration. The Lua
-  lexical path filter does not establish production real-path, symlink, or
-  device enforcement.
+- Requests `ui.overlay.focus` (the accepted W-01 coupled grant for a focusable
+  overlay and its transient input capture), `terminal.semantic-read` (gates
+  `bitty.terminal.snapshot`, the read-only cwd/title observation the panel
+  refreshes from), `process.spawn:git`, and a filesystem read-pattern
+  declaration. It requests no `panel.provider` or `panel.create`.
 - The `[tools.git]` declaration is the accepted Layer 2 slice
   (`bitty` `CTX-0425`): the contract requires `git` to be present and satisfy
   `>=2.30`; this declaration alone does not prove the whole install/activation
@@ -85,18 +87,20 @@ No mounted git-panel surface is implemented by this source.
 - Deny by default: any other executable is denied, unknown capability
   identifiers fail validation, and there is no allow-all identifier.
 
-The plugin sends `{ cwd = cache.cwd }` as the second spawn argument. Core
-`662212c5` reads only argv and does not forward that option. A real backend
-exists, but it does not prove the pane-repository boundary. The spawn extra is
-explicitly outside stable Plugin API v1. Neither bounds nor compatibility
-ranges close that isolation gap.
+The plugin passes the host-resolved `cwd = "pane"` semantic and never supplies a
+path. Core resolves the globally focused view's PTY-child kernel directory at
+call time, validates and audits it, and fails closed when it cannot be proved.
+That directory is a starting point, not a sandbox: the child keeps the user's OS
+authority and repository metadata stays a separate channel. The spawn extra is
+explicitly outside stable Plugin API v1, and neither bounds nor compatibility
+ranges close the isolation gap.
 
 ## Verification plan
 
-Inspect argv restrictions, host grant wiring, source scene composition, and
-the missing cwd forwarding. Require actual backend repository-isolation and
-accepted provider-lifecycle tests before claiming usability; mock cwd tests
-are insufficient.
+Inspect argv restrictions, host grant wiring, pane-cwd resolution, and source
+scene composition. Require real-backend repository-isolation tests, a `.git`
+metadata policy, and live overlay usability evidence before claiming usability;
+mock cwd tests are insufficient.
 
 ## Alternatives considered
 

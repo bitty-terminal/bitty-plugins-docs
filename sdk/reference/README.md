@@ -1,6 +1,6 @@
 ---
 title: Lua API Reference
-description: Index of planned per-namespace Plugin API v1 Lua reference pages with implementation status and covering tests
+description: Index of per-namespace Plugin API v1 Lua reference pages with implementation status and covering tests
 category: reference
 audience: plugin-author
 document_type: index
@@ -13,8 +13,8 @@ sidebar_order: 10
 
 Index of the per-namespace Plugin API v1 Lua reference pages. Normative detail
 lives in the linked contract; this index carries no duplicate normative prose.
-A page marked as planned does not exist yet; existing pages are linked from the
-table below.
+Each page states the accepted spelling, the host-implementation status, and at
+least one covering test path.
 
 ## Admission criteria
 
@@ -40,17 +40,21 @@ captures with no host backend (commands, events, keymaps, tasks, timers) are
 
 ## Namespaces
 
-| Namespace                     | v1 status         | Covering `bitty-lua` test path                                                                                                                                                                                                                      | Page                        |
-| ----------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
-| `bitty.commands`              | `implemented`     | `crates/bitty-lua/tests/host_bridge.rs` (`registrations_are_captured`, `captured_command_is_callable`)                                                                                                                                              | `commands.md` (planned)     |
-| `bitty.events`                | `implemented`     | `crates/bitty-lua/tests/host_bridge.rs` (`registrations_are_captured`)                                                                                                                                                                              | `events.md` (planned)       |
-| `bitty.keymaps`               | `implemented`     | `crates/bitty-lua/tests/lua_parity.rs` (WIRED bridge capture, LUA-OQ-5)                                                                                                                                                                             | `keymaps.md` (planned)      |
-| `bitty.settings`              | `implemented`     | `crates/bitty-lua/tests/host_bridge.rs` (`store_and_settings_round_trip`)                                                                                                                                                                           | `settings.md` (planned)     |
-| `bitty.store`                 | `implemented`     | `crates/bitty-lua/tests/host_bridge.rs` (`store_and_settings_round_trip`), `crates/bitty-lua/tests/store_quota.rs` (RC-11 ceilings)                                                                                                                 | `store.md` (planned)        |
-| `bitty.notify`                | `implemented`     | `crates/bitty-lua/tests/host_bridge.rs` (`FakeServices` notification seam)                                                                                                                                                                          | `notify.md` (planned)       |
-| `bitty.terminal`              | `implemented`     | `crates/bitty-lua/tests/host_bridge.rs` (`FakeServices::terminal_snapshot` seam)                                                                                                                                                                    | `terminal.md` (planned)     |
-| `bitty.tasks`, `bitty.timers` | `implemented`     | `crates/bitty-lua/tests/lua_parity.rs` (tasks WIRED capture, LUA-OQ-9), `crates/bitty-lua/tests/host_bridge.rs` (timer capture caps)                                                                                                                | `tasks-timers.md` (planned) |
-| `bitty.env`                   | `not_implemented` | `crates/bitty-lua/tests/lua_parity.rs` (`env_get_has_are_not_implemented`; grant-gated, CTX-0330)                                                                                                                                                   | `env.md` (planned)          |
-| `bitty.services`              | `not_implemented` | `crates/bitty-lua/tests/lua_parity.rs` (`services_get_provide_are_not_implemented`, LUA-OQ-8)                                                                                                                                                       | `services.md` (planned)     |
-| `bitty.ui`                    | `implemented`     | `crates/bitty-lua/tests/ui_bridge.rs` (mount/update probes, LUA-OQ-7), `crates/bitty-runtime/tests/plugin_ui.rs` (band and overlay hosts), `crates/bitty-runtime/tests/presentation_overlay_api.rs` (presentation-only overlay session, bitty#2849) | [ui.md](ui.md)              |
-| `bitty.process`               | `not_implemented` | `crates/bitty-lua/tests/host_bridge.rs` (`process_spawn_unavailable_by_default`; v1-OUT consent-gated extra, CTX-0445)                                                                                                                              | none (outside v1 scope)     |
+| Namespace                     | v1 status         | Covering `bitty-lua` test path                                                                                                                                                                                                                      | Page                                        |
+| ----------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `bitty.commands`              | `implemented`     | `crates/bitty-lua/tests/host_bridge.rs` (`registrations_are_captured`, `captured_command_is_callable`)                                                                                                                                              | [commands.md](commands.md)                  |
+| `bitty.events`                | `implemented`     | `crates/bitty-lua/tests/host_bridge.rs` (`registrations_are_captured`)                                                                                                                                                                              | [events.md](events.md)                      |
+| `bitty.keymaps`               | `implemented`     | `crates/bitty-lua/tests/lua_parity.rs` (WIRED bridge capture, LUA-OQ-5)                                                                                                                                                                             | [keymaps.md](keymaps.md)                    |
+| `bitty.settings`              | `implemented`     | `crates/bitty-lua/tests/host_bridge.rs` (`store_and_settings_round_trip`)                                                                                                                                                                           | [settings.md](settings.md)                  |
+| `bitty.store`                 | `implemented`     | `crates/bitty-lua/tests/host_bridge.rs` (`store_and_settings_round_trip`), `crates/bitty-lua/tests/store_quota.rs` (RC-11 ceilings)                                                                                                                 | [store.md](store.md)                        |
+| `bitty.notify`                | `implemented`     | `crates/bitty-lua/tests/host_bridge.rs` (`FakeServices` notification seam)                                                                                                                                                                          | [notify.md](notify.md)                      |
+| `bitty.terminal`              | `implemented`     | `crates/bitty-lua/tests/host_bridge.rs` (`FakeServices::terminal_snapshot` seam)                                                                                                                                                                    | [terminal.md](terminal.md)                  |
+| `bitty.tasks`, `bitty.timers` | `implemented`     | `crates/bitty-lua/tests/lua_parity.rs` (tasks WIRED capture, LUA-OQ-9), `crates/bitty-lua/tests/host_bridge.rs` (timer capture caps)                                                                                                                | [tasks-timers.md](tasks-timers.md)          |
+| `bitty.env`                   | `not_implemented` | `crates/bitty-lua/tests/lua_parity.rs` (`env_get_has_are_not_implemented`; grant-gated, CTX-0330)                                                                                                                                                   | [env.md](env.md)                            |
+| `bitty.services`              | `not_implemented` | `crates/bitty-lua/tests/lua_parity.rs` (`services_get_provide_are_not_implemented`, LUA-OQ-8)                                                                                                                                                       | [services.md](services.md)                  |
+| `bitty.ui`                    | `implemented`     | `crates/bitty-lua/tests/ui_bridge.rs` (mount/update probes, LUA-OQ-7), `crates/bitty-runtime/tests/plugin_ui.rs` (band and overlay hosts), `crates/bitty-runtime/tests/presentation_overlay_api.rs` (presentation-only overlay session, bitty#2849) | [ui.md](ui.md)                              |
+| `bitty.process`               | `not_implemented` | `crates/bitty-lua/tests/host_bridge.rs` (`process_spawn_unavailable_by_default`; v1-OUT consent-gated extra, CTX-0445)                                                                                                                              | [process.md](process.md) (outside v1 scope) |
+
+Every namespace that has a page is linked above. A page may still describe a
+`not_implemented` surface: it records the accepted spelling and the failing
+default, not availability.

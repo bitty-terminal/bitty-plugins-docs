@@ -17,11 +17,11 @@ Routes for the independently inspected activity manifest and implementation.
 
 ## Authority and status
 
-Registry #92 pins activity `e1566380` for Core `>=0.0.24,<0.1` / Plugin API
-`^1.0`. Implementation is present; settings declarations remain pending in
-[issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
-Guarded undeclared reads use defaults, and command arguments are never stored.
-This source snapshot establishes no end-to-end or release verification.
+Registry pins activity `0ea39e13` for Core `>=0.0.24` / Plugin API `^1.0`, with a
+manifest hash matching the pin. Implementation is present; both settings keys it
+reads (`retention_days`, `store_command_args`) are declared, and command
+arguments are never stored. This source snapshot establishes no end-to-end or
+release verification.
 
 ## Identity
 

@@ -51,7 +51,13 @@ Core `662212c5` implements per-plugin configuration at
 XDG is unset). The host evaluates this file in a separate bounded, restricted
 `ConfigLuaVm` with no host services, I/O, network, environment, or `require`.
 Plugins receive only their declared, strictly typed settings through
-`bitty.settings.get`. They do not open configuration files directly.
+`bitty.settings.get`. A package has no host surface for opening a user
+configuration file itself. The one inspected exception is Wheel, which resolves
+its own `$XDG_CONFIG_HOME/wheel/init.lua` and project `.wheel/init.lua` inside
+its package code behind a separate trust gate; that path is recorded as an open
+contract question in the [settings
+reference](../sdk/reference/settings.md#open-contract-questions) and is not a
+pattern this page accepts for other plugins.
 
 Canonical Lua takes precedence over an unambiguous short-name Lua alias;
 aliases require complete current plugin discovery. Legacy
@@ -579,8 +585,11 @@ filesystem API.
   discovery (DIR-030).
 - How are components installed from a registry once registry sources exist?
 - [Official settings schema reconciliation](https://github.com/bitty-terminal/bitty-plugins/issues/90)
-  is still open. Table-shaped `entries` remains unaccepted and deferred;
-  Wheel's direct project loader remains a separate follow-up in that issue.
+  is still open. Table-shaped `entries` remains unaccepted and deferred, and
+  Wheel's direct project loader remains a separate follow-up in that issue. The
+  settings reference records both, plus the bar per-module option maps and the
+  missing statusline declarations, as explicit open contract questions rather
+  than as accepted schema.
 
 ## Acceptance criteria
 
