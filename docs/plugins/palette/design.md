@@ -13,8 +13,9 @@ sidebar_order: 35
 
 ## Document status
 
-Current source at registry-pinned `c17dc321`; settings population and live
-query typing remain incomplete. Registry eligibility is not product verification.
+Current source at registry-pinned `5169d974`; the `query` setting is declared and
+live typing drains captured keys, while a picker-provider surface remains
+incomplete. Registry eligibility is not product verification.
 
 ## Purpose and scope
 
@@ -43,10 +44,14 @@ the session-owned scene, and releases capture on close. `overlay.released`
 resets local toggle state. The scene is a `List` of `Text` rows, including
 title and empty placeholder. It requests `ui.overlay.focus` only.
 
-Guarded `entries` and `query` reads are undeclared in the manifest and use
-empty defaults on the strict host. A configuration file cannot populate the
-list yet. Live typing, registry enumeration, picker providers, and terminal
-truth modification are outside this source's implemented behavior.
+The `query` setting is declared (`string`, default `""`) and seeds the filter at
+activation; the value is truncated to `MAX_QUERY_CHARS` (128) and stripped of
+control characters. Captured keys then drive live typing through
+`bitty.ui.overlay.poll`, and `overlay.input.available` is the observation nudge
+that tells the session input is queued. `entries` is not read at all; the list
+comes from the host command catalog. A picker-provider API, a table-shaped
+`entries` kind, and terminal truth modification remain outside this source's
+implemented behavior.
 
 ## Failure behavior
 

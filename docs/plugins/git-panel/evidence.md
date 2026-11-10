@@ -18,12 +18,10 @@ extra, and unproven repository/panel usability.
 
 ## Source identity
 
-Registry [#92](https://github.com/bitty-terminal/bitty-plugins/pull/92), merge
-`ba4d9d1268bfd877ab60413f496e95b6cae41168`, pins git-panel
-`862df1f90ad137eb1e92379ac0710c6cd22c7f21`. The manifest, entry point, scope,
-and scene were independently inspected against Core `662212c5`'s
-`crates/bitty-lua/src/host.rs` spawn callback. Package version is `0.1.0`,
-with Core `>=0.0.24,<0.1` and Plugin API `^1.0` declarations.
+Registry pins git-panel `4f54634f`. The manifest, entry point, scope, and scene
+were independently inspected against Core `b5145675`'s
+`crates/bitty-runtime/src/plugin_runtime/spawn.rs` pane-cwd resolution. Package
+version is `0.1.0`, with Core `>=0.0.24` and Plugin API `^1.0` declarations.
 
 Historical context:
 
@@ -51,11 +49,15 @@ Historical context:
 
 ## Disposition
 
-The grant-gated Core git backend exists, but its argv-only Lua bridge ignores
-the plugin's second cwd argument. Intended repository isolation is unproven.
-The plugin returns data and composes scenes without mounting a panel, and
-does not call filesystem APIs. It has no settings reads or declaration gap.
-Registry eligibility does not prove product usability or release delivery.
+The grant-gated Core git backend exists and the Lua bridge forwards the
+host-resolved `cwd = "pane"` semantic: Core resolves the focused view's PTY-child
+kernel directory, validates and audits it, and fails closed when it cannot be
+proved. The cwd is a starting directory, not a sandbox, and `.git` metadata
+policy is a tracked follow-up, so intended repository isolation is not proven by
+this page. The plugin presents through the focusable overlay session rather than
+a host panel slot and does not call filesystem APIs. It has no settings reads or
+declaration gap. Registry eligibility does not prove product usability or release
+delivery.
 
 ## Verification backlog
 
@@ -66,10 +68,10 @@ LuaLS conformance, and `bitty-plugin-lint` (including the negative-fixture
 gate with the accepted control). This page set does not restate that evidence
 and does not claim independent verification.
 
-Require accepted/validated cwd forwarding and real-backend isolation tests,
-an accepted panel-provider lifecycle, and complete install-time tools/grant
-evidence. Dispatch authorizer tests do not prove those paths. This pass
-independently checks source only and runs no live git or panel campaign.
+Require real-backend isolation tests, a `.git`/repository-metadata policy, and
+complete install-time tools/grant evidence. The cwd semantic and its validation
+exist host-side, but dispatch authorizer tests do not prove those paths. This
+pass independently checks source only and runs no live git or panel campaign.
 
 ### References
 

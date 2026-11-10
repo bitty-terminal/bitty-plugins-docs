@@ -17,8 +17,9 @@ Routes for the current bar source and explicitly deferred chrome direction.
 
 ## Authority and status
 
-The current official registry pin is bar `0fa15139` for Core `>=0.0.24` /
-Plugin API `^1.0`. The source mounts a text row in `top` or `bottom`, with
+The current official registry pin is bar `7b6beb1f` for Core `>=0.0.24` /
+Plugin API `^1.0`, with manifest hash `sha256:651cd54d…` matching the pin.
+The source mounts a text row in `top` or `bottom`, with
 declared chassis and module-list settings. A fresh install places workspace
 capsules on the left, the clock centered across the full band, and provider-backed
 `network`, `cpu`, `memory`, and `battery` modules at the right inset. Each
@@ -29,22 +30,24 @@ strict kinds and stay with
 [issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
 The left, center, and right module groups use true left-inset, full-band-center,
 and right-inset alignment respectively. Richer widgets remain candidate.
-Settings are read at activation and re-read on `config.reloaded`; only the
-`edge` selection remains pinned to the generation. Source presence and registry
-eligibility establish no live presentation or release verification.
+Settings are resolved once at activation and pinned to the generation; the
+`config.reloaded` handler re-reads that same pinned map, so values change only
+on reactivation, and the handler keeps the previous `edge` locally. Source
+presence and registry eligibility establish no live presentation or release
+verification.
 
 ## Identity
 
-| Field             | Value                                                                                                              |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Plugin id         | `bitty-terminal.bar`                                                                                               |
-| Name              | Unified Bar                                                                                                        |
-| Package version   | 0.0.1                                                                                                              |
-| Owning repository | <https://github.com/bitty-terminal/bar>                                                                            |
-| Lua module        | `lua/bar/`                                                                                                         |
-| Capabilities      | `ui.rich`, workspace read/control, notifications, and separately granted provider heads; see [schemas](schemas.md) |
-| Lazy commands     | Focus, detail, and provider controls; see [schemas](schemas.md#events-and-commands)                                |
-| Lazy events       | Workspace changes and `config.reloaded`; see [schemas](schemas.md#events-and-commands)                             |
+| Field             | Value                                                                                                                            |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Plugin id         | `bitty-terminal.bar`                                                                                                             |
+| Name              | Unified Bar                                                                                                                      |
+| Package version   | 0.0.1                                                                                                                            |
+| Owning repository | <https://github.com/bitty-terminal/bar>                                                                                          |
+| Lua module        | `lua/bar/`                                                                                                                       |
+| Capabilities      | `ui.rich`, `ui.overlay`, workspace read/control, notifications, and separately granted provider heads; see [schemas](schemas.md) |
+| Lazy commands     | Focus, detail, and provider controls; see [schemas](schemas.md#events-and-commands)                                              |
+| Lazy events       | Workspace changes and `config.reloaded`; see [schemas](schemas.md#events-and-commands)                                           |
 
 ## Pages
 

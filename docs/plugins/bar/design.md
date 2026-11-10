@@ -13,8 +13,8 @@ sidebar_order: 51
 
 ## Document status
 
-Implementation snapshot at `0fa151395fe9d9d8b3b9dc4ba047eb13fa7b45c4`
-(`0fa15139`), pinned by registry #115. Current text-row behavior is distinct
+Implementation snapshot at `7b6beb1f8d785eaa5e7cb4d9b951b732bd14d25b`
+(`7b6beb1f`), the current registry pin. Current text-row behavior is distinct
 from the broader candidate unified-chrome design; no release verification is
 claimed.
 
@@ -50,9 +50,10 @@ rather than bracketed text; the exact marks, theme tokens, and square-corner
 limit are specified in the [scene contract](schemas.md#scene-contract). Detail
 text may use a grant-gated, rate-limited notification fallback. Optional
 sensor, device, and audio providers hide when absent or ungranted; read and
-control are separate. Settings are read at
-activation and re-read on `config.reloaded`; only the `edge` selection remains
-pinned to the generation.
+control are separate. Settings are resolved once at activation and pinned to the
+generation; the `config.reloaded` handler re-reads that same pinned map, so
+values change only on reactivation, and the handler keeps the previous `edge`
+locally.
 
 The [schema page](schemas.md) enumerates real settings and triggers. Chassis
 scalars and group string arrays are effective. Per-module maps remain inert

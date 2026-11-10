@@ -34,5 +34,6 @@ linked, never copied.
 | Document                                                          | Status    | Purpose                                                                       |
 | ----------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------- |
 | [Plugin API v1 Lua Surface RFC](plugin-api-v1-lua-surface-rfc.md) | Accepted  | Lua module functions, payloads, and the L1/L2 split.                          |
+| [Lua API Reference](reference/README.md)                          | Draft     | Per-namespace reference pages with implementation status and covering tests.  |
 | [Plugin README user documentation](plugin-readme-convention.md)   | Normative | Canonical README sections and the `[settings]` Configuration table.           |
 | bitty.net Lua Request Surface (Candidate)                         | Draft     | Candidate non-blocking `bitty.net` requests over the DIR-030 `net` component. |

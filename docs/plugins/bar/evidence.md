@@ -18,13 +18,16 @@ Record the current bar implementation separately from candidate chrome design.
 ## Source identity
 
 Registry [#115](https://github.com/bitty-terminal/bitty-plugins/pull/115),
-merge `d1ad33edc2416e0d18148ca5cb1f50a7ca591326`, pins bar
-`0fa151395fe9d9d8b3b9dc4ba047eb13fa7b45c4` (`0fa15139`, bar main). The pinned
-`bitty-plugin.toml` digest matches the entry's `manifest_hash`. The manifest and
-`lua/bar/init.lua` were independently inspected. Compatibility declarations are
-Core `>=0.0.24` and Plugin API `^1.0`; package version is `0.0.1`.
-Registry [#113](https://github.com/bitty-terminal/bitty-plugins/pull/113),
-merge `1f369cf1a9f4f3d767e1664e9c8ec4ea43a6beff`, moved the entry to that
+merge `d1ad33edc2416e0d18148ca5cb1f50a7ca591326`, pinned bar at `0fa15139`;
+the current pin is `7b6beb1f8d785eaa5e7cb4d9b951b732bd14d25b`, whose
+`bitty-plugin.toml` digest
+(`sha256:651cd54d78f0f85d8db5faf745fa12b10f4a12703029b7d8646140816535c0c8`)
+matches the registry entry's `manifest_hash`. The manifest and
+`lua/bar/init.lua` were independently inspected at that pin. Compatibility
+declarations are Core `>=0.0.24` and Plugin API `^1.0`; package version is
+`0.0.1`. Registry
+[#113](https://github.com/bitty-terminal/bitty-plugins/pull/113), merge
+`1f369cf1a9f4f3d767e1664e9c8ec4ea43a6beff`, moved the entry to that
 minimum-only compatibility range. Registry
 [#102](https://github.com/bitty-terminal/bitty-plugins/pull/102), merge
 `b1eade711049e8c852a076fbc9db3700dd70fce9`, and registry
@@ -33,17 +36,17 @@ minimum-only compatibility range. Registry
 `18d1a5b6` and `f007a03d` respectively.
 
 Capsule rendering claims in the [scene contract](schemas.md#scene-contract) map
-to these anchors in the pinned blob (line numbers refer to `0fa15139`):
+to these anchors in the pinned blob (line numbers refer to `7b6beb1f`):
 
-| Claim                                                       | Source anchor                             |
-| ----------------------------------------------------------- | ----------------------------------------- |
-| Active, occupied, and attention marks                       | `lua/bar/init.lua:97-99`                  |
-| One-space `CAPSULE_PAD` and square-corner rationale         | `lua/bar/init.lua:100-105`                |
-| Theme token names                                           | `lua/bar/init.lua:109-114`                |
-| Mark order and padded text assembly                         | `lua/bar/init.lua:1244-1262`              |
-| Active/inactive atom styling and the single click target    | `lua/bar/init.lua:1279-1309`              |
-| Workspace-only `CAPSULE_PAD` use and the module gap         | `lua/bar/init.lua:105,160,1262,3583-3585` |
-| Padded capsule, accent/selection fills, and mark assertions | `tests/bar.test.ts:153-204`               |
+| Claim                                                       | Source anchor                   |
+| ----------------------------------------------------------- | ------------------------------- |
+| Active and attention marks                                  | `lua/bar/init.lua:97-98`        |
+| One-space `CAPSULE_PAD` and square-corner rationale         | `lua/bar/init.lua:100-104`      |
+| Theme token names                                           | `lua/bar/init.lua:109-113`      |
+| Mark order and padded text assembly                         | `lua/bar/init.lua:1244-1262`    |
+| Active/inactive atom styling and the single click target    | `lua/bar/init.lua:1279-1310`    |
+| Workspace-only `CAPSULE_PAD` use and the module gap         | `lua/bar/init.lua:104,159,1258` |
+| Padded capsule, accent/selection fills, and mark assertions | `tests/bar.test.ts:153-204`     |
 
 Historical design context:
 
@@ -64,15 +67,17 @@ Historical design context:
 ## Disposition
 
 Implemented: declared chassis scalars, the `label` capsule-label mode, and
-group string arrays; padded workspace capsules with `*`/`+`/`!` marks and
+group string arrays; padded workspace capsules with `*` active and `!` attention
+marks plus an `occupied` atom flag, and
 `accent`/`selection` fills, with square corners because the v1 band exposes no
 corner-radius primitive; shipped default plan of workspaces left, clock centered
 across the full band, and provider-backed `network`, `cpu`, `memory`, and
 `battery` modules at the right inset; unavailable or ungranted provider modules
 are omitted individually; `top`/`bottom` mounts under `ui.rich`; decorated
 `Text` in a `Row`; workspace focus and optional provider policy. Settings are
-resolved at activation and re-read on `config.reloaded`; only the `edge`
-selection remains pinned to the generation. Per-module option keys are empty
+resolved at activation and pinned to the generation; the `config.reloaded`
+handler re-reads the same pinned map and preserves the previous `edge` locally.
+Per-module option keys are empty
 string arrays, so map options remain ineffective on the strict host. No new
 `Capsule` or widget kind is implemented by the pin. Registry eligibility does
 not prove live presentation or release delivery.

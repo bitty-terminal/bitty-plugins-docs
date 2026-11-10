@@ -13,16 +13,14 @@ sidebar_order: 45
 
 ## Purpose
 
-Record observation-only implementation evidence without implying filesystem or
-panel usability.
+Record read-only listing evidence without implying panel, mutation, or real-path
+isolation usability.
 
 ## Source identity
 
-Registry [#92](https://github.com/bitty-terminal/bitty-plugins/pull/92), merge
-`ba4d9d1268bfd877ab60413f496e95b6cae41168`, pins file-manager
-`bf3a17ea6aa1ea0fcc3a45a13ceaa069e83b71d4`. Manifest and Lua were inspected
-independently. Package version is `0.1.0`, with Core `>=0.0.24,<0.1` and
-Plugin API `^1.0` declarations.
+Registry pins file-manager `558bf5a2`. Manifest and Lua were inspected
+independently. Package version is `0.1.0`, with Core `>=0.0.24` and Plugin API
+`^1.0` declarations.
 
 Historical context:
 
@@ -48,11 +46,13 @@ Historical context:
 ## Disposition
 
 Implemented: bounded path/listing/preview/rename-pair composition with terminal
-observation only. The pin has no filesystem or panel calls and requests only
-`terminal.semantic-read`. Guarded undeclared `root`/`entries` reads fall back
-to explicit arguments, cached cwd, or an empty listing. It cannot enumerate,
-read, or rename real files or present a panel. Registry eligibility is not a
-product usability or release claim.
+observation, a host-mediated read-only `bitty.fs.list` enumeration under
+`fs.read:**`, and a `bottom` band presentation under `ui.rich`. The pin requests
+no panel capability and performs no write. `root`, `entries`, and `width` are
+declared and read; a table-shaped `entries` list remains unaccepted. It cannot
+rename real files or present a panel. Registry eligibility is not a product
+usability or release claim, and real-path/symlink isolation of the host backend
+is unproven by Lua tests.
 
 ## Verification backlog
 
@@ -65,9 +65,10 @@ that evidence and does not claim independent verification.
 
 Remaining work includes
 [settings issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90),
-an accepted entry shape, production filesystem authority/backend, and panel
-lifecycle. Source inspection and pure path tests cannot establish host
-real-path isolation. This docs pass runs no live filesystem campaign.
+an accepted entry shape, real-path isolation evidence for the host filesystem
+backend, and panel lifecycle. Source inspection and pure path tests cannot
+establish host real-path isolation. This docs pass runs no live filesystem
+campaign.
 
 ### References
 

@@ -13,9 +13,10 @@ sidebar_order: 52
 
 ## Purpose and scope
 
-Describe the current registry-pinned bar `0fa151395fe9d9d8b3b9dc4ba047eb13fa7b45c4`
-(`0fa15139`). The broader unified-chrome candidate does not define this pin's
-implemented widgets or interactions.
+Describe the current registry-pinned bar `7b6beb1f` (manifest
+`sha256:651cd54d78f0f85d8db5faf745fa12b10f4a12703029b7d8646140816535c0c8`).
+The broader unified-chrome candidate does not define this pin's implemented
+widgets or interactions.
 
 ## Normative sources
 
@@ -38,8 +39,11 @@ implemented widgets or interactions.
 
 ## Capabilities and providers
 
-The pinned manifest requests `ui.rich`, `workspace.read`, `workspace.control`,
-and `platform.notify`. Separate provider heads request
+The pinned manifest requests `ui.rich`, `ui.overlay`, `workspace.read`,
+`workspace.control`, and `platform.notify`. `ui.overlay` mounts the
+presentation-only hover block the host shows as a non-modal tooltip; no
+`ui.overlay.focus` is requested, so the bar never acquires input capture.
+Separate provider heads request
 `platform.cpu-read`, `platform.memory-read`, `platform.battery-read`,
 `platform.network.read`, `platform.essid.read`,
 `platform.bluetooth.read`/`.control`, `platform.backlight.read`/`.control`,
@@ -56,16 +60,17 @@ invented `[plugins]` table in `bitty.toml`. The legacy
 `bitty-terminal.bar.toml` file remains a compatibility fallback only when no
 selected Lua file exists.
 
-| Key              | Kind           | Shipped default                           | Implemented behavior                                                  |
-| ---------------- | -------------- | ----------------------------------------- | --------------------------------------------------------------------- |
-| `show`           | `bool`         | `true`                                    | Enable presentation                                                   |
-| `edge`           | `string`       | `"bottom"`                                | `"top"` or `"bottom"` semantic slot; other strings use local default  |
-| `show_single`    | `bool`         | `false`                                   | Show a lone workspace; occupied scratchpad also keeps the bar visible |
-| `name_max_chars` | `int`          | `32`                                      | Local validation permits 1 through `NAME_MAX_CHARS` (32)              |
-| `label`          | `string`       | `"index"`                                 | Capsule label mode: `"index"`, `"name"`, or `"both"`                  |
-| `modules_left`   | `string-array` | `["workspaces"]`                          | First ordered module group                                            |
-| `modules_center` | `string-array` | `["clock"]`                               | Center group, centered across the full band                           |
-| `modules_right`  | `string-array` | `["network", "cpu", "memory", "battery"]` | Right group, aligned to the right inset edge                          |
+| Key              | Kind           | Shipped default                           | Implemented behavior                                                     |
+| ---------------- | -------------- | ----------------------------------------- | ------------------------------------------------------------------------ |
+| `show`           | `bool`         | `true`                                    | Enable presentation                                                      |
+| `edge`           | `string`       | `"bottom"`                                | `"top"` or `"bottom"` semantic slot; other strings use local default     |
+| `show_single`    | `bool`         | `false`                                   | Show a lone workspace; occupied scratchpad also keeps the bar visible    |
+| `name_max_chars` | `int`          | `32`                                      | Local validation permits 1 through `NAME_MAX_CHARS` (32)                 |
+| `label`          | `string`       | `"index"`                                 | Capsule label mode: `"index"`, `"name"`, or `"both"`                     |
+| `icons`          | `string`       | `"ascii"`                                 | Module icon map: `"ascii"`, `"pua"`, or `"nerd"`; unknown paints `ascii` |
+| `modules_left`   | `string-array` | `["workspaces"]`                          | First ordered module group                                               |
+| `modules_center` | `string-array` | `["clock"]`                               | Center group, centered across the full band                              |
+| `modules_right`  | `string-array` | `["network", "cpu", "memory", "battery"]` | Right group, aligned to the right inset edge                             |
 
 The shipped fresh-install plan places workspace capsules on the left, the clock
 in the center, and provider-backed `network`, `cpu`, `memory`, and `battery`
@@ -81,13 +86,18 @@ never hides the bar.
 `label` is a bounded closed set with no v1 enum kind: the shipped default is
 `index`, an unknown or non-string value falls back to `index` (the bar still
 paints) and reports one bounded notification through the already-requested
-`platform.notify` grant. `name_max_chars` only applies in `name` and `both`
-modes, where an oversized name is truncated to that many characters.
+`platform.notify` grant. `icons` works the same way over `ascii` (default,
+byte-identical to the historical output), `pua` (legacy private-use glyphs), and
+`nerd` (Nerd Fonts v3 glyphs); glyph sets stay opt-in because a terminal
+without the font paints replacement boxes. `name_max_chars` only applies in
+`name` and `both` modes, where an oversized name is truncated to that many
+characters.
 
 `workspaces`, `clock`, `network`, `bluetooth`, `backlight`, `idle`,
-`pulseaudio`, `spectrum`, `cpu`, `memory`, and `battery` are also declared,
-each as `string-array` with empty default. Lua reads them as per-module
-option collections, but strict settings kinds reject map-shaped values.
+`pulseaudio`, `microphone`, `spectrum`, `cpu`, `memory`, and `battery` are also
+declared, each as `string-array` with empty default. Lua reads them as
+per-module option collections, but strict settings kinds reject map-shaped
+values.
 The empty arrays leave module defaults in effect. These declarations do not
 accept maps or dot-path keys such as `workspaces.format`. That mismatch stays
 explicit in [issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/90).
@@ -96,14 +106,20 @@ explicit in [issue #90](https://github.com/bitty-terminal/bitty-plugins/issues/9
 
 Lazy events are `workspace.created`, `workspace.closed`, `workspace.renamed`,
 `workspace.focused`, `workspace.changed`, and `config.reloaded`.
-The plugin reads `bitty.workspace.list()` on the configured event path.
-Settings are resolved at activation and re-read on `config.reloaded`; only the
-`edge` selection remains pinned to the generation.
+The plugin reads `bitty.workspace.list()` on the configured event path. The
+activation-time resolution is pinned to the generation, and the `config.reloaded`
+handler re-runs `read_settings` against that same pinned map: the values it
+receives cannot change until the plugin is reactivated. The handler preserves
+the previous `edge` locally, so the bar does not flip its anchor on a reload
+that leaves the pinned value unchanged.
 
-Lazy commands, each under `bitty-terminal.bar:`, are `focus`, `detail`,
-`bluetooth-toggle`, `backlight-step`, `idle-toggle`, `audio-toggle`, and
-`audio-step`. Inactive workspace text binds the focus command, which requests
-`bitty.workspace.focus`; provider controls use their separate grants.
+Lazy commands, each under `bitty-terminal.bar:`, are `focus`, `detail`, `hover`,
+`bluetooth-toggle`, `backlight-step`, `idle-toggle`, `audio-toggle`,
+`audio-step`, `workspace-action`, `clock-action`, `network-action`,
+`microphone-action`, and `microphone-step`. Inactive workspace text binds the
+focus command, which requests `bitty.workspace.focus`; provider controls use
+their separate grants; `hover` drives the overlay tooltip and never captures
+input.
 Detail text can fall back to best-effort `bitty.notify.show`, subject to
 `platform.notify` and host rate limits.
 
@@ -119,12 +135,13 @@ absent. Hidden provider modules emit no atoms and are omitted individually.
 Each workspace is one styled `Text` atom with one space of padding on each side
 (`" 1 "`). The padding shares the capsule fill and stays inside the same atom,
 so the whole chip, padding included, is one click target and reads as a filled
-capsule rather than bracketed text. Marks append after the label in `*` (active),
-`+` (occupied), and `!` (attention) order in every label mode. The active
-capsule emits `bold` with the `background` foreground on the `accent`
-background; inactive capsules use the `selection` background. On an inactive
-capsule, occupied emphasis is bold and attention emphasis uses the `cursor`
-foreground, with attention winning when both apply. Theme tokens are
+capsule rather than bracketed text. Marks append after the label in `*` (active)
+then `!` (attention) order in every label mode; occupancy is not a mark, it rides
+the atom's `occupied` flag. The active capsule emits `bold` with the
+`background` foreground on the `accent` background; inactive capsules use the
+`selection` background. On an inactive capsule, occupied emphasis is bold and
+attention emphasis uses the `cursor` foreground, with attention winning when
+both apply. Theme tokens are
 host-resolved names, never literal colors. The v1 band exposes no corner-radius
 primitive, so capsules are square padded fills and the plugin has no
 rounded-corner option. Padding and fill apply to workspace capsules only; other

@@ -21,19 +21,28 @@ and contracts, and evidence and links. The reusable starting point is
 ## Registered official plugins
 
 These plugins have independent repositories under `bitty-terminal` and a
-published registry entry in `bitty-plugins`. The `palette`, `statusline`,
+published registry entry in `bitty-plugins`. The `activity`, `palette`,
 `file-manager`, and `git-panel` page sets below are implemented in this tree.
 Each is implemented and tested headlessly in its owning
 repository; none is verified, compatible, or shipped, and no product release
 contains them.
 
-| Plugin       | Repository                                       | Plugin id                     | Stage                                                                                                                                 | Documentation                          |
-| ------------ | ------------------------------------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| activity     | <https://github.com/bitty-terminal/activity>     | `bitty-featured.activity`     | Implementation present, host integration landing                                                                                      | [activity](activity/README.md)         |
-| palette      | <https://github.com/bitty-terminal/palette>      | `bitty-terminal.palette`      | Package implemented headlessly, host bridge landing                                                                                   | [palette](palette/README.md)           |
-| statusline   | <https://github.com/bitty-terminal/statusline>   | `bitty-terminal.statusline`   | Package implemented headlessly, host bridge landing                                                                                   | [statusline](statusline/README.md)     |
-| file-manager | <https://github.com/bitty-terminal/file-manager> | `bitty-terminal.file-manager` | Independent package implemented headlessly, panel presentation deferred pending the panel-provider contract; registry entry published | [file-manager](file-manager/README.md) |
-| git-panel    | <https://github.com/bitty-terminal/git-panel>    | `bitty-terminal.git-panel`    | Independent package implemented headlessly, panel presentation deferred pending the panel-provider contract; registry entry published | [git-panel](git-panel/README.md)       |
+| Plugin       | Repository                                       | Plugin id                     | Stage                                                                                                                                               | Documentation                          |
+| ------------ | ------------------------------------------------ | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| activity     | <https://github.com/bitty-terminal/activity>     | `bitty-featured.activity`     | Implementation present, host integration landing                                                                                                    | [activity](activity/README.md)         |
+| palette      | <https://github.com/bitty-terminal/palette>      | `bitty-terminal.palette`      | Package implemented headlessly, host bridge landing                                                                                                 | [palette](palette/README.md)           |
+| file-manager | <https://github.com/bitty-terminal/file-manager> | `bitty-terminal.file-manager` | Read-only `bitty.fs.list` listing in a band block; real-path isolation evidence and panel presentation deferred pending the panel-provider contract | [file-manager](file-manager/README.md) |
+| git-panel    | <https://github.com/bitty-terminal/git-panel>    | `bitty-terminal.git-panel`    | Focusable-overlay panel over allowlisted read-only git verbs; repository-metadata policy and isolation tests outstanding                            | [git-panel](git-panel/README.md)       |
+
+## Archived packages
+
+The statusline repository is archived on GitHub and has no registry entry. Its
+page set is retained for provenance; the consolidated bar manifest describes the
+current workspace-bar, tab, and statusline presentation surface.
+
+| Plugin     | Repository                                                | Plugin id                   | Stage                                               | Documentation                      |
+| ---------- | --------------------------------------------------------- | --------------------------- | --------------------------------------------------- | ---------------------------------- |
+| statusline | <https://github.com/bitty-terminal/statusline> (archived) | `bitty-terminal.statusline` | Archived source; six formatting keys never declared | [statusline](statusline/README.md) |
 
 ## First-party core policy plugins
 
@@ -46,7 +55,7 @@ Extracted from terminal core under Small-Core architectural boundaries (ADR-0014
 | search    | <https://github.com/bitty-terminal/search>    | `bitty-terminal.search`    | Candidate policy, bounded search over Core snapshots | [search-copy policy](../../specifications/search-copy-mode-policy.md) |
 | copy-mode | <https://github.com/bitty-terminal/copy-mode> | `bitty-terminal.copy-mode` | Candidate policy, keyboard selection over Core model | [search-copy policy](../../specifications/search-copy-mode-policy.md) |
 | history   | <https://github.com/bitty-terminal/history>   | `bitty-terminal.history`   | Policy over local storage and shell integration      | [history policy](../../extensibility/history-and-storage-policy.md)   |
-| devtools  | <https://github.com/bitty-terminal/devtools>  | `bitty-featured.devtools`  | Read-only runtime inspection and event tracing       | [diagrams](../../architecture/diagrams/README.md)                     |
+| devtools  | <https://github.com/bitty-terminal/devtools>  | `bitty-featured.devtools`  | Read-only runtime inspection and event tracing       | [devtools](devtools/README.md)                                        |
 
 ## Candidate plugins
 
