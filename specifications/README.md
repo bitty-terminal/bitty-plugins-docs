@@ -38,6 +38,7 @@ tables.
 | [SDK build plan proposal (Phase 0)](sdk-build-plan-proposal.md)                       | Candidate Phase 0 SDK build direction: freezable surface, churning scope, layouts, and sequencing; no accepted interface.                                                                   | Draft  |
 | [Search and Copy-Mode Policy and Public API Requirements](search-copy-mode-policy.md) | Draft plugin-side policy and public-API requirements for the search and copy-mode plugins over Core-owned mechanisms; no accepted interface.                                                | Draft  |
 | [Plugin Drawing Capability (Candidate)](plugin-drawing-rfc-candidate.md)              | Candidate drawing contract separate from the panel and scene contracts: instruction set, coordinate model, clipping, layers, animation, readback, bounds, damage, and the sandbox boundary. | Draft  |
+| [Panel Overlay Capability (Candidate)](panel-overlay-capability-candidate.md)         | Candidate plugin-facing `panel.overlay` verb: call shape, parameter grammar, borrowed and proposed bounds, typed denials, lifetime, and panel attribution; no accepted interface.           | Draft  |
 
 Research-type pages preserve candidate direction and observations authored in
 this repository; they never become a decision or an implementation claim by
