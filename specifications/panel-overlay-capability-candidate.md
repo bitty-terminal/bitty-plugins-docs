@@ -78,7 +78,7 @@ Out of scope, and each owned elsewhere:
 
 ## The gap this document addresses
 
-Four facts define the gap. All four are readable in the canonical `bitty`
+Five facts define the gap. All five are readable in the canonical `bitty`
 repository at `3311892f75b38adb50e835822e1129c72866a6a3`; none of them is a
 contract decision.
 
@@ -104,11 +104,20 @@ contract decision.
    appears in the closed `CapabilityFamily::Panel` list
    (`crates/bitty-plugin-host/src/capability.rs:217`) and carries the consent
    description "Show panel overlays and modals" (`:547`). It also appears in the
-   manifest validation table (`crates/bitty-package/src/manifest.rs:417`) and in
+   manifest validation table (`crates/bitty-package/src/manifest.rs:419`) and in
    the `PanelLike` consent profile
-   (`crates/bitty-plugin-host/src/consent_profile.rs:110`). There is no
+   (`crates/bitty-plugin-host/src/consent_profile.rs:112`). There is no
    `bitty.panel.overlay*` bridge function, no parameter validation, no bound
    enforced at a plugin boundary, and no plugin-visible error code of its own.
+5. **The grant row exists; nothing consumes it.** `grant_panel_capability`
+   (`crates/bitty-runtime/src/registry/panel.rs:2864`) stores a panel-scoped
+   capability keyed by `(panel_id, generation)`, validating only that the
+   identifier parses and belongs to the `Panel` family
+   (`check_panel_capability`, `:2884`), and `require_panel_capability` (`:3809`)
+   can check it at call time. So the storage, the key, and the reclaim path on
+   release are already there. What is missing is an admission that reads that
+   grant in order to show a surface: no path connects `panel.overlay` to
+   `create_panel_overlay`.
 
 Two consequences follow, and they shape the rest of this document.
 
