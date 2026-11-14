@@ -44,8 +44,14 @@ admits nothing: the repository is archived and no registry entry publishes it.
 
 `terminal.semantic-read` and `ui.rich`. Deny by default; unknown identifiers
 fail validation and there is no allow-all identifier. `terminal.semantic-read`
-gates the read-only committed-state observation the statusline composes from,
-and `ui.rich` gates `bitty.ui.mount`/`bitty.ui.update` on the `statusline` slot.
+gates the read-only committed-state observation the statusline composes from.
+An earlier revision of this page read "`ui.rich` gates
+`bitty.ui.mount`/`bitty.ui.update` on the `statusline` slot"; that reading is
+superseded, because `statusline` is not a slot. The name left the accepted slot
+vocabulary in CTX-1140 (bitty PR #1962), and the archived plugin's status
+presentation is a `bottom`-band composition (see [design.md](design.md)).
+`ui.rich` remains the rich-content gate for whatever a plugin mounts into an
+accepted slot.
 
 ## Lazy surface
 

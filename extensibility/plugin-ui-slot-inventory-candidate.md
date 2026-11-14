@@ -15,12 +15,12 @@ sidebar_order: 28
 > **Compatible**, and not normative. The accepted
 > [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) fixes
 > the closed slot vocabulary, the `SceneNode` subset, the handle model, and the
-> L2 capability gate (`ui.rich`; `ui.overlay` for the overlay slot). Current
-> Core accepts seven of the accepted names: `statusline` was removed in
-> CTX-1140 (bitty PR #1962) and is recorded here only as a divergence, not as a
-> slot. What the RFC does not fix is the **per-slot
-> inventory**: what each slot is for, its bounds, how many contributors it
-> admits, and how a conflict resolves. The
+> L2 capability gate (`ui.rich`; `ui.overlay` for the overlay slot). The
+> accepted text and the current Core build carry the same seven names:
+> `statusline` left the vocabulary in CTX-1140 (bitty PR #1962) and is recorded
+> here only as a divergence, not as a slot. What the RFC does not fix is the
+> **per-slot inventory**: what each slot is for, its bounds, how many
+> contributors it admits, and how a conflict resolves. The
 > [Plugin Roadmap](../product/plugin-roadmap.md) records slot inventory and
 > conflict resolution as the first candidate capability dimension of
 > [OQ-056](https://github.com/bitty-terminal/bitty-docs/blob/main/docs/decisions/open-questions.md).
@@ -53,10 +53,10 @@ surface); token names (terminal-side theme token contract).
 ## Normative sources this specification must not weaken
 
 - [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md)
-  (accepted): the closed slot vocabulary
-  (`terminal | top | bottom | left | right | tabline | statusline | overlay`
-  in the accepted text; current Core accepts the seven names without
-  `statusline`), the v1 `SceneNode` restriction (`Text | Row | Column | List`),
+  (accepted; amended 2026-10-26): the closed slot vocabulary
+  (`terminal | top | bottom | left | right | tabline | overlay`, seven names in
+  the accepted text as amended — `statusline` left the set in CTX-1140), the v1
+  `SceneNode` restriction (`Text | Row | Column | List`),
   the opaque generation-owned `block_id` handle, `ui.rich`/`ui.overlay`
   requirements, the exclusive `tabline` claim, status presentation composed on
   `bottom`, and the rule that host layout owns placement and decoration.
@@ -87,11 +87,13 @@ surface); token names (terminal-side theme token contract).
 
 ## Slot inventory
 
-The accepted slot vocabulary is closed at eight names. Current Core accepts
-seven because `statusline` was removed in CTX-1140 (bitty PR #1962). This
-inventory adds purpose, multiplicity, and bounds; it does not add or rename a
-slot. The `statusline` row is retained only to record the divergence and is not
-a current slot.
+The accepted slot vocabulary is closed at seven names, and the current Core
+build accepts exactly those seven: `statusline` left the set in CTX-1140 (bitty
+PR #1962), and the accepted text was amended on 2026-10-26 to record the
+removal, so the accepted text and the host no longer diverge on the name count.
+This inventory adds purpose, multiplicity, and bounds; it does not add or
+rename a slot. The `statusline` row is retained only to record the removed name
+and is not a current slot.
 
 | Slot         | Current Core host                                                                                                       | Purpose                                                                      | Multiplicity                 | Required capability                                                                               | Bounds                                                                          |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
@@ -106,15 +108,19 @@ a current slot.
 
 Rules for the inventory:
 
-1. **The accepted vocabulary is closed; the current host set is narrower.**
-   This inventory adds no slot and changes no spelling; a new slot family
-   requires an RFC revision of the accepted surface. `statusline` is outside
-   the current seven-name host set because CTX-1140 removed it.
+1. **The accepted vocabulary is closed at seven names.** This inventory adds no
+   slot and changes no spelling; a new slot family requires an RFC revision of
+   the accepted surface. `statusline` is outside the accepted seven-name set
+   because CTX-1140 removed it.
 2. **Every contribution is a bounded scene block.** A mounted subtree is a
    `RichBlock` and respects the accepted scene limits (SCN-1..SCN-5: 2048 nodes,
    depth 32, and 256 KiB per block, with the aggregated ceilings where the host
    surface holds blocks for a terminal); no slot exempts a contribution from the
-   per-block bounds.
+   per-block bounds. Depth is the one dimension where the two layers differ:
+   `SCN-2 = 32` bounds host-built scenes, while a `bitty.ui.mount` subtree is
+   validated by the Lua bridge against the stricter `UI_MAX_DEPTH = 16` and a
+   deeper component fails closed with `E_UI_COMPONENT_INVALID` before any host
+   call (`crates/bitty-lua/src/ui.rs`).
 3. **Bounds are per contributor unless stated otherwise.** A composing slot's
    bound is an aggregate; contributions beyond it fail closed rather than
    crowding out an existing contributor.
@@ -177,7 +183,7 @@ Rules for the inventory:
   presentation never becomes Terminal Truth.
 - Status presentation composes on the `bottom` band; its module budget is the
   terminal-side status contract's budget, and this record does not widen it.
-  `statusline` is not a slot in the current Core build.
+  `statusline` is not a slot in the accepted text or the current Core build.
 - The `overlay` slot is served by the Core focusable-overlay host (CTX-0941).
   The host owns the overlay presentation and the single transient capture
   session; a plugin never selects a tier or a modal kind, and the single modal
