@@ -279,11 +279,12 @@ arbitrary global coordinates:
 terminal | top | bottom | left | right | tabline | overlay
 ```
 
-The accepted Lua Surface RFC also lists `statusline` in its frozen vocabulary.
-Current Core removed that name in CTX-1140 (bitty PR #1962): `statusline` fails
-as an unknown slot with `E_UI_COMPONENT_INVALID`, and status presentation
-composes on `bottom`. `left` and `right` remain accepted names but have no
-vertical band host; a mount there fails closed with `E_UI_UNAVAILABLE`.
+The accepted Lua Surface RFC listed `statusline` in its frozen vocabulary until
+the 2026-10-26 owner amendment removed it; the accepted text now carries the
+seven names above. Core removed the name in CTX-1140 (bitty PR #1962):
+`statusline` fails as an unknown slot with `E_UI_COMPONENT_INVALID`, and status
+presentation composes on `bottom`. `left` and `right` remain accepted names but
+have no vertical band host; a mount there fails closed with `E_UI_UNAVAILABLE`.
 `overlay` is the Core focusable-overlay host, not a band.
 
 Presentation contributions should distinguish at least:

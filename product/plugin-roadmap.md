@@ -236,11 +236,13 @@ Accepted rules for this wave:
 ## Statusline and shell-prompt boundary
 
 The `bitty-terminal.statusline` plugin is terminal-owned chrome: a
-waybar/Hyprland-class status surface that occupies a terminal UI slot (the
-statusline/workspaceline slot) and presents terminal and workspace state such
-as cwd, mode, Git and task state from the semantic snapshot. It shipped
-bundled-disabled in v1 and became an independent first-party package on
-2026-09-14; the surface description is unchanged. It is not a shell prompt.
+waybar/Hyprland-class status surface that presents terminal and workspace state
+such as cwd, mode, Git and task state from the semantic snapshot, and composes
+it into the `bottom` band slot. `statusline` is not a mount slot — it left the
+slot vocabulary in CTX-1140 (bitty PR #1962) — and `workspaceline` is the
+exclusive manifest claim that gates the `tabline` slot, not a slot name either.
+It shipped bundled-disabled in v1 and became an independent first-party package
+on 2026-09-14; the surface description is unchanged. It is not a shell prompt.
 
 Starship, Oh My Posh, Powerlevel10k, and similar tools are shell-prompt
 producers: the shell renders their Unicode/ANSI output inside the terminal
