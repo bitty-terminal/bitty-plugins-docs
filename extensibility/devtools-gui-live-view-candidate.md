@@ -73,8 +73,8 @@ Out of scope and owned elsewhere:
   plugin API v1 (accepted, terminal-side Panel Runtime RFC);
 - per-slot multiplicity and conflict resolution (candidate,
   [Plugin UI Slot Inventory](plugin-ui-slot-inventory-candidate.md));
-- reusable composition recipes over the v1 nodes (candidate,
-  [Plugin UI Component Catalog](ui-component-catalog-candidate.md)).
+- reusable composition patterns over the v1 nodes (candidate,
+  [Extension Component Catalog](extension-component-catalog-candidate.md)).
 
 ## Normative sources this specification must not weaken
 
@@ -689,7 +689,7 @@ already available to the same plugin through the same calls.
 | `bitty-featured.devtools` manifest (`bitty-plugins`)                                | Adds `ui.rich`, `ui.overlay`, `ui.present`, five commands, `[settings].refresh_ms`, and `overlay.dismissed`. |
 | `bitty-featured.devtools` trace session (`trace.lua`)                               | Gains a second, view-owned handle slot; the command handle's semantics are unchanged.                        |
 | [Plugin UI Slot Inventory](plugin-ui-slot-inventory-candidate.md) (candidate)       | Supplies the `overlay` multiplicity and bounds this record stays inside.                                     |
-| [Plugin UI Component Catalog](ui-component-catalog-candidate.md) (candidate)        | Its status-strip and detail recipes cover the header and list shapes used here.                              |
+| [Extension Component Catalog](extension-component-catalog-candidate.md) (candidate) | Its status-strip and detail patterns cover the header and list shapes used here.                             |
 
 ## Open points
 
@@ -769,8 +769,8 @@ extensibility category owner for the contract text.
   — debug scopes and the observability pipeline (the protocol side of tracing).
 - [Plugin UI Slot Inventory (Candidate)](plugin-ui-slot-inventory-candidate.md) —
   slot multiplicity and bounds.
-- [Plugin UI Component Catalog (Candidate)](ui-component-catalog-candidate.md) —
-  composition recipes over the v1 nodes.
+- [Extension Component Catalog (Candidate)](extension-component-catalog-candidate.md) —
+  composition patterns over the v1 nodes.
 - `bitty` at `23ff0f6c`:
   `crates/bitty-runtime/src/plugin_runtime/debug.rs` (trace ring, caps, drain
   counter, `parse_trace_opts`), `crates/bitty-lua/src/host.rs` (`ui` table,
