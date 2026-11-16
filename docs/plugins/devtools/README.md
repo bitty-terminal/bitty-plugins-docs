@@ -29,16 +29,16 @@ verification, and the candidate GUI live view remains unimplemented.
 
 ## Identity
 
-| Field             | Value                                                                                |
-| ----------------- | ------------------------------------------------------------------------------------ |
-| Plugin id         | `bitty-featured.devtools`                                                            |
-| Name              | Bitty DevTools                                                                       |
-| Package version   | 0.1.0                                                                                |
-| Owning repository | <https://github.com/bitty-terminal/devtools>                                         |
-| Lua module        | `lua/devtools/`                                                                      |
-| Capabilities      | `debug.inspect`, `debug.trace`, `platform.notify`                                    |
-| Lazy commands     | `plugins`, `commands`, `events`, `grants`, `trace-start`, `trace-stop`, `trace-dump` |
-| Lazy events       | Nine v1 observation kinds; see [schemas](schemas.md)                                 |
+| Field             | Value                                                                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Plugin id         | `bitty-featured.devtools`                                                                                                                                   |
+| Name              | Bitty DevTools                                                                                                                                              |
+| Package version   | 0.2.1                                                                                                                                                       |
+| Owning repository | <https://github.com/bitty-terminal/devtools>                                                                                                                |
+| Lua module        | `lua/devtools/`                                                                                                                                             |
+| Capabilities      | `debug.inspect`, `debug.trace`, `platform.notify`                                                                                                           |
+| Lazy commands     | `plugins`, `commands`, `events`, `grants`, `trace-start`, `trace-stop`, `trace-dump`, `view-open`, `view-close`, `view-toggle`, `view-pause`, `view-resume` |
+| Lazy events       | Nine v1 observation kinds; see [schemas](schemas.md)                                                                                                        |
 
 ## Pages
 
