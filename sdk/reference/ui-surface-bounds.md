@@ -153,10 +153,13 @@ Binding bounds, all fail-closed at the bridge (`bitty-lua/src/ui.rs`):
 | Region identity                | 64 bytes  | `UI_MAX_REGION_ID_BYTES:262`     |
 
 Host-injected arguments are reserved out of the 16-entry cap rather than added
-to it, so a region-aware binding declares at most 14 (click) or 15 (scroll)
-arguments (`../plugin-api-v1-lua-surface-rfc.md` and `bitty-ui`'s
-`band_click_args_table`); a declared entry whose name collides with a host key
-is overwritten, never duplicated (`ui.rs:269`, `:275`, `:291`).
+to it: the bridge caps a declaration at `UI_CLICK_MAX_ARGS` minus the host keys
+it does not already name (`ui.rs:1281`), so a region-aware binding may declare
+at most 14 (click reserves `region` and `button`) or 15 (scroll reserves
+`region` and `delta`), and an unbound click may declare all 16. The host merges
+its own keys last, overwriting a declared entry of the same name rather than
+duplicating it (`band_click_args_table`, `band_host.rs:1147`;
+`band_hover_args_table`, `band_host.rs:1388`).
 
 ## Landed style table
 
