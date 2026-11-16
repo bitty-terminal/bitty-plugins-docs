@@ -831,9 +831,11 @@ A revision of this catalog that moved to `accepted` would need at least:
    contract.
 4. **No style on the band or overlay path.** The `style` table is parsed for the
    rich vocabulary only; on a band or overlay node it is an unknown optional key
-   that the bridge tolerates and the paint path ignores. A rounded band, capsule,
-   tooltip, or sheet therefore needs the band path to consume the style table — a
-   separate decision with its own budget and paint consequences.
+   that the bridge tolerates, that the paint path ignores, and that the mount
+   path now reports once per generation so the author learns it painted nothing.
+   A rounded band, capsule, tooltip, or sheet therefore needs the band path to
+   consume the style table — a separate decision with its own budget and paint
+   consequences.
 5. **No fill token in the style table.** `border_token` colours a stroke; a styled
    node has no way to name a fill, so radius and token fill cannot be combined
    today. That is the single missing primitive between "square padded capsule" and
@@ -843,19 +845,32 @@ A revision of this catalog that moved to `accepted` would need at least:
    restyle-on-state pattern would need a state vocabulary the surface does not
    have.
 7. **The `bitty.ui` reference page lags the build.** Its pinned revision does not
-   yet document `on_hover`, the `anchor` group field, or the `style` table. This
-   catalog quotes the shipped behaviour and names the gap; syncing that reference
-   page is a documentation task in this repository, not a contract change.
+   yet document `on_hover`, the `anchor` group field, or the `style` table. Those
+   three are now recorded with `bitty` `file:line` evidence in
+   [bitty.ui Surface Bounds and Capability Boundary](../sdk/reference/ui-surface-bounds.md);
+   reconciling the reference page's own placement table is a remaining
+   documentation task in this repository, not a contract change.
 8. **Per-slot aggregate bounds across plugins**, which would bound a composing
    band's total size, are still an open inventory question.
 9. **Ownership of a shared implementation**, if these patterns ever become a
    versioned library, remains unresolved (`bitty-ui-core` direction, candidate and
    unowned).
 
+### Resolved by the landed build
+
+- **The band path does not consume the `style` table.** The rich vocabulary hosts
+  `style = { padding, radius, border, border_token }`; on a band or overlay node
+  the same key is an unknown optional field that mounts, paints nothing, and is
+  reported once per generation so the author learns the declaration did not take
+  effect. The key set, caps, the one-stroke-per-node rule, and that loud-drop path
+  are recorded in
+  [bitty.ui Surface Bounds and Capability Boundary](../sdk/reference/ui-surface-bounds.md).
+  Whether the band path should one day _paint_ the table stays an
+  accepted-extension decision owned by the terminal-side contract, so this record
+  no longer puts the question as if its answer were unknown.
+
 ### Decisions still required
 
-- Whether the band path should consume the `style` table, and what its paint and
-  budget consequences would be.
 - Whether the style table gains a fill token, and whether that token belongs to the
   theme content style rather than the node declaration.
 - Whether an anchored popup surface becomes a primitive, and what anchoring
@@ -897,6 +912,9 @@ narrows authoring rather than widening authority.
 - [bitty.ui reference](../sdk/reference/ui.md) — band token table, binding shape,
   band-only dispatch, overlay style parity, overlay capture, presentation-only
   overlay, and per-generation bounds.
+- [bitty.ui Surface Bounds and Capability Boundary](../sdk/reference/ui-surface-bounds.md)
+  — closed slot, node, and style vocabularies, capability map, contract budgets,
+  one-stroke rule, style loud drop, and the not-in-v1 list.
 - [Scene Style Primitives (Candidate)](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/scene-style-primitives-candidate.md)
   — the four-primitive style table, its caps, and its resolution order.
 - [Plugin UI Slot Inventory (Candidate)](plugin-ui-slot-inventory-candidate.md) —

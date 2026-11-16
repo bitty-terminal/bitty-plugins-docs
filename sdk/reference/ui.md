@@ -621,6 +621,9 @@ depend on the removed name. The accepted RFC vocabulary was amended on
   accepted-contract amendment is tracked in issue
   [#2676](https://github.com/bitty-terminal/bitty/issues/2676) (not in scope
   for this reference).
+- [bitty.ui Surface Bounds and Capability Boundary](ui-surface-bounds.md)
+  (draft; closed slot, node, and style vocabularies, capability map, contract
+  budgets with `bitty` `file:line` evidence, and the not-in-v1 list)
 - `bitty-plugin-sdk` (issue #154, PR #155; `surface/bitty-plugin-api-v1.json`
   `ui.mount.errors` / `ui.update.errors`; `tests/mock-host.test.ts` timeout
   and block-budget coverage; `conformance/cases/36-ui-error-vocabulary.json`)
