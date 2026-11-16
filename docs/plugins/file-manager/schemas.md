@@ -48,10 +48,10 @@ requested.
 
 ## Lazy surface
 
-| Trigger  | Values                                                            |
-| -------- | ----------------------------------------------------------------- |
-| Commands | `bitty-terminal.file-manager:open`, `:preview`, `:rename`         |
-| Events   | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed` |
+| Trigger  | Values                                                              |
+| -------- | ------------------------------------------------------------------- |
+| Commands | `bitty-terminal.file-manager:open`, `:close`, `:preview`, `:rename` |
+| Events   | `terminal.cwd-changed`, `terminal.title-changed`, `focus.changed`   |
 
 Static triggers let the host register the plugin without creating a VM; the
 observation events refresh the cached snapshot-derived state. `:rename` is

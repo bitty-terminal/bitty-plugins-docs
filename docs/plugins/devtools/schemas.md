@@ -55,7 +55,8 @@ unknown identifiers fail validation and there is no allow-all identifier.
 ## Commands and trace events
 
 Lazy commands, each under `bitty-featured.devtools:`, are `plugins`, `commands`,
-`events`, `grants`, `trace-start`, `trace-stop`, and `trace-dump`. The bridge
+`trace-start`, `trace-stop`, `trace-dump`, `view-open`, `view-close`, `view-toggle`,
+`view-pause`, and `view-resume`. The bridge
 keeps `id`, `title`, `description`, and `run`; `args_schema`/`result_schema` are
 documentation only, so `trace-start` validates its own `filter` argument.
 

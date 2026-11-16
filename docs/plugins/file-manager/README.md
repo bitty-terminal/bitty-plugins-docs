@@ -33,7 +33,7 @@ usability.
 | ----------------- | ----------------------------------------------------------------- |
 | Plugin id         | `bitty-terminal.file-manager`                                     |
 | Name              | File Manager                                                      |
-| Package version   | 0.1.0                                                             |
+| Package version   | 0.1.3                                                             |
 | Owning repository | <https://github.com/bitty-terminal/file-manager>                  |
 | Lua module        | `lua/file-manager/`                                               |
 | Capabilities      | `terminal.semantic-read`, `ui.rich`, `fs.read:**`                 |
