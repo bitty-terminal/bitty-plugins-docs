@@ -58,3 +58,9 @@ captures with no host backend (commands, events, keymaps, tasks, timers) are
 Every namespace that has a page is linked above. A page may still describe a
 `not_implemented` surface: it records the accepted spelling and the failing
 default, not availability.
+
+One companion page sits outside the per-namespace set:
+[bitty.ui Surface Bounds and Capability Boundary](ui-surface-bounds.md) records
+the closed slot, node, and style vocabularies, the capability map, and the
+contract budgets of the `bitty.ui` scenes with `bitty` `file:line` evidence. It
+adds no namespace and no normative prose.
