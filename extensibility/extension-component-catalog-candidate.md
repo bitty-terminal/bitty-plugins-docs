@@ -1,6 +1,6 @@
 ---
 title: Extension Component Catalog (Candidate)
-description: Candidate catalog of reusable extension Scene composition patterns with scene shape style hooks slot capability caller evidence and current-build availability
+description: Candidate catalog of reusable extension Scene composition patterns with scene shape style and width hooks slot capability caller evidence and current-build availability
 category: extensibility
 audience: plugin-author
 document_type: specification
@@ -24,6 +24,25 @@ sidebar_order: 31
 > [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md).
 > Where a pattern needs something the current build does not carry, the entry
 > says so and is marked a **gap** instead of being sketched as if it worked.
+>
+> This revision extends all five entries with the two width hooks that landed in
+> the style table (`min_width`, `max_width`, six keys in total, both capped at
+> `1000` cells) and with a per-entry **contract** block: the closed-set slot the
+> pattern mounts into, the four v1 node kinds it composes, the bridge budget it
+> charges, and the command route its interaction takes. Each entry ends with a
+> proof status that separates _bridge-verified_ (the field parses and paints, and
+> `bitty` code proves it) from _caller-demonstrated_ (a shipped plugin already
+> does it) from _unverified_ (no artifact in this repository proves the
+> behaviour). The honest summary of the width work is negative and is stated
+> once, plainly, in [Width hooks](#width-hooks-what-the-landed-table-does-not-unlock):
+> the width hooks are rich-reader-only, so they do not reach any of the five
+> patterns on the surface each one belongs to, and no shipped plugin declares
+> them.
+>
+> No entry claims headed verification, because none exists: this revision
+> produced no screenshot, no run log, and no headed lane. The examples are
+> headed listings — complete scenes with their manifest grant — and they are
+> illustrations, not test results.
 >
 > This record **supersedes** the earlier
 > [Plugin UI Component Catalog](ui-component-catalog-candidate.md), which was
@@ -51,9 +70,11 @@ In scope:
 
 - E-1 edge band, E-2 pill row, E-3 tooltip and detail fallback, E-4 modal
   sheet, E-5 status strip.
-- For every entry: scene shape, style hooks, slot and capability, caller
-  evidence at `file:line`, accessibility notes, bounds, and a headed Lua
-  example.
+- For every entry: scene shape, style hooks (including which width hooks reach
+  the entry's surface), slot and capability, caller evidence at `file:line`,
+  accessibility notes, bounds, a contract block, and a headed Lua example.
+- A per-entry proof status: what is bridge-verified, what a shipped caller
+  demonstrates, and what is `unverified` or a `gap`.
 - A per-entry availability verdict against the **current build**: **shipped**,
   **partial**, or **gap**.
 - The explicit residual list, including the one deliverable this record does not
@@ -97,9 +118,16 @@ Out of scope and owned elsewhere:
   `SCN-1`..`SCN-5` — 2048 nodes, depth 32, 256 KiB text per block, 2 MiB
   aggregated rich bytes, 64 blocks per terminal.
 - [Scene Style Primitives](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/scene-style-primitives-candidate.md)
-  (candidate, shipped as a bridge slice): the closed four-primitive `style`
-  table, its units, its inclusive caps `32` / `16` / `16`, its six-name closed
-  content-token set, and its per-field resolution order.
+  (candidate, shipped as a bridge slice): the closed style table, its units, its
+  inclusive caps `32` / `16` / `16` / `1000` / `1000`, its six-name closed
+  content-token set, and its per-field resolution order. The candidate text
+  closes the _paint_ set at four primitives
+  (`scene-style-primitives-candidate.md:145`), while the bridge parses six keys
+  (`UI_STYLE_FIELDS`, `bitty-lua/src/ui_style.rs:119-126`): the two width bounds
+  are landed code ahead of the candidate text, recorded there as the resolution
+  of the same record's size-constraint gap row (`ui_style.rs:3-12`). This
+  catalog describes the bridge, and says which of the two a statement comes
+  from.
 - [bitty.ui reference](../sdk/reference/ui.md) (draft; current host fact at its
   pinned revision): the band token table, the `bold` double strike, the
   `on_click` / `on_scroll` binding shape with `region` identities, band-only
@@ -123,23 +151,26 @@ widen a bound it quotes.
 
 ## Terminology
 
-| Term            | Meaning in this document                                                                                                                                                                     |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pattern         | A named composition of shipped scene nodes, style hooks, and bindings. Documentation, not API.                                                                                               |
-| Scene shape     | The node tree a pattern mounts, written with the four v1 kinds.                                                                                                                              |
-| Band vocabulary | The four-kind declarative surface `bitty.ui.mount` accepts for every band and the overlay: `Text`, `Row`, `Column`, `List`.                                                                  |
-| Rich vocabulary | The nine-kind declarative surface the `terminal` slot reads, which is the only surface that accepts a `style` table.                                                                         |
-| Style hook      | A field the host paints: `fg`, `bg`, `bold` on the band vocabulary; `style = { padding, radius, border, border_token }` on the rich vocabulary.                                              |
-| Token           | A host-resolved name. Band colour tokens are `foreground`, `background`, `cursor`, `selection`, `accent`. Style border tokens are the six `content.*` / `state.*` names. Never a raw colour. |
-| Group           | A `Row` child of a band root carrying `anchor = "left" \| "center" \| "right"`.                                                                                                              |
-| Atom            | One `Text` leaf — the only node that carries visible characters.                                                                                                                             |
-| Caller evidence | The shipped plugin file and line that hand-rolls the pattern today.                                                                                                                          |
-| Availability    | **Shipped** (usable with shipped spellings), **partial** (one rung works, another does not exist), **gap** (not expressible; no API invented here).                                          |
+| Term            | Meaning in this document                                                                                                                                                                                                                                                                   |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Pattern         | A named composition of shipped scene nodes, style hooks, and bindings. Documentation, not API.                                                                                                                                                                                             |
+| Scene shape     | The node tree a pattern mounts, written with the four v1 kinds.                                                                                                                                                                                                                            |
+| Band vocabulary | The four-kind declarative surface `bitty.ui.mount` accepts for every band and the overlay: `Text`, `Row`, `Column`, `List`.                                                                                                                                                                |
+| Rich vocabulary | The nine-kind declarative surface the `terminal` slot reads, which is the only surface that accepts a `style` table.                                                                                                                                                                       |
+| Style hook      | A field the host paints: `fg`, `bg`, `bold` on the band vocabulary; `style = { padding, radius, border, border_token }` on the rich vocabulary.                                                                                                                                            |
+| Token           | A host-resolved name. Band colour tokens are `foreground`, `background`, `cursor`, `selection`, `accent`. Style border tokens are the six `content.*` / `state.*` names. Never a raw colour.                                                                                               |
+| Group           | A `Row` child of a band root carrying `anchor = "left" \| "center" \| "right"`.                                                                                                                                                                                                            |
+| Atom            | One `Text` leaf — the only node that carries visible characters.                                                                                                                                                                                                                           |
+| Caller evidence | The shipped plugin file and line that hand-rolls the pattern today.                                                                                                                                                                                                                        |
+| Availability    | **Shipped** (usable with shipped spellings), **partial** (one rung works, another does not exist), **gap** (not expressible; no API invented here), **unverified** (landed in the bridge, but no shipped caller or artifact proves the behaviour the entry describes).                     |
+| Proof status    | The evidence level an entry reaches: _bridge-verified_ (a field parses and paints, shown at `bitty` `file:line`), _caller-demonstrated_ (a shipped plugin already hand-rolls it, shown at plugin `file:line`), or **unverified** / **gap** as above. No entry reaches headed verification. |
+| Composition     | The entry's node tree written with the four v1 kinds only. Not a Rust type, not a constructor, not a capability.                                                                                                                                                                           |
 
-Every entry carries the same six fields: scene shape, style hooks, slot and
-capability, caller evidence, accessibility notes, and bounds, plus a headed
-example. Availability is stated first, because a pattern that needs a missing
-primitive is not a pattern.
+Every entry carries the same seven fields: a contract block (slot, nodes,
+style/width hooks, interaction route, budget), scene shape, style hooks, slot
+and capability, caller evidence, accessibility notes, and bounds, plus a headed
+example and a proof status. Availability is stated first, because a pattern that
+needs a missing primitive is not a pattern.
 
 ## Two vocabularies, one catalog
 
@@ -148,21 +179,24 @@ The single most common source of wrong advice about this surface is treating
 and a field accepted by one is either ignored or rejected by the other. The
 catalog entries are written against this table.
 
-| Field                                               | Band vocabulary (`top`, `bottom`, `left`, `right`, `overlay`)                                   | Rich vocabulary (`terminal`)                                 |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `Text`, `Row`, `Column`, `List`                     | Accepted                                                                                        | Accepted                                                     |
-| `Block`, `Image`, `CodeBlock`, `Table`, `Rule`      | Rejected (`E_UI_COMPONENT_INVALID`)                                                             | Accepted                                                     |
-| `fg` / `bg` theme tokens                            | Accepted; closed five-name table, unknown well-formed names fall back and are counted           | **Rejected**                                                 |
-| `bold`                                              | Accepted on every kind                                                                          | Accepted on `Text`                                           |
-| `style = { padding, radius, border, border_token }` | Not part of the vocabulary; an unknown optional key this build tolerates and does **not** paint | Accepted; caps `32` / `16` / `16`; six-name closed token set |
-| `anchor` on a direct child of the root              | Accepted in a band scope; rejected on the root, below it, or in a non-band scope                | **Rejected**                                                 |
-| `on_click` / `on_scroll` / `on_hover`               | Accepted; dispatched from bands only, retained but not routed on the overlay                    | **Rejected**                                                 |
+| Field                                                                     | Band vocabulary (`top`, `bottom`, `left`, `right`, `overlay`)                                                                 | Rich vocabulary (`terminal`)                                                                              |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `Text`, `Row`, `Column`, `List`                                           | Accepted                                                                                                                      | Accepted                                                                                                  |
+| `Block`, `Image`, `CodeBlock`, `Table`, `Rule`                            | Rejected (`E_UI_COMPONENT_INVALID`)                                                                                           | Accepted                                                                                                  |
+| `fg` / `bg` theme tokens                                                  | Accepted; closed five-name table, unknown well-formed names fall back and are counted                                         | **Rejected**                                                                                              |
+| `bold`                                                                    | Accepted on every kind                                                                                                        | Accepted on `Text`                                                                                        |
+| `style = { padding, radius, border, border_token, min_width, max_width }` | Not part of the vocabulary; an unknown optional key this build tolerates, does **not** paint, and reports once per generation | Accepted; caps `32` / `16` / `16` / `1000` / `1000`; six-name closed token set                            |
+| `min_width` / `max_width` (inside `style`)                                | Not painted; a band keeps the width Core gives it                                                                             | Accepted; bounds the **content box** in cells, `0` = unbounded on that side, an inverted range is refused |
+| `anchor` on a direct child of the root                                    | Accepted in a band scope; rejected on the root, below it, or in a non-band scope                                              | **Rejected**                                                                                              |
+| `on_click` / `on_scroll` / `on_hover`                                     | Accepted; dispatched from bands only (overlay routing is not shipped: `ui.rs:46-49`)                                          | **Rejected**                                                                                              |
 
 Consequences a pattern author has to hold:
 
-1. A band cannot be rounded, padded, or bordered today. Declaring `style` on a
-   band node is inert: the band path keeps the accepted additive-minor tolerance
-   for unknown optional fields, so the key neither paints nor errors.
+1. A band cannot be rounded, padded, bordered, or sized today. Declaring `style`
+   on a band node is inert: the band path keeps the accepted additive-minor
+   tolerance for unknown optional fields, so the key neither paints nor errors —
+   and the host now says so once per generation, naming the surface and the
+   number of nodes that declared it (`services.rs:6754`).
 2. A rich node cannot be theme-filled. `style` carries a border colour, not a
    fill, and `bg` is rejected there — so "rounded capsule with an accent fill"
    is not expressible on either surface.
@@ -171,21 +205,141 @@ Consequences a pattern author has to hold:
 4. `style` costs one node and one depth level per styled node, because a
    non-flat declaration lowers to a wrapper. A tree at the node or depth ceiling
    that declares a style is refused, not admitted over budget.
+5. Width is a rich-reader concept. `min_width` and `max_width` bound the content
+   box in cells and are applied by Core's measure path
+   (`bitty-rich/src/scene.rs:428`); the band and overlay readers drop them with
+   the rest of the table. No pattern in this catalog is a rich-reader pattern,
+   so no pattern gains a width it can set — see
+   [Width hooks](#width-hooks-what-the-landed-table-does-not-unlock).
+
+## Entry contract: the bounds every entry inherits
+
+Seven properties hold for every entry below. Each is pinned in `bitty` code at
+`origin/main` (`527e0925`) rather than inherited from prose, and an entry that
+appears to break one is a documentation defect, not an extension.
+
+**Slots: the closed seven.** `terminal`, `top`, `bottom`, `left`, `right`,
+`tabline`, `overlay` (`UI_SLOTS`, `bitty-lua/src/ui.rs:182`, generated from
+`UiSlot::ALL` at `ui.rs:142` so the enum, the string list, and the parser cannot
+disagree). `statusline` is **retired**: it is not one of the seven, `ui.mount`
+rejects the name with `E_UI_COMPONENT_INVALID` before any host call, and a test
+pins the rejection alongside `Statusline`, `status`, `workspaceline`, and `tabs`
+(`ui.rs:1455-1470`). It appears in this document only as the retired spelling.
+Three placement facts decide which entry may claim which slot:
+
+- `top` / `bottom` are one-row bands, and they are the only surfaces where a
+  declared `anchor` resolves: the scope selector maps `Top | Bottom` to
+  `UiSceneScope::Band` and everything else to `Unanchored`
+  (`services.rs:6749`; scope enum `ui.rs:380-386`).
+- `left` / `right` are **column** bands: the root must be column-shaped
+  (`Column` or `List`, or an axis-neutral `Text`), so a `Row`-rooted entry — E-1
+  and E-5 — cannot mount there at all, and an `anchor` inside one is refused
+  because the surface is `Unanchored` (`band_slots.rs:36-38`, `:241-259`;
+  `services.rs:6745-6748`). A column band's width is the widest direct child of
+  its root in display cells, so the scene sets the band thickness even though the
+  band cannot carry `style`.
+- `tabline` is an exclusive claim over Core tab-projection state and has no host
+  in this build: a mount fails `E_UI_UNAVAILABLE` and the slot is
+  `NeverPresented` (`band_slots.rs:163-165`, `:226`). No entry uses it.
+
+**Nodes: four kinds.** `Text`, `Row`, `Column`, `List`
+(`UI_V1_NODE_KINDS`, `ui.rs:208`). `Block`, `Image`, `CodeBlock`, `Table`, and
+`Rule` are v1-excluded (`UI_V1_EXCLUDED_NODE_KINDS`, `ui.rs:211`) and refused by
+name (`ui.rs:922`). The `terminal` slot is read by a second reader that accepts
+all nine kinds (`ui_rich.rs:113`, `:119`), but no entry here uses the extra
+five: an entry states a composition in the intersection, so the same shape means
+the same thing whichever reader evaluates it.
+
+**Style: six keys, rich reader only.** `padding` (cells, cap 32), `radius`
+(physical px, cap 16), `border` (physical px, cap 16), `border_token` (closed
+six-name content set), `min_width` and `max_width` (cells, cap 1000 each) —
+`UI_STYLE_FIELDS`, `ui_style.rs:119-126`; caps `ui_style.rs:131-156`. `0` means
+"no constraint" on a width side, and a floor above the cap is refused rather
+than reordered (`ui_style.rs:414-424`). Width bounds the **content box** inside
+`padding`, and Core applies them in the measure path
+(`SceneNodeStyle::constrain_width`, `bitty-rich/src/scene.rs:428`): the plugin
+declares a range and never runs layout.
+
+**Budgets: five numbers, per generation.** 2048 nodes (`UI_MAX_NODES`,
+`ui.rs:217`), depth 16 (`UI_MAX_DEPTH`, `ui.rs:214`, deliberately stricter than
+accepted `SCN-2 = 32`), 256 KiB text (`UI_MAX_TEXT_BYTES`, `ui.rs:220`), 64
+retained blocks (`UI_MAX_BLOCKS`, `ui.rs:224`), 2 MiB retained strings
+(`UI_MAX_AGGREGATED_TEXT_BYTES`, `ui.rs:232`). A non-flat style — padding,
+radius, border, or either width — is a wrapper node, so it charges one node and
+one depth level on top of what it styles (`ui_style.rs:93-105`), and a tree at a
+ceiling is refused rather than wrapped.
+
+**Interaction: registered commands only.** `on_click`, `on_scroll`, and
+`on_hover` are data shaped `{ command, args, region? }`; no field accepts a
+function, no render or input hot path enters the plugin VM, and no entry
+declares or implies a capability (`ui.rs:11-20`; style parsing is a pure
+cold-path function, `ui_style.rs:85-90`). Hover requires a `region` and receives
+`phase`, never coordinates (`UI_HOVER_PHASE_ARG`, `ui.rs:308`). Colours are
+theme tokens and never literals; neither reader carries a shader, image, path, or
+renderer handle, and no node reads terminal text.
+
+**An entry is composition guidance, not a class.** Nothing here is a Rust type,
+a constructor, a capability, or an error code. An entry names a shape an author
+writes in Lua from the four kinds plus the style table, and names the shipped
+caller that proves the shape is in use today.
+
+**Examples are not verification.** Every entry ends with a headed listing — a
+complete scene plus the manifest grant and command registration it needs, written
+to be run as one file. None has been executed against a headed host for this
+revision: there is no screenshot, no run log, and no headed lane anywhere in this
+repository. An example is an illustration, and no entry may be cited as headed
+verification.
 
 ## Catalog
 
-| ID  | Pattern                   | Scene shape                                                   | Style hooks                                                           | Slot(s)                    | Required capability                                                                      | Hand-rolled today                                                                                                                                                           | Availability                                                                              |
-| --- | ------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| E-1 | Edge band                 | `Row` root, up to three anchored `Row` groups of `Text` atoms | `fg`, `bg`, `bold` on atoms and groups; no padding, radius, or border | `top`, `bottom`            | `ui.rich`                                                                                | `bar/lua/bar/init.lua:4336`, `:4474`, `:4746`; `file-manager/lua/file-manager/init.lua:38`, `:222`; `devtools/lua/devtools/view.lua:45`, `:400`                             | **Shipped** (band vocabulary)                                                             |
-| E-2 | Pill row                  | `Row` of padded `Text` capsules inside a band group           | `fg`, `bg`, `bold`; radius unavailable on the band path               | `top`, `bottom`            | `ui.rich`                                                                                | `bar/lua/bar/init.lua:104`-`:114`, `:1945`, `:1966`-`:1990`                                                                                                                 | **Shipped** as square capsules; rounded pill is a **gap**                                 |
-| E-3 | Tooltip / detail fallback | Band `Text` with `on_hover` + one retained overlay `Text`     | Band fields on the trigger; same token table on the overlay tooltip   | `top`, `bottom`, `overlay` | `ui.rich` + `ui.overlay`                                                                 | `bar/lua/bar/init.lua:1576`, `:4701`-`:4745`, `:4964`-`:5000`                                                                                                               | **Partial**: inline, hover-overlay, and notify rungs shipped; anchored popup is a **gap** |
-| E-4 | Modal sheet               | `Column` of `Text` rows in the overlay (no backdrop, no trap) | Band fields only; non-modal by contract                               | `overlay`                  | `ui.rich` + `ui.overlay` (+ `ui.overlay.focus` for keys, or `ui.present` for paint-only) | `git-panel/lua/git-panel/init.lua:680`, `:689`; `history/lua/history/init.lua:809`, `:840`; `palette/lua/palette/init.lua:225`, `:230`; `help/lua/help/init.lua:470`-`:498` | **Gap** for modality; the non-modal substitutes are shipped                               |
-| E-5 | Status strip              | `Row` root, anchored groups of module `Text` atoms            | `fg`, `bg`, `bold` per module; single-space join, no separators       | `bottom`                   | `ui.rich` + provider read caps                                                           | `bar/lua/bar/init.lua:141`-`:158`, `:4453`-`:4479`, `:2168`, `:2808`                                                                                                        | **Shipped** (band vocabulary)                                                             |
+| ID  | Pattern                   | Scene shape                                                   | Style hooks                                                                              | Slot(s)                    | Required capability                                                                      | Hand-rolled today                                                                                                                                                           | Availability                                                                              |
+| --- | ------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| E-1 | Edge band                 | `Row` root, up to three anchored `Row` groups of `Text` atoms | `fg`, `bg`, `bold` on atoms and groups; no padding, radius, border, or width             | `top`, `bottom`            | `ui.rich`                                                                                | `bar/lua/bar/init.lua:4336`, `:4474`, `:4746`; `file-manager/lua/file-manager/init.lua:38`, `:222`; `devtools/lua/devtools/view.lua:45`, `:400`                             | **Shipped** (band vocabulary)                                                             |
+| E-2 | Pill row                  | `Row` of padded `Text` capsules inside a band group           | `fg`, `bg`, `bold`; radius and width unavailable on the band path                        | `top`, `bottom`            | `ui.rich`                                                                                | `bar/lua/bar/init.lua:104`-`:114`, `:1945`, `:1966`-`:1990`                                                                                                                 | **Shipped** as square capsules; rounded pill is a **gap**                                 |
+| E-3 | Tooltip / detail fallback | Band `Text` with `on_hover` + one retained overlay `Text`     | Band fields on the trigger; same token table on the overlay tooltip; no `style` or width | `top`, `bottom`, `overlay` | `ui.rich` + `ui.overlay`                                                                 | `bar/lua/bar/init.lua:1576`, `:4701`-`:4745`, `:4964`-`:5000`                                                                                                               | **Partial**: inline, hover-overlay, and notify rungs shipped; anchored popup is a **gap** |
+| E-4 | Modal sheet               | `Column` of `Text` rows in the overlay (no backdrop, no trap) | Band fields only; non-modal by contract; no `style` or width                             | `overlay`                  | `ui.rich` + `ui.overlay` (+ `ui.overlay.focus` for keys, or `ui.present` for paint-only) | `git-panel/lua/git-panel/init.lua:680`, `:689`; `history/lua/history/init.lua:809`, `:840`; `palette/lua/palette/init.lua:225`, `:230`; `help/lua/help/init.lua:470`-`:498` | **Gap** for modality; the non-modal substitutes are shipped                               |
+| E-5 | Status strip              | `Row` root, anchored groups of module `Text` atoms            | `fg`, `bg`, `bold` per module; single-space join, no separators; no width                | `bottom`                   | `ui.rich` + provider read caps                                                           | `bar/lua/bar/init.lua:141`-`:158`, `:4453`-`:4479`, `:2168`, `:2808`                                                                                                        | **Shipped** (band vocabulary)                                                             |
+
+### Entry composition register
+
+The same five entries written as the two facts a contract review needs: which of
+the four v1 kinds each one composes, and whether the width hooks reach the
+surface it belongs to.
+
+| ID  | Node composition (v1 kinds only)                   | Composed depth | Slots, from the closed seven     | Width hooks reach it                                                        | Proof status                                                                        |
+| --- | -------------------------------------------------- | -------------- | -------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| E-1 | `Row` root → `Row`(anchor) groups → `Text` atoms   | 3              | `top`, `bottom`                  | No: the band reader drops `style`                                           | bridge-verified + caller-demonstrated; width **gap**                                |
+| E-2 | `Row` group → `Text` capsule, `Text` separators    | 3              | `top`, `bottom` (via E-1 or E-5) | No on a band; the rich reader accepts `min_width` but rejects the `bg` fill | caller-demonstrated as a square fill; rounded or uniform filled pill **gap**        |
+| E-3 | band `Text` trigger + one `overlay` `Text`         | 1 per surface  | `top`, `bottom`, `overlay`       | No: the overlay drops `style`; rich-path text shaping **unverified**        | caller-demonstrated rungs 1-3; anchored popup **gap**                               |
+| E-4 | `Column` → `Text` rows                             | 2              | `overlay`                        | No: the overlay drops `style`                                               | caller-demonstrated as capture / paint-only substitutes; modality and width **gap** |
+| E-5 | `Row` root → `Row`(anchor) groups → `Text` modules | 3              | `bottom`                         | No: the band reader drops `style`                                           | bridge-verified + caller-demonstrated; width **gap**                                |
+
+Read the fourth and fifth columns together: no entry's surface accepts the width
+hooks, so a width statement appears in an entry only to say what does not apply.
+The reason is structural, not incidental — every entry here lives on a band, the
+overlay, or both, and the rich reader that hosts `min_width`/`max_width` is the
+`terminal` slot's reader.
+
+No entry uses `left`, `right`, or `tabline`: the first two require a
+column-shaped root, and the third has no host. No entry uses `Block`, `Image`,
+`CodeBlock`, `Table`, or `Rule`, all of which are v1-excluded.
 
 ## E-1 Edge band
 
 **Availability: shipped on the band vocabulary.** Mounts into `top` or
 `bottom` under `ui.rich`.
+
+**Contract.** Slot: `top` or `bottom`, two of the closed seven. Not `left` or
+`right` — both are column bands and refuse a row-shaped root
+(`band_slots.rs:36-38`, `:241-259`) — and not `tabline`, which has no host.
+Nodes: `Row` root → up to three anchored `Row` groups → `Text` atoms, three
+levels, nothing else. Style hooks: `fg`, `bg`, `bold` on the band reader. Width:
+**not reachable** — a `style` declaration on this surface is dropped and reported
+once per generation (`services.rs:6754`), so a band's thickness and width stay
+Core's decision. Interaction: `on_click`, `on_scroll`, `on_hover`, each with a
+`region` identity and a registered command. Budget: one block, 3 of the 16 depth
+levels, one atom per item. Proof: bridge-verified and caller-demonstrated for the
+band fields; width is a **gap**.
 
 **Scene shape.** One `Row` root with up to three anchored groups, each a `Row`
 of atoms, emitted only when non-empty:
@@ -295,6 +449,18 @@ bitty.ui.update(handle, band("9%")) -- true: the subtree is replaced, the handle
 **Availability: shipped as square capsules.** Radius is unavailable on the band
 path, so the shipped form is a padded square fill.
 
+**Contract.** Slot: inside E-1 or E-5, so `top` or `bottom` — not `left`/`right`
+(column root required) and not `tabline`. Nodes: `Row` group → `Text` capsule,
+with single-space `Text` separators; there is no `Capsule`, `Button`, `Badge`, or
+`Tab` kind in the v1 set (`ui.rs:208`). Style hooks: `fg`, `bg`, `bold`. Width:
+**not reachable on a band**, and on the rich reader `min_width` arrives without a
+fill — `bg` is rejected there (`ui_rich.rs:70-75`) — so equal-width, filled pills
+remain a **gap** on both surfaces. Interaction: `on_click` / `on_hover` with a
+per-capsule `region`. Budget: one atom per capsule and no per-pill block; a
+region-aware binding reserves `region` and `button`, leaving at most 14 declared
+arguments of the 16-entry cap. Proof: caller-demonstrated as a square padded
+fill; the rounded or width-equalised filled pill is a **gap**.
+
 **Scene shape.** Each pill is one `Text` atom whose visible string is
 `" " .. label .. marks .. " "`. The padding belongs to the same atom as the
 fill, so the capsule is one run and one hit target:
@@ -323,10 +489,10 @@ Two hard limits follow from the surface, and both are load-bearing:
   rounded pill needs the band path to consume the `style` table, which it does
   not do today: `style` on a band node is an unknown optional key that the
   bridge tolerates and the band paint path never reads.
-- On the rich vocabulary, where `padding`, `radius`, and `border` do work,
-  `fg`/`bg` are rejected. A rounded, bordered capsule with a token fill
-  therefore needs a fill token that the style table does not have — a gap, not a
-  recipe.
+- On the rich vocabulary, where `padding`, `radius`, `border`, and the two width
+  bounds do work, `fg`/`bg` are rejected. A rounded, bordered, width-equalised
+  capsule with a token fill therefore needs a fill token that the style table
+  does not have — a gap, not a recipe.
 
 **Slot and capability.** Composes inside E-1 or E-5 (`top`, `bottom`);
 `ui.rich`.
@@ -392,6 +558,21 @@ local handle = bitty.ui.mount("bottom", {
 
 **Availability: partial.** Three rungs ship; the rung an author usually means
 by "tooltip" — a popup anchored against its trigger — does not exist.
+
+**Contract.** Slots: `top` or `bottom` for the trigger, `overlay` for the
+tooltip — the only three of the seven this entry may name, and `overlay` needs
+`ui.overlay` in addition to `ui.rich`. Nodes: one band `Text` trigger plus one
+retained overlay `Text` (or `Column` of `Text` rows for a taller card); no richer
+kind is used. Style hooks: band fields on both surfaces, because the band and
+overlay hosts share one paint path. Width: **not reachable on either surface** —
+the overlay drops `style` like the band does (`services.rs:6754`). On the rich
+reader `max_width` would bound a tooltip body, but no shipped tooltip lives on
+that surface, and whether a narrowed content box wraps, clips, or overflows is
+**unverified**: `constrain_width` sizes the box (`bitty-rich/src/scene.rs:428`)
+and no artifact this catalog can cite pins the shaping inside it. Interaction:
+`on_hover` dispatches a registered command with a `region` and an injected
+`phase`. Proof: caller-demonstrated for rungs 1-3; the anchored popup is a
+**gap**; rich-path wrapping is **unverified**.
 
 **Scene shape.** A fallback ladder, in preference order:
 
@@ -530,6 +711,17 @@ field, or call carries any of the four, and the single modal authority stays
 Core-owned. This entry records the absence and the non-modal substitutes; it is
 not a design for a plugin modal.
 
+**Contract.** Slot: `overlay`, one of the seven, presented only while the
+generation owns the transient capture or an active presentation session
+(`band_slots.rs:226`). Nodes: `Column` → `Text` rows. Style hooks: band fields
+only. Width: **not reachable** — `max_width` binds a node on the rich reader,
+which is the `terminal` slot, and `terminal` is content rather than a modal
+surface; the overlay drops `style` altogether. A width-stable sheet is therefore
+a **gap**, like every other modal property. Interaction: keys arrive only through
+the capture session under `ui.overlay.focus`; no callback of the pattern's runs
+on the input path. Proof: caller-demonstrated for the capture and paint-only
+substitutes; modality, backdrop, focus trap, and width are **gap**.
+
 **Scene shape.** The nearest shipped shape is a `Column` of `Text` rows on the
 overlay, with no scrim and no trap:
 
@@ -643,6 +835,18 @@ end
 `ui.rich`. There is no status slot: `statusline` was retired from the slot
 vocabulary, and status presentation is a `bottom`-band composition.
 
+**Contract.** Slot: `bottom`, one of the seven. Not `left` or `right` — both want
+a column-shaped root, and this entry's root is a `Row` — and not `tabline`, which
+has no host. Nodes: `Row` root → anchored `Row` groups → `Text` module atoms
+joined by single-space `Text` separators, three levels. Style hooks: per-module
+`fg`, `bg`, `bold` on the band reader. Width: **not reachable** — a module's
+width is its text and the band's width is Core's; a `style` declaration here is
+dropped and reported once per generation (`services.rs:6754`). Interaction: a
+clickable module binds a registered command with a `region`; a read-only module
+binds nothing rather than binding a command that will be denied. Budget: one
+block, one atom per module, 3 of the 16 depth levels. Proof: bridge-verified and
+caller-demonstrated; width is a **gap**.
+
 **Scene shape.** A `Row` root of module atoms in anchored groups. Modules are
 independent: one that cannot render emits no atom and no placeholder, and only
 that module disappears.
@@ -739,6 +943,50 @@ end
 local handle = bitty.ui.mount("bottom", strip({ clock = "12:04", cpu = "12%" }))
 ```
 
+## Width hooks: what the landed table does not unlock
+
+`min_width` and `max_width` are the newest two of the six style keys, and it is
+tempting to read them as the missing lever for equal-width capsules, a bounded
+tooltip, a fixed-width sheet, or a stable module column. They are not, on any of
+the five surfaces these entries use, and the reason is one line of scope
+selection rather than a gap in the primitives.
+
+| Entry | What `min_width` / `max_width` would do              | Reader that accepts it                 | Shipped caller using it | Verdict                                                                     |
+| ----- | ---------------------------------------------------- | -------------------------------------- | ----------------------- | --------------------------------------------------------------------------- |
+| E-1   | equalise or cap an anchored group                    | rich reader only; the band drops it    | none                    | **gap** on the band surface                                                 |
+| E-2   | give capsules one width, or fix a pill track's width | rich reader only; the band drops it    | none                    | **gap**: the rich reader rejects the `bg` fill a capsule needs              |
+| E-3   | bound a tooltip body                                 | rich reader only; the overlay drops it | none                    | **gap** for the shipped overlay rung; rich-path text shaping **unverified** |
+| E-4   | fix a sheet's width                                  | rich reader only; the overlay drops it | none                    | **gap**: the sheet surface is the overlay, which drops `style`              |
+| E-5   | bound a module readout                               | rich reader only; the band drops it    | none                    | **gap** on the band surface                                                 |
+
+Three conclusions, all negative, all worth recording rather than working around:
+
+1. **The width hooks do not close the pill gap.** E-2 needs a fill, `bg` belongs
+   to the band reader, and the width keys belong to the rich reader. A pill that
+   is both filled and width-equalised would need the band path to paint `style`
+   or the rich reader to accept a fill token; neither exists, so the missing
+   primitive is unchanged.
+2. **No shipped caller declares the table.** Across the published plugin
+   collection at `bitty-plugins@4197ff9`, no Lua source under `plugins/*/lua`
+   carries a `style` key, a `min_width`, or a `max_width` — and `on_hover`, the
+   one binding that would drive a rich-path tooltip, has a single caller, in
+   `bar`. Every rich-path statement in this document is therefore bridge-verified
+   and **caller-not-demonstrated**, and the entries say so rather than implying a
+   shipped consumer.
+3. **Width is a measure bound, and its text behaviour is unpinned here.** Core
+   clamps the content box (`SceneNodeStyle::constrain_width`,
+   `bitty-rich/src/scene.rs:428`), and a validated range is a two-sided clamp,
+   never a precedence rule. Whether a `Text` child of a narrowed box wraps,
+   clips, or overflows is not stated by any artifact this catalog cites, so any
+   entry that would depend on it is **unverified**, not shipped.
+
+A fourth fact belongs here because it is the one an author will trip over: the
+SDK reference page that owns the slot and budget tables is pinned at
+`bitty@94039dd1`, one increment before the width keys. It documents the
+four-key table; the bridge at `origin/main` (`527e0925`) parses six. Neither
+statement is wrong about its own revision, and this catalog cites the bridge by
+`file:line` so a reader can tell which revision a claim comes from.
+
 ## Security review
 
 These patterns change nothing about the security posture: each is a composition
@@ -787,6 +1035,18 @@ A revision of this catalog that moved to `accepted` would need at least:
 9. The caller-evidence paths in this document still resolve at the next revision;
    a pattern whose caller was deleted or renamed is retired rather than left
    stale.
+10. A width-hook test per entry surface: a rich `terminal` mount that declares
+    `min_width` / `max_width` inside the caps and asserts one extra node and one
+    extra depth level, plus a rejection test proving an inverted range fails
+    instead of being reordered.
+11. A drop test proving the same declaration on a band and on the overlay mounts,
+    reports once per generation through `ui_style_ignored`, and paints nothing.
+12. A vocabulary test proving no example in this document uses a kind outside
+    `Text | Row | Column | List` and no slot outside the seven — with
+    `statusline` rejected by name.
+13. A shaping test for the **unverified** item in E-3: a `Text` child of a
+    `max_width`-bounded box, asserting whether it wraps, clips, or overflows
+    before any entry describes tooltip wrapping as available.
 
 ## Alternatives considered
 
@@ -801,16 +1061,17 @@ A revision of this catalog that moved to `accepted` would need at least:
 
 ## Affected contracts
 
-| Contract                                                                                                                                                                | Effect                                                                                                                                      |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) (accepted)                                                                                     | Unchanged; the catalog composes only its accepted fields and gates.                                                                         |
-| [bitty.ui reference](../sdk/reference/ui.md) (draft)                                                                                                                    | Supplies the band token table, binding shape, dispatch scope, and budgets; its own hover, anchor, and `style` coverage is a residual below. |
-| [Plugin UI Slot Inventory](plugin-ui-slot-inventory-candidate.md) (candidate)                                                                                           | Supplies per-slot multiplicity and conflict rules the entries assume.                                                                       |
-| [Lua UI Component Model](lua-ui-component-model-candidate.md) (candidate)                                                                                               | Records the component library and accessibility direction these patterns precede.                                                           |
-| [Scene Style Primitives](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/scene-style-primitives-candidate.md) (candidate, shipped slice) | Supplies the `style` caps and token set the entries quote; the band path is outside it.                                                     |
-| [Plugin UI Component Catalog](ui-component-catalog-candidate.md) (deprecated)                                                                                           | Superseded by this record; retained as a pointer.                                                                                           |
-| [Cross-Plugin Composition](cross-plugin-composition-candidate.md) (candidate)                                                                                           | Would own any future shared pattern package or service.                                                                                     |
-| Theme Token Contract (candidate, terminal-side)                                                                                                                         | Owns token naming and the fail-closed disposition of unknown tokens.                                                                        |
+| Contract                                                                                                                                                                | Effect                                                                                                                                                                                                               |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Plugin API v1 Lua Surface RFC](../sdk/plugin-api-v1-lua-surface-rfc.md) (accepted)                                                                                     | Unchanged; the catalog composes only its accepted fields and gates.                                                                                                                                                  |
+| [bitty.ui reference](../sdk/reference/ui.md) (draft)                                                                                                                    | Supplies the band token table, binding shape, dispatch scope, and budgets; its own hover, anchor, and `style` coverage is a residual below.                                                                          |
+| [Plugin UI Slot Inventory](plugin-ui-slot-inventory-candidate.md) (candidate)                                                                                           | Supplies per-slot multiplicity and conflict rules the entries assume.                                                                                                                                                |
+| [Lua UI Component Model](lua-ui-component-model-candidate.md) (candidate)                                                                                               | Records the component library and accessibility direction these patterns precede.                                                                                                                                    |
+| [Scene Style Primitives](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/scene-style-primitives-candidate.md) (candidate, shipped slice) | Supplies the `style` caps and token set the entries quote. The candidate text closes at four primitives while the bridge parses six (`min_width`, `max_width`), and the band path is outside both — see residual 11. |
+| [bitty.ui Surface Bounds and Capability Boundary](../sdk/reference/ui-surface-bounds.md) (draft, pinned at `bitty@94039dd1`)                                            | Supplies the closed slot, node, and budget tables this record links instead of restating; its "Landed style table" section predates the two width keys, which this record cites from the bridge.                     |
+| [Plugin UI Component Catalog](ui-component-catalog-candidate.md) (deprecated)                                                                                           | Superseded by this record; retained as a pointer.                                                                                                                                                                    |
+| [Cross-Plugin Composition](cross-plugin-composition-candidate.md) (candidate)                                                                                           | Would own any future shared pattern package or service.                                                                                                                                                              |
+| Theme Token Contract (candidate, terminal-side)                                                                                                                         | Owns token naming and the fail-closed disposition of unknown tokens.                                                                                                                                                 |
 
 ## Open points
 
@@ -829,17 +1090,19 @@ A revision of this catalog that moved to `accepted` would need at least:
 3. **No modality.** E-4 stays a gap: no backdrop, focus trap, stacking tier,
    dismissal ownership, or announcement channel. The substitutes are non-modal by
    contract.
-4. **No style on the band or overlay path.** The `style` table is parsed for the
-   rich vocabulary only; on a band or overlay node it is an unknown optional key
-   that the bridge tolerates, that the paint path ignores, and that the mount
-   path now reports once per generation so the author learns it painted nothing.
-   A rounded band, capsule, tooltip, or sheet therefore needs the band path to
-   consume the style table — a separate decision with its own budget and paint
-   consequences.
+4. **No style on the band or overlay path, and no width there either.** The
+   `style` table is parsed for the rich vocabulary only; on a band or overlay node
+   it is an unknown optional key that the bridge tolerates, that the paint path
+   ignores, and that the mount path reports once per generation so the author
+   learns it painted nothing. That includes the two width keys: `min_width` and
+   `max_width` are as inert on a band as `radius` is. A rounded, padded, width-set
+   band, capsule, tooltip, or sheet therefore needs the band path to consume the
+   style table — a separate decision with its own budget and paint consequences.
 5. **No fill token in the style table.** `border_token` colours a stroke; a styled
-   node has no way to name a fill, so radius and token fill cannot be combined
-   today. That is the single missing primitive between "square padded capsule" and
-   a real pill.
+   node has no way to name a fill, so radius, width, and token fill cannot be
+   combined today. That is still the single missing primitive between "square
+   padded capsule" and a real pill, and the two width keys do not change it: they
+   let a rich node hold a width, not wear a fill.
 6. **No interaction-state styling.** There is no hover, focus, or selected state
    field, so highlighting a pill under the pointer requires a re-mount. A
    restyle-on-state pattern would need a state vocabulary the surface does not
@@ -855,24 +1118,66 @@ A revision of this catalog that moved to `accepted` would need at least:
 9. **Ownership of a shared implementation**, if these patterns ever become a
    versioned library, remains unresolved (`bitty-ui-core` direction, candidate and
    unowned).
+10. **No shipped caller declares the style table or either width key.** No Lua
+    source under `plugins/*/lua` in the published plugin collection
+    (`bitty-plugins@4197ff9`) carries `style`, `min_width`, or `max_width`, and
+    `on_hover` has exactly one caller, in `bar`. Every rich-path hook described
+    here is therefore bridge-verified and **caller-not-demonstrated**: the
+    primitives exist, and nothing shipped wears them. A caller would be the first
+    evidence that the shape works end to end, and no entry claims one.
+11. **The width keys are landed code ahead of the contract text.** The candidate
+    record still closes the paint set at four primitives
+    (`specifications/scene-style-primitives-candidate.md:145`), and the SDK page
+    that owns the slot and budget tables is pinned at `bitty@94039dd1` and
+    documents that four-key table
+    ([bitty.ui Surface Bounds and Capability Boundary](../sdk/reference/ui-surface-bounds.md),
+    "Landed style table"). The bridge at `origin/main` (`527e0925`) parses six
+    (`UI_STYLE_FIELDS`, `ui_style.rs:119-126`). Reconciling the two records with
+    the six-key bridge is a documentation task in those documents, not a
+    capability this catalog may claim on their behalf.
+12. **Narrowed-box text shaping is unverified.** `constrain_width` sizes a
+    content box (`bitty-rich/src/scene.rs:428`) and a validated range is a
+    two-sided clamp. Whether a `Text` child of a `max_width`-bounded box wraps,
+    clips, or overflows is pinned by no artifact this catalog can cite, so E-3
+    marks the width behaviour of a tooltip body **unverified** rather than
+    describing it as available.
+13. **`left` and `right` are column bands, so two entries cannot compose there.**
+    Both slots require a column-shaped root and validate as `Unanchored`
+    (`band_slots.rs:36-38`, `:241-259`; `services.rs:6749-6752`), which means the
+    `Row`-rooted entries E-1 and E-5 mount into `top`/`bottom` only. A vertical
+    variant is a different composition, and this catalog does not describe one.
 
 ### Resolved by the landed build
 
 - **The band path does not consume the `style` table.** The rich vocabulary hosts
-  `style = { padding, radius, border, border_token }`; on a band or overlay node
-  the same key is an unknown optional field that mounts, paints nothing, and is
-  reported once per generation so the author learns the declaration did not take
-  effect. The key set, caps, the one-stroke-per-node rule, and that loud-drop path
-  are recorded in
-  [bitty.ui Surface Bounds and Capability Boundary](../sdk/reference/ui-surface-bounds.md).
+  `style = { padding, radius, border, border_token, min_width, max_width }`; on a
+  band or overlay node the same key is an unknown optional field that mounts,
+  paints nothing, and is reported once per generation so the author learns the
+  declaration did not take effect. The key set, caps, the one-stroke-per-node
+  rule, and that loud-drop path are recorded in
+  [bitty.ui Surface Bounds and Capability Boundary](../sdk/reference/ui-surface-bounds.md)
+  (at that page's pinned revision, which predates the two width keys — see
+  residual 11).
   Whether the band path should one day _paint_ the table stays an
   accepted-extension decision owned by the terminal-side contract, so this record
   no longer puts the question as if its answer were unknown.
+- **Width is a declared range, not plugin layout.** `min_width` / `max_width`
+  bound the content box in cells, `0` means unbounded on that side, an inverted
+  range is refused, and Core clamps in the measure path
+  (`ui_style.rs:119-126`, `:414-424`; `bitty-rich/src/scene.rs:428`). The
+  question "can a plugin size its own node?" is answered for the rich reader; it
+  is a plain no for bands and the overlay, where the key never reaches a paint.
 
 ### Decisions still required
 
 - Whether the style table gains a fill token, and whether that token belongs to the
   theme content style rather than the node declaration.
+- Whether the band or overlay reader ever consumes `style` at all, and if so
+  whether it takes the two width keys with the rest of the table — a decision with
+  its own budget and paint consequences, since it would turn every `Row`-group
+  entry into a width-setting surface.
+- Whether a narrowed rich content box wraps, clips, or overflows, and which of the
+  three the catalog should describe for a bounded tooltip or sheet body.
 - Whether an anchored popup surface becomes a primitive, and what anchoring
   contract it would need to avoid leaking geometry to plugins.
 - Whether a plugin modal surface ever exists, and how it would relate to the single
@@ -889,21 +1194,37 @@ A revision of this catalog that moved to `accepted` would need at least:
 2. No entry implies a new node kind, slot, capability, budget, or error code.
 3. Each entry names a shipped caller at `file:line` and states whether the pattern
    is expressible today.
-4. Each entry carries a scene shape, style hooks, slot and capability,
-   accessibility notes, bounds, and a headed example.
-5. The residuals section states plainly that checkbox 3 (bar migration) remains
+4. Each entry carries a contract block, a scene shape, style hooks, slot and
+   capability, accessibility notes, bounds, a headed example, and a proof status.
+5. Every entry names the slot(s) it uses from the closed seven, and the retired
+   `statusline` name appears in no entry as a slot.
+6. Every entry's composition uses only `Text`, `Row`, `Column`, `List`; the five
+   v1-excluded kinds appear in no scene shape and in no example.
+7. Every entry states whether the style and width hooks reach its surface, marks a
+   hook the surface drops as a **gap**, and marks behaviour no artifact proves as
+   **unverified** rather than describing it as shipped.
+8. No entry, example, or summary is described as headed verification, and no
+   screenshot or run log is claimed.
+9. The residuals section states plainly that checkbox 3 (bar migration) remains
    open and is code, not documentation.
-6. Review by a plugin-ecosystem category owner and a docs curator, with
-   terminal-side coordination for any entry that touches host geometry or the
-   overlay contract.
-7. Acceptance happens through the owning contract (the UI component or slot
-   inventory track), not by flipping this record's status.
+10. Review by a plugin-ecosystem category owner and a docs curator, with
+    terminal-side coordination for any entry that touches host geometry or the
+    overlay contract.
+11. Acceptance happens through the owning contract (the UI component or slot
+    inventory track), not by flipping this record's status.
 
 ## P0 Review Sign-off
 
 Not applicable: no security boundary, capability, resource ceiling, or trust
 decision changes; every pattern is a composition of already-admitted pieces and
 narrows authoring rather than widening authority.
+
+## Revision history
+
+| Revision      | Change                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Initial       | Five entries (E-1 to E-5) with scene shape, style hooks, slot and capability, caller evidence at `file:line`, accessibility notes, bounds, and one headed example each; the residual list, including the open bar-migration deliverable.                                                                                                                                                                                |
+| This revision | Adds a per-entry contract block (closed-set slot, v1 node composition, style and width hooks, interaction route, budget footprint, proof status); a composition register; the `min_width` / `max_width` width hooks with an explicit statement that they reach no entry's surface; and residuals 10-13 covering caller absence, the four-key contract text, unverified narrowed-box shaping, and column-band placement. |
 
 ## References
 
