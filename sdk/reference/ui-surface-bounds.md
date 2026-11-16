@@ -75,8 +75,9 @@ Three more heads belong to the same capability family and are deliberately
 separate grants, none implied by another (`crates/bitty-plugin-host/src/capability.rs:152-161`):
 
 - `ui.overlay.focus` — the transient input-capture verbs
-  (`bitty.ui.overlay.acquire`/`update`/`release`/`poll`), deny-by-default
-  (`services.rs:2845`).
+  (`bitty.ui.overlay.acquire`/`update`/`poll`), deny-by-default
+  (`services.rs:2845`); `release` is deliberately ungated so a revoked grant
+  can still free input (`services.rs:2845` docs).
 - `ui.present` — presenting an already-mounted `overlay` block without capture
   (`bitty.ui.present.show`/`hide`), deny-by-default (`services.rs:2878`).
 - `ui.protocol-register` — protocol registration, unrelated to scene
