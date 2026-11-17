@@ -13,14 +13,16 @@ sidebar_order: 131
 
 > Status: **draft**. This page records the closed vocabularies, the capability
 > map, and the contract ceilings of the declarative `bitty.ui` surface as
-> implemented in `bitty` at `94039dd1`, covering the bounded composition work
+> implemented in `bitty` at `94039dd1`, with the style table re-read and
+> re-pinned against `bitty` main at `4bc0fce5` where the page says so, covering
+> the bounded composition work
 > tracked in bitty [#2191](https://github.com/bitty-terminal/bitty/issues/2191),
 > [#2411](https://github.com/bitty-terminal/bitty/issues/2411), and
 > [#3176](https://github.com/bitty-terminal/bitty/issues/3176). It carries no
 > compatibility promise and adds no requirement to the accepted
 > [Plugin API v1 Lua Surface RFC](../plugin-api-v1-lua-surface-rfc.md). Every
-> entry names the file and line that enforces it; anything the sources at that
-> revision do not show is not stated here.
+> entry names the file and the symbol or line that enforces it; anything the
+> sources at those revisions do not show is not stated here.
 
 ## Purpose and scope
 
@@ -165,62 +167,153 @@ duplicating it (`band_click_args_table`, `band_host.rs:1147`;
 ## Landed style table
 
 The style table is the boundary case of this whole page, so it is stated
-exactly. Four keys, closed, in the rich reader only:
+exactly: eight keys, closed, in the rich reader only. Every unit, default, and
+cap below is the bridge's own, re-read from `bitty` main at `4bc0fce5`
+(`crates/bitty-lua/src/ui_style.rs`), whose module doc is the normative
+primitive table and states the same numbers in prose. Citations in this section
+name the symbol rather than a line, because the table grew in three landed steps
+and a line pin would have rotted between them.
 
-| Key            | Unit        | Default              | Inclusive cap       | Evidence              |
-| -------------- | ----------- | -------------------- | ------------------- | --------------------- |
-| `padding`      | cells       | `0`                  | 32                  | `ui_style.rs:99`      |
-| `radius`       | physical px | `0`                  | 16                  | `ui_style.rs:104`     |
-| `border`       | physical px | `0`                  | 16                  | `ui_style.rs:109`     |
-| `border_token` | theme token | `content.foreground` | closed six-name set | `ui_style.rs:118-163` |
+| Key            | Unit        | Default              | Inclusive cap              | Pinned by                    |
+| -------------- | ----------- | -------------------- | -------------------------- | ---------------------------- |
+| `padding`      | cells       | `0`                  | 32                         | `UI_STYLE_MAX_PADDING_CELLS` |
+| `radius`       | physical px | `0`                  | 16                         | `UI_STYLE_MAX_RADIUS_PX`     |
+| `border`       | physical px | `0`                  | 16                         | `UI_STYLE_MAX_BORDER_PX`     |
+| `border_token` | theme token | `content.foreground` | closed six-name set        | `UiBorderToken::ALL`         |
+| `min_width`    | cells       | `0` (no floor)       | 1000                       | `UI_STYLE_MAX_WIDTH_CELLS`   |
+| `max_width`    | cells       | `0` (no cap)         | 1000                       | `UI_STYLE_MAX_WIDTH_CELLS`   |
+| `gap`          | cells       | `0` (no spacing)     | 32                         | `UI_STYLE_MAX_GAP_CELLS`     |
+| `align`        | closed set  | `start`              | `start` / `center` / `end` | `UiStyleAlign::ALL`          |
 
-The closed key set is `UI_STYLE_FIELDS` (`bitty-lua/src/ui_style.rs:94`). The
-caps reuse accepted decoration ranges rather than inventing a ceiling
-(`ui_style.rs:5-15`). The six border tokens are `content.foreground`,
+The closed key set is `UI_STYLE_FIELDS`, in canonical declaration order:
+`padding`, `radius`, `border`, `border_token`, `min_width`, `max_width`, `gap`,
+`align`. An unlisted name is refused with a typed `E_UI_COMPONENT_INVALID`
+naming it, never ignored — `width`, `height`, `margin`, `spacing`,
+`align_items`, and `stroke` are among the refused spellings, because one
+concept has one name and a second spelling would let one node declare two
+answers. A repeated key is refused too, though only a hand-built marshalled
+table can carry one: the Lua VM collapses duplicate keys in a literal before
+the bridge sees the value. The caps reuse accepted ranges rather than inventing
+a ceiling: `padding`, `radius`, and `border` reuse the accepted decoration
+bounds, `gap` reuses the same `0..=32` spacing range `padding` uses, and the
+width cap reuses the accepted grid-dimension bound. One past any cap is a typed
+refusal naming the found value and the cap; there is no clamp and no
+best-effort default.
+
+The six border tokens are unchanged and still exact: `content.foreground`,
 `content.accent`, `content.muted`, `state.error`, `state.warning`, and
-`state.success`; a colour literal, a gradient, a Core chrome token
-(`border.*`, `chrome.*`), and any other name are rejected (`ui_style.rs:46-50`).
-Elevation, shadow, opacity, blur, transitions, transforms, z-order, per-node
-fonts, background images, and the candidate `gap`/`align`/`size`/`states`
-vocabulary are **not** part of this table (`ui_style.rs:35-37`).
+`state.success`. A colour literal, a gradient, a Core chrome token (`border.*`,
+`chrome.*`), and any other name are rejected.
 
-Four rules an author must know:
+**The widths bound the content box.** `min_width` and `max_width` are cells on
+the width inside `padding`, not on the padded outer frame, so a width
+declaration composes with an inset instead of fighting it. `0` is the inert
+idiom `border = 0` uses — no constraint on that side — so a floor alone means
+"at least this wide" and is never read as `N..0`. Equal bounds are a legal
+fixed width. A floor above the declared cap is refused rather than reordered or
+clamped (`scene style width range is inverted: min_width N > max_width M`), and
+`UiNodeStyle::validate` is the type-level half of the same rule.
+
+**`gap` is spacing between siblings.** It is the distance from the end of one
+sibling's span to the start of the next, on the composed axis, in cells, capped
+at 32. `Row`, `Column`, and `List` may declare it; the rich reader refuses a
+non-zero `gap` on any other kind with a typed `E_UI_COMPONENT_INVALID` naming
+the kind, because a leaf has no adjacent pair to separate. A declared `0` is
+accepted everywhere and is flat. A childless or single-child container still
+accepts a gap that separates nothing, and an over-subscribed container clips at
+the slot boundary: no sibling is truncated to make room, nothing wraps, nothing
+scrolls, and the gap is never shrunk. The composed axis belongs to the paint
+path, not to the field — a `Column`/`List` composes horizontally in a band and
+vertically in an overlay — so a plugin must not read `gap` on a `Column` as a
+vertical rhythm inside a band.
+
+**`align` places direct children.** The set is closed at three spellings,
+`start`, `center`, and `end`, exact and case-sensitive, on `Row`, `Column`, and
+`List`. It places that container's direct children inside its content box on
+the axis its siblings do not advance: a `Row` walks left to right, so `align`
+moves them vertically, and a `Column`/`List` walks top to bottom, so it moves
+them horizontally. `center` sits a child at `slack / 2` and `end` at `slack`,
+where `slack` is the content box minus the child's own measured extent, and it
+saturates: a child wider than the box has no slack and stays at offset zero. It
+moves children inside a box the container already owns, so it changes no
+measured size. An absent `align` and a declared `start` are both today's
+offset-zero walk and both flat. `space-between` is **not** a value here — it is
+the band root `Row`'s four-name distribution on a different surface, and the
+two cannot meet on one node, so each refuses the other's exclusive spelling.
+
+**`border_token` is inert without geometry.** The token resolves to an enum, so
+a style that declares only a token is flat: it paints nothing and costs nothing
+until a width or radius gives it something to colour.
+
+Elevation, shadow, opacity, blur, transitions, transforms, z-order, per-node
+fonts, and background images are **not** part of this table. Of the style and
+layout vocabulary the candidate records name, `min_width`, `max_width`, `gap`,
+and `align` are now **landed** — they are the four additive rows above, present
+in `UI_STYLE_FIELDS` and parsed by `parse_node_style` — while `size` (one
+size-constraint key) and `states` (closed interaction states) remain
+**candidate and unlanded**: no `style` key parses either, and a declaration
+naming one is refused as an unknown field rather than tolerated. The unlanded
+half is owned by
+[Lua UI Style and Layout Vocabulary (Candidate)](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/lua-ui-style-layout-candidate.md);
+the four paint primitives stay owned by
+[Scene Style Primitives (Candidate)](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/scene-style-primitives-candidate.md).
+Both are `status: draft`, and neither is a compatibility promise.
+
+Two behaviours shape how the table is used, neither of which is a row in it:
 
 - **One stroke per node.** `style.border` (physical px) and a `Block`'s own
   `border = { width = N }` (cells) are two spellings of one stroke, so a node
   that declares both with a non-zero width is refused with a typed
   `E_UI_COMPONENT_INVALID` naming both widths; a zero width paints nothing and
-  therefore never collides (`ui_style.rs:53-63`; enforcement
-  `bitty-lua/src/ui_rich.rs:358-378`; the cell-frame cap is 8,
-  `ui_rich.rs:113`).
-- **No-op when flat.** An all-zero style lowers to no scene node and paints
-  nothing, so an unstyled tree renders byte for byte as before
-  (`ui_style.rs:64-66`).
-- **It costs nodes.** A non-flat style is a wrapper node, so it charges one
-  node and one depth level against `SCN-1`/`SCN-2`; a tree already at the
-  ceiling is refused rather than silently wrapped (`ui_style.rs:68-78`). Style
-  values charge no `SCN-3` text bytes, and `border_token` retains no string
-  under `SCN-4` because it resolves to an enum (`ui_style.rs:70-72`).
+  therefore never collides (`UiNodeStyle::collides_with_cell_frame`, applied by
+  the rich reader's `Block` admission, `bitty-lua/src/ui_rich.rs`; the
+  cell-frame cap is 8 cells, `UI_RICH_MAX_BORDER_CELLS`).
 - **Loud drop on band and overlay.** The band/overlay reader does not host the
   table: a `style` key there is the one tolerated field it _reports_. The
-  reader counts every node that declared one (`UiTolerated`, `ui.rs:531`;
-  counting at `ui.rs:930`), and after the mount lands the bridge calls
+  reader counts every node that declared one (`UiTolerated::rich_style_nodes`,
+  `bitty-lua/src/ui.rs`), and after the mount lands the bridge calls
   `HostServices::ui_style_ignored` once per generation, which emits one fixed
-  diagnostic naming the surface and the node count
-  (`host.rs:3750-3758` → `services.rs:6754`). The mount **succeeds** and the
-  tree is unchanged: this is a diagnostic, never a refusal, and never a silent
-  drop. Every other unknown optional field on this surface is still ignored
-  silently under the accepted additive-minor rule, pinned by
+  diagnostic naming the surface and the node count. The mount **succeeds** and
+  the tree is unchanged: this is a diagnostic, never a refusal, and never a
+  silent drop. Every other unknown optional field on this surface is still
+  ignored silently under the accepted additive-minor rule, pinned by
   `unknown_properties_are_tolerated`
-  (`crates/bitty-runtime/tests/lua_ui_parity.rs:581`).
+  (`crates/bitty-runtime/tests/lua_ui_parity.rs`).
+
+### Backwards compatibility
+
+A style is flat when every geometry value is `0` and `align` is `start`
+(`UiNodeStyle::is_flat`); the declared `border_token` is then inert, because it
+resolves to an enum and colours nothing on its own. A flat style — the empty
+style included — lowers to no wrapper node and emits no paint operation, so an
+existing `Text`/`Row`/`Column`/`List` tree that never declares `style` renders
+byte for byte as it did before this vocabulary landed. That is the whole
+compatibility claim, and it is why every new field defaults to the value that
+describes today's rendering: `0` for the two widths and for `gap`, `start` for
+`align`.
+
+A non-flat style charges exactly one scene node and one depth level on top of
+the content it styles, against the `SCN-1` node budget and the bridge's
+`UI_MAX_DEPTH` ceiling, so a tree already at either ceiling is refused rather
+than silently wrapped. Nothing else is charged: style values are not text and
+cost no `SCN-3` bytes, and neither `border_token` nor `align` retains a string
+under `SCN-4` because both resolve to an enum.
 
 **Contract status of the table.** The vocabulary is _landed in code, candidate
-in contract_: it is defined by
+in contract_: the paint half is defined by
 [Scene Style Primitives (Candidate)](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/scene-style-primitives-candidate.md)
-(`status: draft`) and is not named by the accepted Plugin API v1 Lua Surface
-RFC. The bridge module states the same thing in its own header
-(`ui_style.rs:5-15`). Do not read this table as an accepted amendment; read it
-as the current behaviour of `bitty@94039dd1` under a candidate vocabulary.
+and the additive half by
+[Lua UI Style and Layout Vocabulary (Candidate)](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/lua-ui-style-layout-candidate.md),
+both `status: draft`, and it is not named by the accepted Plugin API v1 Lua
+Surface RFC. The bridge module states the same thing in its own header. Do not
+read this table as an accepted amendment; read it as the current behaviour of
+`bitty@4bc0fce5` under two candidate vocabularies. The four later rows landed in
+three pull requests on `bitty` main: bitty
+[#3186](https://github.com/bitty-terminal/bitty/pull/3186) (`9ebe5285`,
+`min_width` and `max_width`), bitty
+[#3188](https://github.com/bitty-terminal/bitty/pull/3188) (`90deb814`, `gap`),
+and bitty [#3198](https://github.com/bitty-terminal/bitty/pull/3198) (`9f407a37`,
+`style.align`).
 
 ## Declarative command bindings
 
@@ -352,12 +445,16 @@ contract change and must update this page, the
   (draft candidates; cross-repository contract reconciliation)
 - [Scene Style Primitives (Candidate)](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/scene-style-primitives-candidate.md)
   (draft candidate; `padding`, `radius`, `border`, `border_token`)
+- [Lua UI Style and Layout Vocabulary (Candidate)](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/specifications/lua-ui-style-layout-candidate.md)
+  (draft candidate; `gap` and `align` landed, `size` and `states` unlanded)
 - `bitty` `crates/bitty-lua/src/ui.rs` (`ui.rs:182` slots, `:208`/`:211` node
   sets, `:214`-`:232` budgets, `:308`/`:322` hover phase and queue, `:331`
   anchor, `:531` tolerated declarations, `:922` excluded-kind rejection,
   `:1181` hover region requirement)
-- `bitty` `crates/bitty-lua/src/ui_style.rs` (`:94` closed key set, `:99`-`:115`
-  caps, `:53` one stroke per node, `:68` accounting)
+- `bitty` `crates/bitty-lua/src/ui_style.rs` (`UI_STYLE_FIELDS` closed eight-key
+  set, `UI_STYLE_MAX_*` caps, `UiNodeStyle::is_flat`, `UiNodeStyle::validate`,
+  `UiNodeStyle::collides_with_cell_frame`, `parse_node_style`; module doc owns
+  the primitive table and the accounting)
 - `bitty` `crates/bitty-lua/src/ui_rich.rs` (`:8` terminal-slot reader,
   `:119` rich kinds, `:358` one-stroke refusal, `:470` band-field rejection)
 - `bitty` `crates/bitty-lua/src/host.rs` (`:6485` terminal-slot mount routing,
