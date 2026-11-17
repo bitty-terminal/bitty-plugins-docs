@@ -710,4 +710,5 @@ register.
   register vs claim, and plugin author rules.
 - [Proposed Delivery Sequence](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/proposed-delivery-sequence.md) and
   [Release Ladder](https://github.com/bitty-terminal/bitty-terminal-docs/blob/main/product/release-ladder.md) for maturity and verification
-  framing (`be3bdb4`, 16 crates, `Implemented` not yet `Verified`).
+  framing (Core `main` `67f51b56`, 18 workspace crates — 14 with
+  `publish = true` — `Implemented` not yet `Verified`).
