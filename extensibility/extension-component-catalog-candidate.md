@@ -446,13 +446,13 @@ headed verification.
 
 ## Catalog
 
-| ID  | Pattern                   | Scene shape                                                   | Style hooks                                                                              | Slot(s)                    | Required capability                                                                      | Hand-rolled today                                                                                                                                                           | Availability                                                                              |
-| --- | ------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| E-1 | Edge band                 | `Row` root, up to three anchored `Row` groups of `Text` atoms | `fg`, `bg`, `bold` on atoms and groups; no padding, radius, border, or width             | `top`, `bottom`            | `ui.rich`                                                                                | `bar/lua/bar/init.lua:4336`, `:4474`, `:4746`; `file-manager/lua/file-manager/init.lua:38`, `:224`; `devtools/lua/devtools/view.lua:45`, `:400`                             | **Shipped** (band vocabulary)                                                             |
-| E-2 | Pill row                  | `Row` of padded `Text` capsules inside a band group           | `fg`, `bg`, `bold`; radius and width unavailable on the band path                        | `top`, `bottom`            | `ui.rich`                                                                                | `bar/lua/bar/init.lua:104`-`:114`, `:1945`, `:1966`-`:1990`                                                                                                                 | **Shipped** as square capsules; rounded pill is a **gap**                                 |
-| E-3 | Tooltip / detail fallback | Band `Text` with `on_hover` + one retained overlay `Text`     | Band fields on the trigger; same token table on the overlay tooltip; no `style` or width | `top`, `bottom`, `overlay` | `ui.rich` + `ui.overlay`                                                                 | `bar/lua/bar/init.lua:1576`, `:4701`-`:4745`, `:4963`-`:5002`                                                                                                               | **Partial**: inline, hover-overlay, and notify rungs shipped; anchored popup is a **gap** |
-| E-4 | Modal sheet               | `Column` of `Text` rows in the overlay (no backdrop, no trap) | Band fields only; non-modal by contract; no `style` or width                             | `overlay`                  | `ui.rich` + `ui.overlay` (+ `ui.overlay.focus` for keys, or `ui.present` for paint-only) | `git-panel/lua/git-panel/init.lua:680`, `:689`; `history/lua/history/init.lua:809`, `:840`; `palette/lua/palette/init.lua:225`, `:230`; `help/lua/help/init.lua:470`-`:498` | **Gap** for modality; the non-modal substitutes are shipped                               |
-| E-5 | Status strip              | `Row` root, anchored groups of module `Text` atoms            | `fg`, `bg`, `bold` per module; single-space join, no separators; no width                | `bottom`                   | `ui.rich` + provider read caps                                                           | `bar/lua/bar/init.lua:139`-`:159`, `:4453`-`:4479`, `:2168`, `:2808`                                                                                                        | **Shipped** (band vocabulary)                                                             |
+| ID  | Pattern                   | Scene shape                                                   | Style hooks                                                                              | Slot(s)                    | Required capability                                                                      | Hand-rolled today                                                                                                                                                           | Availability                                                                                                                        |
+| --- | ------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| E-1 | Edge band                 | `Row` root, up to three anchored `Row` groups of `Text` atoms | `fg`, `bg`, `bold` on atoms and groups; no padding, radius, border, or width             | `top`, `bottom`            | `ui.rich`                                                                                | `bar/lua/bar/init.lua:4336`, `:4474`, `:4746`; `file-manager/lua/file-manager/init.lua:38`, `:224`; `devtools/lua/devtools/view.lua:45`, `:400`                             | **Shipped** (band vocabulary)                                                                                                       |
+| E-2 | Pill row                  | `Row` of padded `Text` capsules inside a band group           | `fg`, `bg`, `bold`; radius and width unavailable on the band path                        | `top`, `bottom`            | `ui.rich`                                                                                | `bar/lua/bar/init.lua:104`-`:114`, `:1945`, `:1966`-`:1990`                                                                                                                 | **Shipped** as square capsules; rounded pill is a **gap**                                                                           |
+| E-3 | Tooltip / detail fallback | Band `Text` with `on_hover` + one retained overlay `Text`     | Band fields on the trigger; same token table on the overlay tooltip; no `style` or width | `top`, `bottom`, `overlay` | `ui.rich` + `ui.overlay`                                                                 | `bar/lua/bar/init.lua:1577`, `:4701`-`:4745`, `:4963`-`:5002`                                                                                                               | **Partial**: inline, hover-overlay, and notify rungs shipped; anchored popup is Core-computed labels only, no plugin-side placement |
+| E-4 | Modal sheet               | `Column` of `Text` rows in the overlay (no backdrop, no trap) | Band fields only; non-modal by contract; no `style` or width                             | `overlay`                  | `ui.rich` + `ui.overlay` (+ `ui.overlay.focus` for keys, or `ui.present` for paint-only) | `git-panel/lua/git-panel/init.lua:680`, `:689`; `history/lua/history/init.lua:809`, `:840`; `palette/lua/palette/init.lua:225`, `:230`; `help/lua/help/init.lua:470`-`:498` | **Gap** for modality; the non-modal substitutes are shipped                                                                         |
+| E-5 | Status strip              | `Row` root, anchored groups of module `Text` atoms            | `fg`, `bg`, `bold` per module; single-space join, no separators; no width                | `bottom`                   | `ui.rich` + provider read caps                                                           | `bar/lua/bar/init.lua:139`-`:159`, `:4453`-`:4479`, `:2168`, `:2808`                                                                                                        | **Shipped** (band vocabulary)                                                                                                       |
 
 Every token named in the Style hooks column is a **selection from a closed
 host-resolved table**, not a plugin-owned token: `fg`/`bg` choose from the five
@@ -467,13 +467,13 @@ The same five entries written as the two facts a contract review needs: which of
 the four v1 kinds each one composes, and whether the width hooks reach the
 surface it belongs to.
 
-| ID  | Node composition (v1 kinds only)                   | Composed depth | Slots, from the closed seven     | Width hooks reach it                                                        | Proof status                                                                        |
-| --- | -------------------------------------------------- | -------------- | -------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| E-1 | `Row` root → `Row`(anchor) groups → `Text` atoms   | 3              | `top`, `bottom`                  | No: the band reader drops `style`                                           | bridge-verified + caller-demonstrated; width **gap**                                |
-| E-2 | `Row` group → `Text` capsule, `Text` separators    | 3              | `top`, `bottom` (via E-1 or E-5) | No on a band; the rich reader accepts `min_width` but rejects the `bg` fill | caller-demonstrated as a square fill; rounded or uniform filled pill **gap**        |
-| E-3 | band `Text` trigger + one `overlay` `Text`         | 1 per surface  | `top`, `bottom`, `overlay`       | No: the overlay drops `style`; rich-path text shaping **unverified**        | caller-demonstrated rungs 1-3; anchored popup **gap**                               |
-| E-4 | `Column` → `Text` rows                             | 2              | `overlay`                        | No: the overlay drops `style`                                               | caller-demonstrated as capture / paint-only substitutes; modality and width **gap** |
-| E-5 | `Row` root → `Row`(anchor) groups → `Text` modules | 3              | `bottom`                         | No: the band reader drops `style`                                           | bridge-verified + caller-demonstrated; width **gap**                                |
+| ID  | Node composition (v1 kinds only)                   | Composed depth | Slots, from the closed seven     | Width hooks reach it                                                        | Proof status                                                                              |
+| --- | -------------------------------------------------- | -------------- | -------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| E-1 | `Row` root → `Row`(anchor) groups → `Text` atoms   | 3              | `top`, `bottom`                  | No: the band reader drops `style`                                           | bridge-verified + caller-demonstrated; width **gap**                                      |
+| E-2 | `Row` group → `Text` capsule, `Text` separators    | 3              | `top`, `bottom` (via E-1 or E-5) | No on a band; the rich reader accepts `min_width` but rejects the `bg` fill | caller-demonstrated as a square fill; rounded or uniform filled pill **gap**              |
+| E-3 | band `Text` trigger + one `overlay` `Text`         | 1 per surface  | `top`, `bottom`, `overlay`       | No: the overlay drops `style`; rich-path text shaping **unverified**        | caller-demonstrated rungs 1-3; rung 4 Core-computed labels only, no plugin-side placement |
+| E-4 | `Column` → `Text` rows                             | 2              | `overlay`                        | No: the overlay drops `style`                                               | caller-demonstrated as capture / paint-only substitutes; modality and width **gap**       |
+| E-5 | `Row` root → `Row`(anchor) groups → `Text` modules | 3              | `bottom`                         | No: the band reader drops `style`                                           | bridge-verified + caller-demonstrated; width **gap**                                      |
 
 Read the fourth and fifth columns together: no entry's surface accepts the width
 hooks, so a width statement appears in an entry only to say what does not apply.
@@ -786,8 +786,10 @@ local handle = bitty.ui.mount("bottom", {
 
 ## E-3 Tooltip and detail fallback
 
-**Availability: partial.** Three rungs ship; the rung an author usually means
-by "tooltip" — a popup anchored against its trigger — does not exist.
+**Availability: partial.** Three rungs ship, and a fourth ships in part: Core
+computes and places hint labels for a plugin, but the plugin cannot place a node
+itself. The rung an author usually means by "tooltip" — a popup the plugin
+positions against its trigger — does not exist.
 
 **Contract.** Slots: `top` or `bottom` for the trigger, `overlay` for the
 tooltip — the only three of the seven this entry may name, and `overlay` needs
@@ -801,17 +803,38 @@ that surface, and whether a narrowed content box wraps, clips, or overflows is
 **unverified**: `constrain_width` sizes the box (`bitty-rich/src/scene.rs:619`)
 and no artifact this catalog can cite pins the shaping inside it. Interaction:
 `on_hover` dispatches a registered command with a `region` and an injected
-`phase`. Proof: caller-demonstrated for rungs 1-3; the anchored popup is a
-**gap**; rich-path wrapping is **unverified**.
+`phase`. Proof: caller-demonstrated for rungs 1-3; rung 4 is partial through the
+Core-computed label path (`beacon`), and plugin-side placement is a **gap**;
+rich-path wrapping is **unverified**.
 
 **Scene shape.** A fallback ladder, in preference order:
 
-| Rung | Surface                                                                      | Availability                                                          |
-| ---- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| 1    | An inline suffix inside the trigger's own band atom                          | Shipped (band vocabulary)                                             |
-| 2    | `on_hover` on the trigger region driving one retained `overlay` `Text` block | Shipped (band vocabulary + `ui.overlay`)                              |
-| 3    | `bitty.notify.show { title, body?, urgency? }`                               | Shipped (host-rendered, `platform.notify`)                            |
-| 4    | A popup positioned against the trigger's rectangle                           | **Gap**: no anchoring, offset, placement, or per-item geometry exists |
+| Rung | Surface                                                                      | Availability                                                                                                                                                  |
+| ---- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | An inline suffix inside the trigger's own band atom                          | Shipped (band vocabulary)                                                                                                                                     |
+| 2    | `on_hover` on the trigger region driving one retained `overlay` `Text` block | Shipped (band vocabulary + `ui.overlay`)                                                                                                                      |
+| 3    | `bitty.notify.show { title, body?, urgency? }`                               | Shipped (host-rendered, `platform.notify`)                                                                                                                    |
+| 4    | A popup positioned against the trigger's rectangle                           | **Partial**: Core-computed hint labels only, no plugin-side placement (`crates/bitty-lua/src/host.rs:2506`-`:2512`; `lua/beacon/init.lua:693`-`:695`, `:732`) |
+
+Rung 4 is partial, not absent, and the boundary is placement rather than
+geometry. A plugin has no ambient or per-frame geometry channel and cannot place
+an arbitrary node — but Core does hand it viewport-local `(x, y)` anchor cells
+over the targeting path. The trait documents `anchors` as "viewport-local
+`(x, y)` cells" (`crates/bitty-lua/src/host.rs:2475`-`:2476`), and
+`ui_targets_session_start` takes them positionally beside `commands`
+(`crates/bitty-lua/src/host.rs:2506`-`:2512`); the snapshot rows carry the live
+`rect` as `(x, y, width, height)` window cells when the host has one
+(`crates/bitty-lua/src/host.rs:166`-`:167`, `:2395`). The runtime resolves each
+point from the caller's anchor, except that a live Core panel anchor owns its
+label position (`crates/bitty-runtime/src/plugin_runtime/services.rs:3176`-
+`:3189`, `Point::new(anchor.0, anchor.1)`), and the Lua surface exposes it as
+`bitty.ui.targets.session_start` (`crates/bitty-lua/src/host.rs:7187`, `:7233`).
+`beacon` is a shipped consumer: it copies `row.rect` into its anchor list and
+passes that list to `session_start` (`lua/beacon/init.lua:693`-`:695`, `:732`).
+What remains a gap is a popup the plugin positions itself: no offset, no
+per-item placement, no z-order, and no node the plugin paints at a chosen point.
+Core computes the label and its position; the plugin names a target and a
+command.
 
 Rung 2 in scene terms — the trigger and the tooltip are two blocks on two
 surfaces, joined only by a region id:
@@ -826,8 +849,8 @@ retained block each, the trigger at the first of the depth-16 levels
 (`UI_MAX_DEPTH`, `ui.rs:215`), and the tooltip text inside the 256 KiB block cap
 (`UI_MAX_TEXT_BYTES`, `ui.rs:221`) — the reference narrows it much further, to
 256 UTF-8 bytes. Rung 3 is not a scene block at all, so no node, depth, or text
-budget applies to it; the host's own rate policy does. Rung 4 has no shape to
-bound.
+budget applies to it; the host's own rate policy does. Rung 4 has no
+plugin-authored shape to bound — Core owns the label's box.
 
 **Style hooks.** The trigger carries the band fields. The tooltip block is
 itself a band-vocabulary node and paints through the same closed five-name table
@@ -845,17 +868,19 @@ and delivery are host-side.
 **Interaction contract.** `on_hover` has the same shape as `on_click` and
 **requires** a `region` identity. The host dispatches the declared command on
 pointer enter and leave with `phase = "enter"` or `phase = "leave"` injected
-beside the `region` id; no coordinates ever reach the plugin, so a tooltip is
-anchored by Core-owned region geometry, never by pointer math. Hover never
-captures input and never sets a modal state. At most eight band hover dispatches
-queue per frame (`UI_HOVER_QUEUE_MAX`, `ui.rs:323`), so a pattern coalesces
-transitions instead of assuming one dispatch per painted item.
+beside the `region` id; no pointer coordinates reach the plugin through this
+binding, so a tooltip is anchored by Core-owned region geometry, never by pointer
+math. That is separate from the targeting path, which does hand viewport-local
+`(x, y)` anchors to a session. Hover never captures input and never sets a modal
+state. At most eight band hover dispatches queue per frame
+(`UI_HOVER_QUEUE_MAX`, `ui.rs:323`), so a pattern coalesces transitions instead
+of assuming one dispatch per painted item.
 
 **Slot and capability.** Band slot (`top`, `bottom`) for the trigger under
 `ui.rich`; `overlay` for the tooltip under `ui.rich` + `ui.overlay`. Rung 3
 needs `platform.notify`.
 
-**Caller evidence.** `bar/lua/bar/init.lua`: `hover_binding` at `:1576` builds
+**Caller evidence.** `bar/lua/bar/init.lua`: `hover_binding` at `:1577` builds
 the region-bound binding, `:4701`-`:4745` owns the hover state, the retained
 overlay mount (`:4754`) and the bounded tooltip text update (`:4726`), and
 `:4963`-`:5002` handles the enter/leave phases. The same plugin ships both lower
@@ -887,16 +912,18 @@ collapses whitespace, replaces control bytes with spaces, and cuts the detail at
 host rate-limited — a declined or rate-limited show returns `false`, which the
 pattern treats as "not shown".
 
-**Headed example.** Ships as `bar/lua/bar/init.lua` — `hover_binding` (`:1576`)
+**Headed example.** Ships as `bar/lua/bar/init.lua` — `hover_binding` (`:1577`)
 builds the trigger binding, `:4718`-`:4735` is the bounded tooltip update, `:4754`
 mounts the retained overlay block, and `:4970`-`:5002` is the enter/leave
 dispatcher the listing registers. Rung 1 (inline suffix) ships in the same file
 via `atom.hover_suffix` (`:1989`); rung 3 ships via the `detail` command
-(`:4936`-`:4961`). Rung 4 has **no shipped consumer and no accepted contract** —
-it is an open question owned by the terminal-side surface, not a recipe this
-record may invent. The listing is a complete scene plus its manifest grant,
-written to run as one file; it has not been executed against a headed host for
-this revision.
+(`:4936`-`:4961`). Rung 4 has **no accepted contract** for plugin-side placement,
+and no plugin positions a popup itself: the shipped consumer, `beacon`, uses the
+Core-computed label path instead (`lua/beacon/init.lua:693`-`:695`, `:732`). It
+is an open question owned by the terminal-side surface, not a recipe this record
+may invent. The listing is a complete scene plus its manifest grant, written to
+run as one file; it has not been executed against a headed host for this
+revision.
 
 ```lua
 -- Manifest grants ui.rich and ui.overlay; platform.notify for the last rung.
@@ -1329,15 +1356,15 @@ These patterns change nothing about the security posture: each is a composition
 of already-admitted pieces. The properties that still hold are enforced by the
 host.
 
-| Concern                | Position                                                                                                                                                         |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Presentation not truth | Every pattern mounts a declarative subtree; none writes grid, cursor, mode, scrollback, or layout.                                                               |
-| No hot-path execution  | Bindings dispatch command ids; no plugin VM runs on the input path, and no pattern polls the host per frame.                                                     |
-| Bounded inputs         | Node, depth, text, block, and retained-string budgets apply per generation; a non-flat `style` costs one node and one depth level and is refused at the ceiling. |
-| Authority separation   | Draw authority (`ui.present`) never implies input authority (`ui.overlay.focus`); no pattern asks for both to fake a tooltip.                                    |
-| No ambient geometry    | Region ids derive rectangles from painted spans and carry no coordinates; no pattern reads or sets absolute positions.                                           |
-| Fail closed            | A denied grant, declined notification, rejected mount, or over-cap style leaves the rest of the surface unchanged.                                               |
-| No modal authority     | No pattern paints a backdrop, claims modality, or traps focus; the single modal authority stays Core-owned.                                                      |
+| Concern                | Position                                                                                                                                                                                                                                                                                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Presentation not truth | Every pattern mounts a declarative subtree; none writes grid, cursor, mode, scrollback, or layout.                                                                                                                                                                                                                                                                                          |
+| No hot-path execution  | Bindings dispatch command ids; no plugin VM runs on the input path, and no pattern polls the host per frame.                                                                                                                                                                                                                                                                                |
+| Bounded inputs         | Node, depth, text, block, and retained-string budgets apply per generation; a non-flat `style` costs one node and one depth level and is refused at the ceiling.                                                                                                                                                                                                                            |
+| Authority separation   | Draw authority (`ui.present`) never implies input authority (`ui.overlay.focus`); no pattern asks for both to fake a tooltip.                                                                                                                                                                                                                                                               |
+| No ambient geometry    | Region ids derive rectangles from painted spans and carry no coordinates, and no pattern reads geometry per frame or sets an absolute position. Geometry reaches a plugin only on request: the targeting session takes viewport-local `(x, y)` anchors and Core places the label (`crates/bitty-lua/src/host.rs:2506`-`:2512`; `crates/bitty-runtime/src/plugin_runtime/services.rs:3183`). |
+| Fail closed            | A denied grant, declined notification, rejected mount, or over-cap style leaves the rest of the surface unchanged.                                                                                                                                                                                                                                                                          |
+| No modal authority     | No pattern paints a backdrop, claims modality, or traps focus; the single modal authority stays Core-owned.                                                                                                                                                                                                                                                                                 |
 
 No capability, budget, or trust decision is proposed here, so no `P0` criterion
 is affected. A security reviewer is required if a future revision admits a new
@@ -1442,10 +1469,16 @@ surface that would own one.
    here; the `file:line` evidence is evidence of a hand-rolled caller, not of a
    migration. Until that lands, this catalog is a description of shipped
    compositions, and there is no shared implementation to point at.
-2. **No anchored tooltip or popover primitive.** Rung 4 of E-3 cannot be built: no
-   anchoring, offset, placement, or per-item geometry exists, and an overlay block
-   is presented over the focused view rather than beside a band atom. Region ids
-   give a stable identity, not a rectangle a plugin can position against.
+2. **No anchored tooltip or popover primitive.** Rung 4 of E-3 is partial, not
+   absent. Core does hand the plugin viewport-local `(x, y)` anchors through
+   `ui.targets.session_start` (`crates/bitty-lua/src/host.rs:2475`-`:2476`,
+   `:2506`-`:2512`) and `beacon` already consumes them
+   (`lua/beacon/init.lua:693`-`:695`, `:732`). What does not exist is plugin-side
+   placement: no per-frame or ambient geometry channel, no offset, no z-order, and
+   no way to paint an arbitrary node at a chosen point. Core computes the label
+   and its position; the plugin names a target and a command. An overlay block is
+   still presented over the focused view rather than beside a band atom, and a
+   free-placed popup would need a placement contract this record does not invent.
 3. **No modality.** E-4 stays a gap: no backdrop, focus trap, stacking tier,
    dismissal ownership, or announcement channel. The substitutes are non-modal by
    contract.
@@ -1562,8 +1595,9 @@ surface that would own one.
   `Row`-group entry into a width-setting and spacing-setting surface.
 - Whether a narrowed rich content box wraps, clips, or overflows, and which of the
   three the catalog should describe for a bounded tooltip or sheet body.
-- Whether an anchored popup surface becomes a primitive, and what anchoring
-  contract it would need to avoid leaking geometry to plugins.
+- Whether an anchored popup surface becomes a primitive, and what placement
+  contract it would need beyond the viewport-local anchors the targeting path
+  already hands over.
 - Whether a plugin modal surface ever exists, and how it would relate to the single
   Core-owned modal authority.
 - The accessibility property schema (role, name override, state) and whether band
@@ -1608,11 +1642,11 @@ narrows authoring rather than widening authority.
 
 ## Revision history
 
-| Revision      | Change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Initial       | Five entries (E-1 to E-5) with scene shape, style hooks, slot and capability, caller evidence at `file:line`, accessibility notes, bounds, and one headed example each; the residual list, including the open bar-migration deliverable.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| This revision | Adds a per-entry contract block (closed-set slot, v1 node composition, style, width and spacing hooks, interaction route, budget footprint, proof status); a composition register; the `min_width` / `max_width` width hooks, the `min_height` / `max_height` height pair, the `gap` sibling-spacing key, and `align` — the ten-key style table — with an explicit statement that they reach no entry's surface; and residuals 10-13 covering caller absence, the four-primitive contract text, unverified narrowed-box shaping, and column-band placement.                                                                                                                                                                                                                                                                                                                                                      |
-| Current       | States the four entry axes as distinct labelled fields (**Scene shape**, **Style hooks**, **Accessibility notes**, **Headed example**) on every entry; grounds every style hook in the Theme Token Contract's namespaces so no Core-owned `border.` / `chrome.` / `content.` / `state.` token is presented as a plugin hook; grounds every accessibility note in the Accessibility Baseline's required roles and states the boundary the build cannot cross; makes each headed example name the plugin path that ships the shape, and marks the entries with no shipped consumer or no accepted contract as gaps; re-pins every caller-evidence `file:line` against `bitty` `origin/main` `0e92f6fa` and `bitty-plugins` `ce49705`; adds the **Adoption** section naming the bar migration (bitty#2114, item 3) as the remaining residual; and adds residual 14 for the unreachable `plugin.<name>.*` namespace. |
+| Revision      | Change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Initial       | Five entries (E-1 to E-5) with scene shape, style hooks, slot and capability, caller evidence at `file:line`, accessibility notes, bounds, and one headed example each; the residual list, including the open bar-migration deliverable.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| This revision | Adds a per-entry contract block (closed-set slot, v1 node composition, style, width and spacing hooks, interaction route, budget footprint, proof status); a composition register; the `min_width` / `max_width` width hooks, the `min_height` / `max_height` height pair, the `gap` sibling-spacing key, and `align` — the ten-key style table — with an explicit statement that they reach no entry's surface; and residuals 10-13 covering caller absence, the four-primitive contract text, unverified narrowed-box shaping, and column-band placement.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Current       | States the four entry axes as distinct labelled fields (**Scene shape**, **Style hooks**, **Accessibility notes**, **Headed example**) on every entry; grounds every style hook in the Theme Token Contract's namespaces so no Core-owned `border.` / `chrome.` / `content.` / `state.` token is presented as a plugin hook; grounds every accessibility note in the Accessibility Baseline's required roles and states the boundary the build cannot cross; makes each headed example name the plugin path that ships the shape, and marks the entries with no shipped consumer or no accepted contract as gaps; re-pins every caller-evidence `file:line` against `bitty` `origin/main` `0e92f6fa` and `bitty-plugins` `ce49705`; adds the **Adoption** section naming the bar migration (bitty#2114, item 3) as the remaining residual; adds residual 14 for the unreachable `plugin.<name>.*` namespace; and corrects E-3 rung 4 to its real boundary — Core-computed hint labels over the viewport-local `(x, y)` anchor path of `ui.targets.session_start`, with `beacon` as a shipped consumer — rather than the absence of any geometry, and re-pins `hover_binding` to `:1577`. |
 
 ## References
 
