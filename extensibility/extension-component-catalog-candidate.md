@@ -448,7 +448,7 @@ headed verification.
 
 | ID  | Pattern                   | Scene shape                                                   | Style hooks                                                                              | Slot(s)                    | Required capability                                                                      | Hand-rolled today                                                                                                                                                           | Availability                                                                              |
 | --- | ------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| E-1 | Edge band                 | `Row` root, up to three anchored `Row` groups of `Text` atoms | `fg`, `bg`, `bold` on atoms and groups; no padding, radius, border, or width             | `top`, `bottom`            | `ui.rich`                                                                                | `bar/lua/bar/init.lua:4336`, `:4474`, `:4746`; `file-manager/lua/file-manager/init.lua:38`, `:311`; `devtools/lua/devtools/view.lua:45`, `:400`                             | **Shipped** (band vocabulary)                                                             |
+| E-1 | Edge band                 | `Row` root, up to three anchored `Row` groups of `Text` atoms | `fg`, `bg`, `bold` on atoms and groups; no padding, radius, border, or width             | `top`, `bottom`            | `ui.rich`                                                                                | `bar/lua/bar/init.lua:4336`, `:4474`, `:4746`; `file-manager/lua/file-manager/init.lua:38`, `:224`; `devtools/lua/devtools/view.lua:45`, `:400`                             | **Shipped** (band vocabulary)                                                             |
 | E-2 | Pill row                  | `Row` of padded `Text` capsules inside a band group           | `fg`, `bg`, `bold`; radius and width unavailable on the band path                        | `top`, `bottom`            | `ui.rich`                                                                                | `bar/lua/bar/init.lua:104`-`:114`, `:1945`, `:1966`-`:1990`                                                                                                                 | **Shipped** as square capsules; rounded pill is a **gap**                                 |
 | E-3 | Tooltip / detail fallback | Band `Text` with `on_hover` + one retained overlay `Text`     | Band fields on the trigger; same token table on the overlay tooltip; no `style` or width | `top`, `bottom`, `overlay` | `ui.rich` + `ui.overlay`                                                                 | `bar/lua/bar/init.lua:1576`, `:4701`-`:4745`, `:4963`-`:5002`                                                                                                               | **Partial**: inline, hover-overlay, and notify rungs shipped; anchored popup is a **gap** |
 | E-4 | Modal sheet               | `Column` of `Text` rows in the overlay (no backdrop, no trap) | Band fields only; non-modal by contract; no `style` or width                             | `overlay`                  | `ui.rich` + `ui.overlay` (+ `ui.overlay.focus` for keys, or `ui.present` for paint-only) | `git-panel/lua/git-panel/init.lua:680`, `:689`; `history/lua/history/init.lua:809`, `:840`; `palette/lua/palette/init.lua:225`, `:230`; `help/lua/help/init.lua:470`-`:498` | **Gap** for modality; the non-modal substitutes are shipped                               |
@@ -584,7 +584,11 @@ stack in plugin id byte order, so a pattern never encodes a position.
 `:4472`), and `:4746` mounts the result on the configured edge. Two other
 plugins mount the same shape with a different content budget:
 `file-manager/lua/file-manager/init.lua:38` (`M.SLOT = "bottom"`) with the mount
-at `:311`, and `devtools/lua/devtools/view.lua:45` with the mount at `:400`.
+at `:224`, and `devtools/lua/devtools/view.lua:45` with the mount at `:400`.
+Both `file-manager` and `devtools` are pinned at the commits the collection
+records (`file-manager` `38ee03b0`, `devtools` `88acd1d6`); the file-manager
+mount moves in later commits of that repository, so the pin follows the
+collection rather than that repository's head.
 
 **Bounds.** One retained block per band. The root, a group, and an atom are
 three of the sixteen bridge levels; the per-generation ceilings are 2048 nodes,
@@ -596,7 +600,7 @@ characters and a band line at 1024 bytes).
 
 **Headed example.** Ships as `bar/lua/bar/init.lua` — the anchored-group band
 below is the shape `group_node` (`:4336`) and `render_bar` (`:4453`) build, and
-`file-manager/lua/file-manager/init.lua:311` and
+`file-manager/lua/file-manager/init.lua:224` and
 `devtools/lua/devtools/view.lua:400` mount the same composition with a smaller
 content budget. The listing is a complete scene plus its manifest grant, written
 to run as one file; it has not been executed against a headed host for this
@@ -1212,7 +1216,7 @@ appending.
 (`:4453`-`:4479`). It is the only shipped consumer of this shape: no other plugin
 in the collection declares an `anchor` at all, and the other two `bottom` mounts
 are unanchored content views (`file-manager` mounts a `Column`-rooted listing at
-`file-manager/lua/file-manager/init.lua:311`, `devtools` mounts one `Text` row
+`file-manager/lua/file-manager/init.lua:224`, `devtools` mounts one `Text` row
 per block at `devtools/lua/devtools/view.lua:400`). The listing is a complete scene
 plus its manifest grant, written to run as one file; it has not been executed
 against a headed host for this revision.
