@@ -60,17 +60,17 @@ invented `[plugins]` table in `bitty.toml`. The legacy
 `bitty-terminal.bar.toml` file remains a compatibility fallback only when no
 selected Lua file exists.
 
-| Key              | Kind           | Shipped default                           | Implemented behavior                                                     |
-| ---------------- | -------------- | ----------------------------------------- | ------------------------------------------------------------------------ |
-| `show`           | `bool`         | `true`                                    | Enable presentation                                                      |
-| `edge`           | `string`       | `"bottom"`                                | `"top"` or `"bottom"` semantic slot; other strings use local default     |
-| `show_single`    | `bool`         | `false`                                   | Show a lone workspace; occupied scratchpad also keeps the bar visible    |
-| `name_max_chars` | `int`          | `32`                                      | Local validation permits 1 through `NAME_MAX_CHARS` (32)                 |
-| `label`          | `string`       | `"index"`                                 | Capsule label mode: `"index"`, `"name"`, or `"both"`                     |
-| `icons`          | `string`       | `"ascii"`                                 | Module icon map: `"ascii"`, `"pua"`, or `"nerd"`; unknown paints `ascii` |
-| `modules_left`   | `string-array` | `["workspaces"]`                          | First ordered module group                                               |
-| `modules_center` | `string-array` | `["clock"]`                               | Center group, centered across the full band                              |
-| `modules_right`  | `string-array` | `["network", "cpu", "memory", "battery"]` | Right group, aligned to the right inset edge                             |
+| Key              | Kind           | Shipped default                           | Implemented behavior                                                            |
+| ---------------- | -------------- | ----------------------------------------- | ------------------------------------------------------------------------------- |
+| `show`           | `bool`         | `true`                                    | Enable presentation                                                             |
+| `edge`           | `string`       | `"bottom"`                                | `"top"` or `"bottom"` semantic slot; other strings use local default            |
+| `show_single`    | `bool`         | `true`                                    | Show a lone workspace (default); occupied scratchpad also keeps the bar visible |
+| `name_max_chars` | `int`          | `32`                                      | Local validation permits 1 through `NAME_MAX_CHARS` (32)                        |
+| `label`          | `string`       | `"index"`                                 | Capsule label mode: `"index"`, `"name"`, or `"both"`                            |
+| `icons`          | `string`       | `"ascii"`                                 | Module icon map: `"ascii"`, `"pua"`, or `"nerd"`; unknown paints `ascii`        |
+| `modules_left`   | `string-array` | `["workspaces"]`                          | First ordered module group                                                      |
+| `modules_center` | `string-array` | `["clock"]`                               | Center group, centered across the full band                                     |
+| `modules_right`  | `string-array` | `["network", "cpu", "memory", "battery"]` | Right group, aligned to the right inset edge                                    |
 
 The shipped fresh-install plan places workspace capsules on the left, the clock
 in the center, and provider-backed `network`, `cpu`, `memory`, and `battery`

@@ -41,9 +41,11 @@ The plugin mounts `top` or `bottom` through `bitty.ui.mount` under `ui.rich`.
 It composes a `Row` of `Text`, placing workspaces in the left group, the clock
 centered across the full band, and provider-backed `network`, `cpu`, `memory`,
 and `battery` modules at the right inset. Unavailable or ungranted provider
-modules are omitted individually. A lone workspace is hidden unless configured
-otherwise or a scratchpad is occupied, and a plan that resolves to nothing
-falls back to the shipped default plan. Inactive workspace labels request focus
+modules are omitted individually. A lone workspace keeps the bar visible by
+default (`show_single = true`); setting it to `false` restores the historical
+auto-hide, where an occupied scratchpad still keeps the bar visible, and
+`show = false` hides it outright. A plan that resolves to nothing falls back to
+the shipped default plan. Inactive workspace labels request focus
 through a registered command and `workspace.control`; the `label` setting
 selects index, name, or both. Workspace labels render as padded, filled capsules
 rather than bracketed text; the exact marks, theme tokens, and square-corner
